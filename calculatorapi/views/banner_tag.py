@@ -1,4 +1,3 @@
-from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
@@ -15,3 +14,11 @@ class BannerTagSerializer(serializers.ModelSerializer):
             "id",
             "name",
         )
+
+
+class BannerTagView(ViewSet):
+
+    def list(self, request):
+        banner_tags = BannerTag.objects.all()
+        serializer = BannerTagSerializer(banner_tags, many=True)
+        return Response(serializer.data)
