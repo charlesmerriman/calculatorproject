@@ -1,0 +1,16 @@
+[
+    {
+        "model": "calculatorapi.bannertype",
+        "pk": 1,
+        "fields": {
+            "name": "Uma"
+        }
+    },
+    {
+        "model": "calculatorapi.bannertype",
+        "pk": 2,
+        "fields": {
+            "name": "Support"
+        }
+    }
+]

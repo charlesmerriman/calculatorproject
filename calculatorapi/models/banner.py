@@ -1,6 +1,6 @@
 from django.db import models
-from .BannerType import BannerType
-from .BannerTag import BannerTag
+from .banner_type import BannerType
+from .banner_tag import BannerTag
 
 
 class Banner(models.Model):

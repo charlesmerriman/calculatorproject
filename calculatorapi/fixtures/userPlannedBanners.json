@@ -1,0 +1,11 @@
+[
+    {
+        "model": "calculatorapi.userplannedbanner",
+        "pk": 1,
+        "fields": {
+            "user": 1,
+            "banner": 1,
+            "number_of_pulls": 50
+        }
+    }
+]

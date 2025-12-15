@@ -1,10 +1,10 @@
 from django.db import models
-from .Banner import Banner
-from .User import UserProfile
+from .banner import Banner
+from .custom_user import CustomUser
 
 
 class UserPlannedBanner(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     banner = models.ForeignKey(Banner, on_delete=models.CASCADE)
     number_of_pulls = models.IntegerField()
 
