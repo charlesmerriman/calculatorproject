@@ -1,0 +1,82 @@
+[
+    {
+        "model": "calculatorapi.clubrank",
+        "pk": 1,
+        "fields": {
+            "name": "D+",
+            "income_amount": 225
+        }
+    },
+    {
+        "model": "calculatorapi.clubrank",
+        "pk": 2,
+        "fields": {
+            "name": "C",
+            "income_amount": 450
+        }
+    },
+    {
+        "model": "calculatorapi.clubrank",
+        "pk": 3,
+        "fields": {
+            "name": "C+",
+            "income_amount": 900
+        }
+    },
+    {
+        "model": "calculatorapi.clubrank",
+        "pk": 4,
+        "fields": {
+            "name": "B",
+            "income_amount": 1350
+        }
+    },
+    {
+        "model": "calculatorapi.clubrank",
+        "pk": 5,
+        "fields": {
+            "name": "B+",
+            "income_amount": 1800
+        }
+    },
+    {
+        "model": "calculatorapi.clubrank",
+        "pk": 6,
+        "fields": {
+            "name": "A",
+            "income_amount": 2250
+        }
+    },
+    {
+        "model": "calculatorapi.clubrank",
+        "pk": 7,
+        "fields": {
+            "name": "A+",
+            "income_amount": 2700
+        }
+    },
+    {
+        "model": "calculatorapi.clubrank",
+        "pk": 8,
+        "fields": {
+            "name": "S",
+            "income_amount": 3150
+        }
+    },
+    {
+        "model": "calculatorapi.clubrank",
+        "pk": 9,
+        "fields": {
+            "name": "S+",
+            "income_amount": 3600
+        }
+    },
+    {
+        "model": "calculatorapi.clubrank",
+        "pk": 10,
+        "fields": {
+            "name": "SS",
+            "income_amount": 4500
+        }
+    }
+]

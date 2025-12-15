@@ -1,0 +1,23 @@
+[
+    {
+        "model": "calculatorapi.bannertag",
+        "pk": 1,
+        "fields": {
+            "name": "Whale"
+        }
+    },
+    {
+        "model": "calculatorapi.bannertag",
+        "pk": 2,
+        "fields": {
+            "name": "Dolphin"
+        }
+    },
+    {
+        "model": "calculatorapi.bannertag",
+        "pk": 3,
+        "fields": {
+            "name": "Must Pull"
+        }
+    }
+]

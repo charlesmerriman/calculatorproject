@@ -1,0 +1,50 @@
+[
+    {
+        "model": "calculatorapi.championsmeetingrank",
+        "pk": 1,
+        "fields": {
+            "name": "Champion",
+            "income_amount": 3500
+        }
+    },
+    {
+        "model": "calculatorapi.championsmeetingrank",
+        "pk": 2,
+        "fields": {
+            "name": "Finalist",
+            "income_amount": 2400
+        }
+    },
+    {
+        "model": "calculatorapi.championsmeetingrank",
+        "pk": 3,
+        "fields": {
+            "name": "Group A",
+            "income_amount": 1700
+        }
+    },
+    {
+        "model": "calculatorapi.championsmeetingrank",
+        "pk": 4,
+        "fields": {
+            "name": "Group B",
+            "income_amount": 1400
+        }
+    },
+    {
+        "model": "calculatorapi.championsmeetingrank",
+        "pk": 5,
+        "fields": {
+            "name": "Open League",
+            "income_amount": 1100
+        }
+    },
+        {
+        "model": "calculatorapi.championsmeetingrank",
+        "pk": 6,
+        "fields": {
+            "name": "None",
+            "income_amount": 0
+        }
+    }
+]

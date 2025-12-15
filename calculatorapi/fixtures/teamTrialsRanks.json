@@ -1,0 +1,50 @@
+[
+    {
+        "model": "calculatorapi.teamtrialsrank",
+        "pk": 1,
+        "fields": {
+            "name": "Class 1",
+            "income_amount": 0
+        }
+    },
+    {
+        "model": "calculatorapi.teamtrialsrank",
+        "pk": 2,
+        "fields": {
+            "name": "Class 2",
+            "income_amount": 140
+        }
+    },
+    {
+        "model": "calculatorapi.teamtrialsrank",
+        "pk": 3,
+        "fields": {
+            "name": "Class 3",
+            "income_amount": 300
+        }
+    },
+    {
+        "model": "calculatorapi.teamtrialsrank",
+        "pk": 4,
+        "fields": {
+            "name": "Class 4",
+            "income_amount": 600
+        }
+    },
+    {
+        "model": "calculatorapi.teamtrialsrank",
+        "pk": 5,
+        "fields": {
+            "name": "Class 5",
+            "income_amount": 900
+        }
+    },
+    {
+        "model": "calculatorapi.teamtrialsrank",
+        "pk": 6,
+        "fields": {
+            "name": "Class 6",
+            "income_amount": 1500
+        }
+    }
+]

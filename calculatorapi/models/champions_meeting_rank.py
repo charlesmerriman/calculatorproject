@@ -1,8 +1,8 @@
 from django.db import models
 
 
-class TeamTrialsRank(models.Model):
-    name = models.CharField(max_Length=255)
+class ChampionsMeetingRank(models.Model):
+    name = models.CharField(max_length=255)
     income_amount = models.IntegerField()
 
 
