@@ -27,6 +27,7 @@ class UserViewSet(viewsets.ViewSet):
                 first_name=serializer.validated_data["first_name"],
                 last_name=serializer.validated_data["last_name"],
                 password=serializer.validated_data["password"],
+                email=serializer.validated_data["email"],
             )
             token, created = Token.objects.get_or_create(user=user)
             return Response({"token": token.key}, status=status.HTTP_201_CREATED)
@@ -40,9 +41,22 @@ class UserViewSet(viewsets.ViewSet):
         user = authenticate(username=username, password=password)
 
         if user:
-            token = Token.objects.get(user=user)
+            token, created = Token.objects.get_or_create(user=user)
             return Response({"token": token.key}, status=status.HTTP_200_OK)
         else:
             return Response(
                 {"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST
             )
+
+    @action(
+        detail=False,
+        methods=["post"],
+        url_path="logout",
+        permission_classes=[permissions.IsAuthenticated],
+    )
+    def user_logout(self, request):
+        # Delete the user's token
+        request.user.auth_token.delete()
+        return Response(
+            {"message": "Successfully logged out"}, status=status.HTTP_200_OK
+        )
