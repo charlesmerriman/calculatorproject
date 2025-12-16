@@ -3,6 +3,11 @@ from django.urls import include, path
 from django.conf import settings
 from rest_framework import routers
 from django.conf.urls.static import static
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularSwaggerView,
+    SpectacularRedocView,
+)
 from calculatorapi.views import (
     BannerViewSet,
     UserViewSet,
@@ -13,6 +18,7 @@ from calculatorapi.views import (
     BannerTypeView,
     BannerTagView,
 )
+
 
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r"banners", BannerViewSet, basename="banner")
@@ -42,5 +48,17 @@ urlpatterns = [
         "update-stats",
         UserViewSet.as_view({"patch": "update_stats"}),
         name="update-stats",
+    ),
+    # API Documentation URLs
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "api/schema/swagger-ui/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
+    path(
+        "api/schema/redoc/",
+        SpectacularRedocView.as_view(url_name="schema"),
+        name="redoc",
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
