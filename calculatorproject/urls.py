@@ -38,4 +38,9 @@ urlpatterns = [
     ),
     path("logout", UserViewSet.as_view({"post": "user_logout"}), name="logout"),
     path("admin/", admin.site.urls),
+    path(
+        "update-stats",
+        UserViewSet.as_view({"patch": "update_stats"}),
+        name="update-stats",
+    ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
