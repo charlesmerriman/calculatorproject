@@ -9,3 +9,4 @@ from .champions_meeting_rank import (
     ChampionsMeetingRankSerializer,
     ChampionsMeetingRankViewSet,
 )
+from .calculator import CalculatorViewSet
