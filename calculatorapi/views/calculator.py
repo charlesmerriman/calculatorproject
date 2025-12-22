@@ -8,6 +8,7 @@ from calculatorapi.models import (
     ChampionsMeetingRank,
     Banner,
     UserPlannedBanner,
+    CustomUser as User,
 )
 from calculatorapi.views import (
     ClubRankSerializer,
@@ -15,6 +16,7 @@ from calculatorapi.views import (
     ChampionsMeetingRankSerializer,
     BannerSerializer,
     UserPlannedBannerSerializer,
+    UserStatsSerializer,
 )
 
 
@@ -26,6 +28,7 @@ class CalculatorViewSet(ViewSet):
         champions_meeting_rank_data = ChampionsMeetingRank.objects.all()
         banner_data = Banner.objects.all()
         user_planned_banner_data = UserPlannedBanner.objects.filter(user=request.user)
+        user_stats_data = request.user
 
         club_rank_serializer = ClubRankSerializer(club_rank_data, many=True)
         team_trials_rank_serializer = TeamTrialsRankSerializer(
@@ -38,6 +41,7 @@ class CalculatorViewSet(ViewSet):
         user_planned_banner_serializer = UserPlannedBannerSerializer(
             user_planned_banner_data, many=True
         )
+        user_stats_data_serializer = UserStatsSerializer(user_stats_data, many=False)
 
         response = {
             "club_rank_data": club_rank_serializer.data,
@@ -45,6 +49,7 @@ class CalculatorViewSet(ViewSet):
             "champions_meeting_rank_data": champions_meeting_rank_serializer.data,
             "banner_data": banner_serializer.data,
             "user_planned_banner_data": user_planned_banner_serializer.data,
+            "user_stats_data": user_stats_data_serializer.data,
         }
 
         return Response(response, status=status.HTTP_200_OK)
