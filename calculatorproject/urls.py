@@ -17,6 +17,7 @@ from calculatorapi.views import (
     ChampionsMeetingRankViewSet,
     BannerTypeView,
     BannerTagView,
+    CalculatorViewSet,
 )
 
 
@@ -60,5 +61,10 @@ urlpatterns = [
         "api/schema/redoc/",
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
+    ),
+    path(
+        "calculator-data",
+        CalculatorViewSet.as_view({"get": "get_calculator_data"}),
+        name="calculator-data",
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
