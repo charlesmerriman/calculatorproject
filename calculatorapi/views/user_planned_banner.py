@@ -3,17 +3,15 @@ from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
 from calculatorapi.models import UserPlannedBanner
-from .banner import BannerSerializer
-from .user import UserSerializer
+from .banner import BannerSerializer, Banner
+from .user import UserSerializer, User
 
 
 class UserPlannedBannerSerializer(serializers.ModelSerializer):
     """Serializer for UserPlannedBanner model"""
 
-    user = serializers.PrimaryKeyRelatedField(queryset=UserPlannedBanner.objects.all())
-    banner = serializers.PrimaryKeyRelatedField(
-        queryset=UserPlannedBanner.objects.all()
-    )
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    banner = serializers.PrimaryKeyRelatedField(queryset=Banner.objects.all())
 
     class Meta:
         model = UserPlannedBanner

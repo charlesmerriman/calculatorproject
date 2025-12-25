@@ -64,7 +64,9 @@ urlpatterns = [
     ),
     path(
         "calculator-data",
-        CalculatorViewSet.as_view({"get": "get_calculator_data"}),
+        CalculatorViewSet.as_view(
+            {"get": "get_calculator_data", "patch": "update_calculator_data"}
+        ),
         name="calculator-data",
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
