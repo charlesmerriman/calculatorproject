@@ -10,7 +10,9 @@ from .user import UserSerializer, User
 class UserPlannedBannerSerializer(serializers.ModelSerializer):
     """Serializer for UserPlannedBanner model"""
 
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), required=False
+    )
     banner = serializers.PrimaryKeyRelatedField(queryset=Banner.objects.all())
 
     class Meta:
