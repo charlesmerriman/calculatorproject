@@ -43,7 +43,9 @@ class CalculatorViewSet(ViewSet):
         champions_meeting_rank_serializer = ChampionsMeetingRankSerializer(
             champions_meeting_rank_data, many=True
         )
-        banner_serializer = BannerSerializer(banner_data, many=True)
+        banner_serializer = BannerSerializer(
+            banner_data, many=True, context={"request": request}
+        )
         user_planned_banner_serializer = UserPlannedBannerSerializer(
             user_planned_banner_data, many=True
         )
