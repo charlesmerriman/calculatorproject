@@ -12,8 +12,6 @@ from calculatorapi.models import (
     BannerSupport,
     RecommendationTag,
     ChampionsMeeting,
-    SupportsOnSupportBanner,
-    UmasOnUmaBanner,
 )
 from calculatorapi.views.club_rank import ClubRankSerializer
 from calculatorapi.views.team_trials_rank import TeamTrialsRankSerializer

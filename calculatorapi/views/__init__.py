@@ -12,5 +12,5 @@ from .calculator import CalculatorViewSet
 from .uma import UmaSerializer
 from .support_card import SupportCardSerializer
 from .banner_uma import BannerUmaSerializer, UmasOnUmaBannerSerializer
-from .banner_support import BannerSupportSerializer, SupportsOnSupportBanner
+from .banner_support import BannerSupportSerializer, SupportsOnSupportBannerSerializer
 from .champions_meeting import ChampionsMeetingSerializer
