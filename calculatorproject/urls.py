@@ -34,7 +34,6 @@ router.register(
     ChampionsMeetingRankViewSet,
     basename="championsmeetingrank",
 )
-router.register(r"bannertypes", BannerTypeView, basename="bannertype")
 router.register(r"bannertags", BannerTagView, basename="bannertag")
 
 urlpatterns = [

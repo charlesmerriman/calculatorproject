@@ -3,26 +3,40 @@ from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
 from calculatorapi.models import UserPlannedBanner
-from .banner import BannerSerializer, Banner
-from .user import UserSerializer, User
+from .banner_uma import BannerUmaSerializer
+from .banner_support import BannerSupportSerializer
 
 
 class UserPlannedBannerSerializer(serializers.ModelSerializer):
     """Serializer for UserPlannedBanner model"""
 
-    user = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), required=False
-    )
-    banner = serializers.PrimaryKeyRelatedField(queryset=Banner.objects.all())
+    banner_uma = BannerUmaSerializer(source="banner_uma", read_only=True)
+    banner_support = BannerSupportSerializer(source="banner_support", read_only=True)
 
     class Meta:
         model = UserPlannedBanner
         fields = (
             "id",
             "user",
-            "banner",
             "number_of_pulls",
+            "banner_uma",
+            "banner_support",
         )
+
+    def validate(self, data):
+        banner_uma = data.get("banner_uma")
+        banner_support = data.get("banner_support")
+
+        if not banner_uma and not banner_support:
+            raise serializers.ValidationError(
+                "Either banner_uma or banner_support must be provided."
+            )
+        if banner_uma and banner_support:
+            raise serializers.ValidationError(
+                "Cannot provide both banner_uma and banner_support."
+            )
+
+        return data
 
 
 class UserPlannedBannerViewSet(ViewSet):

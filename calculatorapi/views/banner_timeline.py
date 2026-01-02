@@ -2,29 +2,24 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
-from calculatorapi.models import Banner
-from .banner_type import BannerTypeSerializer
-from .banner_tag import BannerTagSerializer
+from calculatorapi.models import BannerTimeline
+from .recommendation_tag import RecommendationTagSerializer
 
 
-class BannerSerializer(serializers.ModelSerializer):
+class BannerTimelineSerializer(serializers.ModelSerializer):
     """Serializer for Banner model"""
 
-    banner_type = BannerTypeSerializer()
-    banner_tag = BannerTagSerializer()
+    recommendation_tag = RecommendationTagSerializer()
     image = serializers.SerializerMethodField()
 
     class Meta:
-        model = Banner
+        model = BannerTimeline
         fields = (
             "id",
             "name",
-            "banner_type",
-            "banner_tag",
             "start_date",
             "end_date",
             "image",
-            "admin_comments",
         )
 
     def get_image(self, obj):
@@ -36,23 +31,26 @@ class BannerSerializer(serializers.ModelSerializer):
         return None
 
 
-class BannerViewSet(ViewSet):
+class BannerTimelineViewSet(ViewSet):
     """Viewset for handling Banner requests"""
 
     def list(self, request):
-        # Retrieve all Banners
-        banners = Banner.objects.all().order_by("start_date")
+        banner_timelines = BannerTimeline.objects.all().order_by("start_date")
 
-        serializer = BannerSerializer(banners, many=True, context={"request": request})
+        serializer = BannerTimelineSerializer(
+            banner_timelines, many=True, context={"request": request}
+        )
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
         try:
-            banner = Banner.objects.get(pk=pk)
-            serializer = BannerSerializer(banner, context={"request": request})
+            banner_timeline = BannerTimeline.objects.get(pk=pk)
+            serializer = BannerTimelineSerializer(
+                banner_timeline, context={"request": request}
+            )
             return Response(serializer.data)
-        except Banner.DoesNotExist:
+        except BannerTimeline.DoesNotExist:
             return Response(
-                {"message": "Banner not found."},
+                {"message": "Banner Timeline not found."},
                 status=status.HTTP_404_NOT_FOUND,
             )
