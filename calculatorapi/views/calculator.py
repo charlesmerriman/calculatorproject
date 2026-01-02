@@ -32,8 +32,12 @@ class CalculatorViewSet(ViewSet):
         club_rank_data = ClubRank.objects.all()
         team_trials_rank_data = TeamTrialsRank.objects.all()
         champions_meeting_rank_data = ChampionsMeetingRank.objects.all()
-        banner_uma_data = BannerUma.objects.all().order_by("start_date")
-        banner_support_data = BannerSupport.objects.all().order_by("start_date")
+        banner_uma_data = BannerUma.objects.all().order_by(
+            "banner_timeline__start_date"
+        )
+        banner_support_data = BannerSupport.objects.all().order_by(
+            "banner_timeline__start_date"
+        )
         user_planned_banner_data = UserPlannedBanner.objects.filter(user=request.user)
         recommendation_tag_data = RecommendationTag.objects.all()
         user_stats_data = request.user

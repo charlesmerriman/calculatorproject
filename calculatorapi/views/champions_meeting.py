@@ -3,7 +3,7 @@ from calculatorapi.models import ChampionsMeeting
 
 
 class ChampionsMeetingSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = ChampionsMeeting

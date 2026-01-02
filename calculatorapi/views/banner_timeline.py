@@ -9,7 +9,6 @@ from .recommendation_tag import RecommendationTagSerializer
 class BannerTimelineSerializer(serializers.ModelSerializer):
     """Serializer for Banner model"""
 
-    recommendation_tag = RecommendationTagSerializer()
     image = serializers.SerializerMethodField()
 
     class Meta:

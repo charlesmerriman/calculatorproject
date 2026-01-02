@@ -25,19 +25,20 @@ class UserPlannedBanner(models.Model):
         constraints = [
             models.CheckConstraint(
                 condition=(
-                    models.Q(support_card__isnull=False, uma__isnull=True)
-                    | models.Q(support_card__isnull=True, uma__isnull=False)
+                    models.Q(banner_support__isnull=False, banner_uma__isnull=True)
+                    | models.Q(banner_support__isnull=True, banner_uma__isnull=False)
                 ),
                 name="only_one_support_or_uma",
             )
         ]
 
     def clean(self):
-        if not self.support_card and not self.uma:
+        if not self.banner_support and not self.banner_uma:
             raise ValidationError("Either support_card or uma must be set.")
-        if self.support_card and self.uma:
+        if self.banner_support and self.banner_uma:
             raise ValidationError("Cannot set both support_card and uma.")
 
-
-def __str__(self):
-    return f"{self.user.username} - {self.banner.name} ({self.number_of_pulls} pulls)"
+    def __str__(self):
+        return (
+            f"{self.user.username} - {self.banner.name} ({self.number_of_pulls} pulls)"
+        )

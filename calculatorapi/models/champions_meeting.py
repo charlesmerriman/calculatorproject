@@ -21,6 +21,5 @@ class ChampionsMeeting(models.Model):
     guts_recommendation = models.IntegerField()
     wit_recommendation = models.IntegerField()
 
-
-def __str__(self):
-    return self.name
+    def __str__(self):
+        return self.name
