@@ -9,24 +9,16 @@ from drf_spectacular.views import (
     SpectacularRedocView,
 )
 from calculatorapi.views import (
-    BannerViewSet,
     UserViewSet,
-    UserPlannedBannerViewSet,
     TeamTrialsRankViewSet,
     ClubRankViewSet,
     ChampionsMeetingRankViewSet,
-    BannerTypeView,
-    BannerTagView,
     CalculatorViewSet,
 )
 
 
 router = routers.DefaultRouter(trailing_slash=False)
-router.register(r"banners", BannerViewSet, basename="banner")
 router.register(r"users", UserViewSet, basename="user")
-router.register(
-    r"userplannedbanners", UserPlannedBannerViewSet, basename="userplannedbanner"
-)
 router.register(r"teamtrialranks", TeamTrialsRankViewSet, basename="teamtrialrank")
 router.register(r"clubranks", ClubRankViewSet, basename="clubrank")
 router.register(
@@ -34,7 +26,6 @@ router.register(
     ChampionsMeetingRankViewSet,
     basename="championsmeetingrank",
 )
-router.register(r"bannertags", BannerTagView, basename="bannertag")
 
 urlpatterns = [
     path("", include(router.urls)),

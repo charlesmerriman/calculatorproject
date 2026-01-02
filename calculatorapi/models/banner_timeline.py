@@ -8,4 +8,4 @@ class BannerTimeline(models.Model):
     image = models.ImageField(upload_to="banners/", blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return str(self.name) if self.name else "Unnamed Timeline"

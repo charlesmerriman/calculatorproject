@@ -12,18 +12,18 @@ from calculatorapi.models import (
     BannerSupport,
     RecommendationTag,
     ChampionsMeeting,
+    SupportsOnSupportBanner,
+    UmasOnUmaBanner,
 )
-from calculatorapi.views import (
-    ClubRankSerializer,
-    TeamTrialsRankSerializer,
-    ChampionsMeetingRankSerializer,
-    UserPlannedBannerSerializer,
-    UserStatsSerializer,
-    BannerUmaSerializer,
-    BannerSupportSerializer,
-    RecommendationTagSerializer,
-    ChampionsMeetingSerializer,
-)
+from calculatorapi.views.club_rank import ClubRankSerializer
+from calculatorapi.views.team_trials_rank import TeamTrialsRankSerializer
+from calculatorapi.views.champions_meeting_rank import ChampionsMeetingRankSerializer
+from calculatorapi.views.user_planned_banner import UserPlannedBannerSerializer
+from calculatorapi.views.user import UserStatsSerializer
+from calculatorapi.views.banner_uma import BannerUmaSerializer
+from calculatorapi.views.banner_support import BannerSupportSerializer
+from calculatorapi.views.recommendation_tag import RecommendationTagSerializer
+from calculatorapi.views.champions_meeting import ChampionsMeetingSerializer
 
 
 class CalculatorViewSet(ViewSet):

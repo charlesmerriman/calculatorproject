@@ -39,6 +39,7 @@ class UserPlannedBanner(models.Model):
             raise ValidationError("Cannot set both support_card and uma.")
 
     def __str__(self):
-        return (
-            f"{self.user.username} - {self.banner.name} ({self.number_of_pulls} pulls)"
+        banner_name = (
+            self.banner_uma.name if self.banner_uma else self.banner_support.name
         )
+        return f"{self.user.username} - {banner_name} ({self.number_of_pulls} pulls)"

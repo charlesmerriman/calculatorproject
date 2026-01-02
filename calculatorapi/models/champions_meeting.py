@@ -2,7 +2,7 @@ from django.db import models
 
 
 class ChampionsMeeting(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, null=False)
     cm_number = models.IntegerField()
     start_date = models.DateField()
     end_date = models.DateField()
@@ -22,4 +22,4 @@ class ChampionsMeeting(models.Model):
     wit_recommendation = models.IntegerField()
 
     def __str__(self):
-        return self.name
+        return str(self.name)
