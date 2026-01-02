@@ -3,7 +3,6 @@ from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
 from calculatorapi.models import BannerTimeline
-from .recommendation_tag import RecommendationTagSerializer
 
 
 class BannerTimelineSerializer(serializers.ModelSerializer):

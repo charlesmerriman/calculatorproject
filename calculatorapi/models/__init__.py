@@ -4,7 +4,6 @@ from .club_rank import ClubRank
 from .team_trials_rank import TeamTrialsRank
 from .custom_user import CustomUser
 from .user_planned_banner import UserPlannedBanner
-from .recommendation_tag import RecommendationTag
 from .support_card import SupportCard
 from .uma import Uma
 from .champions_meeting import ChampionsMeeting

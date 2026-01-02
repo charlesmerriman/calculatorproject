@@ -1,4 +1,3 @@
-from .recommendation_tag import RecommendationTagSerializer
 from .banner_timeline import BannerTimelineSerializer
 from .user import UserSerializer, UserViewSet, UserStatsSerializer
 from .user_planned_banner import UserPlannedBannerSerializer
@@ -11,6 +10,6 @@ from .champions_meeting_rank import (
 from .calculator import CalculatorViewSet
 from .uma import UmaSerializer
 from .support_card import SupportCardSerializer
-from .banner_uma import BannerUmaSerializer, UmasOnUmaBannerSerializer
-from .banner_support import BannerSupportSerializer, SupportsOnSupportBannerSerializer
+from .banner_uma import BannerUmaSerializer
+from .banner_support import BannerSupportSerializer
 from .champions_meeting import ChampionsMeetingSerializer

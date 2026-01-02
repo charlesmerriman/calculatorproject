@@ -10,8 +10,8 @@ from .banner_support import BannerSupportSerializer
 class UserPlannedBannerSerializer(serializers.ModelSerializer):
     """Serializer for UserPlannedBanner model"""
 
-    banner_uma = BannerUmaSerializer(source="banner_uma", read_only=True)
-    banner_support = BannerSupportSerializer(source="banner_support", read_only=True)
+    banner_uma = BannerUmaSerializer(read_only=True)
+    banner_support = BannerSupportSerializer(read_only=True)
 
     class Meta:
         model = UserPlannedBanner

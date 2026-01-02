@@ -10,7 +10,6 @@ from calculatorapi.models import (
     CustomUser as User,
     BannerUma,
     BannerSupport,
-    RecommendationTag,
     ChampionsMeeting,
 )
 from calculatorapi.views.club_rank import ClubRankSerializer
@@ -20,7 +19,6 @@ from calculatorapi.views.user_planned_banner import UserPlannedBannerSerializer
 from calculatorapi.views.user import UserStatsSerializer
 from calculatorapi.views.banner_uma import BannerUmaSerializer
 from calculatorapi.views.banner_support import BannerSupportSerializer
-from calculatorapi.views.recommendation_tag import RecommendationTagSerializer
 from calculatorapi.views.champions_meeting import ChampionsMeetingSerializer
 
 
@@ -37,7 +35,6 @@ class CalculatorViewSet(ViewSet):
             "banner_timeline__start_date"
         )
         user_planned_banner_data = UserPlannedBanner.objects.filter(user=request.user)
-        recommendation_tag_data = RecommendationTag.objects.all()
         user_stats_data = request.user
         champions_meeting_data = ChampionsMeeting.objects.all()
 
@@ -55,10 +52,7 @@ class CalculatorViewSet(ViewSet):
             banner_support_data, many=True, context={"request": request}
         )
         user_planned_banner_serializer = UserPlannedBannerSerializer(
-            user_planned_banner_data, many=True
-        )
-        recommendation_tag_serializer = RecommendationTagSerializer(
-            recommendation_tag_data, many=True
+            user_planned_banner_data, many=True, context={"request": request}
         )
         champions_meeting_serializer = ChampionsMeetingSerializer(
             champions_meeting_data, many=True
@@ -72,7 +66,6 @@ class CalculatorViewSet(ViewSet):
             "banner_uma_data": banner_uma_serializer.data,
             "banner_support_data": banner_support_serializer.data,
             "user_planned_banner_data": user_planned_banner_serializer.data,
-            "recommendation_tag_data": recommendation_tag_serializer.data,
             "champions_meeting_data": champions_meeting_serializer.data,
             "user_stats_data": user_stats_data_serializer.data,
         }
