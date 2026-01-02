@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class BannerTag(models.Model):
+class RecommendationTag(models.Model):
     name = models.CharField(max_length=100)
 
 
