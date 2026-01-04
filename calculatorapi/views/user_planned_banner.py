@@ -1,17 +1,16 @@
-from rest_framework.viewsets import ViewSet
-from rest_framework.response import Response
 from rest_framework import serializers
-from rest_framework import status
-from calculatorapi.models import UserPlannedBanner
+from calculatorapi.models import UserPlannedBanner, BannerUma, BannerSupport
 from .banner_uma import BannerUmaSerializer
 from .banner_support import BannerSupportSerializer
 
 
 class UserPlannedBannerSerializer(serializers.ModelSerializer):
-    """Serializer for UserPlannedBanner model"""
-
-    banner_uma = BannerUmaSerializer(read_only=True)
-    banner_support = BannerSupportSerializer(read_only=True)
+    banner_uma = serializers.PrimaryKeyRelatedField(
+        queryset=BannerUma.objects.all(), required=False, allow_null=True
+    )
+    banner_support = serializers.PrimaryKeyRelatedField(
+        queryset=BannerSupport.objects.all(), required=False, allow_null=True
+    )
 
     class Meta:
         model = UserPlannedBanner
@@ -22,6 +21,20 @@ class UserPlannedBannerSerializer(serializers.ModelSerializer):
             "banner_uma",
             "banner_support",
         )
+        read_only_fields = ("user",)
+
+    def to_representation(self, instance):
+        # For GET requests, return nested objects
+        representation = super().to_representation(instance)
+        if instance.banner_uma:
+            representation["banner_uma"] = BannerUmaSerializer(
+                instance.banner_uma, context=self.context
+            ).data
+        if instance.banner_support:
+            representation["banner_support"] = BannerSupportSerializer(
+                instance.banner_support, context=self.context
+            ).data
+        return representation
 
     def validate(self, data):
         banner_uma = data.get("banner_uma")
