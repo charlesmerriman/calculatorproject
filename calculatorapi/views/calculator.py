@@ -2,26 +2,28 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
+from django.db.models.functions import Coalesce
+from django.db.models import F
 from calculatorapi.models import (
     ClubRank,
     TeamTrialsRank,
     ChampionsMeetingRank,
-    Banner,
     UserPlannedBanner,
     CustomUser as User,
-    BannerType,
-    BannerTag,
+    BannerUma,
+    BannerSupport,
+    ChampionsMeeting,
+    EventReward
 )
-from calculatorapi.views import (
-    ClubRankSerializer,
-    TeamTrialsRankSerializer,
-    ChampionsMeetingRankSerializer,
-    BannerSerializer,
-    UserPlannedBannerSerializer,
-    BannerTypeSerializer,
-    BannerTagSerializer,
-    UserStatsSerializer,
-)
+from calculatorapi.views.club_rank import ClubRankSerializer
+from calculatorapi.views.team_trials_rank import TeamTrialsRankSerializer
+from calculatorapi.views.champions_meeting_rank import ChampionsMeetingRankSerializer
+from calculatorapi.views.user_planned_banner import UserPlannedBannerSerializer
+from calculatorapi.views.user import UserStatsSerializer
+from calculatorapi.views.banner_uma import BannerUmaSerializer
+from calculatorapi.views.banner_support import BannerSupportSerializer
+from calculatorapi.views.champions_meeting import ChampionsMeetingSerializer
+from calculatorapi.views.event_reward import EventRewardsSerializer
 
 
 class CalculatorViewSet(ViewSet):
@@ -30,11 +32,23 @@ class CalculatorViewSet(ViewSet):
         club_rank_data = ClubRank.objects.all()
         team_trials_rank_data = TeamTrialsRank.objects.all()
         champions_meeting_rank_data = ChampionsMeetingRank.objects.all()
-        banner_data = Banner.objects.all().order_by("start_date")
-        user_planned_banner_data = UserPlannedBanner.objects.filter(user=request.user)
-        banner_type_data = BannerType.objects.all()
-        banner_tag_data = BannerTag.objects.all()
+        banner_uma_data = BannerUma.objects.all().order_by(
+            "banner_timeline__start_date"
+        )
+        banner_support_data = BannerSupport.objects.all().order_by(
+            "banner_timeline__start_date"
+        )
+        user_planned_banner_data = UserPlannedBanner.objects.filter(
+            user=request.user
+        ).annotate(
+            timeline_date=Coalesce(
+                F('banner_uma__banner_timeline__start_date'),
+                F('banner_support__banner_timeline__start_date')
+            )
+        ).order_by('timeline_date')
         user_stats_data = request.user
+        event_rewards_data = EventReward.objects.all()
+        champions_meeting_data = ChampionsMeeting.objects.all()
 
         club_rank_serializer = ClubRankSerializer(club_rank_data, many=True)
         team_trials_rank_serializer = TeamTrialsRankSerializer(
@@ -43,22 +57,30 @@ class CalculatorViewSet(ViewSet):
         champions_meeting_rank_serializer = ChampionsMeetingRankSerializer(
             champions_meeting_rank_data, many=True
         )
-        banner_serializer = BannerSerializer(banner_data, many=True)
-        user_planned_banner_serializer = UserPlannedBannerSerializer(
-            user_planned_banner_data, many=True
+        banner_uma_serializer = BannerUmaSerializer(
+            banner_uma_data, many=True, context={"request": request}
         )
-        banner_type_serializer = BannerTypeSerializer(banner_type_data, many=True)
-        banner_tag_serializer = BannerTagSerializer(banner_tag_data, many=True)
+        banner_support_serializer = BannerSupportSerializer(
+            banner_support_data, many=True, context={"request": request}
+        )
+        user_planned_banner_serializer = UserPlannedBannerSerializer(
+            user_planned_banner_data, many=True, context={"request": request}
+        )
+        champions_meeting_serializer = ChampionsMeetingSerializer(
+            champions_meeting_data, many=True
+        )
+        event_rewards_serializer = EventRewardsSerializer(event_rewards_data, many=True)
         user_stats_data_serializer = UserStatsSerializer(user_stats_data, many=False)
 
         response = {
             "club_rank_data": club_rank_serializer.data,
             "team_trials_rank_data": team_trials_rank_serializer.data,
             "champions_meeting_rank_data": champions_meeting_rank_serializer.data,
-            "banner_data": banner_serializer.data,
+            "banner_uma_data": banner_uma_serializer.data,
+            "banner_support_data": banner_support_serializer.data,
             "user_planned_banner_data": user_planned_banner_serializer.data,
-            "banner_type_data": banner_type_serializer.data,
-            "banner_tag_data": banner_tag_serializer.data,
+            "champions_meeting_data": champions_meeting_serializer.data,
+            "event_rewards_data": event_rewards_serializer.data,
             "user_stats_data": user_stats_data_serializer.data,
         }
 
