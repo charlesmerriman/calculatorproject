@@ -13,3 +13,4 @@ from .support_card import SupportCardSerializer
 from .banner_uma import BannerUmaSerializer
 from .banner_support import BannerSupportSerializer
 from .champions_meeting import ChampionsMeetingSerializer
+from .event_reward import EventRewardsSerializer

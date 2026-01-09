@@ -7,5 +7,6 @@ class BannerTimeline(models.Model):
     end_date = models.DateTimeField()
     image = models.ImageField(upload_to="banners/", blank=True, null=True)
 
+
     def __str__(self):
         return str(self.name) if self.name else "Unnamed Timeline"

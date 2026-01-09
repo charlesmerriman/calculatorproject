@@ -10,6 +10,7 @@ class BannerUma(models.Model):
         Uma, through="UmasOnUmaBanner", related_name="uma_banners"
     )
     admin_comments = models.TextField(blank=True, null=True)
+    free_pulls = models.IntegerField(default=0)
 
     def __str__(self):
         return str(self.name)

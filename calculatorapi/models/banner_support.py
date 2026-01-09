@@ -10,6 +10,7 @@ class BannerSupport(models.Model):
         SupportCard, through="SupportsOnSupportBanner", related_name="support_banners"
     )
     admin_comments = models.TextField(blank=True, null=True)
+    free_pulls = models.IntegerField(default=0)
 
     def __str__(self):
         return str(self.name)

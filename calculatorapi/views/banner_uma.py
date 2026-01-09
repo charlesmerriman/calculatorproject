@@ -14,6 +14,7 @@ class BannerUmaSerializer(serializers.ModelSerializer):
             "id",
             "banner_timeline",
             "name",
+            "free_pulls",
             "admin_comments",
             "umas",
         )

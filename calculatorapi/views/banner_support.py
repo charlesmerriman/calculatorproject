@@ -14,6 +14,7 @@ class BannerSupportSerializer(serializers.ModelSerializer):
             "id",
             "banner_timeline",
             "name",
+            "free_pulls",
             "admin_comments",
             "support_cards",
         )

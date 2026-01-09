@@ -12,3 +12,4 @@ from .banner_support import BannerSupport
 from .champions_meeting_uma_recommendation import ChampionsMeetingUmaRecommendation
 from .umas_on_uma_banner import UmasOnUmaBanner
 from .supports_on_support_banner import SupportsOnSupportBanner
+from .event_reward import EventReward
