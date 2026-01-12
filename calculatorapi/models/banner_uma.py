@@ -4,10 +4,10 @@ from .uma import Uma
 
 
 class BannerUma(models.Model):
-    banner_timeline = models.ForeignKey(BannerTimeline, on_delete=models.CASCADE)
+    banner_timeline = models.ForeignKey(BannerTimeline, on_delete=models.CASCADE, related_name="uma_banners")
     name = models.CharField(max_length=255, null=False)
     umas = models.ManyToManyField(
-        Uma, through="UmasOnUmaBanner", related_name="uma_banners"
+        Uma, through="UmasOnUmaBanner"
     )
     admin_comments = models.TextField(blank=True, null=True)
     free_pulls = models.IntegerField(default=0)
