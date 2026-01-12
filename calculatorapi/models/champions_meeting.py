@@ -4,8 +4,8 @@ from django.db import models
 class ChampionsMeeting(models.Model):
     name = models.CharField(max_length=255, null=False)
     cm_number = models.IntegerField()
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
     image = models.ImageField(upload_to="banners/", blank=True, null=True)
     track = models.CharField(max_length=255)
     surface_type = models.CharField(max_length=255)

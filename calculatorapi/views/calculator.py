@@ -13,7 +13,8 @@ from calculatorapi.models import (
     BannerUma,
     BannerSupport,
     ChampionsMeeting,
-    EventReward
+    EventReward,
+    BannerTimeline
 )
 from calculatorapi.views.club_rank import ClubRankSerializer
 from calculatorapi.views.team_trials_rank import TeamTrialsRankSerializer
@@ -24,6 +25,7 @@ from calculatorapi.views.banner_uma import BannerUmaSerializer
 from calculatorapi.views.banner_support import BannerSupportSerializer
 from calculatorapi.views.champions_meeting import ChampionsMeetingSerializer
 from calculatorapi.views.event_reward import EventRewardsSerializer
+from calculatorapi.views.banner_timeline import BannerTimelineSerializer
 
 
 class CalculatorViewSet(ViewSet):
@@ -49,6 +51,7 @@ class CalculatorViewSet(ViewSet):
         user_stats_data = request.user
         event_rewards_data = EventReward.objects.all()
         champions_meeting_data = ChampionsMeeting.objects.all()
+        banner_timeline_data = BannerTimeline.objects.all()
 
         club_rank_serializer = ClubRankSerializer(club_rank_data, many=True)
         team_trials_rank_serializer = TeamTrialsRankSerializer(
@@ -71,6 +74,7 @@ class CalculatorViewSet(ViewSet):
         )
         event_rewards_serializer = EventRewardsSerializer(event_rewards_data, many=True)
         user_stats_data_serializer = UserStatsSerializer(user_stats_data, many=False)
+        banner_timeline_serializer = BannerTimelineSerializer(banner_timeline_data, many=True)
 
         response = {
             "club_rank_data": club_rank_serializer.data,
@@ -82,6 +86,7 @@ class CalculatorViewSet(ViewSet):
             "champions_meeting_data": champions_meeting_serializer.data,
             "event_rewards_data": event_rewards_serializer.data,
             "user_stats_data": user_stats_data_serializer.data,
+            "banner_timeline_data": banner_timeline_serializer.data,
         }
 
         return Response(response, status=status.HTTP_200_OK)
