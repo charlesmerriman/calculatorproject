@@ -31,7 +31,7 @@ class BannerTimelineSerializer(serializers.ModelSerializer):
         return None
 
 class BannerSupportNestedSerializer(serializers.ModelSerializer):
-    support_cards = SupportCardSerializer(many=True, read_only=True)
+    support_cards = serializers.SerializerMethodField()
 
     class Meta:
         model = BannerSupport
@@ -43,8 +43,16 @@ class BannerSupportNestedSerializer(serializers.ModelSerializer):
             "support_cards",
         )
 
+    def get_support_cards(self, obj):
+        result = []
+        for junction in obj.supportsonsupportbanner_set.select_related('support_card').all():
+            card_data = SupportCardSerializer(junction.support_card, context=self.context).data
+            card_data['recommendation'] = junction.recommendation
+            result.append(card_data)
+        return result
+
 class BannerUmaNestedSerializer(serializers.ModelSerializer):
-    umas = UmaSerializer(many=True, read_only=True)
+    umas = serializers.SerializerMethodField()
 
     class Meta:
         model = BannerUma
@@ -55,6 +63,14 @@ class BannerUmaNestedSerializer(serializers.ModelSerializer):
             "admin_comments",
             "umas",
         )
+    
+    def get_umas(self, obj):
+        result = []
+        for junction in obj.umasonumabanner_set.select_related('uma').all():
+            uma_data = UmaSerializer(junction.uma, context=self.context).data
+            uma_data['recommendation'] = junction.recommendation
+            result.append(uma_data)
+        return result
 
 class BannerTimelineForViewingSerializer(serializers.ModelSerializer):
     """Serializer for viewing inside the banner timeline component, embedded with any related fields"""

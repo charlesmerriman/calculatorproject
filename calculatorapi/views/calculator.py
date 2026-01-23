@@ -24,7 +24,7 @@ from calculatorapi.views.banner_uma import BannerUmaSerializer
 from calculatorapi.views.banner_support import BannerSupportSerializer
 from calculatorapi.views.champions_meeting import ChampionsMeetingSerializer
 from calculatorapi.views.event_reward import EventRewardsSerializer
-from calculatorapi.views.banner_timeline import BannerTimelineSerializer, BannerTimelineForViewingSerializer
+from calculatorapi.views.banner_timeline import BannerTimelineForViewingSerializer
 
 
 class CalculatorViewSet(ViewSet):
@@ -69,7 +69,7 @@ class CalculatorViewSet(ViewSet):
             user_planned_banner_data, many=True, context={"request": request}
         )
         champions_meeting_serializer = ChampionsMeetingSerializer(
-            champions_meeting_data, many=True
+            champions_meeting_data, many=True, context={"request": request}
         )
         event_rewards_serializer = EventRewardsSerializer(event_rewards_data, many=True)
         user_stats_data_serializer = UserStatsSerializer(user_stats_data, many=False)
