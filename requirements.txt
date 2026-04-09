@@ -27,3 +27,5 @@ tomlkit==0.13.3
 typing_extensions==4.15.0
 uritemplate==4.2.0
 gunicorn
+whitenoise
+psycopg2-binary==2.9.10
