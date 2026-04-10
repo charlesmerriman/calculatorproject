@@ -39,13 +39,29 @@ services:
       - key: DEVELOPMENT_MODE
         scope: RUN_AND_BUILD_TIME
         value: "False"
-    jobs:
-      - name: migrate
-        kind: PRE_DEPLOY
-        run_command: python manage.py migrate --no-input
-      - name: collectstatic
-        kind: PRE_DEPLOY
-        run_command: python manage.py collectstatic --no-input
+
+jobs:
+  - name: migrate
+    kind: PRE_DEPLOY
+    github:
+      repo: charlesmerriman/calculatorproject
+      branch: main
+      deploy_on_push: true
+    source_dir: /
+    environment_slug: python
+    instance_size_slug: apps-s-1vcpu-1gb
+    run_command: python manage.py migrate --no-input
+    envs:
+      - key: DJANGO_SECRET_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: "changeme-set-this-in-dashboard"
+      - key: DATABASE_URL
+        scope: RUN_TIME
+        value: "${db.DATABASE_URL}"
+      - key: DEVELOPMENT_MODE
+        scope: RUN_TIME
+        value: "False"
 
 static_sites:
   - name: frontend
@@ -70,11 +86,6 @@ databases:
 
 ingress:
   rules:
-    - component:
-        name: api
-      match:
-        path:
-          prefix: /api
     - component:
         name: api
       match:
