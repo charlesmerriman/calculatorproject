@@ -22,7 +22,6 @@ def test_view(request):
 
 
 router = routers.DefaultRouter(trailing_slash=False)
-router.register(r"users", UserViewSet, basename="user")
 router.register(r"teamtrialranks", TeamTrialsRankViewSet, basename="teamtrialrank")
 router.register(r"clubranks", ClubRankViewSet, basename="clubrank")
 router.register(
