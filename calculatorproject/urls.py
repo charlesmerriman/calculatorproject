@@ -15,6 +15,10 @@ from calculatorapi.views import (
     ChampionsMeetingRankViewSet,
     CalculatorViewSet,
 )
+from django.http import JsonResponse
+
+def test_view(request):
+    return JsonResponse({"status": "ok"})
 
 
 router = routers.DefaultRouter(trailing_slash=False)
@@ -57,4 +61,5 @@ urlpatterns = [
         ),
         name="calculator-data",
     ),
+    path("test", test_view, name="test"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
