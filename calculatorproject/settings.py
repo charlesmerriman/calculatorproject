@@ -107,3 +107,5 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "API for the calculator capstone",
     "VERSION": "1.0.0",
 }
+
+WHITENOISE_STATIC_PREFIX = '/static/'
