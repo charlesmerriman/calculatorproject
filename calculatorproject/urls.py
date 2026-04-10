@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import include, path
 from django.conf import settings
-from rest_framework import routers
+from rest_framework import permissions, routers
 from django.conf.urls.static import static
 from drf_spectacular.views import (
     SpectacularAPIView,
@@ -29,11 +29,9 @@ router.register(
 
 urlpatterns = [
     path("", include(router.urls)),
-    path("login", UserViewSet.as_view({"post": "user_login"}), name="login"),
-    path(
-        "register", UserViewSet.as_view({"post": "register_account"}), name="register"
-    ),
-    path("logout", UserViewSet.as_view({"post": "user_logout"}), name="logout"),
+    path("login", UserViewSet.as_view({"post": "user_login"}, permission_classes=[permissions.AllowAny]), name="login"),
+    path("register", UserViewSet.as_view({"post": "register_account"}, permission_classes=[permissions.AllowAny]), name="register"),
+    path("logout", UserViewSet.as_view({"post": "user_logout"}, permission_classes=[permissions.IsAuthenticated]), name="logout"),
     path("admin/", admin.site.urls),
     path(
         "update-stats",
