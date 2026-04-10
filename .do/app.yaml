@@ -11,7 +11,7 @@ services:
   - name: api
     github:
       repo: charlesmerriman/calculatorproject
-      branch: master
+      branch: main
       deploy_on_push: true
     source_dir: /
     environment_slug: python
@@ -39,6 +39,9 @@ services:
       - key: DEVELOPMENT_MODE
         scope: RUN_AND_BUILD_TIME
         value: "False"
+      - key: DISABLE_COLLECTSTATIC 
+        scope: BUILD_TIME
+        value: "1"
 
 jobs:
   - name: migrate
@@ -50,7 +53,7 @@ jobs:
     source_dir: /
     environment_slug: python
     instance_size_slug: apps-s-1vcpu-1gb
-    run_command: python manage.py migrate --no-input
+    run_command: python manage.py migrate --no-input && python manage.py collectstatic --no-input
     envs:
       - key: DJANGO_SECRET_KEY
         scope: RUN_TIME

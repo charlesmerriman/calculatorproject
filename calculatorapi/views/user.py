@@ -87,7 +87,7 @@ class UserViewSet(viewsets.ViewSet):
         detail=False,
         methods=["post"],
         url_path="logout",
-        permission_classes=[permissions.IsAuthenticated],
+        permission_classes=[permissions.AllowAny],
     )
     def user_logout(self, request):
         # Delete the user's token
@@ -100,7 +100,7 @@ class UserViewSet(viewsets.ViewSet):
         detail=False,
         methods=["patch"],
         url_path="update-stats",
-        permission_classes=[permissions.IsAuthenticated],
+        permission_classes=[permissions.AllowAny],
     )
     def update_stats(self, request):
         user = request.user
