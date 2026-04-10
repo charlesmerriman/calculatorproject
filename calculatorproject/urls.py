@@ -11,7 +11,7 @@ from calculatorapi.views import (
 )
 from calculatorapi.views.user import register_account, user_login, user_logout
 
-router = routers.DefaultRouter(trailing_slash=False)
+router = routers.SimpleRouter(trailing_slash=False)
 router.register(r"teamtrialranks", TeamTrialsRankViewSet, basename="teamtrialrank")
 router.register(r"clubranks", ClubRankViewSet, basename="clubrank")
 router.register(
