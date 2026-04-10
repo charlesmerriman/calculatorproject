@@ -32,7 +32,7 @@ services:
         value: "${APP_DOMAIN}"
       - key: DATABASE_URL
         scope: RUN_AND_BUILD_TIME
-        value: "${db.DATABASE_URL}"
+        value: "https://calculator-capstone-uqax7.ondigitalocean.app"
       - key: CORS_ORIGIN_WHITELIST
         scope: RUN_AND_BUILD_TIME
         value: "https://${APP_DOMAIN}"
