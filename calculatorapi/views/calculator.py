@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import permissions, status
 from django.db.models.functions import Coalesce
 from django.db.models import F
 from calculatorapi.models import (
@@ -28,6 +28,7 @@ from calculatorapi.views.banner_timeline import BannerTimelineForViewingSerializ
 
 
 class CalculatorViewSet(ViewSet):
+    permission_classes = [permissions.IsAuthenticated]
     @action(detail=False, methods=["get"], url_path="calculator-data")
     def get_calculator_data(self, request):
         club_rank_data = ClubRank.objects.all()
