@@ -76,10 +76,12 @@ static_sites:
     build_command: npm run build
     output_dir: /dist
     environment_slug: node-js
+    catchall_document: index.html
+    index_document: index.html
     envs:
       - key: VITE_API_URL
         scope: BUILD_TIME
-        value: "https://${APP_DOMAIN}"
+        value: "https://calculator-capstone-uqax7.ondigitalocean.app"
 
 databases:
   - name: db
@@ -119,6 +121,21 @@ ingress:
       match:
         path:
           prefix: /media
+    - component:
+        name: api
+      match:
+        path:
+          prefix: /teamtrialranks
+    - component:
+        name: api
+      match:
+        path:
+          prefix: /clubranks
+    - component:
+        name: api
+      match:
+        path:
+          prefix: /championsmeetingranks
     - component:
         name: frontend
       match:

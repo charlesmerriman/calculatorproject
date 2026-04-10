@@ -1,12 +1,11 @@
 from django.db import models
 
-
 class ChampionsMeeting(models.Model):
     name = models.CharField(max_length=255, null=False)
     cm_number = models.IntegerField()
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
-    image = models.ImageField(upload_to="banners/", blank=True, null=True)
+    image = models.URLField(blank=True, null=True)
     track = models.CharField(max_length=255)
     surface_type = models.CharField(max_length=255)
     distance = models.CharField(max_length=255)
@@ -23,3 +22,4 @@ class ChampionsMeeting(models.Model):
 
     def __str__(self):
         return str(self.name)
+    
