@@ -1,0 +1,1802 @@
+[
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 1,
+    "fields": {
+      "banner_uma": 1,
+      "uma": 1,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 2,
+    "fields": {
+      "banner_uma": 2,
+      "uma": 2,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 3,
+    "fields": {
+      "banner_uma": 3,
+      "uma": 3,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 4,
+    "fields": {
+      "banner_uma": 4,
+      "uma": 4,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 5,
+    "fields": {
+      "banner_uma": 4,
+      "uma": 5,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 6,
+    "fields": {
+      "banner_uma": 5,
+      "uma": 6,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 7,
+    "fields": {
+      "banner_uma": 6,
+      "uma": 7,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 8,
+    "fields": {
+      "banner_uma": 7,
+      "uma": 8,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 9,
+    "fields": {
+      "banner_uma": 8,
+      "uma": 9,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 10,
+    "fields": {
+      "banner_uma": 9,
+      "uma": 10,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 11,
+    "fields": {
+      "banner_uma": 9,
+      "uma": 11,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 12,
+    "fields": {
+      "banner_uma": 10,
+      "uma": 12,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 13,
+    "fields": {
+      "banner_uma": 11,
+      "uma": 13,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 14,
+    "fields": {
+      "banner_uma": 12,
+      "uma": 14,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 15,
+    "fields": {
+      "banner_uma": 12,
+      "uma": 15,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 16,
+    "fields": {
+      "banner_uma": 13,
+      "uma": 16,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 17,
+    "fields": {
+      "banner_uma": 14,
+      "uma": 17,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 18,
+    "fields": {
+      "banner_uma": 15,
+      "uma": 18,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 19,
+    "fields": {
+      "banner_uma": 15,
+      "uma": 19,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 20,
+    "fields": {
+      "banner_uma": 16,
+      "uma": 20,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 21,
+    "fields": {
+      "banner_uma": 17,
+      "uma": 21,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 22,
+    "fields": {
+      "banner_uma": 18,
+      "uma": 22,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 23,
+    "fields": {
+      "banner_uma": 19,
+      "uma": 23,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 24,
+    "fields": {
+      "banner_uma": 20,
+      "uma": 24,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 25,
+    "fields": {
+      "banner_uma": 21,
+      "uma": 25,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 26,
+    "fields": {
+      "banner_uma": 21,
+      "uma": 26,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 27,
+    "fields": {
+      "banner_uma": 22,
+      "uma": 27,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 28,
+    "fields": {
+      "banner_uma": 23,
+      "uma": 28,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 29,
+    "fields": {
+      "banner_uma": 24,
+      "uma": 29,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 30,
+    "fields": {
+      "banner_uma": 24,
+      "uma": 30,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 31,
+    "fields": {
+      "banner_uma": 25,
+      "uma": 31,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 32,
+    "fields": {
+      "banner_uma": 26,
+      "uma": 32,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 33,
+    "fields": {
+      "banner_uma": 27,
+      "uma": 33,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 34,
+    "fields": {
+      "banner_uma": 27,
+      "uma": 34,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 35,
+    "fields": {
+      "banner_uma": 28,
+      "uma": 35,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 36,
+    "fields": {
+      "banner_uma": 29,
+      "uma": 36,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 37,
+    "fields": {
+      "banner_uma": 30,
+      "uma": 37,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 38,
+    "fields": {
+      "banner_uma": 30,
+      "uma": 38,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 39,
+    "fields": {
+      "banner_uma": 31,
+      "uma": 39,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 40,
+    "fields": {
+      "banner_uma": 32,
+      "uma": 40,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 41,
+    "fields": {
+      "banner_uma": 33,
+      "uma": 41,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 42,
+    "fields": {
+      "banner_uma": 33,
+      "uma": 42,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 43,
+    "fields": {
+      "banner_uma": 34,
+      "uma": 43,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 44,
+    "fields": {
+      "banner_uma": 35,
+      "uma": 44,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 45,
+    "fields": {
+      "banner_uma": 36,
+      "uma": 45,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 46,
+    "fields": {
+      "banner_uma": 36,
+      "uma": 46,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 47,
+    "fields": {
+      "banner_uma": 37,
+      "uma": 47,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 48,
+    "fields": {
+      "banner_uma": 38,
+      "uma": 48,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 49,
+    "fields": {
+      "banner_uma": 39,
+      "uma": 49,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 50,
+    "fields": {
+      "banner_uma": 39,
+      "uma": 50,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 51,
+    "fields": {
+      "banner_uma": 40,
+      "uma": 51,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 52,
+    "fields": {
+      "banner_uma": 41,
+      "uma": 52,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 53,
+    "fields": {
+      "banner_uma": 42,
+      "uma": 53,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 54,
+    "fields": {
+      "banner_uma": 42,
+      "uma": 54,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 55,
+    "fields": {
+      "banner_uma": 43,
+      "uma": 55,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 56,
+    "fields": {
+      "banner_uma": 44,
+      "uma": 56,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 57,
+    "fields": {
+      "banner_uma": 45,
+      "uma": 57,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 58,
+    "fields": {
+      "banner_uma": 45,
+      "uma": 58,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 59,
+    "fields": {
+      "banner_uma": 46,
+      "uma": 59,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 60,
+    "fields": {
+      "banner_uma": 47,
+      "uma": 60,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 61,
+    "fields": {
+      "banner_uma": 48,
+      "uma": 61,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 62,
+    "fields": {
+      "banner_uma": 48,
+      "uma": 62,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 63,
+    "fields": {
+      "banner_uma": 49,
+      "uma": 63,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 64,
+    "fields": {
+      "banner_uma": 50,
+      "uma": 64,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 65,
+    "fields": {
+      "banner_uma": 50,
+      "uma": 65,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 66,
+    "fields": {
+      "banner_uma": 51,
+      "uma": 66,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 67,
+    "fields": {
+      "banner_uma": 51,
+      "uma": 67,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 68,
+    "fields": {
+      "banner_uma": 52,
+      "uma": 68,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 69,
+    "fields": {
+      "banner_uma": 53,
+      "uma": 69,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 70,
+    "fields": {
+      "banner_uma": 54,
+      "uma": 70,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 71,
+    "fields": {
+      "banner_uma": 55,
+      "uma": 71,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 72,
+    "fields": {
+      "banner_uma": 55,
+      "uma": 72,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 73,
+    "fields": {
+      "banner_uma": 56,
+      "uma": 73,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 74,
+    "fields": {
+      "banner_uma": 57,
+      "uma": 74,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 75,
+    "fields": {
+      "banner_uma": 58,
+      "uma": 75,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 76,
+    "fields": {
+      "banner_uma": 58,
+      "uma": 76,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 77,
+    "fields": {
+      "banner_uma": 59,
+      "uma": 77,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 78,
+    "fields": {
+      "banner_uma": 60,
+      "uma": 78,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 79,
+    "fields": {
+      "banner_uma": 61,
+      "uma": 79,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 80,
+    "fields": {
+      "banner_uma": 62,
+      "uma": 80,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 81,
+    "fields": {
+      "banner_uma": 62,
+      "uma": 81,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 82,
+    "fields": {
+      "banner_uma": 63,
+      "uma": 82,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 83,
+    "fields": {
+      "banner_uma": 64,
+      "uma": 83,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 84,
+    "fields": {
+      "banner_uma": 65,
+      "uma": 84,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 85,
+    "fields": {
+      "banner_uma": 65,
+      "uma": 85,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 86,
+    "fields": {
+      "banner_uma": 66,
+      "uma": 86,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 87,
+    "fields": {
+      "banner_uma": 67,
+      "uma": 87,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 88,
+    "fields": {
+      "banner_uma": 68,
+      "uma": 88,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 89,
+    "fields": {
+      "banner_uma": 68,
+      "uma": 89,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 90,
+    "fields": {
+      "banner_uma": 69,
+      "uma": 90,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 91,
+    "fields": {
+      "banner_uma": 70,
+      "uma": 91,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 92,
+    "fields": {
+      "banner_uma": 71,
+      "uma": 25,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 93,
+    "fields": {
+      "banner_uma": 71,
+      "uma": 37,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 94,
+    "fields": {
+      "banner_uma": 72,
+      "uma": 92,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 95,
+    "fields": {
+      "banner_uma": 72,
+      "uma": 93,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 96,
+    "fields": {
+      "banner_uma": 73,
+      "uma": 94,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 97,
+    "fields": {
+      "banner_uma": 73,
+      "uma": 95,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 98,
+    "fields": {
+      "banner_uma": 74,
+      "uma": 96,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 99,
+    "fields": {
+      "banner_uma": 75,
+      "uma": 97,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 100,
+    "fields": {
+      "banner_uma": 76,
+      "uma": 98,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 101,
+    "fields": {
+      "banner_uma": 76,
+      "uma": 99,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 102,
+    "fields": {
+      "banner_uma": 77,
+      "uma": 100,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 103,
+    "fields": {
+      "banner_uma": 78,
+      "uma": 101,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 104,
+    "fields": {
+      "banner_uma": 79,
+      "uma": 102,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 105,
+    "fields": {
+      "banner_uma": 79,
+      "uma": 103,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 106,
+    "fields": {
+      "banner_uma": 80,
+      "uma": 104,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 107,
+    "fields": {
+      "banner_uma": 81,
+      "uma": 105,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 108,
+    "fields": {
+      "banner_uma": 82,
+      "uma": 106,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 109,
+    "fields": {
+      "banner_uma": 82,
+      "uma": 107,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 110,
+    "fields": {
+      "banner_uma": 83,
+      "uma": 61,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 111,
+    "fields": {
+      "banner_uma": 83,
+      "uma": 108,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 112,
+    "fields": {
+      "banner_uma": 84,
+      "uma": 109,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 113,
+    "fields": {
+      "banner_uma": 85,
+      "uma": 110,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 114,
+    "fields": {
+      "banner_uma": 85,
+      "uma": 111,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 115,
+    "fields": {
+      "banner_uma": 86,
+      "uma": 112,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 116,
+    "fields": {
+      "banner_uma": 87,
+      "uma": 113,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 117,
+    "fields": {
+      "banner_uma": 88,
+      "uma": 114,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 118,
+    "fields": {
+      "banner_uma": 88,
+      "uma": 115,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 119,
+    "fields": {
+      "banner_uma": 89,
+      "uma": 116,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 120,
+    "fields": {
+      "banner_uma": 90,
+      "uma": 117,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 121,
+    "fields": {
+      "banner_uma": 91,
+      "uma": 118,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 122,
+    "fields": {
+      "banner_uma": 92,
+      "uma": 119,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 123,
+    "fields": {
+      "banner_uma": 93,
+      "uma": 120,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 124,
+    "fields": {
+      "banner_uma": 93,
+      "uma": 121,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 125,
+    "fields": {
+      "banner_uma": 94,
+      "uma": 122,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 126,
+    "fields": {
+      "banner_uma": 95,
+      "uma": 123,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 127,
+    "fields": {
+      "banner_uma": 95,
+      "uma": 124,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 128,
+    "fields": {
+      "banner_uma": 96,
+      "uma": 125,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 129,
+    "fields": {
+      "banner_uma": 97,
+      "uma": 126,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 130,
+    "fields": {
+      "banner_uma": 97,
+      "uma": 127,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 131,
+    "fields": {
+      "banner_uma": 98,
+      "uma": 128,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 132,
+    "fields": {
+      "banner_uma": 99,
+      "uma": 129,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 133,
+    "fields": {
+      "banner_uma": 100,
+      "uma": 130,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 134,
+    "fields": {
+      "banner_uma": 101,
+      "uma": 131,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 135,
+    "fields": {
+      "banner_uma": 101,
+      "uma": 132,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 136,
+    "fields": {
+      "banner_uma": 102,
+      "uma": 133,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 137,
+    "fields": {
+      "banner_uma": 102,
+      "uma": 134,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 138,
+    "fields": {
+      "banner_uma": 103,
+      "uma": 135,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 139,
+    "fields": {
+      "banner_uma": 104,
+      "uma": 136,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 140,
+    "fields": {
+      "banner_uma": 104,
+      "uma": 137,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 141,
+    "fields": {
+      "banner_uma": 105,
+      "uma": 138,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 142,
+    "fields": {
+      "banner_uma": 106,
+      "uma": 139,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 143,
+    "fields": {
+      "banner_uma": 106,
+      "uma": 140,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 144,
+    "fields": {
+      "banner_uma": 107,
+      "uma": 141,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 145,
+    "fields": {
+      "banner_uma": 108,
+      "uma": 142,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 146,
+    "fields": {
+      "banner_uma": 108,
+      "uma": 143,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 147,
+    "fields": {
+      "banner_uma": 109,
+      "uma": 144,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 148,
+    "fields": {
+      "banner_uma": 110,
+      "uma": 145,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 149,
+    "fields": {
+      "banner_uma": 111,
+      "uma": 146,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 150,
+    "fields": {
+      "banner_uma": 111,
+      "uma": 147,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 151,
+    "fields": {
+      "banner_uma": 112,
+      "uma": 148,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 152,
+    "fields": {
+      "banner_uma": 113,
+      "uma": 149,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 153,
+    "fields": {
+      "banner_uma": 114,
+      "uma": 150,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 154,
+    "fields": {
+      "banner_uma": 114,
+      "uma": 151,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 155,
+    "fields": {
+      "banner_uma": 115,
+      "uma": 152,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 156,
+    "fields": {
+      "banner_uma": 116,
+      "uma": 153,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 157,
+    "fields": {
+      "banner_uma": 116,
+      "uma": 154,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 158,
+    "fields": {
+      "banner_uma": 117,
+      "uma": 155,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 159,
+    "fields": {
+      "banner_uma": 118,
+      "uma": 156,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 160,
+    "fields": {
+      "banner_uma": 119,
+      "uma": 157,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 161,
+    "fields": {
+      "banner_uma": 119,
+      "uma": 158,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 162,
+    "fields": {
+      "banner_uma": 120,
+      "uma": 159,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 163,
+    "fields": {
+      "banner_uma": 121,
+      "uma": 160,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 164,
+    "fields": {
+      "banner_uma": 121,
+      "uma": 161,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 165,
+    "fields": {
+      "banner_uma": 122,
+      "uma": 162,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 166,
+    "fields": {
+      "banner_uma": 123,
+      "uma": 163,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 167,
+    "fields": {
+      "banner_uma": 123,
+      "uma": 164,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 168,
+    "fields": {
+      "banner_uma": 124,
+      "uma": 165,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 169,
+    "fields": {
+      "banner_uma": 125,
+      "uma": 166,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 170,
+    "fields": {
+      "banner_uma": 126,
+      "uma": 167,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 171,
+    "fields": {
+      "banner_uma": 126,
+      "uma": 168,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 172,
+    "fields": {
+      "banner_uma": 127,
+      "uma": 169,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 173,
+    "fields": {
+      "banner_uma": 128,
+      "uma": 170,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 174,
+    "fields": {
+      "banner_uma": 128,
+      "uma": 171,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 175,
+    "fields": {
+      "banner_uma": 129,
+      "uma": 172,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 176,
+    "fields": {
+      "banner_uma": 130,
+      "uma": 173,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 177,
+    "fields": {
+      "banner_uma": 130,
+      "uma": 174,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 178,
+    "fields": {
+      "banner_uma": 131,
+      "uma": 175,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 179,
+    "fields": {
+      "banner_uma": 132,
+      "uma": 176,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 180,
+    "fields": {
+      "banner_uma": 133,
+      "uma": 177,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 181,
+    "fields": {
+      "banner_uma": 133,
+      "uma": 178,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 182,
+    "fields": {
+      "banner_uma": 134,
+      "uma": 179,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 183,
+    "fields": {
+      "banner_uma": 135,
+      "uma": 180,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 184,
+    "fields": {
+      "banner_uma": 135,
+      "uma": 181,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 185,
+    "fields": {
+      "banner_uma": 136,
+      "uma": 182,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 186,
+    "fields": {
+      "banner_uma": 137,
+      "uma": 183,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 187,
+    "fields": {
+      "banner_uma": 137,
+      "uma": 184,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 188,
+    "fields": {
+      "banner_uma": 138,
+      "uma": 185,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 189,
+    "fields": {
+      "banner_uma": 139,
+      "uma": 186,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 190,
+    "fields": {
+      "banner_uma": 140,
+      "uma": 187,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 191,
+    "fields": {
+      "banner_uma": 141,
+      "uma": 188,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 192,
+    "fields": {
+      "banner_uma": 142,
+      "uma": 189,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 193,
+    "fields": {
+      "banner_uma": 142,
+      "uma": 190,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 194,
+    "fields": {
+      "banner_uma": 143,
+      "uma": 191,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 195,
+    "fields": {
+      "banner_uma": 144,
+      "uma": 192,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 196,
+    "fields": {
+      "banner_uma": 144,
+      "uma": 193,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 197,
+    "fields": {
+      "banner_uma": 145,
+      "uma": 194,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 198,
+    "fields": {
+      "banner_uma": 146,
+      "uma": 195,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 199,
+    "fields": {
+      "banner_uma": 146,
+      "uma": 196,
+      "recommendation": ""
+    }
+  },
+  {
+    "model": "calculatorapi.umasonumabanner",
+    "pk": 200,
+    "fields": {
+      "banner_uma": 147,
+      "uma": 197,
+      "recommendation": ""
+    }
+  }
+]

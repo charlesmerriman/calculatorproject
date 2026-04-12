@@ -4,7 +4,7 @@
         "pk": 1,
         "fields": {
             "name": "Champion",
-            "income_amount": 3500
+            "income_amount": 3300
         }
     },
     {
@@ -28,7 +28,7 @@
         "pk": 4,
         "fields": {
             "name": "Group B",
-            "income_amount": 1400
+            "income_amount": 1600
         }
     },
     {
@@ -39,7 +39,7 @@
             "income_amount": 1100
         }
     },
-        {
+    {
         "model": "calculatorapi.championsmeetingrank",
         "pk": 6,
         "fields": {

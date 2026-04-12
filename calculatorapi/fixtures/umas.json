@@ -1,0 +1,1775 @@
+[
+  {
+    "model": "calculatorapi.uma",
+    "pk": 1,
+    "fields": {
+      "name": "T.M. Opera",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 2,
+    "fields": {
+      "name": "Mihono Bourbon",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 3,
+    "fields": {
+      "name": "Biwa Hayahide",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 4,
+    "fields": {
+      "name": "Tokai Teio (Anime)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 5,
+    "fields": {
+      "name": "Mejiro Mcqueen (Anime)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 6,
+    "fields": {
+      "name": "Curren Chan",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 7,
+    "fields": {
+      "name": "Narita Taishin",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 8,
+    "fields": {
+      "name": "Smart Falcon",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 9,
+    "fields": {
+      "name": "Narita Brian",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 10,
+    "fields": {
+      "name": "Air Groove (Wedding)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 11,
+    "fields": {
+      "name": "Mayano Top Gun (Wedding)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 12,
+    "fields": {
+      "name": "Seiun Sky",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 13,
+    "fields": {
+      "name": "Hishi Amazon",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 14,
+    "fields": {
+      "name": "Grass Wonder (Fantasy)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 15,
+    "fields": {
+      "name": "El Condor Pasa (Fantasy)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 16,
+    "fields": {
+      "name": "Fuji Kiseki",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 17,
+    "fields": {
+      "name": "Gold City",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 18,
+    "fields": {
+      "name": "Special Week (Summer)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 19,
+    "fields": {
+      "name": "Maruzensky (Summer)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 20,
+    "fields": {
+      "name": "Meisho Doto",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 21,
+    "fields": {
+      "name": "Eishin Flash",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 22,
+    "fields": {
+      "name": "Matikanefukukitaru (Full Armor)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 23,
+    "fields": {
+      "name": "Hishi Akebono",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 24,
+    "fields": {
+      "name": "Agnes Digital",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 25,
+    "fields": {
+      "name": "Rice Shower (Halloween)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 26,
+    "fields": {
+      "name": "Super Creek (Halloween)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 27,
+    "fields": {
+      "name": "Kawakami Princess\u2661",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 28,
+    "fields": {
+      "name": "Manhattan Cafe",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 29,
+    "fields": {
+      "name": "Symboli Rudolf (Festival)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 30,
+    "fields": {
+      "name": "Gold City (Festival)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 31,
+    "fields": {
+      "name": "Tosen Jordan",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 32,
+    "fields": {
+      "name": "Mejiro Dober",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 33,
+    "fields": {
+      "name": "Oguri Cap (Christmas)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 34,
+    "fields": {
+      "name": "Biwa Hayahide (Christmas)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 35,
+    "fields": {
+      "name": "Fine Motion",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 36,
+    "fields": {
+      "name": "Tamamo Cross",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 37,
+    "fields": {
+      "name": "Haru Urara (New Year)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 38,
+    "fields": {
+      "name": "TM Opera O (New Year)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 39,
+    "fields": {
+      "name": "(All)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 40,
+    "fields": {
+      "name": "Sakura Chiyono O",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 41,
+    "fields": {
+      "name": "Mihono Bourbon (Valentine)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 42,
+    "fields": {
+      "name": "Eishin Flash (Valentine)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 43,
+    "fields": {
+      "name": "Mejiro Ardan",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 44,
+    "fields": {
+      "name": "Admire Vega",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 45,
+    "fields": {
+      "name": "Kitasan Black",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 46,
+    "fields": {
+      "name": "Matikanetannhauser",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 47,
+    "fields": {
+      "name": "Satono Diamond",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 48,
+    "fields": {
+      "name": "Mejiro Bright",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 49,
+    "fields": {
+      "name": "Seiun Sky (Ballroom)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 50,
+    "fields": {
+      "name": "Fuji Kiseki (Ballroom)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 51,
+    "fields": {
+      "name": "Nishino Flower",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 52,
+    "fields": {
+      "name": "Yaeno Muteki",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 53,
+    "fields": {
+      "name": "Nice Nature (Cheerleader)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 54,
+    "fields": {
+      "name": "King Halo (Cheerleader)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 55,
+    "fields": {
+      "name": "Ines Fujin \u2661",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 56,
+    "fields": {
+      "name": "Mejiro Palmer",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 57,
+    "fields": {
+      "name": "Curren Chan (Wedding)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 58,
+    "fields": {
+      "name": "Fine Motion (Wedding)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 59,
+    "fields": {
+      "name": "Inari One",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 60,
+    "fields": {
+      "name": "Sweep Tosho",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 61,
+    "fields": {
+      "name": "Taiki Shuttle (Camping)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 62,
+    "fields": {
+      "name": "Mejiro Dober (Camping)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 63,
+    "fields": {
+      "name": "Air Shakur",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 64,
+    "fields": {
+      "name": "Seiun Sky (Rerun)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 65,
+    "fields": {
+      "name": "Narita Brian (Rerun)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 66,
+    "fields": {
+      "name": "Mejiro McQueen (Summer)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 67,
+    "fields": {
+      "name": "Gold Ship (Summer)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 68,
+    "fields": {
+      "name": "Bamboo Memory",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 69,
+    "fields": {
+      "name": "Copano Rickey",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 70,
+    "fields": {
+      "name": "Smart Falcon (Grand Live)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 71,
+    "fields": {
+      "name": "Winning Ticket (Steampunk)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 72,
+    "fields": {
+      "name": "Narita Taishin (Steampunk)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 73,
+    "fields": {
+      "name": "Yukino Bijin",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 74,
+    "fields": {
+      "name": "Seeking the Pearl",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 75,
+    "fields": {
+      "name": "Agnes Digital (Halloween)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 76,
+    "fields": {
+      "name": "Meisho Doto (Halloween)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 77,
+    "fields": {
+      "name": "Aston Machan",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 78,
+    "fields": {
+      "name": "Seeking the Pearl (Rerun)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 79,
+    "fields": {
+      "name": "Yamanin Zephyr",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 80,
+    "fields": {
+      "name": "Tamamo Cross (Festival)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 81,
+    "fields": {
+      "name": "Inari One (Festival)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 82,
+    "fields": {
+      "name": "Nakayama Festa",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 83,
+    "fields": {
+      "name": "Wonder Acute",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 84,
+    "fields": {
+      "name": "Vodka (Christmas)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 85,
+    "fields": {
+      "name": "Daiwa Scarlet (Christmas)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 86,
+    "fields": {
+      "name": "Zenno Rob Roy",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 87,
+    "fields": {
+      "name": "Narita Brian (Blaze)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 88,
+    "fields": {
+      "name": "Kitasan Black (New Year)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 89,
+    "fields": {
+      "name": "Satono Diamond (New Year)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 90,
+    "fields": {
+      "name": "Hokko Tarumae",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 91,
+    "fields": {
+      "name": "Daitaku Helios",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 92,
+    "fields": {
+      "name": "Ines Fujin (Valentine)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 93,
+    "fields": {
+      "name": "Mejiro Ryan (Valentine)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 94,
+    "fields": {
+      "name": "Mr. C.B.",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 95,
+    "fields": {
+      "name": "Twin Turbo",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 96,
+    "fields": {
+      "name": "Daiichi Ruby",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 97,
+    "fields": {
+      "name": "Symboli Kris S",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 98,
+    "fields": {
+      "name": "Mejiro Ardan (Ballroom)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 99,
+    "fields": {
+      "name": "Sakura Chiyono O (Ballroom)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 100,
+    "fields": {
+      "name": "Sakura Laurel",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 101,
+    "fields": {
+      "name": "Neo Universe",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 102,
+    "fields": {
+      "name": "Matikanetannhauser (Sports Festival)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 103,
+    "fields": {
+      "name": "Sakura Bakushin O (Sports Festival)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 104,
+    "fields": {
+      "name": "Hishi Miracle",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 105,
+    "fields": {
+      "name": "Tanino Gimlet",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 106,
+    "fields": {
+      "name": "Hishi Amazon (Wedding)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 107,
+    "fields": {
+      "name": "Nishino Flower (Wedding)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 108,
+    "fields": {
+      "name": "Yamanin Zephyr (Rerun)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 109,
+    "fields": {
+      "name": "Marvelous Sunday",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 110,
+    "fields": {
+      "name": "Bamboo Memory (Summer Trip)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 111,
+    "fields": {
+      "name": "Tosen Jordan (Summer Trip)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 112,
+    "fields": {
+      "name": "Katsuragi Ace",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 113,
+    "fields": {
+      "name": "Sirius Symboli",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 114,
+    "fields": {
+      "name": "Agnes Tachyon (Summer)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 115,
+    "fields": {
+      "name": "Silence Suzuka (Summer)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 116,
+    "fields": {
+      "name": "Narita Top Road",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 117,
+    "fields": {
+      "name": "Gold Ship (Project L'Arc)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 118,
+    "fields": {
+      "name": "Satono Diamond (Project L'Arc)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 119,
+    "fields": {
+      "name": "K.S.Miracle",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 120,
+    "fields": {
+      "name": "Air Shakur (Halloween)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 121,
+    "fields": {
+      "name": "Symboli Kris S (Halloween)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 122,
+    "fields": {
+      "name": "Mejiro Ramonu",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 123,
+    "fields": {
+      "name": "Kawakami Princess (Festival)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 124,
+    "fields": {
+      "name": "Tokai Teio (Festival)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 125,
+    "fields": {
+      "name": "Tap Dance City",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 126,
+    "fields": {
+      "name": "Mejiro Palmer (Christmas)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 127,
+    "fields": {
+      "name": "Mejiro Bright (Christmas)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 128,
+    "fields": {
+      "name": "Cheval Grand",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 129,
+    "fields": {
+      "name": "Kitasan Black (Anime Collab)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 130,
+    "fields": {
+      "name": "Vivlos",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 131,
+    "fields": {
+      "name": "Yukino Bijin (Valentine)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 132,
+    "fields": {
+      "name": "Manhattan Cafe (Valentine)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 133,
+    "fields": {
+      "name": "Duramente",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 134,
+    "fields": {
+      "name": "Ikuno Dictus",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 135,
+    "fields": {
+      "name": "Rhein Kraft",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 136,
+    "fields": {
+      "name": "Daiichi Ruby (Ballroom)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 137,
+    "fields": {
+      "name": "Daitaku Helios (Ballroom)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 138,
+    "fields": {
+      "name": "Winning Ticket (U.A.F.)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 139,
+    "fields": {
+      "name": "Super Creek (Warfare)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 140,
+    "fields": {
+      "name": "Yaeno Muteki (Warfare)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 141,
+    "fields": {
+      "name": "Agnes Tachyon (Alt Version)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 142,
+    "fields": {
+      "name": "King Halo (Wedding)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 143,
+    "fields": {
+      "name": "Sweep Tosho (Wedding)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 144,
+    "fields": {
+      "name": "Dream Journey",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 145,
+    "fields": {
+      "name": "Rice Shower (Great Food Festival)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 146,
+    "fields": {
+      "name": "Eishin Flash (Summer Trip)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 147,
+    "fields": {
+      "name": "Hokko Tarumae (Summer Trip)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 148,
+    "fields": {
+      "name": "(All) 2",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 149,
+    "fields": {
+      "name": "Gentildonna",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 150,
+    "fields": {
+      "name": "Neo Universe (Autumn)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 151,
+    "fields": {
+      "name": "Zenno Rob Roy (Autumn)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 152,
+    "fields": {
+      "name": "Cesario",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 153,
+    "fields": {
+      "name": "Seeking the Pearl (Halloween)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 154,
+    "fields": {
+      "name": "Mayano Top Gun (Halloween)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 155,
+    "fields": {
+      "name": "Biwa Hayahide (Mecha)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 156,
+    "fields": {
+      "name": "Narita Taishin (Mecha)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 157,
+    "fields": {
+      "name": "Narita Top Road (Christmas)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 158,
+    "fields": {
+      "name": "Admire Vega (Christmas)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 159,
+    "fields": {
+      "name": "Win Variation",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 160,
+    "fields": {
+      "name": "Katsuragi Ace (New Year)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 161,
+    "fields": {
+      "name": "Mr. C.B. (New Year)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 162,
+    "fields": {
+      "name": "Maruzensky (New Year)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 163,
+    "fields": {
+      "name": "Yamanin Zephyr (Valentine)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 164,
+    "fields": {
+      "name": "Aston Machan (Valentine)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 165,
+    "fields": {
+      "name": "Orfevre",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 166,
+    "fields": {
+      "name": "Gran Alegria",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 167,
+    "fields": {
+      "name": "Tap Dance City (Ballroom)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 168,
+    "fields": {
+      "name": "Tanino Gimlet (Ballroom)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 169,
+    "fields": {
+      "name": "Sirius Symboli (The Twinkle Legends)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 170,
+    "fields": {
+      "name": "Copano Rickey (Parade)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 171,
+    "fields": {
+      "name": "Smart Falcon (Parade)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 172,
+    "fields": {
+      "name": "Verxina",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 173,
+    "fields": {
+      "name": "Cesario (Wedding)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 174,
+    "fields": {
+      "name": "Mejiro Ramonu (Wedding)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 175,
+    "fields": {
+      "name": "Gold City (Deserted Island)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 176,
+    "fields": {
+      "name": "Ines Fujin (Deserted Island)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 177,
+    "fields": {
+      "name": "Cheval Grand (Summer)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 178,
+    "fields": {
+      "name": "Satono Crown (Summer)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 179,
+    "fields": {
+      "name": "Still in Love",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 180,
+    "fields": {
+      "name": "K.S.Miracle (Alt Version)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 181,
+    "fields": {
+      "name": "Hishi Miracle (Alt Version)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 182,
+    "fields": {
+      "name": "Espoir City",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 183,
+    "fields": {
+      "name": "Hishi Akebono (Halloween)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 184,
+    "fields": {
+      "name": "Marvelous Sunday (Halloween)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 185,
+    "fields": {
+      "name": "Tosen Jordan (Halloween)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 186,
+    "fields": {
+      "name": "Jungle Pocket (Rerun)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 187,
+    "fields": {
+      "name": "Transcend (Onsen)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 188,
+    "fields": {
+      "name": "Wonder Acute (Onsen)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 189,
+    "fields": {
+      "name": "Nakayama Festa (Christmas)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 190,
+    "fields": {
+      "name": "Dream Journey (Christmas)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 191,
+    "fields": {
+      "name": "Oguri Cap (Anime Collab)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 192,
+    "fields": {
+      "name": "Ikuno Dictus (New Year)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 193,
+    "fields": {
+      "name": "Sakura Laurel (New Year)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 194,
+    "fields": {
+      "name": "Bubble Gum Fellow (New Year)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 195,
+    "fields": {
+      "name": "Taiki Shuttle (Valentine)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 196,
+    "fields": {
+      "name": "Sounds of Earth (Valentine)",
+      "image": null,
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 197,
+    "fields": {
+      "name": "Almond Eye",
+      "image": null,
+      "admin_comments": ""
+    }
+  }
+]
