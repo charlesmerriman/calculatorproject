@@ -1,0 +1,9 @@
+from django.db import models
+
+
+class LeagueOfHeroesRank(models.Model):
+    name = models.CharField(max_length=255)
+    income_amount = models.IntegerField()
+
+    def __str__(self):
+        return str(self.name) if self.name else "Unnamed Rank"

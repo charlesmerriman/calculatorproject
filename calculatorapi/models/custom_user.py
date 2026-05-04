@@ -3,6 +3,7 @@ from django.db import models
 from .club_rank import ClubRank
 from .champions_meeting_rank import ChampionsMeetingRank
 from .team_trials_rank import TeamTrialsRank
+from .league_of_heroes_rank import LeagueOfHeroesRank
 
 
 class CustomUser(AbstractUser):
@@ -16,8 +17,17 @@ class CustomUser(AbstractUser):
     team_trials_rank = models.ForeignKey(
         TeamTrialsRank, on_delete=models.SET_NULL, null=True, blank=True
     )
+    league_of_heroes_rank = models.ForeignKey(
+        LeagueOfHeroesRank, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    sr_shards = models.IntegerField(default=0)
+    sr_crystals = models.IntegerField(default=0)
+    ssr_shards = models.IntegerField(default=0)
+    ssr_crystals = models.IntegerField(default=0)
     daily_carat = models.BooleanField(default=False)
+    training_pass = models.BooleanField(default=False)
     current_carat = models.IntegerField(default=0)
+    current_paid_carat = models.IntegerField(default=0)
     uma_ticket = models.IntegerField(default=0)
     support_ticket = models.IntegerField(default=0)
 

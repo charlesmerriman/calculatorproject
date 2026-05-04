@@ -1,15 +1,14 @@
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
-from calculatorapi.models import EventReward
+from calculatorapi.models import GameEvent, EventReward
 
 
-class EventRewardsSerializer(serializers.ModelSerializer):
+class EventRewardNestedSerializer(serializers.ModelSerializer):
     class Meta:
         model = EventReward
         fields = (
             "id",
-            "event",
             "name",
             "carat_amount",
             "support_ticket_amount",
@@ -22,25 +21,30 @@ class EventRewardsSerializer(serializers.ModelSerializer):
         )
 
 
-class EventRewardViewSet(ViewSet):
+class GameEventSerializer(serializers.ModelSerializer):
+    rewards = EventRewardNestedSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = GameEvent
+        fields = ("id", "name", "image", "start_date", "end_date", "rewards")
+
+
+class GameEventViewSet(ViewSet):
     def list(self, request):
-        rewards = EventReward.objects.all()
-        event_id = request.query_params.get("event_id")
-        if event_id:
-            rewards = rewards.filter(event_id=event_id)
-        serializer = EventRewardsSerializer(rewards, many=True)
+        game_events = GameEvent.objects.all().order_by("start_date")
+        serializer = GameEventSerializer(game_events, many=True)
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
         try:
-            reward = EventReward.objects.get(pk=pk)
-        except EventReward.DoesNotExist:
+            game_event = GameEvent.objects.get(pk=pk)
+        except GameEvent.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = EventRewardsSerializer(reward)
+        serializer = GameEventSerializer(game_event)
         return Response(serializer.data)
 
     def create(self, request):
-        serializer = EventRewardsSerializer(data=request.data)
+        serializer = GameEventSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -48,10 +52,10 @@ class EventRewardViewSet(ViewSet):
 
     def update(self, request, pk=None):
         try:
-            reward = EventReward.objects.get(pk=pk)
-        except EventReward.DoesNotExist:
+            game_event = GameEvent.objects.get(pk=pk)
+        except GameEvent.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = EventRewardsSerializer(reward, data=request.data)
+        serializer = GameEventSerializer(game_event, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -59,8 +63,8 @@ class EventRewardViewSet(ViewSet):
 
     def destroy(self, request, pk=None):
         try:
-            reward = EventReward.objects.get(pk=pk)
-        except EventReward.DoesNotExist:
+            game_event = GameEvent.objects.get(pk=pk)
+        except GameEvent.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        reward.delete()
+        game_event.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

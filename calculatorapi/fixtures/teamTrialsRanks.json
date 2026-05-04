@@ -43,6 +43,14 @@
         "model": "calculatorapi.teamtrialsrank",
         "pk": 6,
         "fields": {
+            "name": "Class 5.5",
+            "income_amount": 262
+        }
+    },
+        {
+        "model": "calculatorapi.teamtrialsrank",
+        "pk": 7,
+        "fields": {
             "name": "Class 6",
             "income_amount": 375
         }

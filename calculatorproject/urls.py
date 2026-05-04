@@ -7,7 +7,10 @@ from calculatorapi.views import (
     TeamTrialsRankViewSet,
     ClubRankViewSet,
     ChampionsMeetingRankViewSet,
+    LeagueOfHeroesRankViewSet,
     CalculatorViewSet,
+    GameEventViewSet,
+    EventRewardViewSet,
 )
 from calculatorapi.views.user import register_account, user_login, user_logout
 
@@ -19,6 +22,13 @@ router.register(
     ChampionsMeetingRankViewSet,
     basename="championsmeetingrank",
 )
+router.register(
+    r"leagueofheroesranks",
+    LeagueOfHeroesRankViewSet,
+    basename="leagueofheroesrank",
+)
+router.register(r"events", GameEventViewSet, basename="event")
+router.register(r"eventrewards", EventRewardViewSet, basename="eventreward")
 
 urlpatterns = [
     path("", include(router.urls)),
