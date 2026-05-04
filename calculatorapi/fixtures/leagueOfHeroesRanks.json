@@ -1,0 +1,74 @@
+[
+    {
+        "model": "calculatorapi.leagueofheroesrank",
+        "pk": 1,
+        "fields": {
+            "name": "Silver 4",
+            "income_amount": 390
+        }
+    },
+    {
+        "model": "calculatorapi.leagueofheroesrank",
+        "pk": 2,
+        "fields": {
+            "name": "Gold 1",
+            "income_amount": 540
+        }
+    },
+    {
+        "model": "calculatorapi.leagueofheroesrank",
+        "pk": 3,
+        "fields": {
+            "name": "Gold 2",
+            "income_amount": 690
+        }
+    },
+    {
+        "model": "calculatorapi.leagueofheroesrank",
+        "pk": 4,
+        "fields": {
+            "name": "Gold 3",
+            "income_amount": 990
+        }
+    },
+    {
+        "model": "calculatorapi.leagueofheroesrank",
+        "pk": 5,
+        "fields": {
+            "name": "Gold 4",
+            "income_amount": 1290
+        }
+    },
+    {
+        "model": "calculatorapi.leagueofheroesrank",
+        "pk": 6,
+        "fields": {
+            "name": "Platinum 1",
+            "income_amount": 1790
+        }
+    },
+    {
+        "model": "calculatorapi.leagueofheroesrank",
+        "pk": 7,
+        "fields": {
+            "name": "Platinum 2",
+            "income_amount": 2290
+        }
+    },
+    {
+        "model": "calculatorapi.leagueofheroesrank",
+        "pk": 8,
+        "fields": {
+            "name": "Platinum 3",
+            "income_amount": 2790
+        }
+    },
+    {
+        "model": "calculatorapi.leagueofheroesrank",
+        "pk": 9,
+        "fields": {
+            "name": "Platinum 4",
+            "income_amount": 3290
+        }
+    }
+]

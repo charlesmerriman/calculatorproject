@@ -5,7 +5,7 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from calculatorapi.models import CustomUser as User
-from calculatorapi.models import ClubRank, TeamTrialsRank, ChampionsMeetingRank
+from calculatorapi.models import ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -25,12 +25,16 @@ class UserStatsSerializer(serializers.ModelSerializer):
     champions_meeting_rank = serializers.PrimaryKeyRelatedField(
         queryset=ChampionsMeetingRank.objects.all(), required=False, allow_null=True
     )
+    league_of_heroes_rank = serializers.PrimaryKeyRelatedField(
+        queryset=LeagueOfHeroesRank.objects.all(), required=False, allow_null=True
+    )
 
     class Meta:
         model = User
         fields = [
-            "current_carat", "uma_ticket", "support_ticket",
-            "daily_carat", "club_rank", "team_trials_rank", "champions_meeting_rank",
+            "current_carat", "current_paid_carat", "uma_ticket", "support_ticket",
+            "daily_carat", "training_pass", "sr_shards", "sr_crystals", "ssr_shards", "ssr_crystals",
+            "club_rank", "team_trials_rank", "champions_meeting_rank", "league_of_heroes_rank",
         ]
 
 

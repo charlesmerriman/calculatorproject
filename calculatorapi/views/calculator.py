@@ -5,19 +5,20 @@ from rest_framework import permissions, status
 from django.db.models.functions import Coalesce
 from django.db.models import F
 from calculatorapi.models import (
-    ClubRank, TeamTrialsRank, ChampionsMeetingRank,
+    ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
     UserPlannedBanner, BannerUma, BannerSupport,
-    ChampionsMeeting, EventReward, BannerTimeline
+    ChampionsMeeting, GameEvent, BannerTimeline
 )
 from calculatorapi.views.club_rank import ClubRankSerializer
 from calculatorapi.views.team_trials_rank import TeamTrialsRankSerializer
 from calculatorapi.views.champions_meeting_rank import ChampionsMeetingRankSerializer
+from calculatorapi.views.league_of_heroes_rank import LeagueOfHeroesRankSerializer
 from calculatorapi.views.user_planned_banner import UserPlannedBannerSerializer
 from calculatorapi.views.user import UserStatsSerializer
 from calculatorapi.views.banner_uma import BannerUmaSerializer
 from calculatorapi.views.banner_support import BannerSupportSerializer
 from calculatorapi.views.champions_meeting import ChampionsMeetingSerializer
-from calculatorapi.views.event_reward import EventRewardsSerializer
+from calculatorapi.views.game_event import GameEventSerializer
 from calculatorapi.views.banner_timeline import BannerTimelineForViewingSerializer
 
 
@@ -29,6 +30,7 @@ class CalculatorViewSet(ViewSet):
         club_rank_data = ClubRank.objects.all()
         team_trials_rank_data = TeamTrialsRank.objects.all()
         champions_meeting_rank_data = ChampionsMeetingRank.objects.all()
+        league_of_heroes_rank_data = LeagueOfHeroesRank.objects.all()
         banner_uma_data = BannerUma.objects.all().order_by("banner_timeline__start_date")
         banner_support_data = BannerSupport.objects.all().order_by("banner_timeline__start_date")
         user_planned_banner_data = UserPlannedBanner.objects.filter(
@@ -39,7 +41,7 @@ class CalculatorViewSet(ViewSet):
                 F('banner_support__banner_timeline__start_date')
             )
         ).order_by('timeline_date')
-        event_rewards_data = EventReward.objects.all()
+        events_data = GameEvent.objects.prefetch_related('rewards').order_by('start_date').all()
         champions_meeting_data = ChampionsMeeting.objects.all()
         banner_timeline_data = BannerTimeline.objects.prefetch_related(
             "uma_banners", "support_banners"
@@ -49,11 +51,12 @@ class CalculatorViewSet(ViewSet):
             "club_rank_data": ClubRankSerializer(club_rank_data, many=True).data,
             "team_trials_rank_data": TeamTrialsRankSerializer(team_trials_rank_data, many=True).data,
             "champions_meeting_rank_data": ChampionsMeetingRankSerializer(champions_meeting_rank_data, many=True).data,
+            "league_of_heroes_rank_data": LeagueOfHeroesRankSerializer(league_of_heroes_rank_data, many=True).data,
             "banner_uma_data": BannerUmaSerializer(banner_uma_data, many=True).data,
             "banner_support_data": BannerSupportSerializer(banner_support_data, many=True).data,
             "user_planned_banner_data": UserPlannedBannerSerializer(user_planned_banner_data, many=True).data,
             "champions_meeting_data": ChampionsMeetingSerializer(champions_meeting_data, many=True).data,
-            "event_rewards_data": EventRewardsSerializer(event_rewards_data, many=True).data,
+            "events_data": GameEventSerializer(events_data, many=True).data,
             "user_stats_data": UserStatsSerializer(request.user).data,
             "banner_timeline_data": BannerTimelineForViewingSerializer(banner_timeline_data, many=True).data,
         }
