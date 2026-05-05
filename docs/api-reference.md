@@ -83,6 +83,7 @@ Protected. Returns a single aggregated payload containing all reference data and
   "banner_support_data":         [ BannerSupport ],
   "user_planned_banner_data":    [ UserPlannedBanner ],
   "champions_meeting_data":      [ ChampionsMeeting ],
+  "league_of_heroes_event_data": [ LeagueOfHeroes ],
   "events_data":                 [ GameEvent ],
   "user_stats_data":             UserStats,
   "banner_timeline_data":        [ BannerTimeline ]

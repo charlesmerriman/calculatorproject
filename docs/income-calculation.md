@@ -88,9 +88,9 @@ Paid once per Champions Meeting event. The projection adds this payout for each 
 
 ---
 
-## League of Heroes Rank
+## League of Heroes Rank (per event)
 
-The rank tiers and amounts are stored in the database and returned by the API, but **League of Heroes income is not currently included in the resource projection**. The data is available if this income source is added later.
+Paid once per League of Heroes event. The projection adds this payout for each `LeagueOfHeroes` whose `end_date` falls within the window.
 
 | Rank | Income (carats) |
 |---|---|

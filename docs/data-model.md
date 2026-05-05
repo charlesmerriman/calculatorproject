@@ -191,7 +191,7 @@ This is the discriminated union that the frontend mirrors with the `SavedPlanned
 
 `ClubRank`, `TeamTrialsRank`, `ChampionsMeetingRank`, and `LeagueOfHeroesRank` are static reference tables seeded from fixtures. They are never written to by user-facing endpoints. `CustomUser` holds a nullable FK to the user's current tier in each.
 
-`LeagueOfHeroesRank` data exists and is returned by the API but is **not yet used in the resource projection**. The FK on `CustomUser` is in place for future use.
+`LeagueOfHeroesRank` data is returned by the API and used by the resource projection — each `LeagueOfHeroes` event whose `end_date` falls within a banner window contributes the user's rank `income_amount` to the carat total.
 
 ### Through tables carry recommendation text
 
