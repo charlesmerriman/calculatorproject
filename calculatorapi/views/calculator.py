@@ -7,7 +7,7 @@ from django.db.models import F
 from calculatorapi.models import (
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
     UserPlannedBanner, BannerUma, BannerSupport,
-    ChampionsMeeting, GameEvent, BannerTimeline
+    ChampionsMeeting, LeagueOfHeroes, GameEvent, BannerTimeline
 )
 from calculatorapi.views.club_rank import ClubRankSerializer
 from calculatorapi.views.team_trials_rank import TeamTrialsRankSerializer
@@ -18,6 +18,7 @@ from calculatorapi.views.user import UserStatsSerializer
 from calculatorapi.views.banner_uma import BannerUmaSerializer
 from calculatorapi.views.banner_support import BannerSupportSerializer
 from calculatorapi.views.champions_meeting import ChampionsMeetingSerializer
+from calculatorapi.views.league_of_heroes import LeagueOfHeroesSerializer
 from calculatorapi.views.game_event import GameEventSerializer
 from calculatorapi.views.banner_timeline import BannerTimelineForViewingSerializer
 
@@ -43,6 +44,7 @@ class CalculatorViewSet(ViewSet):
         ).order_by('timeline_date')
         events_data = GameEvent.objects.prefetch_related('rewards').order_by('start_date').all()
         champions_meeting_data = ChampionsMeeting.objects.all()
+        league_of_heroes_event_data = LeagueOfHeroes.objects.all().order_by("start_date")
         banner_timeline_data = BannerTimeline.objects.prefetch_related(
             "uma_banners", "support_banners"
         ).order_by("start_date").all()
@@ -56,6 +58,7 @@ class CalculatorViewSet(ViewSet):
             "banner_support_data": BannerSupportSerializer(banner_support_data, many=True).data,
             "user_planned_banner_data": UserPlannedBannerSerializer(user_planned_banner_data, many=True).data,
             "champions_meeting_data": ChampionsMeetingSerializer(champions_meeting_data, many=True).data,
+            "league_of_heroes_event_data": LeagueOfHeroesSerializer(league_of_heroes_event_data, many=True).data,
             "events_data": GameEventSerializer(events_data, many=True).data,
             "user_stats_data": UserStatsSerializer(request.user).data,
             "banner_timeline_data": BannerTimelineForViewingSerializer(banner_timeline_data, many=True).data,

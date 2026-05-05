@@ -63,28 +63,38 @@ SimpleRouter-registered read-only ViewSets:
 cd backend
 
 # Create and activate a virtual environment
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
 
 # Run migrations
-python manage.py migrate
+python3 manage.py migrate
 
-# Seed the database with reference data
-bash seed_database.sh
+# Load reference and game data
+python3 manage.py loaddata calculatorapi/fixtures/clubRanks.json
+python3 manage.py loaddata calculatorapi/fixtures/teamTrialsRanks.json
+python3 manage.py loaddata calculatorapi/fixtures/championsMeetingRanks.json
+python3 manage.py loaddata calculatorapi/fixtures/leagueOfHeroesRanks.json
+python3 manage.py loaddata calculatorapi/fixtures/umas.json
+python3 manage.py loaddata calculatorapi/fixtures/supportCards.json
+python3 manage.py loaddata calculatorapi/fixtures/bannerTimelines.json
+python3 manage.py loaddata calculatorapi/fixtures/bannerUmas.json
+python3 manage.py loaddata calculatorapi/fixtures/bannerSupports.json
+python3 manage.py loaddata calculatorapi/fixtures/umasOnUmaBanner.json
+python3 manage.py loaddata calculatorapi/fixtures/supportsOnSupportBanner.json
 
 # Start the dev server
-python manage.py runserver
+python3 manage.py runserver
 ```
 
 Other useful commands:
 
 ```bash
-python manage.py test      # Run tests
+python3 manage.py test      # Run tests
 pylint calculatorapi/ calculatorproject/  # Lint
-python manage.py makemigrations          # After model changes
+python3 manage.py makemigrations          # After model changes
 ```
 
 ## Environment Variables

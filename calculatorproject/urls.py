@@ -8,6 +8,7 @@ from calculatorapi.views import (
     ClubRankViewSet,
     ChampionsMeetingRankViewSet,
     LeagueOfHeroesRankViewSet,
+    LeagueOfHeroesViewSet,
     CalculatorViewSet,
     GameEventViewSet,
     EventRewardViewSet,
@@ -27,6 +28,7 @@ router.register(
     LeagueOfHeroesRankViewSet,
     basename="leagueofheroesrank",
 )
+router.register(r"leagueofheroes", LeagueOfHeroesViewSet, basename="leagueofheroes")
 router.register(r"events", GameEventViewSet, basename="event")
 router.register(r"eventrewards", EventRewardViewSet, basename="eventreward")
 
