@@ -110,3 +110,26 @@ SPECTACULAR_SETTINGS = {
 }
 
 WHITENOISE_STATIC_PREFIX = '/static/'
+
+# Log all Django errors to stdout so DigitalOcean runtime logs capture tracebacks.
+# Without this, Django silently swallows 500 errors when DEBUG=False.
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "WARNING",
+        },
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+    },
+}
