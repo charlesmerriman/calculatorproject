@@ -1,143 +1,73 @@
-name: calculator-capstone
-region: nyc
-
 alerts:
-  - rule: DEPLOYMENT_FAILED
-
-features:
-  - buildpack-stack=ubuntu-22
-
-services:
-  - name: api
-    github:
-      repo: charlesmerriman/calculatorproject
-      branch: master
-      deploy_on_push: true
-    source_dir: /
-    environment_slug: python
-    instance_size_slug: apps-s-1vcpu-1gb
-    instance_count: 1
-    run_command: gunicorn --worker-tmp-dir /dev/shm calculatorproject.wsgi:application --bind 0.0.0.0:8080
-    http_port: 8080
-    envs:
-      - key: DJANGO_SECRET_KEY
-        scope: RUN_AND_BUILD_TIME
-        type: SECRET
-        value: "changeme-set-this-in-dashboard"
-      - key: DEBUG
-        scope: RUN_AND_BUILD_TIME
-        value: "False"
-      - key: DJANGO_ALLOWED_HOSTS
-        scope: RUN_AND_BUILD_TIME
-        value: "${APP_DOMAIN}"
-      - key: DATABASE_URL
-        scope: RUN_AND_BUILD_TIME
-        value: "https://calculator-capstone-uqax7.ondigitalocean.app"
-      - key: CORS_ORIGIN_WHITELIST
-        scope: RUN_AND_BUILD_TIME
-        value: "https://${APP_DOMAIN}"
-      - key: DEVELOPMENT_MODE
-        scope: RUN_AND_BUILD_TIME
-        value: "False"
-      - key: DISABLE_COLLECTSTATIC 
-        scope: BUILD_TIME
-        value: "1"
-
-jobs:
-  - name: migrate
-    kind: PRE_DEPLOY
-    github:
-      repo: charlesmerriman/calculatorproject
-      branch: master
-      deploy_on_push: true
-    source_dir: /
-    environment_slug: python
-    instance_size_slug: apps-s-1vcpu-1gb
-    run_command: python manage.py migrate --no-input && python manage.py collectstatic --no-input
-    envs:
-      - key: DJANGO_SECRET_KEY
-        scope: RUN_TIME
-        type: SECRET
-        value: "changeme-set-this-in-dashboard"
-      - key: DATABASE_URL
-        scope: RUN_TIME
-        value: "${db.DATABASE_URL}"
-      - key: DEVELOPMENT_MODE
-        scope: RUN_TIME
-        value: "False"
-
-static_sites:
-  - name: frontend
-    github:
-      repo: charlesmerriman/calculatorcapstoneclient
-      branch: master
-      deploy_on_push: true
-    source_dir: /
-    build_command: npm run build
-    output_dir: /dist
-    environment_slug: node-js
-    catchall_document: index.html
-    index_document: index.html
-    envs:
-      - key: VITE_API_URL
-        scope: BUILD_TIME
-        value: "https://calculator-capstone-uqax7.ondigitalocean.app"
-
+- rule: DEPLOYMENT_FAILED
+- rule: DOMAIN_FAILED
 databases:
-  - name: db
-    engine: PG
-    version: "16"
-    production: false
-
+- engine: PG
+  name: dev-db-462490
+  version: "17"
+features:
+- buildpack-stack=ubuntu-22
 ingress:
   rules:
-    - component:
-        name: api
-      match:
-        path:
-          prefix: /admin
-    - component:
-        name: api
-      match:
-        path:
-          prefix: /login
-    - component:
-        name: api
-      match:
-        path:
-          prefix: /register
-    - component:
-        name: api
-      match:
-        path:
-          prefix: /logout
-    - component:
-        name: api
-      match:
-        path:
-          prefix: /calculator-data
-    - component:
-        name: api
-      match:
-        path:
-          prefix: /media
-    - component:
-        name: api
-      match:
-        path:
-          prefix: /teamtrialranks
-    - component:
-        name: api
-      match:
-        path:
-          prefix: /clubranks
-    - component:
-        name: api
-      match:
-        path:
-          prefix: /championsmeetingranks
-    - component:
-        name: frontend
-      match:
-        path:
-          prefix: /
+  - component:
+      name: calculatorproject
+    match:
+      path:
+        prefix: /api
+  - component:
+      name: calculatorcapstoneclient
+    match:
+      path:
+        prefix: /
+  - component:
+      name: calculatorproject
+      preserve_path_prefix: true
+    match:
+      path:
+        prefix: /admin
+  - component:
+      name: calculatorproject
+      preserve_path_prefix: true
+    match:
+      path:
+        prefix: /static
+name: umamusme-calculator
+region: nyc
+services:
+- build_command: pip install -r requirements.txt && python manage.py collectstatic --noinput
+  environment_slug: python
+  envs:
+  - key: DATABASE_URL
+    scope: RUN_TIME
+    value: ${dev-db-462490.DATABASE_URL}
+  - key: DJANGO_SECRET_KEY
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+    value: ""  # Set this in the DigitalOcean dashboard — never commit the real value
+  - key: DJANGO_ALLOWED_HOSTS
+    scope: RUN_AND_BUILD_TIME
+    value: umamusme-calculator-7zdcg.ondigitalocean.app
+  github:
+    branch: master
+    deploy_on_push: true
+    repo: charlesmerriman/calculatorproject
+  http_port: 8080
+  instance_count: 1
+  instance_size_slug: apps-s-1vcpu-0.5gb
+  name: calculatorproject
+  run_command: python manage.py migrate && gunicorn calculatorproject.wsgi:application --bind 0.0.0.0:8080
+  source_dir: /
+static_sites:
+- build_command: npm install && npm run build
+  environment_slug: node-js
+  envs:
+  - key: VITE_API_URL
+    scope: BUILD_TIME
+    value: https://umamusme-calculator-7zdcg.ondigitalocean.app/api
+  github:
+    branch: master
+    deploy_on_push: true
+    repo: charlesmerriman/calculatorcapstoneclient
+  name: calculatorcapstoneclient
+  output_dir: dist
+  source_dir: /

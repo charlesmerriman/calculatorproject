@@ -2,6 +2,7 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import permissions, status
+from django.db import transaction
 from django.db.models.functions import Coalesce
 from django.db.models import F
 from calculatorapi.models import (
@@ -70,36 +71,39 @@ class CalculatorViewSet(ViewSet):
     def update_calculator_data(self, request):
         user = request.user
 
-        user_stats_data = request.data.get("user_stats_data")
-        if user_stats_data:
-            user_stats_serializer = UserStatsSerializer(user, data=user_stats_data, partial=True)
-            if user_stats_serializer.is_valid():
-                user_stats_serializer.save()
-            else:
-                return Response(user_stats_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Wrap everything in a transaction so a mid-update failure doesn't
+        # leave stats saved but banners half-updated (or vice versa).
+        with transaction.atomic():
+            user_stats_data = request.data.get("user_stats_data")
+            if user_stats_data:
+                user_stats_serializer = UserStatsSerializer(user, data=user_stats_data, partial=True)
+                if user_stats_serializer.is_valid():
+                    user_stats_serializer.save()
+                else:
+                    return Response(user_stats_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        user_planned_banner_data = request.data.get("user_planned_banner_data")
-        if user_planned_banner_data is not None:
-            incoming_ids = [b["id"] for b in user_planned_banner_data if "id" in b]
-            UserPlannedBanner.objects.filter(user=user).exclude(id__in=incoming_ids).delete()
+            user_planned_banner_data = request.data.get("user_planned_banner_data")
+            if user_planned_banner_data is not None:
+                incoming_ids = [b["id"] for b in user_planned_banner_data if "id" in b]
+                UserPlannedBanner.objects.filter(user=user).exclude(id__in=incoming_ids).delete()
 
-            for banner_data in user_planned_banner_data:
-                banner_id = banner_data.get("id")
-                if banner_id:
-                    try:
-                        banner = UserPlannedBanner.objects.get(id=banner_id, user=user)
-                        serializer = UserPlannedBannerSerializer(banner, data=banner_data, partial=True)
+                for banner_data in user_planned_banner_data:
+                    banner_id = banner_data.get("id")
+                    if banner_id:
+                        try:
+                            banner = UserPlannedBanner.objects.get(id=banner_id, user=user)
+                            serializer = UserPlannedBannerSerializer(banner, data=banner_data, partial=True)
+                            if serializer.is_valid():
+                                serializer.save()
+                            else:
+                                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                        except UserPlannedBanner.DoesNotExist:
+                            return Response({"error": "Banner not found"}, status=status.HTTP_404_NOT_FOUND)
+                    else:
+                        serializer = UserPlannedBannerSerializer(data=banner_data)
                         if serializer.is_valid():
-                            serializer.save()
+                            serializer.save(user=user)
                         else:
                             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                    except UserPlannedBanner.DoesNotExist:
-                        return Response({"error": "Banner not found"}, status=status.HTTP_404_NOT_FOUND)
-                else:
-                    serializer = UserPlannedBannerSerializer(data=banner_data)
-                    if serializer.is_valid():
-                        serializer.save(user=user)
-                    else:
-                        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({"message": "Data updated successfully"}, status=status.HTTP_200_OK)
