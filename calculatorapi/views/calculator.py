@@ -10,10 +10,12 @@ from calculatorapi.models import (
     UserPlannedBanner, BannerUma, BannerSupport,
     ChampionsMeeting, LeagueOfHeroes, GameEvent, BannerTimeline
 )
-from calculatorapi.views.club_rank import ClubRankSerializer
-from calculatorapi.views.team_trials_rank import TeamTrialsRankSerializer
-from calculatorapi.views.champions_meeting_rank import ChampionsMeetingRankSerializer
-from calculatorapi.views.league_of_heroes_rank import LeagueOfHeroesRankSerializer
+from calculatorapi.views.rank_viewsets import (
+    ClubRankSerializer,
+    TeamTrialsRankSerializer,
+    ChampionsMeetingRankSerializer,
+    LeagueOfHeroesRankSerializer,
+)
 from calculatorapi.views.user_planned_banner import UserPlannedBannerSerializer
 from calculatorapi.views.user import UserStatsSerializer
 from calculatorapi.views.banner_uma import BannerUmaSerializer
