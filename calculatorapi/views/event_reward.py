@@ -1,6 +1,6 @@
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
-from rest_framework import serializers, status
+from rest_framework import serializers, status, permissions
 from calculatorapi.models import EventReward
 
 
@@ -23,6 +23,12 @@ class EventRewardsSerializer(serializers.ModelSerializer):
 
 
 class EventRewardViewSet(ViewSet):
+    def get_permissions(self):
+        # create/update/destroy are admin-only; list/retrieve are open to any authenticated user
+        if self.action in ("create", "update", "destroy"):
+            return [permissions.IsAdminUser()]
+        return [permissions.IsAuthenticated()]
+
     def list(self, request):
         rewards = EventReward.objects.all()
         event_id = request.query_params.get("event_id")
