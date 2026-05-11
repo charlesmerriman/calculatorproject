@@ -1,5 +1,12 @@
 from django.contrib import admin
-from .models import *
+from .models import (
+    CustomUser, Uma, SupportCard, UserPlannedBanner,
+    TeamTrialsRank, ClubRank, ChampionsMeetingRank,
+    BannerTimeline, BannerUma, BannerSupport,
+    ChampionsMeeting, ChampionsMeetingUmaRecommendation,
+    SupportsOnSupportBanner, UmasOnUmaBanner,
+    EventReward, LeagueOfHeroes,
+)
 
 # Register your models here.
 admin.site.register(CustomUser)

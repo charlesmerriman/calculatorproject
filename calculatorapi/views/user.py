@@ -9,10 +9,11 @@ from calculatorapi.models import ClubRank, TeamTrialsRank, ChampionsMeetingRank,
 
 
 class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, min_length=8)
+
     class Meta:
         model = User
         fields = ["id", "username", "password", "first_name", "last_name", "email"]
-        extra_kwargs = {"password": {"write_only": True}}
 
 
 class UserStatsSerializer(serializers.ModelSerializer):
@@ -50,7 +51,7 @@ def register_account(request):
             password=serializer.validated_data["password"],
             email=serializer.validated_data["email"],
         )
-        token, created = Token.objects.get_or_create(user=user)
+        token, _created = Token.objects.get_or_create(user=user)
         return Response({"token": token.key}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -62,7 +63,7 @@ def user_login(request):
     password = request.data.get("password")
     user = authenticate(username=username, password=password)
     if user:
-        token, created = Token.objects.get_or_create(user=user)
+        token, _created = Token.objects.get_or_create(user=user)
         return Response({"token": token.key}, status=status.HTTP_200_OK)
     return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
 

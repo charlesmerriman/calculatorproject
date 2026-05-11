@@ -36,9 +36,9 @@ class UserPlannedBannerSerializer(serializers.ModelSerializer):
             ).data
         return representation
 
-    def validate(self, data):
-        banner_uma = data.get("banner_uma")
-        banner_support = data.get("banner_support")
+    def validate(self, attrs):
+        banner_uma = attrs.get("banner_uma")
+        banner_support = attrs.get("banner_support")
 
         if not banner_uma and not banner_support:
             raise serializers.ValidationError(
@@ -49,4 +49,4 @@ class UserPlannedBannerSerializer(serializers.ModelSerializer):
                 "Cannot provide both banner_uma and banner_support."
             )
 
-        return data
+        return attrs
