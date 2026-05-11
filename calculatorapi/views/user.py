@@ -50,7 +50,7 @@ def register_account(request):
             password=serializer.validated_data["password"],
             email=serializer.validated_data["email"],
         )
-        token, created = Token.objects.get_or_create(user=user)
+        token, _created = Token.objects.get_or_create(user=user)
         return Response({"token": token.key}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -62,7 +62,7 @@ def user_login(request):
     password = request.data.get("password")
     user = authenticate(username=username, password=password)
     if user:
-        token, created = Token.objects.get_or_create(user=user)
+        token, _created = Token.objects.get_or_create(user=user)
         return Response({"token": token.key}, status=status.HTTP_200_OK)
     return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
 

@@ -8,4 +8,3 @@ class BannerTimeline(models.Model):
 
     def __str__(self):
         return str(self.name) if self.name else "Unnamed Timeline"
-    
