@@ -29,12 +29,14 @@ If the user enables the **Daily Carat** toggle, an additional **50 carats/day** 
 
 ## Training Pass (monthly, day 24)
 
+> **Available from August 15, 2027.** No training pass income is projected for any period before this date — neither the paid reward nor the free tier.
+
 | State | Income |
 |---|---|
 | Training pass active | **+2,200 carats** on the 24th of each month |
-| No training pass | **+500 carats** per calendar month (flat base) |
+| No training pass | **+500 carats** per calendar month (free tier) |
 
-The 500-carat figure is a floor monthly reward that applies regardless of training pass status when the pass is inactive. Every user receives one or the other each month.
+The 500-carat figure is the free tier of the Training Pass — it applies to all accounts once the feature launches, regardless of whether the paid pass is active.
 
 ---
 
