@@ -1,11 +1,13 @@
 [FORMAT]
   good-names=i,j,ex,pk
+  max-line-length=120
 
 [MESSAGES CONTROL]
-  disable=broad-except,imported-auth-user,missing-class-docstring,no-self-use,abstract-method
+  disable=broad-except,imported-auth-user,missing-class-docstring,abstract-method,C0116
 
 [MASTER]
   load-plugins=pylint_django
   django-settings-module=calculatorproject.settings
+  ignore-paths=.*/migrations/.*
   disable=C0114,
 

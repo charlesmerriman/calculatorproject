@@ -1,13 +1,15 @@
+import datetime
+
 from django.test import TestCase
-from rest_framework.test import APIClient
+from django.utils import timezone
 from rest_framework.authtoken.models import Token
+from rest_framework.test import APIClient
+
 from calculatorapi.models import (
     CustomUser,
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
     BannerTimeline, BannerUma, BannerSupport, UserPlannedBanner,
 )
-from django.utils import timezone
-import datetime
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -132,7 +134,7 @@ class AuthTests(TestCase):
 
     def test_logout_returns_200_and_deletes_token(self):
         user = make_user()
-        client, token = auth_client(user)
+        client, _token = auth_client(user)
         res = client.post('/logout')
         self.assertEqual(res.status_code, 200)
         self.assertFalse(Token.objects.filter(user=user).exists())
