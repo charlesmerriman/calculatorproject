@@ -9,10 +9,11 @@ from calculatorapi.models import ClubRank, TeamTrialsRank, ChampionsMeetingRank,
 
 
 class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, min_length=8)
+
     class Meta:
         model = User
         fields = ["id", "username", "password", "first_name", "last_name", "email"]
-        extra_kwargs = {"password": {"write_only": True}}
 
 
 class UserStatsSerializer(serializers.ModelSerializer):
