@@ -3,7 +3,7 @@ from .game_event import GameEvent
 
 class EventReward(models.Model):
     event = models.ForeignKey(GameEvent, on_delete=models.CASCADE, related_name='rewards', null=True, blank=True)
-    name = models.CharField(max_length=255, null=False)
+    name = models.CharField(max_length=500, null=False)
     carat_amount = models.IntegerField(default=0)
     support_ticket_amount = models.IntegerField(default=0)
     uma_ticket_amount = models.IntegerField(default=0)
