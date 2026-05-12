@@ -8,15 +8,21 @@ from calculatorapi.models import (
 )
 
 _RANK_FIELDS = ("id", "name", "income_amount")
+# CM and LoH ranks also award tickets and shards per event.
+_COMPETITIVE_RANK_FIELDS = (
+    "id", "name", "income_amount",
+    "uma_ticket_amount", "support_ticket_amount",
+    "ssr_shard_amount", "sr_shard_amount",
+)
 
 
-def _make_rank_serializer(model):
+def _make_rank_serializer(model, fields=_RANK_FIELDS):
     """Return a ModelSerializer class for the given rank model.
 
     Uses type() to build the Meta class before the serializer class so that
     DRF's metaclass sees a fully-configured Meta at class-creation time.
     """
-    meta = type("Meta", (), {"model": model, "fields": _RANK_FIELDS})
+    meta = type("Meta", (), {"model": model, "fields": fields})
     return type(
         f"{model.__name__}Serializer",
         (serializers.ModelSerializer,),
@@ -40,8 +46,8 @@ def _make_rank_viewset(model, serializer_class):
 
 ClubRankSerializer = _make_rank_serializer(ClubRank)
 TeamTrialsRankSerializer = _make_rank_serializer(TeamTrialsRank)
-ChampionsMeetingRankSerializer = _make_rank_serializer(ChampionsMeetingRank)
-LeagueOfHeroesRankSerializer = _make_rank_serializer(LeagueOfHeroesRank)
+ChampionsMeetingRankSerializer = _make_rank_serializer(ChampionsMeetingRank, _COMPETITIVE_RANK_FIELDS)
+LeagueOfHeroesRankSerializer = _make_rank_serializer(LeagueOfHeroesRank, _COMPETITIVE_RANK_FIELDS)
 
 ClubRankViewSet = _make_rank_viewset(ClubRank, ClubRankSerializer)
 TeamTrialsRankViewSet = _make_rank_viewset(TeamTrialsRank, TeamTrialsRankSerializer)
