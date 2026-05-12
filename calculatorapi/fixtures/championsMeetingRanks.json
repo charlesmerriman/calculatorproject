@@ -4,7 +4,11 @@
         "pk": 1,
         "fields": {
             "name": "Champion",
-            "income_amount": 3300
+            "income_amount": 3300,
+            "uma_ticket_amount": 5,
+            "support_ticket_amount": 5,
+            "ssr_shard_amount": 0,
+            "sr_shard_amount": 0
         }
     },
     {
@@ -12,7 +16,11 @@
         "pk": 2,
         "fields": {
             "name": "Second",
-            "income_amount": 2400
+            "income_amount": 2400,
+            "uma_ticket_amount": 4,
+            "support_ticket_amount": 4,
+            "ssr_shard_amount": 0,
+            "sr_shard_amount": 0
         }
     },
     {
@@ -20,7 +28,11 @@
         "pk": 3,
         "fields": {
             "name": "Third",
-            "income_amount": 1700
+            "income_amount": 1700,
+            "uma_ticket_amount": 3,
+            "support_ticket_amount": 3,
+            "ssr_shard_amount": 0,
+            "sr_shard_amount": 0
         }
     },
     {
@@ -28,7 +40,11 @@
         "pk": 4,
         "fields": {
             "name": "Group B 1st",
-            "income_amount": 1600
+            "income_amount": 1600,
+            "uma_ticket_amount": 3,
+            "support_ticket_amount": 3,
+            "ssr_shard_amount": 0,
+            "sr_shard_amount": 0
         }
     },
     {
@@ -36,7 +52,11 @@
         "pk": 5,
         "fields": {
             "name": "Group B 2nd",
-            "income_amount": 1250
+            "income_amount": 1250,
+            "uma_ticket_amount": 2,
+            "support_ticket_amount": 2,
+            "ssr_shard_amount": 0,
+            "sr_shard_amount": 0
         }
     },
     {
@@ -44,7 +64,11 @@
         "pk": 6,
         "fields": {
             "name": "Open League",
-            "income_amount": 1100
+            "income_amount": 1100,
+            "uma_ticket_amount": 3,
+            "support_ticket_amount": 3,
+            "ssr_shard_amount": 0,
+            "sr_shard_amount": 0
         }
     }
 ]
