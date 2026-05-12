@@ -55,7 +55,7 @@ services:
   instance_count: 1
   instance_size_slug: apps-s-1vcpu-0.5gb
   name: calculatorproject
-  run_command: python manage.py migrate && python manage.py loaddata calculatorapi/fixtures/clubRanks.json && gunicorn calculatorproject.wsgi:application --bind 0.0.0.0:8080
+  run_command: python manage.py migrate && gunicorn calculatorproject.wsgi:application --bind 0.0.0.0:8080
   source_dir: /
 static_sites:
 - build_command: npm install && npm run build
