@@ -1,0 +1,2002 @@
+[
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 1,
+    "fields": {
+      "name": "Special Week + Silence Suzuka + Tokai Teio + Maruzensky + Oguri Cap + Taiki Shuttle + Mejiro McQueen + Symboli Rudolf + Rice Shower",
+      "image": null,
+      "start_date": "2025-06-26T00:00:00Z",
+      "end_date": "2025-07-02T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 2,
+    "fields": {
+      "name": "T.M. Opera",
+      "image": null,
+      "start_date": "2025-06-26T00:00:00Z",
+      "end_date": "2025-07-03T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 3,
+    "fields": {
+      "name": "Mihono Bourbon",
+      "image": null,
+      "start_date": "2025-07-02T00:00:00Z",
+      "end_date": "2025-07-11T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 4,
+    "fields": {
+      "name": "Biwa Hayahide",
+      "image": null,
+      "start_date": "2025-07-10T00:00:00Z",
+      "end_date": "2025-07-22T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 5,
+    "fields": {
+      "name": "Tokai Teio + Mejiro Mcqueen",
+      "image": null,
+      "start_date": "2025-07-16T00:00:00Z",
+      "end_date": "2025-08-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 6,
+    "fields": {
+      "name": "Curren Chan",
+      "image": null,
+      "start_date": "2025-07-27T00:00:00Z",
+      "end_date": "2025-08-07T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 7,
+    "fields": {
+      "name": "Narita Taishin",
+      "image": null,
+      "start_date": "2025-08-03T00:00:00Z",
+      "end_date": "2025-08-13T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 8,
+    "fields": {
+      "name": "Smart Falcon",
+      "image": null,
+      "start_date": "2025-08-11T00:00:00Z",
+      "end_date": "2025-08-22T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 9,
+    "fields": {
+      "name": "Narita Brian",
+      "image": null,
+      "start_date": "2025-08-20T00:00:00Z",
+      "end_date": "2025-08-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 10,
+    "fields": {
+      "name": "Air Groove (Wedding) + Mayano Top Gun (Wedding)",
+      "image": null,
+      "start_date": "2025-08-28T00:00:00Z",
+      "end_date": "2025-09-10T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 11,
+    "fields": {
+      "name": "Seiun Sky",
+      "image": null,
+      "start_date": "2025-09-07T00:00:00Z",
+      "end_date": "2025-09-18T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 12,
+    "fields": {
+      "name": "Hishi Amazon",
+      "image": null,
+      "start_date": "2025-09-17T00:00:00Z",
+      "end_date": "2025-09-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 13,
+    "fields": {
+      "name": "Grass Wonder (Fantasy) + El Condor Pasa (Fantasy)",
+      "image": null,
+      "start_date": "2025-09-21T00:00:00Z",
+      "end_date": "2025-10-04T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 14,
+    "fields": {
+      "name": "Fuji Kiseki",
+      "image": null,
+      "start_date": "2025-10-02T00:00:00Z",
+      "end_date": "2025-10-10T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 15,
+    "fields": {
+      "name": "Gold City",
+      "image": null,
+      "start_date": "2025-10-07T00:00:00Z",
+      "end_date": "2025-10-16T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 16,
+    "fields": {
+      "name": "Special Week (Summer) + Maruzensky (Summer)",
+      "image": null,
+      "start_date": "2025-10-14T00:00:00Z",
+      "end_date": "2025-10-27T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 17,
+    "fields": {
+      "name": "Meisho Doto",
+      "image": null,
+      "start_date": "2025-10-21T00:00:00Z",
+      "end_date": "2025-10-30T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 18,
+    "fields": {
+      "name": "Eishin Flash",
+      "image": null,
+      "start_date": "2025-10-30T00:00:00Z",
+      "end_date": "2025-11-09T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 19,
+    "fields": {
+      "name": "Matikanefukukitaru (Full Armor)",
+      "image": null,
+      "start_date": "2025-11-06T00:00:00Z",
+      "end_date": "2025-11-17T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 20,
+    "fields": {
+      "name": "Hishi Akebono",
+      "image": null,
+      "start_date": "2025-11-11T00:00:00Z",
+      "end_date": "2025-11-21T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 21,
+    "fields": {
+      "name": "Agnes Digital",
+      "image": null,
+      "start_date": "2025-11-19T00:00:00Z",
+      "end_date": "2025-11-28T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 22,
+    "fields": {
+      "name": "Rice Shower (Halloween) + Super Creek (Halloween)",
+      "image": null,
+      "start_date": "2025-11-24T00:00:00Z",
+      "end_date": "2025-12-06T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 23,
+    "fields": {
+      "name": "Kawakami Princess♡",
+      "image": null,
+      "start_date": "2025-12-01T00:00:00Z",
+      "end_date": "2025-12-10T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 24,
+    "fields": {
+      "name": "Manhattan Cafe",
+      "image": null,
+      "start_date": "2025-12-08T00:00:00Z",
+      "end_date": "2025-12-16T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 25,
+    "fields": {
+      "name": "Symboli Rudolf (Festival) + Gold City (Festival)",
+      "image": null,
+      "start_date": "2025-12-14T00:00:00Z",
+      "end_date": "2025-12-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 26,
+    "fields": {
+      "name": "Tosen Jordan",
+      "image": null,
+      "start_date": "2025-12-18T00:00:00Z",
+      "end_date": "2025-12-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 27,
+    "fields": {
+      "name": "Mejiro Dober",
+      "image": null,
+      "start_date": "2025-12-28T00:00:00Z",
+      "end_date": "2026-01-07T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 28,
+    "fields": {
+      "name": "Oguri Cap (Christmas) + Biwa Hayahide (Christmas)",
+      "image": null,
+      "start_date": "2026-01-05T00:00:00Z",
+      "end_date": "2026-01-20T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 29,
+    "fields": {
+      "name": "Fine Motion",
+      "image": null,
+      "start_date": "2026-01-15T00:00:00Z",
+      "end_date": "2026-01-23T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 30,
+    "fields": {
+      "name": "Tamamo Cross",
+      "image": null,
+      "start_date": "2026-01-22T00:00:00Z",
+      "end_date": "2026-01-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 31,
+    "fields": {
+      "name": "Haru Urara (New Year) + TM Opera O (New Year)",
+      "image": null,
+      "start_date": "2026-01-29T00:00:00Z",
+      "end_date": "2026-02-09T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 32,
+    "fields": {
+      "name": "(All)",
+      "image": null,
+      "start_date": "2026-02-05T00:00:00Z",
+      "end_date": "2026-02-14T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 33,
+    "fields": {
+      "name": "Sakura Chiyono O",
+      "image": null,
+      "start_date": "2026-02-11T00:00:00Z",
+      "end_date": "2026-02-19T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 34,
+    "fields": {
+      "name": "Mihono Bourbon (Valentine) + Eishin Flash (Valentine)",
+      "image": null,
+      "start_date": "2026-02-18T00:00:00Z",
+      "end_date": "2026-03-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 35,
+    "fields": {
+      "name": "Mejiro Ardan",
+      "image": null,
+      "start_date": "2026-02-25T00:00:00Z",
+      "end_date": "2026-03-05T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 36,
+    "fields": {
+      "name": "Admire Vega",
+      "image": null,
+      "start_date": "2026-03-05T00:00:00Z",
+      "end_date": "2026-03-13T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 37,
+    "fields": {
+      "name": "Kitasan Black + Matikanetannhauser",
+      "image": null,
+      "start_date": "2026-03-12T00:00:00Z",
+      "end_date": "2026-03-23T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 38,
+    "fields": {
+      "name": "Satono Diamond",
+      "image": null,
+      "start_date": "2026-03-22T00:00:00Z",
+      "end_date": "2026-04-02T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 39,
+    "fields": {
+      "name": "Mejiro Bright",
+      "image": null,
+      "start_date": "2026-03-26T00:00:00Z",
+      "end_date": "2026-04-06T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 40,
+    "fields": {
+      "name": "Seiun Sky (Ballroom) + Fuji Kiseki (Ballroom)",
+      "image": null,
+      "start_date": "2026-04-05T00:00:00Z",
+      "end_date": "2026-04-18T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 41,
+    "fields": {
+      "name": "Nishino Flower",
+      "image": null,
+      "start_date": "2026-04-12T00:00:00Z",
+      "end_date": "2026-04-20T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 42,
+    "fields": {
+      "name": "Yaeno Muteki",
+      "image": null,
+      "start_date": "2026-04-20T00:00:00Z",
+      "end_date": "2026-04-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 43,
+    "fields": {
+      "name": "Nice Nature (Cheerleader) + King Halo (Cheerleader)",
+      "image": null,
+      "start_date": "2026-04-26T00:00:00Z",
+      "end_date": "2026-05-08T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 44,
+    "fields": {
+      "name": "Ines Fujin♡",
+      "image": null,
+      "start_date": "2026-04-30T00:00:00Z",
+      "end_date": "2026-05-10T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 45,
+    "fields": {
+      "name": "Mejiro Palmer",
+      "image": null,
+      "start_date": "2026-05-07T00:00:00Z",
+      "end_date": "2026-05-17T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 46,
+    "fields": {
+      "name": "Curren Chan (Wedding) + Fine Motion (Wedding)",
+      "image": null,
+      "start_date": "2026-05-14T00:00:00Z",
+      "end_date": "2026-05-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 47,
+    "fields": {
+      "name": "Inari One",
+      "image": null,
+      "start_date": "2026-05-21T00:00:00Z",
+      "end_date": "2026-05-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 48,
+    "fields": {
+      "name": "Sweep Tosho",
+      "image": null,
+      "start_date": "2026-05-28T00:00:00Z",
+      "end_date": "2026-06-07T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 49,
+    "fields": {
+      "name": "Taiki Shuttle (Camping) + Mejiro Dober (Camping)",
+      "image": null,
+      "start_date": "2026-06-04T00:00:00Z",
+      "end_date": "2026-06-15T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 50,
+    "fields": {
+      "name": "Air Shakur",
+      "image": null,
+      "start_date": "2026-06-12T00:00:00Z",
+      "end_date": "2026-06-21T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 51,
+    "fields": {
+      "name": "Seiun Sky (Rerun) + Narita Brian (Rerun)",
+      "image": null,
+      "start_date": "2026-06-18T00:00:00Z",
+      "end_date": "2026-06-27T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 52,
+    "fields": {
+      "name": "Mejiro McQueen (Summer) + Gold Ship (Summer)",
+      "image": null,
+      "start_date": "2026-06-24T00:00:00Z",
+      "end_date": "2026-07-06T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 53,
+    "fields": {
+      "name": "Bamboo Memory",
+      "image": null,
+      "start_date": "2026-07-02T00:00:00Z",
+      "end_date": "2026-07-11T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 54,
+    "fields": {
+      "name": "Copano Rickey",
+      "image": null,
+      "start_date": "2026-07-10T00:00:00Z",
+      "end_date": "2026-07-20T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 55,
+    "fields": {
+      "name": "Smart Falcon (Grand Live)",
+      "image": null,
+      "start_date": "2026-07-14T00:00:00Z",
+      "end_date": "2026-08-02T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 56,
+    "fields": {
+      "name": "Winning Ticket (Steampunk) + Narita Taishin (Steampunk)",
+      "image": null,
+      "start_date": "2026-07-17T00:00:00Z",
+      "end_date": "2026-07-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 57,
+    "fields": {
+      "name": "Yukino Bijin",
+      "image": null,
+      "start_date": "2026-07-27T00:00:00Z",
+      "end_date": "2026-08-04T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 58,
+    "fields": {
+      "name": "Seeking the Pearl",
+      "image": null,
+      "start_date": "2026-08-02T00:00:00Z",
+      "end_date": "2026-08-11T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 59,
+    "fields": {
+      "name": "Agnes Digital (Halloween) + Meisho Doto (Halloween)",
+      "image": null,
+      "start_date": "2026-08-08T00:00:00Z",
+      "end_date": "2026-08-20T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 60,
+    "fields": {
+      "name": "Aston Machan",
+      "image": null,
+      "start_date": "2026-08-16T00:00:00Z",
+      "end_date": "2026-08-24T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 61,
+    "fields": {
+      "name": "Seeking the Pearl (Rerun)",
+      "image": null,
+      "start_date": "2026-08-20T00:00:00Z",
+      "end_date": "2026-08-27T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 62,
+    "fields": {
+      "name": "Yamanin Zephyr",
+      "image": null,
+      "start_date": "2026-08-22T00:00:00Z",
+      "end_date": "2026-08-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 63,
+    "fields": {
+      "name": "Tamamo Cross (Festival) + Inari One (Festival)",
+      "image": null,
+      "start_date": "2026-08-28T00:00:00Z",
+      "end_date": "2026-09-09T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 64,
+    "fields": {
+      "name": "Nakayama Festa",
+      "image": null,
+      "start_date": "2026-09-05T00:00:00Z",
+      "end_date": "2026-09-13T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 65,
+    "fields": {
+      "name": "Wonder Acute",
+      "image": null,
+      "start_date": "2026-09-10T00:00:00Z",
+      "end_date": "2026-09-21T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 66,
+    "fields": {
+      "name": "Vodka (Christmas) + Daiwa Scarlet (Christmas)",
+      "image": null,
+      "start_date": "2026-09-18T00:00:00Z",
+      "end_date": "2026-10-02T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 67,
+    "fields": {
+      "name": "Zenno Rob Roy",
+      "image": null,
+      "start_date": "2026-09-28T00:00:00Z",
+      "end_date": "2026-10-06T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 68,
+    "fields": {
+      "name": "Narita Brian (Blaze)",
+      "image": null,
+      "start_date": "2026-10-03T00:00:00Z",
+      "end_date": "2026-10-12T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 69,
+    "fields": {
+      "name": "Kitasan Black (New Year) + Satono Diamond (New Year)",
+      "image": null,
+      "start_date": "2026-10-09T00:00:00Z",
+      "end_date": "2026-10-21T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 70,
+    "fields": {
+      "name": "Hokko Tarumae",
+      "image": null,
+      "start_date": "2026-10-18T00:00:00Z",
+      "end_date": "2026-10-28T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 71,
+    "fields": {
+      "name": "Daitaku Helios",
+      "image": null,
+      "start_date": "2026-10-25T00:00:00Z",
+      "end_date": "2026-11-04T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 72,
+    "fields": {
+      "name": "Rice Shower (Halloween) + Haru Urara (New Year)",
+      "image": null,
+      "start_date": "2026-10-25T00:00:00Z",
+      "end_date": "2026-11-04T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 73,
+    "fields": {
+      "name": "Ines Fujin (Valentine) + Mejiro Ryan (Valentine)",
+      "image": null,
+      "start_date": "2026-10-31T00:00:00Z",
+      "end_date": "2026-11-14T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 74,
+    "fields": {
+      "name": "Shinko Windy",
+      "image": null,
+      "start_date": "2026-11-10T00:00:00Z",
+      "end_date": "2026-11-21T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 75,
+    "fields": {
+      "name": "Mr. C.B. + Twin Turbo",
+      "image": null,
+      "start_date": "2026-11-20T00:00:00Z",
+      "end_date": "2026-12-14T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 76,
+    "fields": {
+      "name": "Daiichi Ruby",
+      "image": null,
+      "start_date": "2026-12-01T00:00:00Z",
+      "end_date": "2026-12-11T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 77,
+    "fields": {
+      "name": "Symboli Kris S",
+      "image": null,
+      "start_date": "2026-12-08T00:00:00Z",
+      "end_date": "2026-12-17T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 78,
+    "fields": {
+      "name": "Mejiro Ardan (Ballroom) + Sakura Chiyono O (Ballroom)",
+      "image": null,
+      "start_date": "2026-12-14T00:00:00Z",
+      "end_date": "2026-12-26T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 79,
+    "fields": {
+      "name": "Sakura Laurel",
+      "image": null,
+      "start_date": "2026-12-22T00:00:00Z",
+      "end_date": "2026-12-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 80,
+    "fields": {
+      "name": "Neo Universe",
+      "image": null,
+      "start_date": "2026-12-29T00:00:00Z",
+      "end_date": "2027-01-07T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 81,
+    "fields": {
+      "name": "Matikanetannhauser (Sports Festival) + Sakura Bakushin O (Sports Festival)",
+      "image": null,
+      "start_date": "2027-01-04T00:00:00Z",
+      "end_date": "2027-01-16T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 82,
+    "fields": {
+      "name": "Gold City + Tosen Jordan + Mejiro Palmer + Daitaku Helios",
+      "image": null,
+      "start_date": "2027-01-04T00:00:00Z",
+      "end_date": "2027-01-16T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 83,
+    "fields": {
+      "name": "Hishi Miracle",
+      "image": null,
+      "start_date": "2027-01-12T00:00:00Z",
+      "end_date": "2027-01-21T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 84,
+    "fields": {
+      "name": "Champions Meeting 2027-01-13",
+      "image": null,
+      "start_date": "2027-01-13T00:00:00Z",
+      "end_date": "2027-01-19T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 85,
+    "fields": {
+      "name": "Tanino Gimlet",
+      "image": null,
+      "start_date": "2027-01-18T00:00:00Z",
+      "end_date": "2027-01-28T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 86,
+    "fields": {
+      "name": "Hishi Amazon (Wedding) + Nishino Flower (Wedding)",
+      "image": null,
+      "start_date": "2027-01-25T00:00:00Z",
+      "end_date": "2027-02-05T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 87,
+    "fields": {
+      "name": "Taiki Shuttle (Camping) + Yamanin Zephyr (Rerun)",
+      "image": null,
+      "start_date": "2027-02-02T00:00:00Z",
+      "end_date": "2027-02-12T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 88,
+    "fields": {
+      "name": "Marvelous Sunday",
+      "image": null,
+      "start_date": "2027-02-09T00:00:00Z",
+      "end_date": "2027-02-19T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 89,
+    "fields": {
+      "name": "Bamboo Memory (Summer Trip) + Tosen Jordan (Summer Trip)",
+      "image": null,
+      "start_date": "2027-02-15T00:00:00Z",
+      "end_date": "2027-02-26T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 90,
+    "fields": {
+      "name": "Katsuragi Ace",
+      "image": null,
+      "start_date": "2027-02-23T00:00:00Z",
+      "end_date": "2027-03-06T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 91,
+    "fields": {
+      "name": "Champions Meeting 2027-02-25",
+      "image": null,
+      "start_date": "2027-02-25T00:00:00Z",
+      "end_date": "2027-03-03T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 92,
+    "fields": {
+      "name": "Sirius Symboli",
+      "image": null,
+      "start_date": "2027-03-03T00:00:00Z",
+      "end_date": "2027-03-13T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 93,
+    "fields": {
+      "name": "Agnes Tachyon (Summer) + Silence Suzuka (Summer)",
+      "image": null,
+      "start_date": "2027-03-09T00:00:00Z",
+      "end_date": "2027-03-23T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 94,
+    "fields": {
+      "name": "Copano Rickey (Rerun) + Hokko Tarumae (Rerun)",
+      "image": null,
+      "start_date": "2027-03-19T00:00:00Z",
+      "end_date": "2027-03-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 95,
+    "fields": {
+      "name": "Narita Top Road",
+      "image": null,
+      "start_date": "2027-03-28T00:00:00Z",
+      "end_date": "2027-04-15T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 96,
+    "fields": {
+      "name": "Gold Ship (Project L'Arc)",
+      "image": null,
+      "start_date": "2027-04-02T00:00:00Z",
+      "end_date": "2027-04-13T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 97,
+    "fields": {
+      "name": "Satono Diamond (Project L'Arc)",
+      "image": null,
+      "start_date": "2027-04-09T00:00:00Z",
+      "end_date": "2027-04-18T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 98,
+    "fields": {
+      "name": "Champions Meeting 2027-04-11",
+      "image": null,
+      "start_date": "2027-04-11T00:00:00Z",
+      "end_date": "2027-04-17T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 99,
+    "fields": {
+      "name": "K.S.Miracle",
+      "image": null,
+      "start_date": "2027-04-16T00:00:00Z",
+      "end_date": "2027-04-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 100,
+    "fields": {
+      "name": "Air Shakur (Halloween) + Symboli Kris S (Halloween)",
+      "image": null,
+      "start_date": "2027-04-22T00:00:00Z",
+      "end_date": "2027-05-03T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 101,
+    "fields": {
+      "name": "Jungle Pocket + Maruzensky +",
+      "image": null,
+      "start_date": "2027-04-29T00:00:00Z",
+      "end_date": "2027-05-08T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 102,
+    "fields": {
+      "name": "Mejiro Ramonu",
+      "image": null,
+      "start_date": "2027-05-06T00:00:00Z",
+      "end_date": "2027-05-17T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 103,
+    "fields": {
+      "name": "Kawakami Princess (Festival) + Tokai Teio (Festival)",
+      "image": null,
+      "start_date": "2027-05-13T00:00:00Z",
+      "end_date": "2027-05-23T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 104,
+    "fields": {
+      "name": "Mejiro McQueen",
+      "image": null,
+      "start_date": "2027-05-20T00:00:00Z",
+      "end_date": "2027-05-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 105,
+    "fields": {
+      "name": "Champions Meeting 2027-05-22",
+      "image": null,
+      "start_date": "2027-05-22T00:00:00Z",
+      "end_date": "2027-05-28T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 106,
+    "fields": {
+      "name": "Tap Dance City",
+      "image": null,
+      "start_date": "2027-05-28T00:00:00Z",
+      "end_date": "2027-06-07T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 107,
+    "fields": {
+      "name": "Mejiro Palmer (Christmas) + Mejiro Bright (Christmas)",
+      "image": null,
+      "start_date": "2027-06-03T00:00:00Z",
+      "end_date": "2027-06-14T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 108,
+    "fields": {
+      "name": "Satono Crown",
+      "image": null,
+      "start_date": "2027-06-11T00:00:00Z",
+      "end_date": "2027-06-20T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 109,
+    "fields": {
+      "name": "Cheval Grand",
+      "image": null,
+      "start_date": "2027-06-17T00:00:00Z",
+      "end_date": "2027-06-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 110,
+    "fields": {
+      "name": "Kitasan Black (Anime Collab)",
+      "image": null,
+      "start_date": "2027-06-23T00:00:00Z",
+      "end_date": "2027-07-05T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 111,
+    "fields": {
+      "name": "Nice Nature (New Year)",
+      "image": null,
+      "start_date": "2027-07-01T00:00:00Z",
+      "end_date": "2027-07-11T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 112,
+    "fields": {
+      "name": "Champions Meeting 2027-07-03",
+      "image": null,
+      "start_date": "2027-07-03T00:00:00Z",
+      "end_date": "2027-07-09T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 113,
+    "fields": {
+      "name": "Vivlos",
+      "image": null,
+      "start_date": "2027-07-08T00:00:00Z",
+      "end_date": "2027-07-20T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 114,
+    "fields": {
+      "name": "Yukino Bijin (Valentine) + Manhattan Cafe (Valentine)",
+      "image": null,
+      "start_date": "2027-07-16T00:00:00Z",
+      "end_date": "2027-07-30T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 115,
+    "fields": {
+      "name": "Biko Pegasus",
+      "image": null,
+      "start_date": "2027-07-26T00:00:00Z",
+      "end_date": "2027-08-05T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 116,
+    "fields": {
+      "name": "Duramente + Ikuno Dictus",
+      "image": null,
+      "start_date": "2027-08-04T00:00:00Z",
+      "end_date": "2027-08-30T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 117,
+    "fields": {
+      "name": "Transcend",
+      "image": null,
+      "start_date": "2027-08-15T00:00:00Z",
+      "end_date": "2027-08-24T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 118,
+    "fields": {
+      "name": "Rhein Kraft",
+      "image": null,
+      "start_date": "2027-08-21T00:00:00Z",
+      "end_date": "2027-08-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 119,
+    "fields": {
+      "name": "Daiichi Ruby (Ballroom) + Daitaku Helios (Ballroom)",
+      "image": null,
+      "start_date": "2027-08-27T00:00:00Z",
+      "end_date": "2027-09-07T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 120,
+    "fields": {
+      "name": "Winning Ticket (U.A.F.)",
+      "image": null,
+      "start_date": "2027-09-03T00:00:00Z",
+      "end_date": "2027-09-13T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 121,
+    "fields": {
+      "name": "Sounds of Earth",
+      "image": null,
+      "start_date": "2027-09-10T00:00:00Z",
+      "end_date": "2027-09-21T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 122,
+    "fields": {
+      "name": "Super Creek (Warfare) + Yaeno Muteki (Warfare)",
+      "image": null,
+      "start_date": "2027-09-18T00:00:00Z",
+      "end_date": "2027-09-28T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 123,
+    "fields": {
+      "name": "Katsuragi Ace + Sakura Chiyono O + (Ballroom) + Hishi Amazon + (Wedding)",
+      "image": null,
+      "start_date": "2027-09-18T00:00:00Z",
+      "end_date": "2027-09-28T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 124,
+    "fields": {
+      "name": "Agnes Tachyon (Alt Version)",
+      "image": null,
+      "start_date": "2027-09-25T00:00:00Z",
+      "end_date": "2027-10-05T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 125,
+    "fields": {
+      "name": "Champions Meeting 2027-09-27",
+      "image": null,
+      "start_date": "2027-09-27T00:00:00Z",
+      "end_date": "2027-10-03T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 126,
+    "fields": {
+      "name": "North Flight",
+      "image": null,
+      "start_date": "2027-10-01T00:00:00Z",
+      "end_date": "2027-10-11T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 127,
+    "fields": {
+      "name": "King Halo (Wedding) + Sweep Tosho (Wedding)",
+      "image": null,
+      "start_date": "2027-10-08T00:00:00Z",
+      "end_date": "2027-10-22T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 128,
+    "fields": {
+      "name": "Jungle Pocket",
+      "image": null,
+      "start_date": "2027-10-18T00:00:00Z",
+      "end_date": "2027-10-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 129,
+    "fields": {
+      "name": "Dream Journey",
+      "image": null,
+      "start_date": "2027-10-27T00:00:00Z",
+      "end_date": "2027-11-19T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 130,
+    "fields": {
+      "name": "Rice Shower (Great Food Festival)",
+      "image": null,
+      "start_date": "2027-11-05T00:00:00Z",
+      "end_date": "2027-11-15T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 131,
+    "fields": {
+      "name": "Calstone Light O",
+      "image": null,
+      "start_date": "2027-11-12T00:00:00Z",
+      "end_date": "2027-11-22T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 132,
+    "fields": {
+      "name": "Champions Meeting 2027-11-14",
+      "image": null,
+      "start_date": "2027-11-14T00:00:00Z",
+      "end_date": "2027-11-20T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 133,
+    "fields": {
+      "name": "Eishin Flash (Summer Trip) + Hokko Tarumae (Summer Trip)",
+      "image": null,
+      "start_date": "2027-11-19T00:00:00Z",
+      "end_date": "2027-12-05T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 134,
+    "fields": {
+      "name": "(All) 2",
+      "image": null,
+      "start_date": "2027-11-30T00:00:00Z",
+      "end_date": "2027-12-10T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 135,
+    "fields": {
+      "name": "Gentildonna",
+      "image": null,
+      "start_date": "2027-12-09T00:00:00Z",
+      "end_date": "2027-12-26T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 136,
+    "fields": {
+      "name": "Neo Universe (Autumn) + Zenno Rob Roy (Autumn)",
+      "image": null,
+      "start_date": "2027-12-13T00:00:00Z",
+      "end_date": "2027-12-24T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 137,
+    "fields": {
+      "name": "Cesario",
+      "image": null,
+      "start_date": "2027-12-21T00:00:00Z",
+      "end_date": "2028-01-10T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 138,
+    "fields": {
+      "name": "Durandal",
+      "image": null,
+      "start_date": "2027-12-28T00:00:00Z",
+      "end_date": "2028-01-07T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 139,
+    "fields": {
+      "name": "Champions Meeting 2027-12-30",
+      "image": null,
+      "start_date": "2027-12-30T00:00:00Z",
+      "end_date": "2028-01-05T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 140,
+    "fields": {
+      "name": "Seeking the Pearl (Halloween) + Mayano Top Gun (Halloween)",
+      "image": null,
+      "start_date": "2028-01-03T00:00:00Z",
+      "end_date": "2028-01-14T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 141,
+    "fields": {
+      "name": "Bubble Gum Fellow",
+      "image": null,
+      "start_date": "2028-01-11T00:00:00Z",
+      "end_date": "2028-01-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 142,
+    "fields": {
+      "name": "Biwa Hayahide (Mecha)",
+      "image": null,
+      "start_date": "2028-01-23T00:00:00Z",
+      "end_date": "2028-02-12T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 143,
+    "fields": {
+      "name": "Narita Taishin (Mecha)",
+      "image": null,
+      "start_date": "2028-01-30T00:00:00Z",
+      "end_date": "2028-02-09T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 144,
+    "fields": {
+      "name": "Air Messiah",
+      "image": null,
+      "start_date": "2028-02-06T00:00:00Z",
+      "end_date": "2028-02-16T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 145,
+    "fields": {
+      "name": "Champions Meeting 2028-02-08",
+      "image": null,
+      "start_date": "2028-02-08T00:00:00Z",
+      "end_date": "2028-02-14T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 146,
+    "fields": {
+      "name": "Narita Top Road (Christmas) + Admire Vega (Christmas)",
+      "image": null,
+      "start_date": "2028-02-13T00:00:00Z",
+      "end_date": "2028-02-25T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 147,
+    "fields": {
+      "name": "Win Variation",
+      "image": null,
+      "start_date": "2028-02-21T00:00:00Z",
+      "end_date": "2028-03-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 148,
+    "fields": {
+      "name": "Grass Wonder (New Year)",
+      "image": null,
+      "start_date": "2028-02-28T00:00:00Z",
+      "end_date": "2028-03-07T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 149,
+    "fields": {
+      "name": "Katsuragi Ace (New Year) + Mr. C.B. (New Year)",
+      "image": null,
+      "start_date": "2028-03-04T00:00:00Z",
+      "end_date": "2028-03-18T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 150,
+    "fields": {
+      "name": "Maruzensky (New Year)",
+      "image": null,
+      "start_date": "2028-03-14T00:00:00Z",
+      "end_date": "2028-03-24T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 151,
+    "fields": {
+      "name": "Furioso",
+      "image": null,
+      "start_date": "2028-03-21T00:00:00Z",
+      "end_date": "2028-04-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 152,
+    "fields": {
+      "name": "Yamanin Zephyr (Valentine) + Aston Machan (Valentine)",
+      "image": null,
+      "start_date": "2028-03-28T00:00:00Z",
+      "end_date": "2028-04-11T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 153,
+    "fields": {
+      "name": "Tsurumaru Tsuyoshi",
+      "image": null,
+      "start_date": "2028-04-07T00:00:00Z",
+      "end_date": "2028-04-17T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 154,
+    "fields": {
+      "name": "Champions Meeting 2028-04-08",
+      "image": null,
+      "start_date": "2028-04-08T00:00:00Z",
+      "end_date": "2028-04-17T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 155,
+    "fields": {
+      "name": "Orfevre",
+      "image": null,
+      "start_date": "2028-04-16T00:00:00Z",
+      "end_date": "2028-05-11T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 156,
+    "fields": {
+      "name": "Gran Alegria",
+      "image": null,
+      "start_date": "2028-04-27T00:00:00Z",
+      "end_date": "2028-05-07T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 157,
+    "fields": {
+      "name": "No Reason",
+      "image": null,
+      "start_date": "2028-05-04T00:00:00Z",
+      "end_date": "2028-05-14T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 158,
+    "fields": {
+      "name": "Tap Dance City (Ballroom) + Tanino Gimlet (Ballroom)",
+      "image": null,
+      "start_date": "2028-05-11T00:00:00Z",
+      "end_date": "2028-05-21T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 159,
+    "fields": {
+      "name": "Sirius Symboli (The Twinkle Legends)",
+      "image": null,
+      "start_date": "2028-05-18T00:00:00Z",
+      "end_date": "2028-05-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 160,
+    "fields": {
+      "name": "Fenomeno",
+      "image": null,
+      "start_date": "2028-05-25T00:00:00Z",
+      "end_date": "2028-06-03T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 161,
+    "fields": {
+      "name": "Copano Rickey (Parade) + Smart Falcon (Parade)",
+      "image": null,
+      "start_date": "2028-05-31T00:00:00Z",
+      "end_date": "2028-06-12T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 162,
+    "fields": {
+      "name": "Oguri Cap + (Christmas) + Gold Ship + (Summer) + (Project L'Arc) + Mejiro McQueen + (Summer) + (Anime Collab) + Tamamo Cross + (Festival) + Curren Chan + (Wedding) + Seiun Sky + (Ballroom) + Hishi Miracle + Biwa Hayahide + (Christmas) + (Mecha)",
+      "image": null,
+      "start_date": "2028-05-31T00:00:00Z",
+      "end_date": "2028-06-21T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 163,
+    "fields": {
+      "name": "Verxina",
+      "image": null,
+      "start_date": "2028-06-09T00:00:00Z",
+      "end_date": "2028-06-18T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 164,
+    "fields": {
+      "name": "Loves Only You",
+      "image": null,
+      "start_date": "2028-06-15T00:00:00Z",
+      "end_date": "2028-06-24T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 165,
+    "fields": {
+      "name": "Champions Meeting 2028-06-17",
+      "image": null,
+      "start_date": "2028-06-17T00:00:00Z",
+      "end_date": "2028-06-26T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 166,
+    "fields": {
+      "name": "Cesario (Wedding) + Mejiro Ramonu (Wedding)",
+      "image": null,
+      "start_date": "2028-06-21T00:00:00Z",
+      "end_date": "2028-07-05T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 167,
+    "fields": {
+      "name": "Chrono Genesis",
+      "image": null,
+      "start_date": "2028-07-01T00:00:00Z",
+      "end_date": "2028-07-15T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 168,
+    "fields": {
+      "name": "Gold City (Deserted Island)",
+      "image": null,
+      "start_date": "2028-07-10T00:00:00Z",
+      "end_date": "2028-08-04T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 169,
+    "fields": {
+      "name": "Ines Fujin (Deserted Island)",
+      "image": null,
+      "start_date": "2028-07-20T00:00:00Z",
+      "end_date": "2028-07-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 170,
+    "fields": {
+      "name": "Fusaichi Pandora",
+      "image": null,
+      "start_date": "2028-07-28T00:00:00Z",
+      "end_date": "2028-08-06T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 171,
+    "fields": {
+      "name": "Cheval Grand (Summer) + Satono Crown (Summer)",
+      "image": null,
+      "start_date": "2028-08-03T00:00:00Z",
+      "end_date": "2028-08-17T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 172,
+    "fields": {
+      "name": "Vivlos (Summer)",
+      "image": null,
+      "start_date": "2028-08-12T00:00:00Z",
+      "end_date": "2028-08-22T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 173,
+    "fields": {
+      "name": "Champions Meeting 2028-08-13",
+      "image": null,
+      "start_date": "2028-08-13T00:00:00Z",
+      "end_date": "2028-08-22T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 174,
+    "fields": {
+      "name": "Still in Love",
+      "image": null,
+      "start_date": "2028-08-21T00:00:00Z",
+      "end_date": "2028-09-16T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 175,
+    "fields": {
+      "name": "K.S.Miracle (Alt Version) + Hishi Miracle (Alt Version)",
+      "image": null,
+      "start_date": "2028-08-24T00:00:00Z",
+      "end_date": "2028-09-04T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 176,
+    "fields": {
+      "name": "Espoir City",
+      "image": null,
+      "start_date": "2028-09-01T00:00:00Z",
+      "end_date": "2028-09-11T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 177,
+    "fields": {
+      "name": "Believe",
+      "image": null,
+      "start_date": "2028-09-08T00:00:00Z",
+      "end_date": "2028-09-18T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 178,
+    "fields": {
+      "name": "Hishi Akebono (Halloween) + Marvelous Sunday (Halloween)",
+      "image": null,
+      "start_date": "2028-09-15T00:00:00Z",
+      "end_date": "2028-09-26T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 179,
+    "fields": {
+      "name": "Tosen Jordan (Halloween)",
+      "image": null,
+      "start_date": "2028-09-22T00:00:00Z",
+      "end_date": "2028-10-02T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 180,
+    "fields": {
+      "name": "Dantsu Flame",
+      "image": null,
+      "start_date": "2028-09-28T00:00:00Z",
+      "end_date": "2028-10-09T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 181,
+    "fields": {
+      "name": "Jungle Pocket",
+      "image": null,
+      "start_date": "2028-09-28T00:00:00Z",
+      "end_date": "2028-10-09T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 182,
+    "fields": {
+      "name": "Transcend (Onsen)",
+      "image": null,
+      "start_date": "2028-10-05T00:00:00Z",
+      "end_date": "2028-10-26T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 183,
+    "fields": {
+      "name": "Wonder Acute (Onsen)",
+      "image": null,
+      "start_date": "2028-10-14T00:00:00Z",
+      "end_date": "2028-10-23T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 184,
+    "fields": {
+      "name": "Buena Vista",
+      "image": null,
+      "start_date": "2028-10-20T00:00:00Z",
+      "end_date": "2028-10-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 185,
+    "fields": {
+      "name": "Champions Meeting 2028-10-21",
+      "image": null,
+      "start_date": "2028-10-21T00:00:00Z",
+      "end_date": "2028-10-30T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 186,
+    "fields": {
+      "name": "Nakayama Festa (Christmas) + Dream Journey (Christmas)",
+      "image": null,
+      "start_date": "2028-10-26T00:00:00Z",
+      "end_date": "2028-11-08T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 187,
+    "fields": {
+      "name": "Oguri Cap (Anime Collab)",
+      "image": null,
+      "start_date": "2028-11-04T00:00:00Z",
+      "end_date": "2028-12-02T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 188,
+    "fields": {
+      "name": "Stay Gold",
+      "image": null,
+      "start_date": "2028-11-11T00:00:00Z",
+      "end_date": "2028-12-10T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 189,
+    "fields": {
+      "name": "Ikuno Dictus (New Year) + Sakura Laurel (New Year)",
+      "image": null,
+      "start_date": "2028-11-14T00:00:00Z",
+      "end_date": "2028-11-27T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 190,
+    "fields": {
+      "name": "Gentildonna",
+      "image": null,
+      "start_date": "2028-11-18T00:00:00Z",
+      "end_date": "2028-12-06T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 191,
+    "fields": {
+      "name": "Orfevre",
+      "image": null,
+      "start_date": "2028-11-18T00:00:00Z",
+      "end_date": "2028-12-06T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 192,
+    "fields": {
+      "name": "Bubble Gum Fellow (New Year)",
+      "image": null,
+      "start_date": "2028-11-23T00:00:00Z",
+      "end_date": "2028-12-04T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 193,
+    "fields": {
+      "name": "Kiseki",
+      "image": null,
+      "start_date": "2028-12-01T00:00:00Z",
+      "end_date": "2028-12-12T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 194,
+    "fields": {
+      "name": "Taiki Shuttle (Valentine) + Sounds of Earth (Valentine)",
+      "image": null,
+      "start_date": "2028-12-08T00:00:00Z",
+      "end_date": "2028-12-23T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 195,
+    "fields": {
+      "name": "Royce and Royce",
+      "image": null,
+      "start_date": "2028-12-19T00:00:00Z",
+      "end_date": "2028-12-29T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 196,
+    "fields": {
+      "name": "Champions Meeting 2028-12-19",
+      "image": null,
+      "start_date": "2028-12-19T00:00:00Z",
+      "end_date": "2028-12-28T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 197,
+    "fields": {
+      "name": "Almond Eye",
+      "image": null,
+      "start_date": "2028-12-28T00:00:00Z",
+      "end_date": "2029-01-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 198,
+    "fields": {
+      "name": "Event 2029-01-07",
+      "image": null,
+      "start_date": "2029-01-07T00:00:00Z",
+      "end_date": "2029-01-15T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 199,
+    "fields": {
+      "name": "Event 2029-01-13",
+      "image": null,
+      "start_date": "2029-01-13T00:00:00Z",
+      "end_date": "2029-01-24T00:00:00Z"
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 200,
+    "fields": {
+      "name": "Event 2029-01-20",
+      "image": null,
+      "start_date": "2029-01-20T00:00:00Z",
+      "end_date": "2029-01-31T00:00:00Z"
+    }
+  }
+]
