@@ -2,7 +2,7 @@ from django.db import models
 
 class SupportCard(models.Model):
     name = models.CharField(max_length=255)
-    image = models.URLField(blank=True, null=True)
+    image = models.ImageField(upload_to="support_cards/", blank=True, null=True)
     admin_comments = models.TextField(blank=True, null=True)
 
     def __str__(self):

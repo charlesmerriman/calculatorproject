@@ -4,7 +4,7 @@ class BannerTimeline(models.Model):
     name = models.CharField(max_length=255)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
-    image = models.URLField(blank=True, null=True)
+    image = models.ImageField(upload_to="banner_timelines/", blank=True, null=True)
 
     def __str__(self):
         return str(self.name) if self.name else "Unnamed Timeline"

@@ -5,7 +5,7 @@ class ChampionsMeeting(models.Model):
     cm_number = models.IntegerField()
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
-    image = models.URLField(blank=True, null=True)
+    image = models.ImageField(upload_to="champions_meetings/", blank=True, null=True)
     track = models.CharField(max_length=255)
     surface_type = models.CharField(max_length=255)
     distance = models.CharField(max_length=255)

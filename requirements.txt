@@ -28,3 +28,7 @@ uritemplate==4.2.0
 gunicorn
 whitenoise
 psycopg2-binary==2.9.10
+django-storages==1.14.6
+boto3==1.38.23
+Pillow==11.2.1
+python-dotenv==1.1.0

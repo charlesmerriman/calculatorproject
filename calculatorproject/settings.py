@@ -1,6 +1,9 @@
 from pathlib import Path
 import os
 import dj_database_url
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,6 +24,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "drf_spectacular",
     "corsheaders",
+    "storages",
     "calculatorapi",
 ]
 
@@ -97,7 +101,30 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# django-storages: media files go to DigitalOcean Spaces; static files stay on whitenoise.
+# STORAGES replaces the old STATICFILES_STORAGE setting (deprecated in Django 4.2+).
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        "OPTIONS": {
+            "access_key": os.getenv("DO_SPACES_ACCESS_KEY"),
+            "secret_key": os.getenv("DO_SPACES_SECRET_KEY"),
+            "bucket_name": os.getenv("DO_SPACES_BUCKET_NAME"),
+            # Base Spaces endpoint (not the CDN) — boto3 uses this for API calls.
+            "endpoint_url": os.getenv("DO_SPACES_ENDPOINT_URL"),
+            # CDN domain used to build public-facing image URLs (no https:// prefix).
+            "custom_domain": os.getenv("DO_SPACES_CDN_DOMAIN"),
+            "default_acl": "public-read",
+            "file_overwrite": False,
+            # Disable signed query params so CDN URLs are clean and cacheable.
+            "querystring_auth": False,
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
