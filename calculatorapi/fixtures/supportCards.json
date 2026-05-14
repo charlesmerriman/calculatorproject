@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
       "name": "Oguri Cap",
-      "image": "https://lh3.googleusercontent.com/d/1QQjhrCHy_1Le35Qdf_lOkvgzHwTHJqZD",
+      "image": "support_cards/30024-Oguri-Cap-pwr.png",
       "admin_comments": ""
     }
   },
@@ -13,7 +13,7 @@
     "pk": 2,
     "fields": {
       "name": "Twin Turbo",
-      "image": "https://lh3.googleusercontent.com/d/1iMrquBZ5iFmfM3c_Y0b6r9rv826Q893i",
+      "image": "support_cards/30026-Twin-Turbo-spd.png",
       "admin_comments": ""
     }
   },
@@ -22,7 +22,7 @@
     "pk": 3,
     "fields": {
       "name": "Mejiro Palmer",
-      "image": "https://lh3.googleusercontent.com/d/1KGtpSgAy-mYjDsoEvRIYHpzP94Qg5-zl",
+      "image": "support_cards/30027-Mejiro-Palmer-gts.png",
       "admin_comments": ""
     }
   },
@@ -31,7 +31,7 @@
     "pk": 4,
     "fields": {
       "name": "Kitasan Black",
-      "image": "https://lh3.googleusercontent.com/d/18p8Pq2My1KnQBtEvgMrZwCbfb_Vr1Nmi",
+      "image": "support_cards/30028-Kitasan-Black-spd.png",
       "admin_comments": ""
     }
   },
@@ -40,7 +40,7 @@
     "pk": 5,
     "fields": {
       "name": "Satono Diamond",
-      "image": "https://lh3.googleusercontent.com/d/1B35b-4ojXTzOm49HdIH49tMbG16jBzxy",
+      "image": "support_cards/30029-Satono-Diamond-stm.png",
       "admin_comments": ""
     }
   },
@@ -49,7 +49,7 @@
     "pk": 6,
     "fields": {
       "name": "Yukino Bijin",
-      "image": "https://lh3.googleusercontent.com/d/1ynKvJaxkPZpWdkqKyLwBCGGZk_xlgo3M",
+      "image": "support_cards/30031-Yukino-Bijin-wts.png",
       "admin_comments": ""
     }
   },
@@ -58,7 +58,7 @@
     "pk": 7,
     "fields": {
       "name": "Yaeno Muteki",
-      "image": "https://lh3.googleusercontent.com/d/1jIYN77yo2yttypGdp4ToI2Ltb-dkqYls",
+      "image": "support_cards/30032-Yaeno-Muteki-pwr.png",
       "admin_comments": ""
     }
   },
@@ -67,7 +67,7 @@
     "pk": 8,
     "fields": {
       "name": "Super Creek",
-      "image": "https://lh3.googleusercontent.com/d/1Qs1HPT4n9mwzIpmF7QSHeXqrJ8QVhs99",
+      "image": "support_cards/30016-Super-Creek-stm.png",
       "admin_comments": ""
     }
   },
@@ -76,7 +76,7 @@
     "pk": 9,
     "fields": {
       "name": "Tazuna",
-      "image": "https://lh3.googleusercontent.com/d/1e7D4MQwsa5iZ93WNtuMPuwQJpzfmyNwD",
+      "image": "support_cards/30021-Tazuna-Hayakawa-pls.png",
       "admin_comments": ""
     }
   },
@@ -85,7 +85,7 @@
     "pk": 10,
     "fields": {
       "name": "Sakura Chiyono O",
-      "image": "https://lh3.googleusercontent.com/d/1YvTUwt4KuQV2MB5Bj7l0nLWfJ1NYDtwe",
+      "image": "support_cards/30038-Sakura-Chiyono-O-stm.png",
       "admin_comments": ""
     }
   },
@@ -94,7 +94,7 @@
     "pk": 11,
     "fields": {
       "name": "Hishi Akebono",
-      "image": "https://lh3.googleusercontent.com/d/1n4GlsDm_t6daZKTuJ1ha9TZiMtkqvhvs",
+      "image": "support_cards/30040-Hishi-Akebono-gts.png",
       "admin_comments": ""
     }
   },
@@ -103,7 +103,7 @@
     "pk": 12,
     "fields": {
       "name": "Kawakami Princess",
-      "image": "https://lh3.googleusercontent.com/d/12w3wuBfN5PerdiDeGEs5yUtH2uAGSA64",
+      "image": "support_cards/30039-Kawakami-Princess-spd.png",
       "admin_comments": ""
     }
   },
@@ -112,7 +112,7 @@
     "pk": 13,
     "fields": {
       "name": "Silence Suzuka",
-      "image": "https://lh3.googleusercontent.com/d/10YL1KBZ6VlhoUjnCDVJ0FNJmSSWBYmcw",
+      "image": "support_cards/30002-Silence-Suzuka-spd.png",
       "admin_comments": ""
     }
   },
@@ -121,7 +121,7 @@
     "pk": 14,
     "fields": {
       "name": "Tamamo Cross",
-      "image": "https://lh3.googleusercontent.com/d/1S0fi3cu5h1C_TyQ5UO57vCwKoN90oJ8s",
+      "image": "support_cards/30009-Tamamo-Cross-stm.png",
       "admin_comments": ""
     }
   },
@@ -130,7 +130,7 @@
     "pk": 15,
     "fields": {
       "name": "Bamboo Memory",
-      "image": "https://lh3.googleusercontent.com/d/1-46Lhx17COqYdoiTri1nXF5buiU3wIqp",
+      "image": "support_cards/30042-Bamboo-Memory-pwr.png",
       "admin_comments": ""
     }
   },
@@ -139,7 +139,7 @@
     "pk": 16,
     "fields": {
       "name": "King Halo",
-      "image": "https://lh3.googleusercontent.com/d/1SkkOBswFMO9cyKbN1T6PXYzQ7NF1SQYo",
+      "image": "support_cards/30056-King-Halo-pwr.png",
       "admin_comments": ""
     }
   },
@@ -148,7 +148,7 @@
     "pk": 17,
     "fields": {
       "name": "Seiun Sky",
-      "image": "https://lh3.googleusercontent.com/d/1lhY1C-HmQ2TRS4AoA1AXXpqdu4CEUgFG",
+      "image": "support_cards/30008-Seiun-Sky-stm.png",
       "admin_comments": ""
     }
   },
@@ -157,7 +157,7 @@
     "pk": 18,
     "fields": {
       "name": "Mejiro Ryan 30048",
-      "image": "https://lh3.googleusercontent.com/d/19kXvz_ueYYz7uIvRcUKBu23PFC-cmSaw",
+      "image": "support_cards/30048-Mejiro-Ryan-gts.png",
       "admin_comments": ""
     }
   },
@@ -166,7 +166,7 @@
     "pk": 19,
     "fields": {
       "name": "Nishino Flower",
-      "image": "https://lh3.googleusercontent.com/d/1eF_6TwWgou41tbFk1FYwdUbcg0rOwt1X",
+      "image": "support_cards/30018-Nishino-Flower-spd.png",
       "admin_comments": ""
     }
   },
@@ -175,7 +175,7 @@
     "pk": 20,
     "fields": {
       "name": "Vodka",
-      "image": "https://lh3.googleusercontent.com/d/1PzQhe3oKq9poyHjNd62y4UG-0ECuTIHf",
+      "image": "support_cards/30005-Vodka-pwr.png",
       "admin_comments": ""
     }
   },
@@ -184,7 +184,7 @@
     "pk": 21,
     "fields": {
       "name": "Sweep Tosho",
-      "image": "https://lh3.googleusercontent.com/d/1GoFnswjburpf78lpi9iTKMR0l8gS2uud",
+      "image": "support_cards/30045-Sweep-Tosho-spd.png",
       "admin_comments": ""
     }
   },
@@ -193,7 +193,7 @@
     "pk": 22,
     "fields": {
       "name": "Winning Ticket",
-      "image": "https://lh3.googleusercontent.com/d/13tBnnq8GSoJEQHPkuM7loMMxUua0x7ak",
+      "image": "support_cards/30012-Winning-Ticket-gts.png",
       "admin_comments": ""
     }
   },
@@ -202,7 +202,7 @@
     "pk": 23,
     "fields": {
       "name": "Special Week",
-      "image": "https://lh3.googleusercontent.com/d/1-azX_EQYuYY-lUGbBh-wJoW3wi44_9ro",
+      "image": "support_cards/30001-Special-Week-gts.png",
       "admin_comments": ""
     }
   },
@@ -211,7 +211,7 @@
     "pk": 24,
     "fields": {
       "name": "Tokai Teio",
-      "image": "https://lh3.googleusercontent.com/d/13CrIIkmsoyM4PJEn9OUXBZI-OeXn1VJX",
+      "image": "support_cards/30003-Tokai-Teio-spd.png",
       "admin_comments": ""
     }
   },
@@ -220,7 +220,7 @@
     "pk": 25,
     "fields": {
       "name": "Nice Nature",
-      "image": "https://lh3.googleusercontent.com/d/1kmFMyj67FpC2min_PlzE2TyqD3tf3jVm",
+      "image": "support_cards/30054-Nice-Nature-wts.png",
       "admin_comments": ""
     }
   },
@@ -229,7 +229,7 @@
     "pk": 26,
     "fields": {
       "name": "Rice Shower",
-      "image": "https://lh3.googleusercontent.com/d/1BNX29rxDzUlDrC04rJ7aWCtgzceUacez",
+      "image": "support_cards/30023-Rice-Shower-stm.png",
       "admin_comments": ""
     }
   },
@@ -238,7 +238,7 @@
     "pk": 27,
     "fields": {
       "name": "Riko Kashimoto",
-      "image": "https://lh3.googleusercontent.com/d/17PmzkFoyxTvmenTQs2-TPxEUfBx_ILim",
+      "image": "support_cards/30036-Riko-Kashimoto-pls.png",
       "admin_comments": ""
     }
   },
@@ -247,7 +247,7 @@
     "pk": 28,
     "fields": {
       "name": "Sakura Bakushin O",
-      "image": "https://lh3.googleusercontent.com/d/1-DM5Xm8GIX6WHaAsO-zyvclhoU2AIosQ",
+      "image": "support_cards/30015-Sakura-Bakushin-O-spd.png",
       "admin_comments": ""
     }
   },
@@ -256,7 +256,7 @@
     "pk": 29,
     "fields": {
       "name": "Biko Pegasus",
-      "image": "https://lh3.googleusercontent.com/d/1_2K1mY0Tbdx0WytFr0HXYlRXhfwE2AvC",
+      "image": "support_cards/30020-Biko-Pegasus-spd.png",
       "admin_comments": ""
     }
   },
@@ -265,7 +265,7 @@
     "pk": 30,
     "fields": {
       "name": "Ikuno Dictus",
-      "image": "https://lh3.googleusercontent.com/d/1Y5BeW7FZZK039OOuin7yAS5TXkSahzXq",
+      "image": "support_cards/30063-Ikuno-Dictus-gts.png",
       "admin_comments": ""
     }
   },
@@ -274,7 +274,7 @@
     "pk": 31,
     "fields": {
       "name": "Zenno Rob Roy",
-      "image": "https://lh3.googleusercontent.com/d/1PerrFd4TFZktg24a7yxw9iLKECXqyVAM",
+      "image": "support_cards/30065-Zenno-Rob-Roy-spd.png",
       "admin_comments": ""
     }
   },
@@ -283,7 +283,7 @@
     "pk": 32,
     "fields": {
       "name": "Nakayama Festa Stamina",
-      "image": "https://lh3.googleusercontent.com/d/1nayfuAnI6SxOvor73kHGcuo5542GI-MN",
+      "image": "support_cards/30043-Nakayama-Festa-stm.png",
       "admin_comments": ""
     }
   },
@@ -292,7 +292,7 @@
     "pk": 33,
     "fields": {
       "name": "♡Curren Chan♡",
-      "image": "https://lh3.googleusercontent.com/d/13Vw07mw6oS_VGXNKQc-dJOWRGjvw9hsq",
+      "image": "support_cards/30237-Curren-Chan-gts.png",
       "admin_comments": ""
     }
   },
@@ -301,7 +301,7 @@
     "pk": 34,
     "fields": {
       "name": "Narita Brian",
-      "image": "https://lh3.googleusercontent.com/d/1T9T16mJv3mad8QzgxN4QvoUHi3XEtjF1",
+      "image": "support_cards/30044-Narita-Brian-spd.png",
       "admin_comments": ""
     }
   },
@@ -310,7 +310,7 @@
     "pk": 35,
     "fields": {
       "name": "El Condor Pasa",
-      "image": "https://lh3.googleusercontent.com/d/1GDRBw75oVvf5gaiEbuzG3M7Oko96Owr_",
+      "image": "support_cards/30007-El-Condor-Pasa-pwr.png",
       "admin_comments": ""
     }
   },
@@ -319,7 +319,7 @@
     "pk": 36,
     "fields": {
       "name": "Daitaku Helios",
-      "image": "https://lh3.googleusercontent.com/d/1-5zwR9UDGPColjmzKx3h58rFtwKz-pNt",
+      "image": "support_cards/30071-Daitaku-Helios-pwr.png",
       "admin_comments": ""
     }
   },
@@ -328,7 +328,7 @@
     "pk": 37,
     "fields": {
       "name": "Mayano Top Gun",
-      "image": "https://lh3.googleusercontent.com/d/1oSAf3tkXM6m6JQ74j42ahuU5TEhhQvYl",
+      "image": "support_cards/30072-Mayano-Top-Gun-spd.png",
       "admin_comments": ""
     }
   },
@@ -337,7 +337,7 @@
     "pk": 38,
     "fields": {
       "name": "Narita Taishin",
-      "image": "https://lh3.googleusercontent.com/d/1Fxeyb7K0NnYVCt3XhUh4L5HBUEybX83O",
+      "image": "support_cards/30073-Narita-Taishin-wts.png",
       "admin_comments": ""
     }
   },
@@ -346,7 +346,7 @@
     "pk": 39,
     "fields": {
       "name": "Manhattan Cafe 30075",
-      "image": "https://lh3.googleusercontent.com/d/14_dWVgmBqsQuLlwPT-dOU77byoYVGF-2",
+      "image": "support_cards/30075-Manhattan-Cafe-stm.png",
       "admin_comments": ""
     }
   },
@@ -355,7 +355,7 @@
     "pk": 40,
     "fields": {
       "name": "Matikanefukukitaru",
-      "image": "https://lh3.googleusercontent.com/d/14WHcMaTdNPI5ZhCpRJW4OKXpgJ7qPb-n",
+      "image": "support_cards/30078-Matikanefukukitaru-spd.png",
       "admin_comments": ""
     }
   },
@@ -364,7 +364,7 @@
     "pk": 41,
     "fields": {
       "name": "Admire Vega",
-      "image": "https://lh3.googleusercontent.com/d/1XN7yjl-pACWe3Ii9f5wsWXluMD3vGXnc",
+      "image": "support_cards/30077-Admire-Vega-pwr.png",
       "admin_comments": ""
     }
   },
@@ -373,7 +373,7 @@
     "pk": 42,
     "fields": {
       "name": "S. Anshinzawa",
-      "image": "https://lh3.googleusercontent.com/d/1KTiKZtM-AUzD327SD2LUMtgqQbCJX-46",
+      "image": "support_cards/30080-Sasami-Anshinzawa-pls.png",
       "admin_comments": ""
     }
   },
@@ -382,7 +382,7 @@
     "pk": 43,
     "fields": {
       "name": "Agnes Digital",
-      "image": "https://lh3.googleusercontent.com/d/1wIL1yfD0Te_-6rQY2h2IXEkutBajwqJo",
+      "image": "support_cards/30085-Agnes-Digital-pwr.png",
       "admin_comments": ""
     }
   },
@@ -391,7 +391,7 @@
     "pk": 44,
     "fields": {
       "name": "Fine Motion",
-      "image": "https://lh3.googleusercontent.com/d/1MDnlJhfFV8iTLY_GV1WFRZrcuTEF0a_0",
+      "image": "support_cards/30010-Fine-Motion-wts.png",
       "admin_comments": ""
     }
   },
@@ -400,7 +400,7 @@
     "pk": 45,
     "fields": {
       "name": "Narita Top Road",
-      "image": "https://lh3.googleusercontent.com/d/1Pi3vMDmYD4jKY0ITQyp96yPkOcS4vkJN",
+      "image": "support_cards/30086-Narita-Top-Road-spd.png",
       "admin_comments": ""
     }
   },
@@ -409,7 +409,7 @@
     "pk": 46,
     "fields": {
       "name": "Marvelous Sunday",
-      "image": "https://lh3.googleusercontent.com/d/12Fw2p0bOTYGzRBiaJnYlz_bm6own50aK",
+      "image": "support_cards/30074-Marvelous-Sunday-pwr.png",
       "admin_comments": ""
     }
   },
@@ -418,7 +418,7 @@
     "pk": 47,
     "fields": {
       "name": "Curren Chan",
-      "image": "https://lh3.googleusercontent.com/d/13Vw07mw6oS_VGXNKQc-dJOWRGjvw9hsq",
+      "image": "support_cards/30068-Curren-Chan-wts.png",
       "admin_comments": ""
     }
   },
@@ -427,7 +427,7 @@
     "pk": 48,
     "fields": {
       "name": "Symboli Rudolf",
-      "image": "https://lh3.googleusercontent.com/d/1XfasmdUiBwpL7qQDWyggBo0wVbXEss40",
+      "image": "support_cards/30037-Symboli-Rudolf-gts.png",
       "admin_comments": ""
     }
   },
@@ -436,7 +436,7 @@
     "pk": 49,
     "fields": {
       "name": "Sirius Symboli",
-      "image": "https://lh3.googleusercontent.com/d/1WIPe2-BlTwlbHOIOo2VhWwkQ_7h7Of5f",
+      "image": "support_cards/30091-Sirius-Symboli-wts.png",
       "admin_comments": ""
     }
   },
@@ -445,7 +445,7 @@
     "pk": 50,
     "fields": {
       "name": "Daiwa Scarlet ♡",
-      "image": "https://lh3.googleusercontent.com/d/1EhapDPjKVQLWFdAZkI_buNco-DYiPotl",
+      "image": "support_cards/30227-Daiwa-Scarlet-wts.png",
       "admin_comments": ""
     }
   },
@@ -454,7 +454,7 @@
     "pk": 51,
     "fields": {
       "name": "Ines Fujin",
-      "image": "https://lh3.googleusercontent.com/d/1dETAupelyu0QZl0bOd-oCb8-ldSr3o5H",
+      "image": "support_cards/30011-Ines-Fujin-gts.png",
       "admin_comments": ""
     }
   },
@@ -463,7 +463,7 @@
     "pk": 52,
     "fields": {
       "name": "Seeking the Pearl",
-      "image": "https://lh3.googleusercontent.com/d/15_MUo4NKv_D1ENa2yCs8UBqkkbIhtTiM",
+      "image": "support_cards/30095-Seeking-the-Pearl-spd.png",
       "admin_comments": ""
     }
   },
@@ -472,7 +472,7 @@
     "pk": 53,
     "fields": {
       "name": "Mr. C.B.",
-      "image": "https://lh3.googleusercontent.com/d/1pN8Gy9Ufe4YfLBY9KRb0Ho2-5nYgexJH",
+      "image": "support_cards/30097-Mr.-C.B.-wts.png",
       "admin_comments": ""
     }
   },
@@ -481,7 +481,7 @@
     "pk": 54,
     "fields": {
       "name": "Haru Urara",
-      "image": "https://lh3.googleusercontent.com/d/1-Gp4SrAyrMleAq1i9uicvofG3KK3GcVf",
+      "image": "support_cards/30019-Haru-Urara-gts.png",
       "admin_comments": ""
     }
   },
@@ -490,7 +490,7 @@
     "pk": 55,
     "fields": {
       "name": "Taiki Shuttle",
-      "image": "https://lh3.googleusercontent.com/d/1qQT5m-2WYHIn8dJe-VdlTDMMdp_awSXq",
+      "image": "support_cards/30053-Taiki-Shuttle-spd.png",
       "admin_comments": ""
     }
   },
@@ -499,7 +499,7 @@
     "pk": 56,
     "fields": {
       "name": "Matikanetannhauser",
-      "image": "https://lh3.googleusercontent.com/d/1TlK_w0jPeUcGEgg8St-4gzt9EKFvD76u",
+      "image": "support_cards/30030-Matikanetannhauser-gts.png",
       "admin_comments": ""
     }
   },
@@ -508,7 +508,7 @@
     "pk": 57,
     "fields": {
       "name": "Air Groove",
-      "image": "https://lh3.googleusercontent.com/d/1Ywr5S_Tg2YjX6K-5AlVVljNIaWQ6tLB_",
+      "image": "support_cards/30106-Air-Groove-pwr.png",
       "admin_comments": ""
     }
   },
@@ -517,7 +517,7 @@
     "pk": 58,
     "fields": {
       "name": "The Throne's Assemblage",
-      "image": "https://lh3.googleusercontent.com/d/1aWDKqrf-NnFnHhgjKlgpzQPtsjIbFP_-",
+      "image": "support_cards/30067-The-Thrones-Assemblage-frd.png",
       "admin_comments": ""
     }
   },
@@ -526,7 +526,7 @@
     "pk": 59,
     "fields": {
       "name": "Maruzensky",
-      "image": "https://lh3.googleusercontent.com/d/1kFJwKNxBjB9zvLibsjymuWtaads4AmV_",
+      "image": "support_cards/30107-Maruzensky-spd.png",
       "admin_comments": ""
     }
   },
@@ -535,7 +535,7 @@
     "pk": 60,
     "fields": {
       "name": "Nakayama Festa",
-      "image": "https://lh3.googleusercontent.com/d/1nayfuAnI6SxOvor73kHGcuo5542GI-MN",
+      "image": "support_cards/30043-Nakayama-Festa-stm.png",
       "admin_comments": ""
     }
   },
@@ -544,7 +544,7 @@
     "pk": 61,
     "fields": {
       "name": "Manhattan Cafe",
-      "image": "https://lh3.googleusercontent.com/d/1GAV7A058huVBsY9UJyP4XQHsLJNvTKFf",
+      "image": "support_cards/30110-Manhattan-Cafe-stm.png",
       "admin_comments": ""
     }
   },
@@ -553,7 +553,7 @@
     "pk": 62,
     "fields": {
       "name": "Light Hello",
-      "image": "https://lh3.googleusercontent.com/d/1y5u5UFoWky3o0dW5ejlSUE8b7iLMW11X",
+      "image": "support_cards/30052-Light-Hello-pls.png",
       "admin_comments": ""
     }
   },
@@ -562,7 +562,7 @@
     "pk": 63,
     "fields": {
       "name": "Agnes Tachyon",
-      "image": "https://lh3.googleusercontent.com/d/1YNl1w1ew3BNvDS_0Rm9bToQthGfeDIgD",
+      "image": "support_cards/30101-Agnes-Tachyon-spd.png",
       "admin_comments": ""
     }
   },
@@ -571,7 +571,7 @@
     "pk": 64,
     "fields": {
       "name": "Smart Falcon",
-      "image": "https://lh3.googleusercontent.com/d/10i3z9PCAzYwgVE7TCIGO1YJhoSvuExDO",
+      "image": "support_cards/30017-Smart-Falcon-pwr.png",
       "admin_comments": ""
     }
   },
@@ -580,7 +580,7 @@
     "pk": 65,
     "fields": {
       "name": "Daiichi Ruby",
-      "image": "https://lh3.googleusercontent.com/d/1z2vw39CLP7nDwmiVf2WpiAoKTBHh3PSt",
+      "image": "support_cards/30114-Daiichi-Ruby-pwr.png",
       "admin_comments": ""
     }
   },
@@ -589,7 +589,7 @@
     "pk": 66,
     "fields": {
       "name": "Daiichi Ruby (Rerun)",
-      "image": "https://lh3.googleusercontent.com/d/1z2vw39CLP7nDwmiVf2WpiAoKTBHh3PSt",
+      "image": "support_cards/30114-Daiichi-Ruby-pwr.png",
       "admin_comments": ""
     }
   },
@@ -598,7 +598,7 @@
     "pk": 67,
     "fields": {
       "name": "Symboli Kris S Stamina",
-      "image": "https://lh3.googleusercontent.com/d/1w6Jni6FHhxoZD_rBx4jdbqPbiO2fDucp",
+      "image": "support_cards/30118-Symboli-Kris-S-stm.png",
       "admin_comments": ""
     }
   },
@@ -607,7 +607,7 @@
     "pk": 68,
     "fields": {
       "name": "Eishin Flash",
-      "image": "https://lh3.googleusercontent.com/d/11thTfyfOKF1hULVGZMumObbuXiyQdchE",
+      "image": "support_cards/30122-Eishin-Flash-spd.png",
       "admin_comments": ""
     }
   },
@@ -616,7 +616,7 @@
     "pk": 69,
     "fields": {
       "name": "Yamanin Zephyr",
-      "image": "https://lh3.googleusercontent.com/d/1ReI5JdOkcGJ_4_qRmWADKFAncTKu0tFK",
+      "image": "support_cards/30126-Yamanin-Zephyr-gts.png",
       "admin_comments": ""
     }
   },
@@ -625,7 +625,7 @@
     "pk": 70,
     "fields": {
       "name": "K.S.Miracle",
-      "image": "https://lh3.googleusercontent.com/d/1gckCI3q8azcEmQQDJPhNkSXBgluq4TFQ",
+      "image": "support_cards/30130-K.S.Miracle-gts.png",
       "admin_comments": ""
     }
   },
@@ -634,7 +634,7 @@
     "pk": 71,
     "fields": {
       "name": "Mejiro Ramonu",
-      "image": "https://lh3.googleusercontent.com/d/1YSoAyBmaP9yO0Iabejt0z-tbQR4wu1ii",
+      "image": "support_cards/30134-Mejiro-Ramonu-wts.png",
       "admin_comments": ""
     }
   },
@@ -643,7 +643,7 @@
     "pk": 72,
     "fields": {
       "name": "Ancestors & Guides",
-      "image": "https://lh3.googleusercontent.com/d/1-yGYZGHZqSxS8OtFhIzuXu1cG5T6uUDc",
+      "image": "support_cards/30137-Ancestors-Guides-frd.png",
       "admin_comments": ""
     }
   },
@@ -652,7 +652,7 @@
     "pk": 73,
     "fields": {
       "name": "Mejiro McQueen",
-      "image": "https://lh3.googleusercontent.com/d/1Zd2TKa-474mHPxYym607Rzyj13e-i_gX",
+      "image": "support_cards/30022-Mejiro-McQueen-stm.png",
       "admin_comments": ""
     }
   },
@@ -661,7 +661,7 @@
     "pk": 74,
     "fields": {
       "name": "Mihono Bourbon",
-      "image": "https://lh3.googleusercontent.com/d/1AaIqO3CXzsmr34B_nTDl5k1YL_r-w5UM",
+      "image": "support_cards/30059-Mihono-Bourbon-stm.png",
       "admin_comments": ""
     }
   },
@@ -670,7 +670,7 @@
     "pk": 75,
     "fields": {
       "name": "Sakura Laurel",
-      "image": "https://lh3.googleusercontent.com/d/1nadbzskivs1igVoQm6htOzwHiUgAiWBf",
+      "image": "support_cards/30125-Sakura-Laurel-stm.png",
       "admin_comments": ""
     }
   },
@@ -679,7 +679,7 @@
     "pk": 76,
     "fields": {
       "name": "Jungle Pocket",
-      "image": "https://lh3.googleusercontent.com/d/1RcQq71DGlWAGNjqsSBhIaFz0fs6_8Kpk",
+      "image": "support_cards/30147-Jungle-Pocket-spd.png",
       "admin_comments": ""
     }
   },
@@ -688,7 +688,7 @@
     "pk": 77,
     "fields": {
       "name": "Daiwa Scarlet",
-      "image": "https://lh3.googleusercontent.com/d/1EhapDPjKVQLWFdAZkI_buNco-DYiPotl",
+      "image": "support_cards/30047-Daiwa-Scarlet-pwr.png",
       "admin_comments": ""
     }
   },
@@ -697,7 +697,7 @@
     "pk": 78,
     "fields": {
       "name": "Aston Machan",
-      "image": "https://lh3.googleusercontent.com/d/1kNLf2QhWAktq4fcKF9HArMiCv9Uc_Wnv",
+      "image": "support_cards/30149-Aston-Machan-wts.png",
       "admin_comments": ""
     }
   },
@@ -706,7 +706,7 @@
     "pk": 79,
     "fields": {
       "name": "TM Opera O",
-      "image": "https://lh3.googleusercontent.com/d/1jF_SNOBXUzQ1gIOBS-YejOsjnMRblwbE",
+      "image": "support_cards/30152-TM-Opera-O-wts.png",
       "admin_comments": ""
     }
   },
@@ -715,7 +715,7 @@
     "pk": 80,
     "fields": {
       "name": "Gold City",
-      "image": "https://lh3.googleusercontent.com/d/1k3UajTq8E-L04vYbto--7rnRsriYgIg0",
+      "image": "support_cards/30014-Gold-City-spd.png",
       "admin_comments": ""
     }
   },
@@ -724,7 +724,7 @@
     "pk": 81,
     "fields": {
       "name": "Wonder Acute",
-      "image": "https://lh3.googleusercontent.com/d/1yT7Vz75sltYk6HX9ix2C9oJNXrSKEkwp",
+      "image": "support_cards/30156-Wonder-Acute-pwr.png",
       "admin_comments": ""
     }
   },
@@ -733,7 +733,7 @@
     "pk": 82,
     "fields": {
       "name": "Mei Satake",
-      "image": "https://lh3.googleusercontent.com/d/1LQTSgP0FZ2A3Zp11R3IbZrjSIZnC8K6h",
+      "image": "support_cards/30160-Mei-Satake-pls.png",
       "admin_comments": ""
     }
   },
@@ -742,7 +742,7 @@
     "pk": 83,
     "fields": {
       "name": "Nakayama Festa Wit",
-      "image": "https://lh3.googleusercontent.com/d/1-wdIWsffh-rapdqBe8h24sfabyzwz_8a",
+      "image": "support_cards/30163-Nakayama-Festa-wts.png",
       "admin_comments": ""
     }
   },
@@ -751,7 +751,7 @@
     "pk": 84,
     "fields": {
       "name": "Hishi Amazon",
-      "image": "https://lh3.googleusercontent.com/d/180FfLYYVTiDlTcSLUbb69Uv6-F44h7ye",
+      "image": "support_cards/30164-Hishi-Amazon-pwr.png",
       "admin_comments": ""
     }
   },
@@ -760,7 +760,7 @@
     "pk": 85,
     "fields": {
       "name": "Tanino Gimlet",
-      "image": "https://lh3.googleusercontent.com/d/1Uw4kfawT62TE3Zj9NDv5-bCqAArWqX7N",
+      "image": "support_cards/30145-Tanino-Gimlet-pwr.png",
       "admin_comments": ""
     }
   },
@@ -769,7 +769,7 @@
     "pk": 86,
     "fields": {
       "name": "Tap Dance City",
-      "image": "https://lh3.googleusercontent.com/d/1SiSQUXZD8IqDhlTDFFrHF8aHtGQNz2Cz",
+      "image": "support_cards/30166-Tap-Dance-City-gts.png",
       "admin_comments": ""
     }
   },
@@ -778,7 +778,7 @@
     "pk": 87,
     "fields": {
       "name": "Gold Ship",
-      "image": "https://lh3.googleusercontent.com/d/1RTMyIjX0GkovLJoNdyAqLZ5WIU8X2W4Y",
+      "image": "support_cards/30004-Gold-Ship-stm.png",
       "admin_comments": ""
     }
   },
@@ -787,7 +787,7 @@
     "pk": 88,
     "fields": {
       "name": "Tsurumaru Tsuyoshi",
-      "image": "https://lh3.googleusercontent.com/d/1tc99p79_xPbvoC0SAEhiX0_FeIXPyOjD",
+      "image": "support_cards/30169-Tsurumaru-Tsuyoshi-pwr.png",
       "admin_comments": ""
     }
   },
@@ -796,7 +796,7 @@
     "pk": 89,
     "fields": {
       "name": "Sounds of Earth",
-      "image": "https://lh3.googleusercontent.com/d/1qzGPA6Fl6Qh0feEm4359S42I-uJr3K3m",
+      "image": "support_cards/30173-Sounds-of-Earth-stm.png",
       "admin_comments": ""
     }
   },
@@ -805,7 +805,7 @@
     "pk": 90,
     "fields": {
       "name": "Mejiro Dober",
-      "image": "https://lh3.googleusercontent.com/d/1V-SoPnX8QJbnY7Gn6kEaRl6q1c8zrxNE",
+      "image": "support_cards/30041-Mejiro-Dober-wts.png",
       "admin_comments": ""
     }
   },
@@ -814,7 +814,7 @@
     "pk": 91,
     "fields": {
       "name": "Vivlos",
-      "image": "https://lh3.googleusercontent.com/d/113Fh2Nc0DjqMFhA5m4WX7lQtqHO4gjdM",
+      "image": "support_cards/30177-Vivlos-gts.png",
       "admin_comments": ""
     }
   },
@@ -823,7 +823,7 @@
     "pk": 92,
     "fields": {
       "name": "Duramente",
-      "image": "https://lh3.googleusercontent.com/d/1OdLHMLiGZp-e42lBbM6D0qjxJEipow7U",
+      "image": "support_cards/30178-Duramente-spd.png",
       "admin_comments": ""
     }
   },
@@ -832,7 +832,7 @@
     "pk": 93,
     "fields": {
       "name": "Hokko Tarumae",
-      "image": "https://lh3.googleusercontent.com/d/1xgNdR2htc6MpcuVv2O9eu3BQvQuXC98S",
+      "image": "support_cards/30182-Hokko-Tarumae-stm.png",
       "admin_comments": ""
     }
   },
@@ -841,7 +841,7 @@
     "pk": 94,
     "fields": {
       "name": "Orfevre",
-      "image": "https://lh3.googleusercontent.com/d/1j1jMD5OwTPndQxlUDtaHqg34_eHzkC45",
+      "image": "support_cards/30187-Orfevre-gts.png",
       "admin_comments": ""
     }
   },
@@ -850,7 +850,7 @@
     "pk": 95,
     "fields": {
       "name": "Ryoka Tsurugi",
-      "image": "https://lh3.googleusercontent.com/d/1NeM5IVwnf0eQD0riGOa-e1hsCYk0Bcs6",
+      "image": "support_cards/30188-Ryoka-Tsurugi-pls.png",
       "admin_comments": ""
     }
   },
@@ -859,7 +859,7 @@
     "pk": 96,
     "fields": {
       "name": "Cheval Grand",
-      "image": "https://lh3.googleusercontent.com/d/1JlISIOSTWaVgxl88eYDkGNoioVE1CrgL",
+      "image": "support_cards/30193-Cheval-Grand-stm.png",
       "admin_comments": ""
     }
   },
@@ -868,7 +868,7 @@
     "pk": 97,
     "fields": {
       "name": "K.S.Miracle 30195",
-      "image": "https://lh3.googleusercontent.com/d/1BdyT4Kxudx-kk4APwaNR8H1X7eIYdJa9",
+      "image": "support_cards/30195-K.S.Miracle-pwr.png",
       "admin_comments": ""
     }
   },
@@ -877,7 +877,7 @@
     "pk": 98,
     "fields": {
       "name": "Yamanin Zephyr 30196",
-      "image": "https://lh3.googleusercontent.com/d/1bjlUnHTLp3TvEVvZXDWTLjyBsx4q2aLm",
+      "image": "support_cards/30196-Yamanin-Zephyr-spd.png",
       "admin_comments": ""
     }
   },
@@ -886,7 +886,7 @@
     "pk": 99,
     "fields": {
       "name": "Neo Universe",
-      "image": "https://lh3.googleusercontent.com/d/1EMbNPp3RT79qfPjzx02Pr6IkBgQG5I0D",
+      "image": "support_cards/30198-Neo-Universe-wts.png",
       "admin_comments": ""
     }
   },
@@ -895,7 +895,7 @@
     "pk": 100,
     "fields": {
       "name": "Hishi Miracle",
-      "image": "https://lh3.googleusercontent.com/d/1bJRrFsifhnIU-Znv5Y522oOQ8n3JIJ8h",
+      "image": "support_cards/30199-Hishi-Miracle-stm.png",
       "admin_comments": ""
     }
   },
@@ -904,7 +904,7 @@
     "pk": 101,
     "fields": {
       "name": "Yayoi Akikawa",
-      "image": "https://lh3.googleusercontent.com/d/1izbsXOqUsep35U7pZAF-B4X3k6uWKR2p",
+      "image": "support_cards/30207-Yayoi-Akikawa-pls.png",
       "admin_comments": ""
     }
   },
@@ -913,7 +913,7 @@
     "pk": 102,
     "fields": {
       "name": "Dantsu Flame",
-      "image": "https://lh3.googleusercontent.com/d/1R_zK2xaf160h_sNPVU_kq3DlcwNODJpf",
+      "image": "support_cards/30209-Dantsu-Flame-stm.png",
       "admin_comments": ""
     }
   },
@@ -922,7 +922,7 @@
     "pk": 103,
     "fields": {
       "name": "Copano Rickey",
-      "image": "https://lh3.googleusercontent.com/d/1McjzEG0bdpZl1xZnNJfKifKDwuAHJGmd",
+      "image": "support_cards/30211-Copano-Rickey-wts.png",
       "admin_comments": ""
     }
   },
@@ -931,7 +931,7 @@
     "pk": 104,
     "fields": {
       "name": "Still in Love",
-      "image": "https://lh3.googleusercontent.com/d/1X7zEmoqmMWHJE4rU4a0omEKr3nJOQReY",
+      "image": "support_cards/30215-Still-in-Love-spd.png",
       "admin_comments": ""
     }
   },
@@ -940,7 +940,7 @@
     "pk": 105,
     "fields": {
       "name": "Fuji Kiseki",
-      "image": "https://lh3.googleusercontent.com/d/1CJfsY3krQGa80OkFBg8yGqScHhe6HNZL",
+      "image": "support_cards/30219-Fuji-Kiseki-gts.png",
       "admin_comments": ""
     }
   },
@@ -949,7 +949,7 @@
     "pk": 106,
     "fields": {
       "name": "Espoir City",
-      "image": "https://lh3.googleusercontent.com/d/1Yy8WC8XJdCfpHqVF_MoUtwjEOCYnd5Uk",
+      "image": "support_cards/30222-Espoir-City-pwr.png",
       "admin_comments": ""
     }
   },
@@ -958,7 +958,7 @@
     "pk": 107,
     "fields": {
       "name": "Air Shakur",
-      "image": "https://lh3.googleusercontent.com/d/1wHBcsxWJ_8rEoSo2dokMryuMVRdUS9AX",
+      "image": "support_cards/30092-Air-Shakur-spd.png",
       "admin_comments": ""
     }
   },
@@ -967,7 +967,7 @@
     "pk": 108,
     "fields": {
       "name": "Symboli Kris S Power",
-      "image": "https://lh3.googleusercontent.com/d/1-ho-2ePOmYE2NEbUPJla5f2leUSz--zq",
+      "image": "support_cards/30228-Symboli-Kris-S-pwr.png",
       "admin_comments": ""
     }
   },
@@ -976,7 +976,7 @@
     "pk": 109,
     "fields": {
       "name": "Meisho Doto",
-      "image": "https://lh3.googleusercontent.com/d/1I8WeAaoE1b1w6YLMi0p-5WWJzBQ46-wI",
+      "image": "support_cards/30079-Meisho-Doto-stm.png",
       "admin_comments": ""
     }
   },
@@ -985,7 +985,7 @@
     "pk": 110,
     "fields": {
       "name": "Blast Onepiece",
-      "image": "https://lh3.googleusercontent.com/d/1TO8toIyt9Z-mp20o-7DxgPeNEGKozHNG",
+      "image": "support_cards/30232-Blast-Onepiece-gts.png",
       "admin_comments": ""
     }
   },
@@ -994,7 +994,7 @@
     "pk": 111,
     "fields": {
       "name": "Mejiro Ardan",
-      "image": "https://lh3.googleusercontent.com/d/1mYXDlSi3x5O2-NkMkQrjtyLZNHe5d7hg",
+      "image": "support_cards/30119-Mejiro-Ardan-spd.png",
       "admin_comments": ""
     }
   },
@@ -1003,7 +1003,7 @@
     "pk": 112,
     "fields": {
       "name": "Almond Eye",
-      "image": "https://lh3.googleusercontent.com/d/1-bmxCmZ-GGSO28bSZQO4E8bqOQ-x0PDT",
+      "image": "support_cards/30242-Almond-Eye-spd.png",
       "admin_comments": ""
     }
   },
@@ -1012,7 +1012,7 @@
     "pk": 113,
     "fields": {
       "name": "Embodiment of Legends",
-      "image": "https://lh3.googleusercontent.com/d/1otwn1p3dofPjKPjlmEZPfaEVQVEP3J2K",
+      "image": "support_cards/30241-Embodiment-of-Legends-frd.png",
       "admin_comments": ""
     }
   },
@@ -1021,7 +1021,7 @@
     "pk": 114,
     "fields": {
       "name": "Mejiro Bright",
-      "image": "https://lh3.googleusercontent.com/d/1bkt6vKS6UWN7q6uFwH8POGDHQbHzXyG_",
+      "image": "support_cards/30087-Mejiro-Bright-stm.png",
       "admin_comments": ""
     }
   },
@@ -1030,7 +1030,7 @@
     "pk": 115,
     "fields": {
       "name": "Dream Journey",
-      "image": "https://lh3.googleusercontent.com/d/1jQfOXBH316DxQTIUuqmqifS65DHQMkL8",
+      "image": "support_cards/30246-Dream-Journey-spd.png",
       "admin_comments": ""
     }
   },
@@ -1039,7 +1039,7 @@
     "pk": 116,
     "fields": {
       "name": "Daring Tact",
-      "image": "https://lh3.googleusercontent.com/d/174IJuGipUOHuVEfMA7UraHxIsTB6Lj4k",
+      "image": "support_cards/30248-Daring-Tact-wts.png",
       "admin_comments": ""
     }
   },
@@ -1048,7 +1048,7 @@
     "pk": 117,
     "fields": {
       "name": "Buena Vista",
-      "image": "https://lh3.googleusercontent.com/d/1dOanss3hzk9JyawXM4mSBPvdyM_DEfqz",
+      "image": "support_cards/30216-Buena-Vista-gts.png",
       "admin_comments": ""
     }
   },
@@ -1057,7 +1057,7 @@
     "pk": 118,
     "fields": {
       "name": "Transcend",
-      "image": "https://lh3.googleusercontent.com/d/1KyUI5QcO5WfoxM9gL9J1ZP_up1r-ejea",
+      "image": "support_cards/30249-Transcend-gts.png",
       "admin_comments": ""
     }
   },
@@ -1066,7 +1066,7 @@
     "pk": 119,
     "fields": {
       "name": "Daring Heart",
-      "image": "https://lh3.googleusercontent.com/d/1IdwtcTG8zigkl77q4dLljF_nxPLmkSr9",
+      "image": "support_cards/30254-Daring-Heart-wts.png",
       "admin_comments": ""
     }
   },
@@ -1075,7 +1075,7 @@
     "pk": 120,
     "fields": {
       "name": "Rhein Kraft",
-      "image": "https://lh3.googleusercontent.com/d/132KEHCUC7pXTbY8lLFYcD7GjKaQUVGpA",
+      "image": "support_cards/30194-Rhein-Kraft-gts.png",
       "admin_comments": ""
     }
   },
@@ -1084,7 +1084,7 @@
     "pk": 121,
     "fields": {
       "name": "Tucker Bryne",
-      "image": "https://lh3.googleusercontent.com/d/1rHlYfR5DRoqMZ3brLtvV1DHnMlYJdm_t",
+      "image": "support_cards/30257-Tucker-Bryne-pls.png",
       "admin_comments": ""
     }
   },
@@ -1093,7 +1093,7 @@
     "pk": 122,
     "fields": {
       "name": "Mejiro Ryan",
-      "image": "https://lh3.googleusercontent.com/d/1K9Tx0F2vPlwaLIfEsQtDTnbi-PCsF61k",
+      "image": "support_cards/30176-Mejiro-Ryan-gts.png",
       "admin_comments": ""
     }
   },
@@ -1102,7 +1102,7 @@
     "pk": 123,
     "fields": {
       "name": "Win Variation",
-      "image": "https://lh3.googleusercontent.com/d/1-94M3He-IVu3y1n88_cJsa5rE9_g5jYP",
+      "image": "support_cards/30261-Win-Variation-wts.png",
       "admin_comments": ""
     }
   },
@@ -1111,7 +1111,7 @@
     "pk": 124,
     "fields": {
       "name": "Stay Gold",
-      "image": "https://lh3.googleusercontent.com/d/1JjLn-q_4Iz8vvKiK5sZUB6Xo6rMacyvS",
+      "image": "support_cards/30264-Stay-Gold-gts.png",
       "admin_comments": ""
     }
   },
@@ -1120,7 +1120,7 @@
     "pk": 125,
     "fields": {
       "name": "Admire Groove",
-      "image": "https://lh3.googleusercontent.com/d/1xcC9aEGlRqVPLW68OEuN-5welT-8CtTS",
+      "image": "support_cards/30265-Admire-Groove-spd.png",
       "admin_comments": ""
     }
   },
@@ -1129,7 +1129,7 @@
     "pk": 126,
     "fields": {
       "name": "Calstone Light O",
-      "image": "https://lh3.googleusercontent.com/d/19IvsxdKe6gnrm6z9Wr3txaXGGROGNJnx",
+      "image": "support_cards/30267-Calstone-Light-O-spd.png",
       "admin_comments": ""
     }
   },
@@ -1138,7 +1138,7 @@
     "pk": 127,
     "fields": {
       "name": "Durandal",
-      "image": "https://lh3.googleusercontent.com/d/1c51BX105JGe8zVxWQ0EmQVXSRfLoLGIL",
+      "image": "support_cards/30268-Durandal-wts.png",
       "admin_comments": ""
     }
   },
@@ -1147,7 +1147,7 @@
     "pk": 128,
     "fields": {
       "name": "Daiichi Ruby 30270",
-      "image": "https://lh3.googleusercontent.com/d/1S5P_IlZpfkqdBiWZG84XilDEj45m0X1S",
+      "image": "support_cards/30270-Daiichi-Ruby-gts.png",
       "admin_comments": ""
     }
   },
@@ -1156,7 +1156,7 @@
     "pk": 129,
     "fields": {
       "name": "Curren Bouquetd'or",
-      "image": "https://lh3.googleusercontent.com/d/15O8jqSmrcYR0xRTZFbJBdZ0KgLmekZ2f",
+      "image": "support_cards/30274-Curren-Bouquetdor-stm.png",
       "admin_comments": ""
     }
   },
@@ -1165,7 +1165,7 @@
     "pk": 130,
     "fields": {
       "name": "Kiyoko Hoshina",
-      "image": "https://lh3.googleusercontent.com/d/1dCloZmFMeOpK-gbxP_Eanoe74tX7ZBu6",
+      "image": "support_cards/30276-Kiyoko-Hoshina-pls.png",
       "admin_comments": ""
     }
   },
@@ -1174,7 +1174,7 @@
     "pk": 131,
     "fields": {
       "name": "Fenomeno",
-      "image": "https://lh3.googleusercontent.com/d/1lLIaAj--puEdz5juQgsCj1iaPxVdqm_r",
+      "image": "support_cards/30279-Fenomeno-stm.png",
       "admin_comments": ""
     }
   },
@@ -1183,7 +1183,7 @@
     "pk": 132,
     "fields": {
       "name": "Inari One",
-      "image": "https://lh3.googleusercontent.com/d/1guYyGlKVDxXsVWVVD3ec1kLYfq9UdQDo",
+      "image": "support_cards/30281-Inari-One-stm.png",
       "admin_comments": ""
     }
   },
@@ -1192,7 +1192,7 @@
     "pk": 133,
     "fields": {
       "name": "Forever Young",
-      "image": "https://lh3.googleusercontent.com/d/1CGZiUwB73ThFdmqCgL8DP36oJEMqlW7C",
+      "image": "support_cards/30289-Forever-Young-wts.png",
       "admin_comments": ""
     }
   },
@@ -1201,7 +1201,7 @@
     "pk": 134,
     "fields": {
       "name": "Casino Drive",
-      "image": "https://lh3.googleusercontent.com/d/172dX__GfyqqbduSG0FBHpr0ci41icS3Q",
+      "image": "support_cards/30290-Casino-Drive-pls.png",
       "admin_comments": ""
     }
   }
