@@ -31,10 +31,11 @@ class GameEventSerializer(serializers.ModelSerializer):
 
 class GameEventViewSet(ViewSet):
     def get_permissions(self):
-        # create/update/destroy are admin-only; list/retrieve are open to any authenticated user
+        # create/update/destroy are admin-only; list/retrieve serve reference
+        # data and are open to guests
         if self.action in ("create", "update", "destroy"):
             return [permissions.IsAdminUser()]
-        return [permissions.IsAuthenticated()]
+        return [permissions.AllowAny()]
 
     def list(self, request):
         game_events = GameEvent.objects.all().order_by("start_date")

@@ -8,6 +8,8 @@ Token authentication is required for all protected endpoints. Include the token 
 Authorization: Token <token>
 ```
 
+Read-only reference endpoints (rank tables, events, event rewards, League of Heroes) and `GET /calculator-data` are public. Note that a request carrying an *invalid* token still returns `401` even on public endpoints — DRF authenticates the token before checking permissions. Clients should drop a rejected token and retry without one.
+
 ---
 
 ## Authentication
@@ -70,7 +72,9 @@ Protected. Deletes the user's current auth token.
 
 ### `GET /calculator-data`
 
-Protected. Returns a single aggregated payload containing all reference data and user-specific state. The frontend calls this once on mount.
+Public. Returns a single aggregated payload containing all reference data and user-specific state. The frontend calls this once on mount.
+
+For anonymous requests, all reference keys are populated as usual but the two user-scoped keys are empty: `user_stats_data` is `null` and `user_planned_banner_data` is `[]`. The frontend uses the `null` stats to detect guest mode and seed local defaults.
 
 **Response `200`**
 ```json
@@ -140,7 +144,7 @@ Rank fields accept the integer primary key of the corresponding rank row. Exactl
 
 ## Reference Data (read-only)
 
-These endpoints return static rank tables. All are protected and support `list` and `retrieve`.
+These endpoints return static rank tables. All are public and support `list` and `retrieve`.
 
 | Endpoint | Resource |
 |---|---|
