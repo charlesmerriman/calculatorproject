@@ -159,8 +159,21 @@ class CalculatorGetTests(TestCase):
         self.user = make_user()
         self.client, self.token = auth_client(self.user)
 
-    def test_unauthenticated_returns_401(self):
+    def test_unauthenticated_returns_200_with_empty_user_data(self):
+        # Guests get the full reference payload; user-scoped keys are empty/null.
         res = APIClient().get('/calculator-data')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(set(res.data.keys()), _EXPECTED_GET_KEYS)
+        self.assertIsNone(res.data['user_stats_data'])
+        self.assertEqual(res.data['user_planned_banner_data'], [])
+
+    def test_get_with_invalid_token_returns_401(self):
+        # TokenAuthentication rejects a present-but-invalid token before
+        # permissions run, even under AllowAny. The frontend relies on this
+        # to detect a stale token and retry the fetch as a guest.
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token deadbeef')
+        res = client.get('/calculator-data')
         self.assertEqual(res.status_code, 401)
 
     def test_authenticated_returns_200(self):
@@ -181,6 +194,26 @@ class CalculatorGetTests(TestCase):
         res = self.client.get('/calculator-data')
         self.assertEqual(len(res.data['user_planned_banner_data']), 1)
         self.assertEqual(res.data['user_planned_banner_data'][0]['number_of_pulls'], 5)
+
+
+# ── Reference Endpoint Tests ──────────────────────────────────────────────────
+
+class ReferenceEndpointGuestAccessTests(TestCase):
+    """Read-only reference endpoints are open to guests."""
+
+    def test_reference_reads_return_200_for_guests(self):
+        client = APIClient()
+        for url in (
+            '/clubranks', '/teamtrialranks', '/championsmeetingranks',
+            '/leagueofheroesranks', '/leagueofheroes', '/events', '/eventrewards',
+        ):
+            with self.subTest(url=url):
+                self.assertEqual(client.get(url).status_code, 200)
+
+    def test_event_writes_still_require_admin(self):
+        # Guests (and non-admin users) must not be able to write reference data.
+        res = APIClient().post('/events', {'name': 'x'})
+        self.assertIn(res.status_code, (401, 403))
 
 
 # ── Calculator PATCH Tests ────────────────────────────────────────────────────

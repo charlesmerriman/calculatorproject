@@ -27,7 +27,12 @@ from calculatorapi.views.banner_timeline import BannerTimelineForViewingSerializ
 
 
 class CalculatorViewSet(ViewSet):
-    permission_classes = [permissions.IsAuthenticated]
+    def get_permissions(self):
+        # GET serves mostly reference data, so guests may read it; the PATCH
+        # writes to request.user's rows and stays account-only.
+        if self.action == "get_calculator_data":
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
 
     @action(detail=False, methods=["get"], url_path="calculator-data")
     def get_calculator_data(self, request):
@@ -37,14 +42,21 @@ class CalculatorViewSet(ViewSet):
         league_of_heroes_rank_data = LeagueOfHeroesRank.objects.all()
         banner_uma_data = BannerUma.objects.all().order_by("banner_timeline__start_date")
         banner_support_data = BannerSupport.objects.all().order_by("banner_timeline__start_date")
-        user_planned_banner_data = UserPlannedBanner.objects.filter(
-            user=request.user
-        ).annotate(
-            timeline_date=Coalesce(
-                F('banner_uma__banner_timeline__start_date'),
-                F('banner_support__banner_timeline__start_date')
-            )
-        ).order_by('timeline_date')
+        # Guests get the full reference payload but no user-scoped data:
+        # an empty plan and null stats (the frontend seeds local defaults).
+        if request.user.is_authenticated:
+            user_planned_banner_data = UserPlannedBanner.objects.filter(
+                user=request.user
+            ).annotate(
+                timeline_date=Coalesce(
+                    F('banner_uma__banner_timeline__start_date'),
+                    F('banner_support__banner_timeline__start_date')
+                )
+            ).order_by('timeline_date')
+            user_stats_data = UserStatsSerializer(request.user).data
+        else:
+            user_planned_banner_data = UserPlannedBanner.objects.none()
+            user_stats_data = None
         events_data = GameEvent.objects.prefetch_related('rewards').order_by('start_date').all()
         champions_meeting_data = ChampionsMeeting.objects.all()
         league_of_heroes_event_data = LeagueOfHeroes.objects.all().order_by("start_date")
@@ -63,7 +75,7 @@ class CalculatorViewSet(ViewSet):
             "champions_meeting_data": ChampionsMeetingSerializer(champions_meeting_data, many=True).data,
             "league_of_heroes_event_data": LeagueOfHeroesSerializer(league_of_heroes_event_data, many=True).data,
             "events_data": GameEventSerializer(events_data, many=True).data,
-            "user_stats_data": UserStatsSerializer(request.user).data,
+            "user_stats_data": user_stats_data,
             "banner_timeline_data": BannerTimelineForViewingSerializer(banner_timeline_data, many=True).data,
         }
 
