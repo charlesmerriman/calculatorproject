@@ -1,6 +1,6 @@
 # Uma Musume Carat Calculator — Backend
 
-A REST API that powers a gacha resource planner for Uma Musume Pretty Derby. Authenticated users receive a personalized forecast of how many carats and tickets they will accumulate before each planned banner's start date, based on their in-game ranks and upcoming event schedules.
+A REST API that powers a gacha resource planner for Uma Musume Pretty Derby. Users receive a personalized forecast of how many carats and tickets they will accumulate before each planned banner's start date, based on their in-game ranks and upcoming event schedules. All read endpoints are public — guests get the full reference payload with empty user data — while saving a plan (`PATCH /calculator-data`) requires a token-authenticated account.
 
 ## Tech Stack
 
