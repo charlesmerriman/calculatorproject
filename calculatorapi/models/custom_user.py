@@ -31,5 +31,7 @@ class CustomUser(AbstractUser):
     uma_ticket = models.IntegerField(default=0)
     support_ticket = models.IntegerField(default=0)
 
+    # No Meta needed: AbstractUser already sets verbose_name "user" / "users".
+
     def __str__(self):
         return self.username

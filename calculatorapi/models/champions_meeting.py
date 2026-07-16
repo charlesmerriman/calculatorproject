@@ -2,7 +2,7 @@ from django.db import models
 
 class ChampionsMeeting(models.Model):
     name = models.CharField(max_length=255, null=False)
-    cm_number = models.IntegerField()
+    cm_number = models.IntegerField(verbose_name="meeting number")
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     image = models.ImageField(upload_to="champions_meetings/", blank=True, null=True)
@@ -19,6 +19,11 @@ class ChampionsMeeting(models.Model):
     power_recommendation = models.IntegerField()
     guts_recommendation = models.IntegerField()
     wit_recommendation = models.IntegerField()
+
+    class Meta:
+        # Proper-noun casing (default capfirst would render "Champions meetings").
+        verbose_name = "Champions Meeting"
+        verbose_name_plural = "Champions Meetings"
 
     def __str__(self):
         return str(self.name)

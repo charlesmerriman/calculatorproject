@@ -57,6 +57,16 @@ SimpleRouter-registered read-only ViewSets:
 - `/teamtrialranks`, `/clubranks`, `/championsmeetingranks`, `/leagueofheroesranks`
 - `/events`, `/eventrewards`
 
+### Content editing via Django admin
+
+The admin (`/admin/`) is configured for non-technical content editors: friendly model
+names under an "Uma Musume Data" section, inline editing (a banner and its featured
+umas/cards on one page), searchable autocomplete pickers, and image previews. A
+"Content editors" permission group scopes editor accounts to game content only —
+create it with `python manage.py create_content_editor_group`. See
+[docs/content-editing.md](docs/content-editing.md) for the editor guide and
+account-setup steps.
+
 ### Admin analytics dashboard
 
 `/admin/analytics/` (staff-only, linked from the admin home page) shows aggregate usage
@@ -104,6 +114,7 @@ python3 manage.py test      # Run tests
 pylint calculatorapi/ calculatorproject/  # Lint
 python3 manage.py makemigrations          # After model changes
 python3 manage.py createsuperuser         # Staff login for /admin and /admin/analytics/
+python3 manage.py create_content_editor_group  # Permission group for content editors
 ```
 
 ## Environment Variables
