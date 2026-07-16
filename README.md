@@ -57,6 +57,14 @@ SimpleRouter-registered read-only ViewSets:
 - `/teamtrialranks`, `/clubranks`, `/championsmeetingranks`, `/leagueofheroesranks`
 - `/events`, `/eventrewards`
 
+### Admin analytics dashboard
+
+`/admin/analytics/` (staff-only, linked from the admin home page) shows aggregate usage
+statistics — paid-product adoption, rank distributions, resource averages, and the most
+popular planned banners — with a CSV export. Aggregation logic lives in
+`calculatorapi/analytics.py`; only aggregates are ever exposed, never per-user rows.
+See [docs/analytics.md](docs/analytics.md) for how to read and use the numbers.
+
 ## Local Setup
 
 ```bash
@@ -95,6 +103,7 @@ Other useful commands:
 python3 manage.py test      # Run tests
 pylint calculatorapi/ calculatorproject/  # Lint
 python3 manage.py makemigrations          # After model changes
+python3 manage.py createsuperuser         # Staff login for /admin and /admin/analytics/
 ```
 
 ## Environment Variables

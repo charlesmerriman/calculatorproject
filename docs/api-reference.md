@@ -10,6 +10,8 @@ Authorization: Token <token>
 
 Read-only reference endpoints (rank tables, events, event rewards, League of Heroes) and `GET /calculator-data` are public. Note that a request carrying an *invalid* token still returns `401` even on public endpoints — DRF authenticates the token before checking permissions. Clients should drop a rejected token and retry without one.
 
+Not part of the public API: `/admin/analytics/` is a staff-only aggregate analytics page served inside the Django admin (session auth, not token auth) — see [analytics.md](analytics.md).
+
 ---
 
 ## Authentication

@@ -1,0 +1,148 @@
+{% extends "admin/base_site.html" %}
+{% comment %}
+Staff-only analytics dashboard. Extends the admin base so it inherits the
+admin's chrome, auth-aware header, and table styling for free. All data
+comes pre-aggregated from calculatorapi.analytics via views/analytics.py —
+this template never sees individual users.
+{% endcomment %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Home</a>
+  &rsaquo; Analytics
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Site analytics</h1>
+<p>
+  Snapshot of current user data, generated {{ report.generated_at }}.
+  Staff accounts are excluded from every metric. “Engaged users” are accounts
+  that changed at least one calculator setting or planned at least one banner —
+  percentages are shown against both denominators because brand-new accounts
+  start with everything off.
+</p>
+<p><a class="button" href="?format=csv">Download CSV</a></p>
+
+<div class="module">
+  <h2>Overview</h2>
+  <table>
+    <tbody>
+      <tr><th scope="row">Total users (non-staff)</th><td>{{ report.total_users }}</td></tr>
+      <tr><th scope="row">Engaged users</th><td>{{ report.engaged_users }} ({{ report.engaged_pct }}%)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="module">
+  <h2>Paid products</h2>
+  <table>
+    <thead>
+      <tr><th>Product</th><th>Users</th><th>% of total</th><th>% of engaged</th></tr>
+    </thead>
+    <tbody>
+      {% for product in report.paid_products %}
+      <tr>
+        <td>{{ product.label }}</td>
+        <td>{{ product.count }}</td>
+        <td>{{ product.pct_of_total }}%</td>
+        <td>{{ product.pct_of_engaged }}%</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% for distribution in report.rank_distributions %}
+<div class="module">
+  <h2>Rank distribution — {{ distribution.label }}</h2>
+  <table>
+    <thead>
+      <tr><th>Rank</th><th>Users</th><th>% of total</th></tr>
+    </thead>
+    <tbody>
+      {% for row in distribution.rows %}
+      <tr>
+        <td>{{ row.name }}</td>
+        <td>{{ row.count }}</td>
+        <td>{{ row.pct_of_total }}%</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endfor %}
+
+<div class="module">
+  <h2>Average current resources (engaged users)</h2>
+  <table>
+    <thead>
+      <tr><th>Resource</th><th>Average</th></tr>
+    </thead>
+    <tbody>
+      {% for resource in report.resource_averages %}
+      <tr>
+        <td>{{ resource.label }}</td>
+        <td>{{ resource.avg }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="module">
+  <h2>Popular Uma banners</h2>
+  {% if report.popular_uma_banners %}
+  <table>
+    <thead>
+      <tr>
+        <th>Banner</th><th>Timeline</th><th>Runs</th>
+        <th>Planners</th><th>Total pulls</th><th>Avg pulls</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for banner in report.popular_uma_banners %}
+      <tr>
+        <td>{{ banner.name }}</td>
+        <td>{{ banner.timeline }}</td>
+        <td>{{ banner.start_date|date:"Y-m-d" }} → {{ banner.end_date|date:"Y-m-d" }}</td>
+        <td>{{ banner.planners }}</td>
+        <td>{{ banner.total_pulls }}</td>
+        <td>{{ banner.avg_pulls }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No planned uma banners yet.</p>
+  {% endif %}
+</div>
+
+<div class="module">
+  <h2>Popular support banners</h2>
+  {% if report.popular_support_banners %}
+  <table>
+    <thead>
+      <tr>
+        <th>Banner</th><th>Timeline</th><th>Runs</th>
+        <th>Planners</th><th>Total pulls</th><th>Avg pulls</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for banner in report.popular_support_banners %}
+      <tr>
+        <td>{{ banner.name }}</td>
+        <td>{{ banner.timeline }}</td>
+        <td>{{ banner.start_date|date:"Y-m-d" }} → {{ banner.end_date|date:"Y-m-d" }}</td>
+        <td>{{ banner.planners }}</td>
+        <td>{{ banner.total_pulls }}</td>
+        <td>{{ banner.avg_pulls }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No planned support banners yet.</p>
+  {% endif %}
+</div>
+{% endblock %}
