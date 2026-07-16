@@ -1,7 +1,10 @@
 import datetime
+from io import StringIO
 
+from django.contrib.auth.models import Group
+from django.core.management import call_command
 from django.test import TestCase, override_settings
-from django.urls import reverse
+from django.urls import NoReverseMatch, reverse
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
@@ -485,11 +488,14 @@ class AnalyticsReportScenarioTests(TestCase):
 
 # Rendering admin templates resolves {% static %} tags; the production
 # whitenoise manifest storage requires collectstatic, which never runs in
-# tests. Swap in the plain storage for these tests only.
-@override_settings(STORAGES={
+# tests. Any test class that renders admin pages swaps in plain storage.
+PLAIN_TEST_STORAGES = {
     'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
     'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'},
-})
+}
+
+
+@override_settings(STORAGES=PLAIN_TEST_STORAGES)
 class AnalyticsDashboardViewTests(TestCase):
     """Access control and response formats for /admin/analytics/."""
 
@@ -528,3 +534,123 @@ class AnalyticsDashboardViewTests(TestCase):
         body = res.content.decode()
         self.assertIn('Paid Products', body)
         self.assertIn('Popular Uma Banners', body)
+
+
+# ── Admin UX Tests ────────────────────────────────────────────────────────────
+
+@override_settings(STORAGES=PLAIN_TEST_STORAGES)
+class AdminSmokeTests(TestCase):
+    """Changelist and add pages render for a superuser.
+
+    Catches admin config mistakes (bad list_display refs, broken fieldsets,
+    autocomplete targets without search_fields) that only surface on render.
+    """
+
+    CONTENT_URL_NAMES = [
+        'admin:calculatorapi_bannertimeline',
+        'admin:calculatorapi_banneruma',
+        'admin:calculatorapi_bannersupport',
+        'admin:calculatorapi_uma',
+        'admin:calculatorapi_supportcard',
+        'admin:calculatorapi_gameevent',
+        'admin:calculatorapi_eventreward',
+        'admin:calculatorapi_championsmeeting',
+        'admin:calculatorapi_leagueofheroes',
+        'admin:calculatorapi_clubrank',
+    ]
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.superuser = CustomUser.objects.create_superuser(
+            username='boss', password='x')
+
+    def setUp(self):
+        self.client.force_login(self.superuser)
+
+    def test_changelists_render(self):
+        for base in self.CONTENT_URL_NAMES:
+            with self.subTest(url=f'{base}_changelist'):
+                res = self.client.get(reverse(f'{base}_changelist'))
+                self.assertEqual(res.status_code, 200)
+
+    def test_add_forms_render(self):
+        for base in self.CONTENT_URL_NAMES:
+            with self.subTest(url=f'{base}_add'):
+                res = self.client.get(reverse(f'{base}_add'))
+                self.assertEqual(res.status_code, 200)
+
+    def test_index_shows_friendly_names(self):
+        res = self.client.get(reverse('admin:index'))
+        self.assertContains(res, 'Uma Musume Data')      # app section heading
+        self.assertContains(res, 'Uma banners')          # was "Banner umas"
+        self.assertContains(res, 'League of Heroes events')
+        self.assertNotContains(res, 'League of heroess')  # the old plural bug
+
+    def test_join_models_not_registered_top_level(self):
+        # Edited via inlines only — their changelists should not exist.
+        for name in ['umasonumabanner', 'supportsonsupportbanner',
+                     'championsmeetingumarecommendation']:
+            with self.subTest(model=name):
+                with self.assertRaises(NoReverseMatch):
+                    reverse(f'admin:calculatorapi_{name}_changelist')
+
+
+@override_settings(STORAGES=PLAIN_TEST_STORAGES)
+class ContentEditorPermissionTests(TestCase):
+    """The "Content editors" group can manage content but never user data."""
+
+    @classmethod
+    def setUpTestData(cls):
+        call_command('create_content_editor_group', stdout=StringIO())
+        cls.editor = CustomUser.objects.create_user(
+            username='editor', password='x', is_staff=True)
+        cls.editor.groups.add(Group.objects.get(name='Content editors'))
+
+    def setUp(self):
+        self.client.force_login(self.editor)
+
+    def test_editor_can_open_banner_changelist(self):
+        res = self.client.get(reverse('admin:calculatorapi_banneruma_changelist'))
+        self.assertEqual(res.status_code, 200)
+
+    def test_editor_can_open_rank_changelist(self):
+        res = self.client.get(reverse('admin:calculatorapi_clubrank_changelist'))
+        self.assertEqual(res.status_code, 200)
+
+    def test_editor_cannot_open_user_changelist(self):
+        res = self.client.get(reverse('admin:calculatorapi_customuser_changelist'))
+        self.assertEqual(res.status_code, 403)
+
+    def test_editor_cannot_open_planned_banner_changelist(self):
+        res = self.client.get(
+            reverse('admin:calculatorapi_userplannedbanner_changelist'))
+        self.assertEqual(res.status_code, 403)
+
+    def test_editor_index_hides_user_models(self):
+        res = self.client.get(reverse('admin:index'))
+        self.assertNotContains(
+            res, reverse('admin:calculatorapi_customuser_changelist'))
+        self.assertNotContains(res, 'User planned banners')
+
+
+class ContentEditorGroupCommandTests(TestCase):
+    """create_content_editor_group is idempotent and scoped to content only."""
+
+    def test_command_is_idempotent(self):
+        call_command('create_content_editor_group', stdout=StringIO())
+        call_command('create_content_editor_group', stdout=StringIO())
+        self.assertEqual(Group.objects.filter(name='Content editors').count(), 1)
+        group = Group.objects.get(name='Content editors')
+        # 16 content models x 4 permissions (add/change/delete/view)
+        self.assertEqual(group.permissions.count(), 64)
+
+    def test_command_grants_no_user_data_permissions(self):
+        call_command('create_content_editor_group', stdout=StringIO())
+        codenames = set(
+            Group.objects.get(name='Content editors')
+            .permissions.values_list('codename', flat=True)
+        )
+        for forbidden in ['change_customuser', 'delete_customuser',
+                          'change_userplannedbanner', 'view_userplannedbanner',
+                          'change_token']:
+            self.assertNotIn(forbidden, codenames)
