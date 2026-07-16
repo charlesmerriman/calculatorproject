@@ -13,6 +13,7 @@ from calculatorapi.views import (
     GameEventViewSet,
     EventRewardViewSet,
 )
+from calculatorapi.views.analytics import analytics_dashboard
 from calculatorapi.views.user import register_account, user_login, user_logout
 
 router = routers.SimpleRouter(trailing_slash=False)
@@ -37,6 +38,14 @@ urlpatterns = [
     path("login", user_login, name="login"),
     path("register", register_account, name="register"),
     path("logout", user_logout, name="logout"),
+    # Must come BEFORE admin.site.urls — the admin URLconf ends in a
+    # catch-all that would 404 this path. admin_view() makes the page
+    # staff-only (redirects everyone else to the admin login).
+    path(
+        "admin/analytics/",
+        admin.site.admin_view(analytics_dashboard),
+        name="admin-analytics",
+    ),
     path("admin/", admin.site.urls),
     path(
         "calculator-data",

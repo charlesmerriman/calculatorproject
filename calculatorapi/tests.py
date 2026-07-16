@@ -1,10 +1,12 @@
 import datetime
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
+from django.urls import reverse
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 
+from calculatorapi.analytics import build_analytics_report
 from calculatorapi.models import (
     CustomUser,
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
@@ -354,3 +356,175 @@ class CalculatorPatchTests(TestCase):
     # an unhandled *exception*, not on an early `return Response(...)`. If stats
     # save succeeds but a banner update then returns a 4xx, the stats change is
     # already committed. This is a known limitation in the current implementation.
+
+
+# ── Analytics Tests ───────────────────────────────────────────────────────────
+
+class AnalyticsReportEmptyTests(TestCase):
+    """build_analytics_report() must survive a completely empty database."""
+
+    def test_empty_db_returns_zeroes_without_errors(self):
+        report = build_analytics_report()
+        self.assertEqual(report['total_users'], 0)
+        self.assertEqual(report['engaged_users'], 0)
+        self.assertEqual(report['engaged_pct'], 0.0)
+        for product in report['paid_products']:
+            self.assertEqual(product['count'], 0)
+            self.assertEqual(product['pct_of_total'], 0.0)
+            self.assertEqual(product['pct_of_engaged'], 0.0)
+        for resource in report['resource_averages']:
+            self.assertEqual(resource['avg'], 0)
+        self.assertEqual(report['popular_uma_banners'], [])
+        self.assertEqual(report['popular_support_banners'], [])
+
+
+class AnalyticsReportScenarioTests(TestCase):
+    """One seeded user base, asserted against every report section.
+
+    The scenario:
+      - whale:   both paid flags, Club Rank A, 3000 carats, plans Uma X (10)
+                 and Support Y (5)
+      - dolphin: training pass only, Club Rank B, 1000 carats, plans Uma X (20)
+      - planner: default stats, engaged ONLY through planning Uma Z (5)
+      - lurker:  registered but never touched anything (not engaged)
+      - staff:   admin account with paid flags and a 100-pull plan — must be
+                 invisible to every metric
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        # income_amount drives display order: B (100) must sort before A (200)
+        club_b = ClubRank.objects.create(name='B', income_amount=100)
+        club_a = ClubRank.objects.create(name='A', income_amount=200)
+
+        cls.whale = CustomUser.objects.create_user(
+            username='whale', password='x',
+            daily_carat=True, training_pass=True,
+            club_rank=club_a, current_carat=3000,
+        )
+        cls.dolphin = CustomUser.objects.create_user(
+            username='dolphin', password='x',
+            training_pass=True, club_rank=club_b, current_carat=1000,
+        )
+        cls.planner = CustomUser.objects.create_user(username='planner', password='x')
+        cls.lurker = CustomUser.objects.create_user(username='lurker', password='x')
+        cls.staff = CustomUser.objects.create_user(
+            username='staff', password='x', is_staff=True,
+            daily_carat=True, training_pass=True,
+        )
+
+        timeline = make_timeline()
+        uma_x = make_uma_banner(timeline, name='Uma X')
+        uma_z = make_uma_banner(timeline, name='Uma Z')
+        support_y = make_support_banner(timeline, name='Support Y')
+
+        UserPlannedBanner.objects.create(user=cls.whale, banner_uma=uma_x, number_of_pulls=10)
+        UserPlannedBanner.objects.create(user=cls.whale, banner_support=support_y, number_of_pulls=5)
+        UserPlannedBanner.objects.create(user=cls.dolphin, banner_uma=uma_x, number_of_pulls=20)
+        UserPlannedBanner.objects.create(user=cls.planner, banner_uma=uma_z, number_of_pulls=5)
+        UserPlannedBanner.objects.create(user=cls.staff, banner_uma=uma_z, number_of_pulls=100)
+
+        cls.report = build_analytics_report()
+
+    def test_user_counts_exclude_staff(self):
+        self.assertEqual(self.report['total_users'], 4)
+
+    def test_engaged_counts_flag_rank_and_banner_users(self):
+        # whale + dolphin (stats) + planner (banner only); lurker excluded
+        self.assertEqual(self.report['engaged_users'], 3)
+        self.assertEqual(self.report['engaged_pct'], 75.0)
+
+    def test_paid_product_percentages(self):
+        daily, training = self.report['paid_products'][0], self.report['paid_products'][1]
+        self.assertEqual(daily['label'], 'Daily Carat Pack')
+        self.assertEqual(daily['count'], 1)          # whale only (staff ignored)
+        self.assertEqual(daily['pct_of_total'], 25.0)
+        self.assertEqual(daily['pct_of_engaged'], 33.3)
+        self.assertEqual(training['label'], 'Training Pass')
+        self.assertEqual(training['count'], 2)       # whale + dolphin
+        self.assertEqual(training['pct_of_total'], 50.0)
+        self.assertEqual(training['pct_of_engaged'], 66.7)
+
+    def test_club_rank_distribution_ordered_by_income_with_not_set(self):
+        club = next(d for d in self.report['rank_distributions']
+                    if d['label'] == 'Club Rank')
+        names = [row['name'] for row in club['rows']]
+        self.assertEqual(names, ['B', 'A', 'Not set'])  # income order, not alphabetical
+        counts = {row['name']: row['count'] for row in club['rows']}
+        self.assertEqual(counts, {'B': 1, 'A': 1, 'Not set': 2})
+
+    def test_unused_rank_type_reports_everyone_not_set(self):
+        team_trials = next(d for d in self.report['rank_distributions']
+                           if d['label'] == 'Team Trials')
+        self.assertEqual(team_trials['rows'],
+                         [{'name': 'Not set', 'count': 4, 'pct_of_total': 100.0}])
+
+    def test_resource_averages_use_engaged_denominator(self):
+        carats = next(r for r in self.report['resource_averages']
+                      if r['label'] == 'Carats')
+        # (3000 + 1000 + 0) / 3 engaged users — lurker's zeroes not averaged in
+        self.assertEqual(carats['avg'], 1333.3)
+
+    def test_uma_banner_popularity_ranked_and_staff_free(self):
+        top, second = self.report['popular_uma_banners']
+        self.assertEqual(top['name'], 'Uma X')
+        self.assertEqual(top['planners'], 2)
+        self.assertEqual(top['total_pulls'], 30)
+        self.assertEqual(top['avg_pulls'], 15.0)
+        # staff's 100-pull plan on Uma Z must not appear anywhere
+        self.assertEqual(second['name'], 'Uma Z')
+        self.assertEqual(second['planners'], 1)
+        self.assertEqual(second['total_pulls'], 5)
+
+    def test_support_banner_popularity(self):
+        (only,) = self.report['popular_support_banners']
+        self.assertEqual(only['name'], 'Support Y')
+        self.assertEqual(only['planners'], 1)
+        self.assertEqual(only['total_pulls'], 5)
+
+
+# Rendering admin templates resolves {% static %} tags; the production
+# whitenoise manifest storage requires collectstatic, which never runs in
+# tests. Swap in the plain storage for these tests only.
+@override_settings(STORAGES={
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'},
+})
+class AnalyticsDashboardViewTests(TestCase):
+    """Access control and response formats for /admin/analytics/."""
+
+    def setUp(self):
+        self.url = reverse('admin-analytics')
+
+    def _staff_client(self):
+        staff = CustomUser.objects.create_user(
+            username='staffer', password='x', is_staff=True)
+        self.client.force_login(staff)
+
+    def test_anonymous_redirected_to_admin_login(self):
+        res = self.client.get(self.url)
+        self.assertEqual(res.status_code, 302)
+        self.assertIn('/admin/login/', res.url)
+
+    def test_non_staff_user_redirected_not_served(self):
+        self.client.force_login(make_user('regular'))
+        res = self.client.get(self.url)
+        self.assertEqual(res.status_code, 302)
+        self.assertIn('/admin/login/', res.url)
+
+    def test_staff_user_gets_dashboard(self):
+        self._staff_client()
+        res = self.client.get(self.url)
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, 'Daily Carat Pack')
+        self.assertContains(res, 'Download CSV')
+
+    def test_csv_download(self):
+        self._staff_client()
+        res = self.client.get(self.url, {'format': 'csv'})
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res['Content-Type'], 'text/csv')
+        self.assertIn('attachment; filename="analytics-', res['Content-Disposition'])
+        body = res.content.decode()
+        self.assertIn('Paid Products', body)
+        self.assertIn('Popular Uma Banners', body)

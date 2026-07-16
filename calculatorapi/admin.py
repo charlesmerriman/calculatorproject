@@ -8,6 +8,10 @@ from .models import (
     EventReward, LeagueOfHeroes,
 )
 
+# Swap in an index template that adds a "Reports" box linking to the
+# analytics dashboard (templates/admin/custom_index.html extends the default).
+admin.site.index_template = "admin/custom_index.html"
+
 # Register your models here.
 admin.site.register(CustomUser)
 admin.site.register(Uma)
