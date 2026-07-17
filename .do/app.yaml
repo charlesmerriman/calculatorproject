@@ -5,6 +5,24 @@ databases:
 - engine: PG
   name: dev-db-462490
   version: "17"
+# App-level env vars (shared by all components) — DigitalOcean Spaces image storage
+envs:
+- key: DO_SPACES_ACCESS_KEY
+  scope: RUN_TIME
+  value: allbuckets-1778774936035
+- key: DO_SPACES_SECRET_KEY
+  scope: RUN_TIME
+  type: SECRET
+  value: ""  # Set this in the DigitalOcean dashboard — never commit the real value
+- key: DO_SPACES_BUCKET_NAME
+  scope: RUN_TIME
+  value: umacalculatorimages
+- key: DO_SPACES_ENDPOINT_URL
+  scope: RUN_TIME
+  value: https://nyc3.digitaloceanspaces.com
+- key: DO_SPACES_CDN_DOMAIN
+  scope: RUN_TIME
+  value: umacalculatorimages.nyc3.cdn.digitaloceanspaces.com
 features:
 - buildpack-stack=ubuntu-22
 ingress:
