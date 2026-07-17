@@ -1,0 +1,42 @@
+[
+  {
+    "model": "calculatorapi.changelogchange",
+    "pk": 1,
+    "fields": {
+      "entry": 1,
+      "category": "added",
+      "text": "Changelog page so you can follow updates to the calculator.",
+      "order": 0
+    }
+  },
+  {
+    "model": "calculatorapi.changelogchange",
+    "pk": 2,
+    "fields": {
+      "entry": 1,
+      "category": "fixed",
+      "text": "Corrected a weekend daily-income off-by-one in resource projections.",
+      "order": 1
+    }
+  },
+  {
+    "model": "calculatorapi.changelogchange",
+    "pk": 3,
+    "fields": {
+      "entry": 1,
+      "category": "changed",
+      "text": "Banners now sort by their resolved global dates for faster loads.",
+      "order": 2
+    }
+  },
+  {
+    "model": "calculatorapi.changelogchange",
+    "pk": 4,
+    "fields": {
+      "entry": 2,
+      "category": "added",
+      "text": "First release of the Uma Musume carat calculator and planner.",
+      "order": 0
+    }
+  }
+]

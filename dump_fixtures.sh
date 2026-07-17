@@ -40,11 +40,13 @@ dump calculatorapi.BannerTimeline       $F/bannerTimelines.json
 dump calculatorapi.ChampionsMeeting     $F/championsMeetings.json
 dump calculatorapi.LeagueOfHeroes       $F/leagueOfHeroes.json
 dump calculatorapi.GameEvent            $F/gameEvents.json
+dump calculatorapi.ChangelogEntry       $F/changelogEntries.json
 
 # Models with FK dependencies
 dump calculatorapi.BannerUma            $F/bannerUmas.json
 dump calculatorapi.BannerSupport        $F/bannerSupports.json
 dump calculatorapi.EventReward          $F/eventRewards.json
+dump calculatorapi.ChangelogChange      $F/changelogChanges.json
 
 # M2M through tables
 dump calculatorapi.UmasOnUmaBanner          $F/umasOnUmaBanner.json

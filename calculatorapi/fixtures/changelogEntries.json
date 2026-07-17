@@ -1,0 +1,20 @@
+[
+  {
+    "model": "calculatorapi.changelogentry",
+    "pk": 1,
+    "fields": {
+      "title": "Changelog, FAQ groundwork, and income fixes",
+      "version": "v1.1",
+      "date": "2026-07-16"
+    }
+  },
+  {
+    "model": "calculatorapi.changelogentry",
+    "pk": 2,
+    "fields": {
+      "title": "Initial public release",
+      "version": "v1.0",
+      "date": "2026-07-01"
+    }
+  }
+]

@@ -136,6 +136,21 @@ erDiagram
         datetime date
     }
 
+    ChangelogEntry {
+        int id PK
+        string title
+        string version
+        date date
+    }
+
+    ChangelogChange {
+        int id PK
+        int entry_id FK
+        string category
+        string text
+        int order
+    }
+
     ChampionsMeeting {
         int id PK
         string name
@@ -177,6 +192,7 @@ erDiagram
     UserPlannedBanner }o--o| BannerSupport : "banner_support"
 
     EventReward }o--|| GameEvent : "event"
+    ChangelogChange }o--|| ChangelogEntry : "entry"
 ```
 
 ---

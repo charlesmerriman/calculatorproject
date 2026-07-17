@@ -16,3 +16,5 @@ from .game_event import GameEvent
 from .event_reward import EventReward
 from .league_of_heroes_rank import LeagueOfHeroesRank
 from .league_of_heroes import LeagueOfHeroes
+from .changelog_entry import ChangelogEntry
+from .changelog_change import ChangelogChange

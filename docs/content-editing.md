@@ -46,6 +46,16 @@ entries** (carats, tickets, shards, crystals) are edited in the table at the
 bottom of the same page. The calculator pays players these rewards on the
 dates you enter, so the amounts and dates directly affect projections.
 
+## Changelog (patch notes)
+
+**Changelog entries** are the update notes shown on the public Changelog page.
+Each entry has a **title**, a **date**, and an optional **version** label (e.g.
+`v1.2` — leave it blank if you don't use versions). The individual update lines
+are edited in the table at the bottom of the entry's page: give each line a
+**category** (Added / Fixed / Changed), the **text** of the change, and an
+**order** number (lower numbers show first). Entries appear newest-first on the
+site, and the home page shows how long ago the most recent entry was posted.
+
 ## Champions Meetings & League of Heroes
 
 - **Champions Meetings**: the form is grouped into basic info, **Track

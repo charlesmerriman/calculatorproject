@@ -156,6 +156,7 @@ These endpoints return static rank tables. All are public and support `list` and
 | `GET /leagueofheroesranks` | League of Heroes rank tiers and income amounts |
 | `GET /events` | Game events with nested reward entries |
 | `GET /eventrewards` | Individual dated reward entries |
+| `GET /changelog` | Patch-note entries (newest first) with nested, ordered change lines |
 
 All list responses return an array of the resource object. Retrieve by appending `/<id>`.
 
@@ -243,6 +244,29 @@ On GET, `banner_uma` and `banner_support` are expanded to nested objects (not ID
       "ssr_shard_amount": 0,
       "ssr_crystal_amount": 0,
       "date": "ISO8601"
+    }
+  ]
+}
+```
+
+### `ChangelogEntry` (from `GET /changelog`)
+
+Entries are returned newest-first by `date`. Each entry nests its `changes`,
+ordered by their `order` field. `version` is an optional label (empty string when
+unset). `category` is one of `"added"`, `"fixed"`, `"changed"`.
+
+```json
+{
+  "id": 1,
+  "title": "string",
+  "version": "v1.2",
+  "date": "YYYY-MM-DD",
+  "changes": [
+    {
+      "id": 1,
+      "category": "added",
+      "text": "string",
+      "order": 0
     }
   ]
 }
