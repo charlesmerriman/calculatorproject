@@ -29,6 +29,7 @@ from calculatorapi.models import (
     GameEvent, EventReward,
     ChampionsMeeting, ChampionsMeetingUmaRecommendation,
     LeagueOfHeroes,
+    ChangelogEntry, ChangelogChange,
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
 )
 
@@ -43,6 +44,7 @@ CONTENT_MODELS = [
     GameEvent, EventReward,
     ChampionsMeeting, ChampionsMeetingUmaRecommendation,
     LeagueOfHeroes,
+    ChangelogEntry, ChangelogChange,
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
 ]
 

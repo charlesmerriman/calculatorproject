@@ -15,6 +15,7 @@ from calculatorapi.models import (
     CustomUser,
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
     BannerTimeline, BannerUma, BannerSupport, UserPlannedBanner,
+    ChangelogEntry, ChangelogChange,
 )
 
 
@@ -800,8 +801,8 @@ class ContentEditorGroupCommandTests(TestCase):
         call_command('create_content_editor_group', stdout=StringIO())
         self.assertEqual(Group.objects.filter(name='Content editors').count(), 1)
         group = Group.objects.get(name='Content editors')
-        # 16 content models x 4 permissions (add/change/delete/view)
-        self.assertEqual(group.permissions.count(), 64)
+        # 18 content models x 4 permissions (add/change/delete/view)
+        self.assertEqual(group.permissions.count(), 72)
 
     def test_command_grants_no_user_data_permissions(self):
         call_command('create_content_editor_group', stdout=StringIO())
@@ -813,3 +814,61 @@ class ContentEditorGroupCommandTests(TestCase):
                           'change_userplannedbanner', 'view_userplannedbanner',
                           'change_token']:
             self.assertNotIn(forbidden, codenames)
+
+
+# ── Changelog Endpoint Tests ──────────────────────────────────────────────────
+
+class ChangelogEndpointTests(TestCase):
+    """The public /changelog endpoint lists entries newest-first with nested,
+    ordered changes; writes stay admin-only."""
+
+    def setUp(self):
+        # Two entries out of date order so we can assert sorting.
+        older = ChangelogEntry.objects.create(
+            title='Initial release', version='v1.0',
+            date=datetime.date(2026, 7, 1),
+        )
+        newer = ChangelogEntry.objects.create(
+            title='Changelog added', version='v1.1',
+            date=datetime.date(2026, 7, 16),
+        )
+        # Create changes out of `order` so we can assert they come back sorted.
+        ChangelogChange.objects.create(
+            entry=newer, category=ChangelogChange.CHANGED,
+            text='Faster banner sorting.', order=2,
+        )
+        ChangelogChange.objects.create(
+            entry=newer, category=ChangelogChange.ADDED,
+            text='Changelog page.', order=0,
+        )
+        self.newer, self.older = newer, older
+
+    def test_list_is_public_and_newest_first(self):
+        res = APIClient().get('/changelog')
+        self.assertEqual(res.status_code, 200)
+        titles = [e['title'] for e in res.json()]
+        self.assertEqual(titles, ['Changelog added', 'Initial release'])
+
+    def test_nested_changes_are_ordered(self):
+        res = APIClient().get('/changelog')
+        newest = res.json()[0]
+        # Sorted by ChangelogChange.Meta.ordering ("order", "id").
+        self.assertEqual(
+            [c['order'] for c in newest['changes']], [0, 2]
+        )
+        self.assertEqual(
+            [c['category'] for c in newest['changes']], ['added', 'changed']
+        )
+
+    def test_retrieve_is_public(self):
+        res = APIClient().get(f'/changelog/{self.newer.id}')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()['version'], 'v1.1')
+
+    def test_writes_require_admin(self):
+        # Guests and non-admin users cannot create entries.
+        guest = APIClient().post('/changelog', {'title': 'x', 'date': '2026-07-17'})
+        self.assertIn(guest.status_code, (401, 403))
+        user_client, _ = auth_client(make_user())
+        res = user_client.post('/changelog', {'title': 'x', 'date': '2026-07-17'})
+        self.assertIn(res.status_code, (401, 403))

@@ -27,6 +27,7 @@ from .models import (
     ChampionsMeeting, ChampionsMeetingUmaRecommendation,
     SupportsOnSupportBanner, UmasOnUmaBanner,
     GameEvent, EventReward, LeagueOfHeroes,
+    ChangelogEntry, ChangelogChange,
 )
 
 # ── 1. Site branding ─────────────────────────────────────────────────────────
@@ -104,6 +105,13 @@ class RecommendedUmaInline(admin.TabularInline):
     """Recommended umas for a Champions Meeting."""
     model = ChampionsMeetingUmaRecommendation
     autocomplete_fields = ("uma",)
+    extra = 1
+
+
+class ChangelogChangeInline(admin.TabularInline):
+    """The individual change lines of a changelog entry, edited on its page."""
+    model = ChangelogChange
+    fields = ("order", "category", "text")
     extra = 1
 
 
@@ -208,6 +216,15 @@ class ChampionsMeetingAdmin(ImagePreviewMixin, admin.ModelAdmin):
         }),
     )
     inlines = (RecommendedUmaInline,)
+
+
+@admin.register(ChangelogEntry)
+class ChangelogEntryAdmin(admin.ModelAdmin):
+    list_display = ("title", "version", "date")
+    date_hierarchy = "date"
+    ordering = ("-date",)
+    search_fields = ("title",)
+    inlines = (ChangelogChangeInline,)
 
 
 @admin.register(LeagueOfHeroes)

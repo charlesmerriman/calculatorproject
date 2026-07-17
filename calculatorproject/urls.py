@@ -12,6 +12,7 @@ from calculatorapi.views import (
     CalculatorViewSet,
     GameEventViewSet,
     EventRewardViewSet,
+    ChangelogEntryViewSet,
 )
 from calculatorapi.views.analytics import analytics_dashboard
 from calculatorapi.views.user import register_account, user_login, user_logout
@@ -32,6 +33,7 @@ router.register(
 router.register(r"leagueofheroes", LeagueOfHeroesViewSet, basename="leagueofheroes")
 router.register(r"events", GameEventViewSet, basename="event")
 router.register(r"eventrewards", EventRewardViewSet, basename="eventreward")
+router.register(r"changelog", ChangelogEntryViewSet, basename="changelog")
 
 urlpatterns = [
     path("", include(router.urls)),
