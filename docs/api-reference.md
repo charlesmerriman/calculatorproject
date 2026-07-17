@@ -96,7 +96,7 @@ For anonymous requests, all reference keys are populated as usual but the two us
 }
 ```
 
-`user_planned_banner_data` is ordered by timeline start date. `banner_uma_data` and `banner_support_data` are ordered by timeline start date. `events_data` is ordered by `start_date`.
+`user_planned_banner_data`, `banner_uma_data`, and `banner_support_data` are ordered by each timeline's **resolved** (confirmed-or-predicted) global start date, sorted server-side in Python since predicted dates aren't a DB column. `events_data` is ordered by `start_date`.
 
 ---
 
@@ -206,7 +206,7 @@ On GET, `banner_uma` and `banner_support` are expanded to nested objects (not ID
   "name": "string",
   "free_pulls": 0,
   "admin_comments": "string | null",
-  "banner_timeline": { "id": 1, "name": "string", "start_date": "ISO8601", "end_date": "ISO8601", "image": "url | null" },
+  "banner_timeline": { "id": 1, "name": "string", "start_date": "ISO8601", "end_date": "ISO8601", "is_predicted": false, "jp_start_date": "ISO8601 | null", "jp_end_date": "ISO8601 | null", "global_start_date": "ISO8601 | null", "global_end_date": "ISO8601 | null", "image": "url | null" },
   "umas": [ { "id": 1, "name": "string", "image": "url | null", "admin_comments": "string | null" } ]
 }
 ```
@@ -252,12 +252,19 @@ On GET, `banner_uma` and `banner_support` are expanded to nested objects (not ID
 
 The `banner_timeline_data` key uses an expanded serializer that nests uma and support banners (including per-card/uma recommendation text from the through table), distinct from the flat `BannerTimelineSerializer` used inside `BannerUma`/`BannerSupport` objects.
 
+**Date fields.** `start_date`/`end_date` are the **resolved** global dates: the confirmed global dates when set, otherwise dates **predicted** from the JP schedule (see `backend/calculatorapi/predictions.py`). `is_predicted` is `true` when they are an estimate. The raw source fields (`jp_start_date`, `jp_end_date`, `global_start_date`, `global_end_date`) are also exposed; `global_*` is null until a banner is officially confirmed. The same resolved values and `is_predicted` appear on every nested `banner_timeline` (inside `banner_uma_data`, `banner_support_data`, and `user_planned_banner_data`), keyed consistently by timeline id.
+
 ```json
 {
   "id": 1,
   "name": "string",
-  "start_date": "ISO8601",
-  "end_date": "ISO8601",
+  "start_date": "ISO8601 (resolved: confirmed or predicted)",
+  "end_date": "ISO8601 (resolved: confirmed or predicted)",
+  "is_predicted": false,
+  "jp_start_date": "ISO8601 | null",
+  "jp_end_date": "ISO8601 | null",
+  "global_start_date": "ISO8601 | null",
+  "global_end_date": "ISO8601 | null",
   "image": "url | null",
   "banner_umas": [ { "id": 1, "name": "string", "free_pulls": 0, "admin_comments": "string | null", "umas": [ { ...uma + "recommendation": "string | null" } ] } ],
   "banner_supports": [ { ... } ]

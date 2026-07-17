@@ -86,8 +86,8 @@ def _banner_popularity(fk_name):
             fk_name,
             f"{fk_name}__name",
             f"{fk_name}__banner_timeline__name",
-            f"{fk_name}__banner_timeline__start_date",
-            f"{fk_name}__banner_timeline__end_date",
+            f"{fk_name}__banner_timeline__global_start_date",
+            f"{fk_name}__banner_timeline__global_end_date",
         )
         .annotate(
             planners=Count("user", distinct=True),
@@ -100,8 +100,11 @@ def _banner_popularity(fk_name):
         {
             "name": row[f"{fk_name}__name"],
             "timeline": row[f"{fk_name}__banner_timeline__name"],
-            "start_date": row[f"{fk_name}__banner_timeline__start_date"],
-            "end_date": row[f"{fk_name}__banner_timeline__end_date"],
+            # Confirmed global dates; predicted banners report null here (fine
+            # for an aggregate popularity report). Output keys stay the same so
+            # the dashboard/CSV need no change.
+            "start_date": row[f"{fk_name}__banner_timeline__global_start_date"],
+            "end_date": row[f"{fk_name}__banner_timeline__global_end_date"],
             "planners": row["planners"],
             "total_pulls": row["total_pulls"],
             "avg_pulls": round(row["avg_pulls"], 1),

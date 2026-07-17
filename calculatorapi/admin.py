@@ -111,19 +111,26 @@ class RecommendedUmaInline(admin.TabularInline):
 
 @admin.register(BannerTimeline)
 class BannerTimelineAdmin(ImagePreviewMixin, admin.ModelAdmin):
-    list_display = ("name", "start_date", "end_date")
-    date_hierarchy = "start_date"
-    ordering = ("-start_date",)
+    list_display = ("name", "jp_start_date", "global_start_date", "global_end_date")
+    date_hierarchy = "global_start_date"
+    ordering = ("-global_start_date",)
     search_fields = ("name",)  # also powers the autocomplete on banner admins
     readonly_fields = ("image_preview",)
     inlines = (BannerUmaInline, BannerSupportInline)
+    # Editors always fill the JP dates; global dates only once the banner is
+    # confirmed (they're left blank until then, and the app predicts them).
+    fieldsets = (
+        (None, {"fields": ("name", "image", "image_preview")}),
+        ("JP server dates (always known)", {"fields": ("jp_start_date", "jp_end_date")}),
+        ("Global server dates (fill when confirmed)", {"fields": ("global_start_date", "global_end_date")}),
+    )
 
 
 @admin.register(BannerUma)
 class BannerUmaAdmin(admin.ModelAdmin):
     list_display = ("name", "banner_timeline", "free_pulls")
     list_select_related = ("banner_timeline",)
-    ordering = ("-banner_timeline__start_date",)
+    ordering = ("-banner_timeline__global_start_date",)
     search_fields = ("name",)
     autocomplete_fields = ("banner_timeline",)
     inlines = (UmaOnBannerInline,)
@@ -133,7 +140,7 @@ class BannerUmaAdmin(admin.ModelAdmin):
 class BannerSupportAdmin(admin.ModelAdmin):
     list_display = ("name", "banner_timeline", "free_pulls")
     list_select_related = ("banner_timeline",)
-    ordering = ("-banner_timeline__start_date",)
+    ordering = ("-banner_timeline__global_start_date",)
     search_fields = ("name",)
     autocomplete_fields = ("banner_timeline",)
     inlines = (SupportOnBannerInline,)

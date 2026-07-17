@@ -3,8 +3,11 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import permissions, status
 from django.db import transaction
-from django.db.models.functions import Coalesce
-from django.db.models import F
+from calculatorapi.predictions import (
+    build_effective_date_map,
+    effective_sort_key,
+    planned_effective_start,
+)
 from calculatorapi.models import (
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
     UserPlannedBanner, BannerUma, BannerSupport,
@@ -40,19 +43,29 @@ class CalculatorViewSet(ViewSet):
         team_trials_rank_data = TeamTrialsRank.objects.all()
         champions_meeting_rank_data = ChampionsMeetingRank.objects.all()
         league_of_heroes_rank_data = LeagueOfHeroesRank.objects.all()
-        banner_uma_data = BannerUma.objects.all().order_by("banner_timeline__start_date")
-        banner_support_data = BannerSupport.objects.all().order_by("banner_timeline__start_date")
+
+        # Resolve every timeline's effective (confirmed-or-predicted) global
+        # dates once. Banner ordering now keys off these resolved dates rather
+        # than a DB column, so we sort in Python (the sets are small).
+        emap = build_effective_date_map()
+
+        banner_uma_data = sorted(
+            BannerUma.objects.select_related("banner_timeline"),
+            key=lambda b: effective_sort_key(emap.get(b.banner_timeline_id)),
+        )
+        banner_support_data = sorted(
+            BannerSupport.objects.select_related("banner_timeline"),
+            key=lambda b: effective_sort_key(emap.get(b.banner_timeline_id)),
+        )
         # Guests get the full reference payload but no user-scoped data:
         # an empty plan and null stats (the frontend seeds local defaults).
         if request.user.is_authenticated:
-            user_planned_banner_data = UserPlannedBanner.objects.filter(
-                user=request.user
-            ).annotate(
-                timeline_date=Coalesce(
-                    F('banner_uma__banner_timeline__start_date'),
-                    F('banner_support__banner_timeline__start_date')
-                )
-            ).order_by('timeline_date')
+            user_planned_banner_data = sorted(
+                UserPlannedBanner.objects.filter(user=request.user).select_related(
+                    "banner_uma__banner_timeline", "banner_support__banner_timeline"
+                ),
+                key=lambda pb: effective_sort_key(planned_effective_start(pb, emap)),
+            )
             user_stats_data = UserStatsSerializer(request.user).data
         else:
             user_planned_banner_data = UserPlannedBanner.objects.none()
@@ -60,23 +73,33 @@ class CalculatorViewSet(ViewSet):
         events_data = GameEvent.objects.prefetch_related('rewards').order_by('start_date').all()
         champions_meeting_data = ChampionsMeeting.objects.all()
         league_of_heroes_event_data = LeagueOfHeroes.objects.all().order_by("start_date")
-        banner_timeline_data = BannerTimeline.objects.prefetch_related(
-            "uma_banners", "support_banners"
-        ).order_by("start_date").all()
+        banner_timeline_data = sorted(
+            BannerTimeline.objects.prefetch_related("uma_banners", "support_banners"),
+            key=lambda t: effective_sort_key(emap.get(t.id)),
+        )
 
         response = {
             "club_rank_data": ClubRankSerializer(club_rank_data, many=True).data,
             "team_trials_rank_data": TeamTrialsRankSerializer(team_trials_rank_data, many=True).data,
             "champions_meeting_rank_data": ChampionsMeetingRankSerializer(champions_meeting_rank_data, many=True).data,
             "league_of_heroes_rank_data": LeagueOfHeroesRankSerializer(league_of_heroes_rank_data, many=True).data,
-            "banner_uma_data": BannerUmaSerializer(banner_uma_data, many=True).data,
-            "banner_support_data": BannerSupportSerializer(banner_support_data, many=True).data,
-            "user_planned_banner_data": UserPlannedBannerSerializer(user_planned_banner_data, many=True).data,
+            "banner_uma_data": BannerUmaSerializer(
+                banner_uma_data, many=True, context={"effective_dates": emap}
+            ).data,
+            "banner_support_data": BannerSupportSerializer(
+                banner_support_data, many=True, context={"effective_dates": emap}
+            ).data,
+            "user_planned_banner_data": UserPlannedBannerSerializer(
+                user_planned_banner_data, many=True,
+                context={"effective_dates": emap, "request": request},
+            ).data,
             "champions_meeting_data": ChampionsMeetingSerializer(champions_meeting_data, many=True).data,
             "league_of_heroes_event_data": LeagueOfHeroesSerializer(league_of_heroes_event_data, many=True).data,
             "events_data": GameEventSerializer(events_data, many=True).data,
             "user_stats_data": user_stats_data,
-            "banner_timeline_data": BannerTimelineForViewingSerializer(banner_timeline_data, many=True).data,
+            "banner_timeline_data": BannerTimelineForViewingSerializer(
+                banner_timeline_data, many=True, context={"effective_dates": emap}
+            ).data,
         }
 
         return Response(response, status=status.HTTP_200_OK)

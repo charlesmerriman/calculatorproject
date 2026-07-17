@@ -10,6 +10,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 
 from calculatorapi.analytics import build_analytics_report
+from calculatorapi.predictions import PREDICTION_FACTOR, compute_effective_dates
 from calculatorapi.models import (
     CustomUser,
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
@@ -44,12 +45,22 @@ def make_user(username='testuser', password='testpass123'):
     )
 
 
-def make_timeline(name='Test Timeline'):
+def make_timeline(name='Test Timeline', jp_start_date=None, jp_end_date=None,
+                  global_start_date=None, global_end_date=None):
+    """Create a BannerTimeline. By default it's a CONFIRMED global banner
+    (now → now+30d) so existing tests keep resolving real dates; pass jp_*/
+    global_* explicitly to build predicted (global-null) timelines."""
     now = timezone.now()
+    if global_start_date is None and global_end_date is None and \
+            jp_start_date is None and jp_end_date is None:
+        global_start_date = now
+        global_end_date = now + datetime.timedelta(days=30)
     return BannerTimeline.objects.create(
         name=name,
-        start_date=now,
-        end_date=now + datetime.timedelta(days=30),
+        jp_start_date=jp_start_date,
+        jp_end_date=jp_end_date,
+        global_start_date=global_start_date,
+        global_end_date=global_end_date,
     )
 
 
@@ -151,6 +162,108 @@ class AuthTests(TestCase):
 
 # ── Calculator GET Tests ──────────────────────────────────────────────────────
 
+# ── Prediction logic (pure, DB-free) ──────────────────────────────────────────
+
+_UTC = datetime.timezone.utc
+
+
+def _dt(y, m, d):
+    return datetime.datetime(y, m, d, tzinfo=_UTC)
+
+
+class PredictionUnitTests(TestCase):
+    """Directly exercises compute_effective_dates on plain dicts (no DB)."""
+
+    def test_confirmed_banner_passes_through(self):
+        rows = [{
+            "id": 1, "jp_start_date": _dt(2025, 1, 1), "jp_end_date": _dt(2025, 1, 8),
+            "global_start_date": _dt(2025, 6, 1), "global_end_date": _dt(2025, 6, 8),
+        }]
+        out = compute_effective_dates(rows)[1]
+        self.assertEqual(out["start_date"], _dt(2025, 6, 1))
+        self.assertEqual(out["end_date"], _dt(2025, 6, 8))
+        self.assertFalse(out["is_predicted"])
+
+    def test_anchor_is_latest_jp_among_confirmed_with_jp(self):
+        rows = [
+            # confirmed + jp, earlier jp
+            {"id": 1, "jp_start_date": _dt(2024, 6, 1), "jp_end_date": _dt(2024, 6, 8),
+             "global_start_date": _dt(2025, 5, 1), "global_end_date": _dt(2025, 5, 8)},
+            # confirmed + jp, latest jp -> should be the anchor
+            {"id": 2, "jp_start_date": _dt(2025, 1, 1), "jp_end_date": _dt(2025, 1, 8),
+             "global_start_date": _dt(2025, 6, 1), "global_end_date": _dt(2025, 6, 8)},
+            # confirmed but NO jp -> ineligible as anchor
+            {"id": 3, "jp_start_date": None, "jp_end_date": None,
+             "global_start_date": _dt(2025, 7, 1), "global_end_date": _dt(2025, 7, 8)},
+            # target awaiting confirmation
+            {"id": 4, "jp_start_date": _dt(2025, 1, 31), "jp_end_date": _dt(2025, 2, 7),
+             "global_start_date": None, "global_end_date": None},
+        ]
+        target = compute_effective_dates(rows)[4]
+        # Anchored to id=2 (jp 2025-01-01 / global 2025-06-01). Δjp = 30 days.
+        self.assertTrue(target["is_predicted"])
+        self.assertEqual(target["start_date"], _dt(2025, 6, 1) + datetime.timedelta(days=30) * PREDICTION_FACTOR)
+
+    def test_fixed_anchor_worked_example(self):
+        rows = [
+            {"id": 1, "jp_start_date": _dt(2025, 1, 1), "jp_end_date": _dt(2025, 1, 8),
+             "global_start_date": _dt(2025, 6, 1), "global_end_date": _dt(2025, 6, 8)},
+            {"id": 2, "jp_start_date": _dt(2025, 1, 31), "jp_end_date": _dt(2025, 2, 7),
+             "global_start_date": None, "global_end_date": None},
+        ]
+        out = compute_effective_dates(rows)[2]
+        # Δjp = 30d × 0.7 = 21d -> 2025-06-22; banner runs 7d -> 2025-06-29.
+        self.assertEqual(out["start_date"], _dt(2025, 6, 22))
+        self.assertEqual(out["end_date"], _dt(2025, 6, 29))
+        self.assertTrue(out["is_predicted"])
+
+    def test_no_anchor_leaves_jp_only_rows_unresolved(self):
+        rows = [{
+            "id": 1, "jp_start_date": _dt(2025, 1, 1), "jp_end_date": _dt(2025, 1, 8),
+            "global_start_date": None, "global_end_date": None,
+        }]
+        out = compute_effective_dates(rows)[1]
+        self.assertIsNone(out["start_date"])
+        self.assertIsNone(out["end_date"])
+        self.assertFalse(out["is_predicted"])
+
+    def test_target_with_no_jp_and_no_global_is_unresolved(self):
+        rows = [
+            {"id": 1, "jp_start_date": _dt(2025, 1, 1), "jp_end_date": _dt(2025, 1, 8),
+             "global_start_date": _dt(2025, 6, 1), "global_end_date": _dt(2025, 6, 8)},
+            {"id": 2, "jp_start_date": None, "jp_end_date": None,
+             "global_start_date": None, "global_end_date": None},
+        ]
+        out = compute_effective_dates(rows)[2]
+        self.assertIsNone(out["start_date"])
+        self.assertFalse(out["is_predicted"])
+
+    def test_negative_delta_predicts_before_anchor(self):
+        rows = [
+            {"id": 1, "jp_start_date": _dt(2025, 3, 1), "jp_end_date": _dt(2025, 3, 8),
+             "global_start_date": _dt(2025, 8, 1), "global_end_date": _dt(2025, 8, 8)},
+            # target's jp is BEFORE the anchor's jp -> predicted start before anchor global
+            {"id": 2, "jp_start_date": _dt(2025, 1, 30), "jp_end_date": _dt(2025, 2, 6),
+             "global_start_date": None, "global_end_date": None},
+        ]
+        out = compute_effective_dates(rows)[2]
+        # Δjp = -30d × 0.7 = -21d -> 2025-07-11.
+        self.assertEqual(out["start_date"], _dt(2025, 8, 1) - datetime.timedelta(days=30) * PREDICTION_FACTOR)
+        self.assertTrue(out["is_predicted"])
+
+    def test_predicted_start_but_null_jp_end_gives_null_end(self):
+        rows = [
+            {"id": 1, "jp_start_date": _dt(2025, 1, 1), "jp_end_date": _dt(2025, 1, 8),
+             "global_start_date": _dt(2025, 6, 1), "global_end_date": _dt(2025, 6, 8)},
+            {"id": 2, "jp_start_date": _dt(2025, 1, 31), "jp_end_date": None,
+             "global_start_date": None, "global_end_date": None},
+        ]
+        out = compute_effective_dates(rows)[2]
+        self.assertEqual(out["start_date"], _dt(2025, 6, 22))
+        self.assertIsNone(out["end_date"])
+        self.assertTrue(out["is_predicted"])
+
+
 _EXPECTED_GET_KEYS = {
     'club_rank_data', 'team_trials_rank_data', 'champions_meeting_rank_data',
     'league_of_heroes_rank_data', 'banner_uma_data', 'banner_support_data',
@@ -199,6 +312,52 @@ class CalculatorGetTests(TestCase):
         res = self.client.get('/calculator-data')
         self.assertEqual(len(res.data['user_planned_banner_data']), 1)
         self.assertEqual(res.data['user_planned_banner_data'][0]['number_of_pulls'], 5)
+
+    def test_timeline_data_exposes_resolved_and_predicted_fields(self):
+        make_timeline(name='Confirmed')  # default: confirmed global banner
+        res = self.client.get('/calculator-data')
+        entry = res.data['banner_timeline_data'][0]
+        for key in ('start_date', 'end_date', 'is_predicted',
+                    'jp_start_date', 'global_start_date'):
+            self.assertIn(key, entry)
+        self.assertFalse(entry['is_predicted'])
+        self.assertTrue(entry['start_date'].endswith('Z'))
+
+    def test_predicted_dates_are_consistent_across_all_paths(self):
+        # Anchor: confirmed banner with a JP date. Target: JP-only, so predicted.
+        make_timeline(
+            name='Anchor',
+            jp_start_date=_dt(2025, 1, 1), jp_end_date=_dt(2025, 1, 8),
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        predicted_tl = make_timeline(
+            name='Predicted',
+            jp_start_date=_dt(2025, 1, 31), jp_end_date=_dt(2025, 2, 7),
+        )
+        uma_banner = make_uma_banner(timeline=predicted_tl)
+        UserPlannedBanner.objects.create(
+            user=self.user, banner_uma=uma_banner, number_of_pulls=3
+        )
+
+        res = self.client.get('/calculator-data')
+
+        # Δjp = 30d × 0.7 = 21d -> 2025-06-22.
+        expected_start = '2025-06-22T00:00:00Z'
+
+        top = next(t for t in res.data['banner_timeline_data'] if t['id'] == predicted_tl.id)
+        self.assertTrue(top['is_predicted'])
+        self.assertEqual(top['start_date'], expected_start)
+
+        nested_uma = next(
+            b for b in res.data['banner_uma_data']
+            if b['banner_timeline']['id'] == predicted_tl.id
+        )
+        self.assertTrue(nested_uma['banner_timeline']['is_predicted'])
+        self.assertEqual(nested_uma['banner_timeline']['start_date'], expected_start)
+
+        planned_tl = res.data['user_planned_banner_data'][0]['banner_uma']['banner_timeline']
+        self.assertEqual(planned_tl['start_date'], expected_start)
+        self.assertTrue(planned_tl['is_predicted'])
 
 
 # ── Reference Endpoint Tests ──────────────────────────────────────────────────
