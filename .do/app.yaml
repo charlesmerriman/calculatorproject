@@ -59,6 +59,9 @@ services:
   source_dir: /
 static_sites:
 - build_command: npm install && npm run build
+  # SPA fallback: serve index.html for any path with no matching file,
+  # so client-side routes (/app, /app/timeline) survive refresh/direct links
+  catchall_document: index.html
   environment_slug: node-js
   envs:
   - key: VITE_API_URL
