@@ -7,8 +7,9 @@ admin site. Written for content editors — no technical background needed.
 
 Go to `https://<your-domain>/admin/` and sign in with the staff account you
 were given. You'll land on **Content management**, which lists everything you
-can edit under **Uma Musume Data**, plus a **Reports** box linking to the
-analytics dashboard.
+can edit under **Uma Musume Data**, plus a **Reports** card linking to the
+analytics dashboard. The light/dark theme toggle is in the sidebar next to
+your account name.
 
 You will only see the models you have permission to edit. User accounts and
 players' saved plans are managed separately and never appear in your view.
@@ -39,6 +40,21 @@ Banners are organized in three levels:
 If a featured uma or card doesn't exist yet, create it first under **Umas** /
 **Support cards** (name + image), or use the green **+** next to the picker.
 
+### Confirmed vs. predicted dates
+
+A timeline's **JP server dates** are always filled in; the **global server
+dates** stay blank until the banner is officially confirmed — until then the
+site shows players dates *predicted* from the JP schedule. The timeline list
+shows each row's state as a **Confirmed** (green) or **Predicted** (amber)
+badge, and the **Global dates** filter in the sidebar lists everything still
+awaiting confirmation, so you can spot what needs dates filled in.
+
+### Seeing which banners players care about
+
+The Uma banner and Support card banner lists have a **Planned by** column —
+how many players currently have that banner in their pull plan. Click the
+column header to sort by it.
+
 ## Events
 
 **Game events** hold an event's name, dates, and image; its dated **reward
@@ -67,8 +83,10 @@ site, and the home page shows how long ago the most recent entry was posted.
 
 **Club ranks, Team trials ranks, Champions Meeting ranks, League of Heroes
 ranks** define how many carats (and tickets/shards, where applicable) players
-earn per rank. Only change these when the game itself rebalances payouts —
-they feed every player's income projection.
+earn per rank. The amounts are edited directly in the list — change as many
+rows as you need, then press **Save** once at the bottom. Only change these
+when the game itself rebalances payouts — they feed every player's income
+projection.
 
 ## A few care notes
 
