@@ -18,6 +18,7 @@ permissions on them for the inlines to save.
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.db.models import Count
 from django.utils.html import format_html
 
 from .models import (
@@ -117,9 +118,34 @@ class ChangelogChangeInline(admin.TabularInline):
 
 # ── 4. Game content ──────────────────────────────────────────────────────────
 
+class GlobalDatesFilter(admin.SimpleListFilter):
+    """
+    Sidebar filter on the timeline list: has the global run been confirmed?
+    Mirrors the app's own logic — a timeline without a global_start_date is
+    served to users with dates *predicted* from the JP schedule.
+    """
+    title = "global dates"
+    parameter_name = "global_dates"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("confirmed", "Confirmed"),
+            ("predicted", "Predicted (awaiting confirmation)"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "confirmed":
+            return queryset.filter(global_start_date__isnull=False)
+        if self.value() == "predicted":
+            return queryset.filter(global_start_date__isnull=True)
+        return queryset
+
+
 @admin.register(BannerTimeline)
 class BannerTimelineAdmin(ImagePreviewMixin, admin.ModelAdmin):
-    list_display = ("name", "jp_start_date", "global_start_date", "global_end_date")
+    list_display = ("name", "jp_start_date", "global_start_date",
+                    "global_end_date", "global_dates_status")
+    list_filter = (GlobalDatesFilter,)
     date_hierarchy = "global_start_date"
     ordering = ("-global_start_date",)
     search_fields = ("name",)  # also powers the autocomplete on banner admins
@@ -133,10 +159,41 @@ class BannerTimelineAdmin(ImagePreviewMixin, admin.ModelAdmin):
         ("Global server dates (fill when confirmed)", {"fields": ("global_start_date", "global_end_date")}),
     )
 
+    @admin.display(description="Status", ordering="global_start_date")
+    def global_dates_status(self, obj):
+        # Inline styles (not admin CSS classes) so the badge renders the same
+        # under any admin theme.
+        if obj.global_start_date:
+            color, background, label = "#166534", "#dcfce7", "Confirmed"
+        else:
+            color, background, label = "#92400e", "#fef3c7", "Predicted"
+        return format_html(
+            '<span style="color: {}; background: {}; padding: 2px 8px; '
+            'border-radius: 9999px; font-weight: 600;">{}</span>',
+            color, background, label,
+        )
+
+
+class PlannedByColumnMixin:  # pylint: disable=too-few-public-methods
+    """
+    Adds a sortable "Planned by" column: how many users have this banner in
+    their pull plan. Counting happens in SQL (one annotation, no N+1) and the
+    `ordering=` mapping is what makes the column header sortable.
+    """
+
+    def get_queryset(self, request):
+        # Reverse FK from UserPlannedBanner (no related_name → default name).
+        return super().get_queryset(request).annotate(
+            planned_count=Count("userplannedbanner"))
+
+    @admin.display(description="Planned by", ordering="planned_count")
+    def planned_by(self, obj):
+        return f"{obj.planned_count} user{'' if obj.planned_count == 1 else 's'}"
+
 
 @admin.register(BannerUma)
-class BannerUmaAdmin(admin.ModelAdmin):
-    list_display = ("name", "banner_timeline", "free_pulls")
+class BannerUmaAdmin(PlannedByColumnMixin, admin.ModelAdmin):
+    list_display = ("name", "banner_timeline", "free_pulls", "planned_by")
     list_select_related = ("banner_timeline",)
     ordering = ("-banner_timeline__global_start_date",)
     search_fields = ("name",)
@@ -145,8 +202,8 @@ class BannerUmaAdmin(admin.ModelAdmin):
 
 
 @admin.register(BannerSupport)
-class BannerSupportAdmin(admin.ModelAdmin):
-    list_display = ("name", "banner_timeline", "free_pulls")
+class BannerSupportAdmin(PlannedByColumnMixin, admin.ModelAdmin):
+    list_display = ("name", "banner_timeline", "free_pulls", "planned_by")
     list_select_related = ("banner_timeline",)
     ordering = ("-banner_timeline__global_start_date",)
     search_fields = ("name",)
@@ -238,15 +295,22 @@ class LeagueOfHeroesAdmin(ImagePreviewMixin, admin.ModelAdmin):
 
 # ── 5. Rank / income tables ──────────────────────────────────────────────────
 
+# `list_editable` turns the changelist into an editable grid: every rank's
+# amounts can be updated on one screen with a single Save. The `name` column
+# stays non-editable because it is the link to the detail page (a Django
+# requirement: editable fields can't be in list_display_links).
+
 @admin.register(ClubRank)
 class ClubRankAdmin(admin.ModelAdmin):
     list_display = ("name", "income_amount")
+    list_editable = ("income_amount",)
     ordering = ("income_amount",)
 
 
 @admin.register(TeamTrialsRank)
 class TeamTrialsRankAdmin(admin.ModelAdmin):
     list_display = ("name", "income_amount")
+    list_editable = ("income_amount",)
     ordering = ("income_amount",)
 
 
@@ -254,6 +318,8 @@ class TeamTrialsRankAdmin(admin.ModelAdmin):
 class ChampionsMeetingRankAdmin(admin.ModelAdmin):
     list_display = ("name", "income_amount", "uma_ticket_amount",
                     "support_ticket_amount", "ssr_shard_amount", "sr_shard_amount")
+    list_editable = ("income_amount", "uma_ticket_amount",
+                     "support_ticket_amount", "ssr_shard_amount", "sr_shard_amount")
     ordering = ("income_amount",)
 
 
@@ -261,6 +327,8 @@ class ChampionsMeetingRankAdmin(admin.ModelAdmin):
 class LeagueOfHeroesRankAdmin(admin.ModelAdmin):
     list_display = ("name", "income_amount", "uma_ticket_amount",
                     "support_ticket_amount", "ssr_shard_amount", "sr_shard_amount")
+    list_editable = ("income_amount", "uma_ticket_amount",
+                     "support_ticket_amount", "ssr_shard_amount", "sr_shard_amount")
     ordering = ("income_amount",)
 
 
