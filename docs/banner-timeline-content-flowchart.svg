@@ -1,0 +1,213 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100" role="img" aria-labelledby="title desc">
+  <title id="title">Adding Banner Timeline Content Flowchart</title>
+  <desc id="desc">Flowchart showing how to add banner timeline content in the Django admin panel, plus the related banner timeline data schema.</desc>
+  <defs>
+    <marker id="arrow-teal" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#24756f" />
+    </marker>
+    <marker id="arrow-red" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#9b3f45" />
+    </marker>
+    <style>
+      .page { fill: #f7f4ee; }
+      .title { font: 700 42px Arial, Helvetica, sans-serif; fill: #1f2a32; }
+      .subtitle { font: 400 20px Arial, Helvetica, sans-serif; fill: #55636c; }
+      .section-title { font: 700 26px Arial, Helvetica, sans-serif; fill: #1f2a32; }
+      .section-caption { font: 400 16px Arial, Helvetica, sans-serif; fill: #65737c; }
+      .box-title { font: 700 18px Arial, Helvetica, sans-serif; fill: #1f2a32; }
+      .box-text { font: 400 15px Arial, Helvetica, sans-serif; fill: #3d4b54; }
+      .box-small { font: 400 13px Arial, Helvetica, sans-serif; fill: #52616a; }
+      .field-title { font: 700 16px Arial, Helvetica, sans-serif; fill: #1f2a32; }
+      .field-text { font: 400 14px Arial, Helvetica, sans-serif; fill: #3d4b54; }
+      .tag { font: 700 12px Arial, Helvetica, sans-serif; fill: #ffffff; }
+      .note-title { font: 700 15px Arial, Helvetica, sans-serif; fill: #1f2a32; }
+      .note-text { font: 400 13px Arial, Helvetica, sans-serif; fill: #3d4b54; }
+      .workflow-card { fill: #ffffff; stroke: #d9d2c4; stroke-width: 2; rx: 8; }
+      .schema-card { fill: #ffffff; stroke: #c9d8d4; stroke-width: 2; rx: 8; }
+      .join-card { fill: #fff8e5; stroke: #d8bd72; stroke-width: 2; rx: 8; }
+      .entity-card { fill: #eef7fb; stroke: #a7c7d7; stroke-width: 2; rx: 8; }
+      .warn-card { fill: #fff0f0; stroke: #e3a0a4; stroke-width: 2; rx: 8; }
+      .admin-pill { fill: #24756f; rx: 12; }
+      .schema-pill { fill: #5b6d91; rx: 12; }
+      .line { fill: none; stroke: #24756f; stroke-width: 3; marker-end: url(#arrow-teal); }
+      .schema-line { fill: none; stroke: #5b6d91; stroke-width: 3; marker-end: url(#arrow-teal); }
+      .delete-line { fill: none; stroke: #9b3f45; stroke-width: 2.5; stroke-dasharray: 7 7; marker-end: url(#arrow-red); }
+      .muted-line { fill: none; stroke: #b8c0c5; stroke-width: 2; }
+      .divider { stroke: #d8d1c5; stroke-width: 2; stroke-dasharray: 8 8; }
+    </style>
+  </defs>
+
+  <rect class="page" width="1600" height="1100" />
+
+  <text class="title" x="72" y="70">Adding Banner Timeline Content</text>
+  <text class="subtitle" x="72" y="104">Admin-panel workflow and data schema for banner timelines, Uma banners, support card banners, and featured items. Events are intentionally excluded.</text>
+
+  <line class="divider" x1="780" y1="150" x2="780" y2="1015" />
+
+  <text class="section-title" x="72" y="154">Admin Panel Workflow</text>
+  <text class="section-caption" x="72" y="181">Use Content management -> Uma Musume Data in Django admin.</text>
+
+  <text class="section-title" x="836" y="154">Banner Timeline Data Schema</text>
+  <text class="section-caption" x="836" y="181">These are the related models touched by this content workflow.</text>
+
+  <!-- Workflow lane -->
+  <g transform="translate(72 215)">
+    <rect class="workflow-card" x="0" y="0" width="620" height="82" />
+    <rect class="admin-pill" x="18" y="18" width="72" height="24" />
+    <text class="tag" x="37" y="35">STEP 1</text>
+    <text class="box-title" x="108" y="31">Log in</text>
+    <text class="box-text" x="108" y="56">Go to /admin/ and open Content management -> Uma Musume Data.</text>
+  </g>
+  <path class="line" d="M382 300 L382 335" />
+
+  <g transform="translate(72 340)">
+    <rect class="workflow-card" x="0" y="0" width="620" height="106" />
+    <rect class="admin-pill" x="18" y="18" width="72" height="24" />
+    <text class="tag" x="37" y="35">STEP 2</text>
+    <text class="box-title" x="108" y="31">Create missing featured items first</text>
+    <text class="box-text" x="108" y="56">If an Uma or support card is not available in the picker, add it first.</text>
+    <text class="box-small" x="108" y="80">Admin sections: Umas / Support cards. Required fields: name and image.</text>
+  </g>
+  <path class="line" d="M382 449 L382 484" />
+
+  <g transform="translate(72 489)">
+    <rect class="workflow-card" x="0" y="0" width="620" height="112" />
+    <rect class="admin-pill" x="18" y="18" width="72" height="24" />
+    <text class="tag" x="37" y="35">STEP 3</text>
+    <text class="box-title" x="108" y="31">Add the banner timeline</text>
+    <text class="box-text" x="108" y="56">Uma Musume Data -> Banner timelines -> Add.</text>
+    <text class="box-small" x="108" y="80">Fill: name, start date, end date, image.</text>
+    <text class="box-small" x="108" y="100">Then click Save and continue editing.</text>
+  </g>
+  <path class="line" d="M382 604 L382 639" />
+
+  <g transform="translate(72 644)">
+    <rect class="workflow-card" x="0" y="0" width="620" height="118" />
+    <rect class="admin-pill" x="18" y="18" width="72" height="24" />
+    <text class="tag" x="37" y="35">STEP 4</text>
+    <text class="box-title" x="108" y="31">Add child banners on the timeline page</text>
+    <text class="box-text" x="108" y="56">Use the inline tables: Uma banners and/or Support card banners.</text>
+    <text class="box-small" x="108" y="80">Fill each banner: name, free pulls, optional admin comments.</text>
+    <text class="box-small" x="108" y="100">Save the timeline page.</text>
+  </g>
+  <path class="line" d="M382 765 L382 800" />
+
+  <g transform="translate(72 805)">
+    <rect class="workflow-card" x="0" y="0" width="620" height="116" />
+    <rect class="admin-pill" x="18" y="18" width="72" height="24" />
+    <text class="tag" x="37" y="35">STEP 5</text>
+    <text class="box-title" x="108" y="31">Attach featured Umas or support cards</text>
+    <text class="box-text" x="108" y="56">Click Change next to a banner row to open that banner page.</text>
+    <text class="box-small" x="108" y="80">Use Umas on banner or Support cards on banner.</text>
+    <text class="box-small" x="108" y="100">Pick each featured item and add optional recommendation text. Save.</text>
+  </g>
+  <path class="line" d="M382 924 L382 959" />
+
+  <g transform="translate(72 964)">
+    <rect class="workflow-card" x="0" y="0" width="620" height="78" />
+    <rect class="admin-pill" x="18" y="18" width="72" height="24" />
+    <text class="tag" x="37" y="35">CHECK</text>
+    <text class="box-title" x="108" y="31">Verify the result in the app</text>
+    <text class="box-text" x="108" y="56">/calculator-data returns banner_timeline_data with nested banners and recommendations.</text>
+  </g>
+
+  <!-- Schema lane -->
+  <g transform="translate(880 220)">
+    <rect class="schema-card" x="0" y="0" width="285" height="136" />
+    <rect class="schema-pill" x="18" y="16" width="72" height="24" />
+    <text class="tag" x="37" y="33">MODEL</text>
+    <text class="field-title" x="18" y="62">BannerTimeline</text>
+    <text class="field-text" x="18" y="86">id PK</text>
+    <text class="field-text" x="18" y="108">name, start_date, end_date</text>
+    <text class="field-text" x="18" y="130">image</text>
+  </g>
+
+  <g transform="translate(836 440)">
+    <rect class="schema-card" x="0" y="0" width="292" height="158" />
+    <rect class="schema-pill" x="18" y="16" width="72" height="24" />
+    <text class="tag" x="37" y="33">MODEL</text>
+    <text class="field-title" x="18" y="62">BannerUma</text>
+    <text class="field-text" x="18" y="86">id PK</text>
+    <text class="field-text" x="18" y="108">banner_timeline_id FK</text>
+    <text class="field-text" x="18" y="130">name, free_pulls</text>
+    <text class="field-text" x="18" y="152">admin_comments</text>
+  </g>
+
+  <g transform="translate(1188 440)">
+    <rect class="schema-card" x="0" y="0" width="292" height="158" />
+    <rect class="schema-pill" x="18" y="16" width="72" height="24" />
+    <text class="tag" x="37" y="33">MODEL</text>
+    <text class="field-title" x="18" y="62">BannerSupport</text>
+    <text class="field-text" x="18" y="86">id PK</text>
+    <text class="field-text" x="18" y="108">banner_timeline_id FK</text>
+    <text class="field-text" x="18" y="130">name, free_pulls</text>
+    <text class="field-text" x="18" y="152">admin_comments</text>
+  </g>
+
+  <path class="schema-line" d="M1022 356 L982 435" />
+  <path class="schema-line" d="M1022 356 L1334 435" />
+  <text class="box-small" x="968" y="394">one timeline has many banners</text>
+
+  <g transform="translate(836 680)">
+    <rect class="join-card" x="0" y="0" width="292" height="154" />
+    <rect class="schema-pill" x="18" y="16" width="92" height="24" />
+    <text class="tag" x="35" y="33">THROUGH</text>
+    <text class="field-title" x="18" y="62">UmasOnUmaBanner</text>
+    <text class="field-text" x="18" y="86">id PK</text>
+    <text class="field-text" x="18" y="108">banner_uma_id FK</text>
+    <text class="field-text" x="18" y="130">uma_id FK</text>
+    <text class="field-text" x="18" y="152">recommendation</text>
+  </g>
+
+  <g transform="translate(1188 680)">
+    <rect class="join-card" x="0" y="0" width="292" height="154" />
+    <rect class="schema-pill" x="18" y="16" width="92" height="24" />
+    <text class="tag" x="35" y="33">THROUGH</text>
+    <text class="field-title" x="18" y="62">SupportsOnSupportBanner</text>
+    <text class="field-text" x="18" y="86">id PK</text>
+    <text class="field-text" x="18" y="108">banner_support_id FK</text>
+    <text class="field-text" x="18" y="130">support_card_id FK</text>
+    <text class="field-text" x="18" y="152">recommendation</text>
+  </g>
+
+  <path class="schema-line" d="M982 598 L982 675" />
+  <path class="schema-line" d="M1334 598 L1334 675" />
+  <text class="box-small" x="904" y="641">featured Umas</text>
+  <text class="box-small" x="1260" y="641">featured cards</text>
+
+  <g transform="translate(836 910)">
+    <rect class="entity-card" x="0" y="0" width="292" height="96" />
+    <rect class="schema-pill" x="18" y="16" width="72" height="24" />
+    <text class="tag" x="37" y="33">MODEL</text>
+    <text class="field-title" x="18" y="62">Uma</text>
+    <text class="field-text" x="18" y="86">id PK, name, image, admin_comments</text>
+  </g>
+
+  <g transform="translate(1188 910)">
+    <rect class="entity-card" x="0" y="0" width="292" height="96" />
+    <rect class="schema-pill" x="18" y="16" width="72" height="24" />
+    <text class="tag" x="37" y="33">MODEL</text>
+    <text class="field-title" x="18" y="62">SupportCard</text>
+    <text class="field-text" x="18" y="86">id PK, name, image, admin_comments</text>
+  </g>
+
+  <path class="schema-line" d="M982 834 L982 905" />
+  <path class="schema-line" d="M1334 834 L1334 905" />
+
+  <!-- Notes -->
+  <g transform="translate(1180 220)">
+    <rect class="warn-card" x="0" y="0" width="300" height="136" />
+    <text class="note-title" x="18" y="30">Important deletion behavior</text>
+    <text class="note-text" x="18" y="56">Deleting a timeline deletes its banners.</text>
+    <text class="note-text" x="18" y="80">Deleting a banner removes featured rows.</text>
+    <text class="note-text" x="18" y="104">It can also affect players' saved plans.</text>
+  </g>
+
+  <path class="delete-line" d="M1150 256 L1172 256" />
+
+  <g transform="translate(836 1030)">
+    <text class="note-title" x="0" y="0">Schema note:</text>
+    <text class="note-text" x="96" y="0">Recommendation text lives on the through tables, not directly on Uma or SupportCard.</text>
+    <text class="note-text" x="0" y="26">API note: banner_timeline_data uses the expanded serializer and nests banner_umas and banner_supports.</text>
+  </g>
+</svg>
