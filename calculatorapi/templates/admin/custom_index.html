@@ -1,19 +1,25 @@
 {% extends "admin/index.html" %}
 {% comment %}
-Admin landing page with a "Reports" box linking to the analytics dashboard.
+Admin landing page with a "Reports" card linking to the analytics dashboard.
 Activated via `admin.site.index_template` in calculatorapi/admin.py — the
 default index is otherwise untouched ({{ block.super }} renders it).
+Styled with django-unfold's Tailwind utilities so it matches the theme
+(including dark mode) — the old stock-admin `.module` CSS no longer exists.
 {% endcomment %}
 
 {% block content %}
-<div class="module">
-  <table>
-    <caption>Reports</caption>
-    <tr>
-      <th scope="row"><a href="{% url 'admin-analytics' %}">Analytics dashboard</a></th>
-      <td><a class="viewlink" href="{% url 'admin-analytics' %}?format=csv">Download CSV</a></td>
-    </tr>
-  </table>
+<div class="border border-base-200 mb-8 rounded-default shadow-xs dark:border-base-800">
+  <div class="border-b border-base-200 px-4 py-3 font-semibold text-font-important-light dark:border-base-800 dark:text-font-important-dark">
+    Reports
+  </div>
+  <div class="flex gap-6 px-4 py-3">
+    <a href="{% url 'admin-analytics' %}" class="font-medium text-primary-600 dark:text-primary-500">
+      Analytics dashboard
+    </a>
+    <a href="{% url 'admin-analytics' %}?format=csv" class="font-medium text-primary-600 dark:text-primary-500">
+      Download CSV
+    </a>
+  </div>
 </div>
 {{ block.super }}
 {% endblock %}

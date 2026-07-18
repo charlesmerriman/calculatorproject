@@ -16,10 +16,21 @@ group (see management/commands/create_content_editor_group.py) still needs
 permissions on them for the inlines to save.
 """
 
+# unfold's ModelAdmin has a deeper class hierarchy than pylint's default
+# max-parents of 7 — every admin in this file trips it, so disable once here.
+# pylint: disable=too-many-ancestors
+
 from django.contrib import admin
+from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import Group
 from django.db.models import Count
 from django.utils.html import format_html
+# django-unfold themes the admin, but only for admins that inherit its base
+# classes — a plain admin.ModelAdmin would render unstyled under unfold's
+# templates. Hence every ModelAdmin/TabularInline below extends unfold's.
+from unfold.admin import ModelAdmin, TabularInline
+from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
 from .models import (
     CustomUser, Uma, SupportCard, UserPlannedBanner,
@@ -60,7 +71,7 @@ class ImagePreviewMixin:  # pylint: disable=too-few-public-methods
 
 # ── 3. Inlines ───────────────────────────────────────────────────────────────
 
-class BannerUmaInline(admin.TabularInline):
+class BannerUmaInline(TabularInline):
     """Uma banners listed on their timeline; click through to edit the umas."""
     model = BannerUma
     fields = ("name", "free_pulls")
@@ -68,7 +79,7 @@ class BannerUmaInline(admin.TabularInline):
     extra = 0
 
 
-class BannerSupportInline(admin.TabularInline):
+class BannerSupportInline(TabularInline):
     """Support card banners listed on their timeline."""
     model = BannerSupport
     fields = ("name", "free_pulls")
@@ -76,21 +87,21 @@ class BannerSupportInline(admin.TabularInline):
     extra = 0
 
 
-class UmaOnBannerInline(admin.TabularInline):
+class UmaOnBannerInline(TabularInline):
     """The umas featured on an uma banner, edited on the banner page."""
     model = UmasOnUmaBanner
     autocomplete_fields = ("uma",)  # searchable picker instead of a 200-item dropdown
     extra = 1
 
 
-class SupportOnBannerInline(admin.TabularInline):
+class SupportOnBannerInline(TabularInline):
     """The support cards featured on a support banner."""
     model = SupportsOnSupportBanner
     autocomplete_fields = ("support_card",)
     extra = 1
 
 
-class EventRewardInline(admin.TabularInline):
+class EventRewardInline(TabularInline):
     """An event's dated reward entries, edited on the event page."""
     model = EventReward
     fields = (
@@ -102,14 +113,14 @@ class EventRewardInline(admin.TabularInline):
     extra = 1
 
 
-class RecommendedUmaInline(admin.TabularInline):
+class RecommendedUmaInline(TabularInline):
     """Recommended umas for a Champions Meeting."""
     model = ChampionsMeetingUmaRecommendation
     autocomplete_fields = ("uma",)
     extra = 1
 
 
-class ChangelogChangeInline(admin.TabularInline):
+class ChangelogChangeInline(TabularInline):
     """The individual change lines of a changelog entry, edited on its page."""
     model = ChangelogChange
     fields = ("order", "category", "text")
@@ -142,7 +153,7 @@ class GlobalDatesFilter(admin.SimpleListFilter):
 
 
 @admin.register(BannerTimeline)
-class BannerTimelineAdmin(ImagePreviewMixin, admin.ModelAdmin):
+class BannerTimelineAdmin(ImagePreviewMixin, ModelAdmin):
     list_display = ("name", "jp_start_date", "global_start_date",
                     "global_end_date", "global_dates_status")
     list_filter = (GlobalDatesFilter,)
@@ -192,7 +203,7 @@ class PlannedByColumnMixin:  # pylint: disable=too-few-public-methods
 
 
 @admin.register(BannerUma)
-class BannerUmaAdmin(PlannedByColumnMixin, admin.ModelAdmin):
+class BannerUmaAdmin(PlannedByColumnMixin, ModelAdmin):
     list_display = ("name", "banner_timeline", "free_pulls", "planned_by")
     list_select_related = ("banner_timeline",)
     ordering = ("-banner_timeline__global_start_date",)
@@ -202,7 +213,7 @@ class BannerUmaAdmin(PlannedByColumnMixin, admin.ModelAdmin):
 
 
 @admin.register(BannerSupport)
-class BannerSupportAdmin(PlannedByColumnMixin, admin.ModelAdmin):
+class BannerSupportAdmin(PlannedByColumnMixin, ModelAdmin):
     list_display = ("name", "banner_timeline", "free_pulls", "planned_by")
     list_select_related = ("banner_timeline",)
     ordering = ("-banner_timeline__global_start_date",)
@@ -212,7 +223,7 @@ class BannerSupportAdmin(PlannedByColumnMixin, admin.ModelAdmin):
 
 
 @admin.register(Uma)
-class UmaAdmin(ImagePreviewMixin, admin.ModelAdmin):
+class UmaAdmin(ImagePreviewMixin, ModelAdmin):
     list_display = ("image_preview", "name")
     list_display_links = ("name",)
     ordering = ("name",)
@@ -221,7 +232,7 @@ class UmaAdmin(ImagePreviewMixin, admin.ModelAdmin):
 
 
 @admin.register(SupportCard)
-class SupportCardAdmin(ImagePreviewMixin, admin.ModelAdmin):
+class SupportCardAdmin(ImagePreviewMixin, ModelAdmin):
     list_display = ("image_preview", "name")
     list_display_links = ("name",)
     ordering = ("name",)
@@ -230,7 +241,7 @@ class SupportCardAdmin(ImagePreviewMixin, admin.ModelAdmin):
 
 
 @admin.register(GameEvent)
-class GameEventAdmin(ImagePreviewMixin, admin.ModelAdmin):
+class GameEventAdmin(ImagePreviewMixin, ModelAdmin):
     list_display = ("name", "start_date", "end_date")
     date_hierarchy = "start_date"
     ordering = ("-start_date",)
@@ -240,7 +251,7 @@ class GameEventAdmin(ImagePreviewMixin, admin.ModelAdmin):
 
 
 @admin.register(EventReward)
-class EventRewardAdmin(admin.ModelAdmin):
+class EventRewardAdmin(ModelAdmin):
     """Kept top-level for browsing/searching all rewards across events."""
     list_display = ("name", "event", "date", "carat_amount")
     list_select_related = ("event",)
@@ -251,7 +262,7 @@ class EventRewardAdmin(admin.ModelAdmin):
 
 
 @admin.register(ChampionsMeeting)
-class ChampionsMeetingAdmin(ImagePreviewMixin, admin.ModelAdmin):
+class ChampionsMeetingAdmin(ImagePreviewMixin, ModelAdmin):
     list_display = ("name", "cm_number", "start_date", "end_date")
     date_hierarchy = "start_date"
     ordering = ("-start_date",)
@@ -276,7 +287,7 @@ class ChampionsMeetingAdmin(ImagePreviewMixin, admin.ModelAdmin):
 
 
 @admin.register(ChangelogEntry)
-class ChangelogEntryAdmin(admin.ModelAdmin):
+class ChangelogEntryAdmin(ModelAdmin):
     list_display = ("title", "version", "date")
     date_hierarchy = "date"
     ordering = ("-date",)
@@ -285,7 +296,7 @@ class ChangelogEntryAdmin(admin.ModelAdmin):
 
 
 @admin.register(LeagueOfHeroes)
-class LeagueOfHeroesAdmin(ImagePreviewMixin, admin.ModelAdmin):
+class LeagueOfHeroesAdmin(ImagePreviewMixin, ModelAdmin):
     list_display = ("name", "start_date", "end_date")
     date_hierarchy = "start_date"
     ordering = ("-start_date",)
@@ -301,21 +312,21 @@ class LeagueOfHeroesAdmin(ImagePreviewMixin, admin.ModelAdmin):
 # requirement: editable fields can't be in list_display_links).
 
 @admin.register(ClubRank)
-class ClubRankAdmin(admin.ModelAdmin):
+class ClubRankAdmin(ModelAdmin):
     list_display = ("name", "income_amount")
     list_editable = ("income_amount",)
     ordering = ("income_amount",)
 
 
 @admin.register(TeamTrialsRank)
-class TeamTrialsRankAdmin(admin.ModelAdmin):
+class TeamTrialsRankAdmin(ModelAdmin):
     list_display = ("name", "income_amount")
     list_editable = ("income_amount",)
     ordering = ("income_amount",)
 
 
 @admin.register(ChampionsMeetingRank)
-class ChampionsMeetingRankAdmin(admin.ModelAdmin):
+class ChampionsMeetingRankAdmin(ModelAdmin):
     list_display = ("name", "income_amount", "uma_ticket_amount",
                     "support_ticket_amount", "ssr_shard_amount", "sr_shard_amount")
     list_editable = ("income_amount", "uma_ticket_amount",
@@ -324,7 +335,7 @@ class ChampionsMeetingRankAdmin(admin.ModelAdmin):
 
 
 @admin.register(LeagueOfHeroesRank)
-class LeagueOfHeroesRankAdmin(admin.ModelAdmin):
+class LeagueOfHeroesRankAdmin(ModelAdmin):
     list_display = ("name", "income_amount", "uma_ticket_amount",
                     "support_ticket_amount", "ssr_shard_amount", "sr_shard_amount")
     list_editable = ("income_amount", "uma_ticket_amount",
@@ -335,11 +346,15 @@ class LeagueOfHeroesRankAdmin(admin.ModelAdmin):
 # ── 6. User data (owner-only) ────────────────────────────────────────────────
 
 @admin.register(CustomUser)
-class CustomUserAdmin(UserAdmin):
+class CustomUserAdmin(UserAdmin, ModelAdmin):
     """
     Django's stock UserAdmin (proper password handling, permission editors)
     extended with a collapsed section for the calculator's stat fields.
     """
+    # Unfold's variants of the auth forms — same behavior, themed widgets.
+    form = UserChangeForm
+    add_form = UserCreationForm
+    change_password_form = AdminPasswordChangeForm
     list_display = ("username", "email", "is_staff", "date_joined")
     fieldsets = UserAdmin.fieldsets + (
         ("Calculator stats", {
@@ -357,7 +372,17 @@ class CustomUserAdmin(UserAdmin):
 
 
 @admin.register(UserPlannedBanner)
-class UserPlannedBannerAdmin(admin.ModelAdmin):
+class UserPlannedBannerAdmin(ModelAdmin):
     list_display = ("user", "banner_uma", "banner_support", "number_of_pulls")
     list_select_related = ("user", "banner_uma", "banner_support")
     search_fields = ("user__username",)
+
+
+# Group is registered by django.contrib.auth with a plain ModelAdmin;
+# re-register it on unfold's base class so it picks up the theme.
+admin.site.unregister(Group)
+
+
+@admin.register(Group)
+class GroupAdmin(BaseGroupAdmin, ModelAdmin):
+    pass

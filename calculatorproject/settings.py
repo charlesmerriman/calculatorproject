@@ -14,6 +14,9 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 INSTALLED_APPS = [
+    # django-unfold must come BEFORE django.contrib.admin so its templates
+    # override the stock admin's (Django resolves app templates in order).
+    "unfold",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -27,6 +30,15 @@ INSTALLED_APPS = [
     "storages",
     "calculatorapi",
 ]
+
+# django-unfold (admin theme) configuration. Branding here mirrors the
+# admin.site.* values in calculatorapi/admin.py, which unfold's templates
+# fall back to; the sidebar keeps the default auto-generated app list.
+UNFOLD = {
+    "SITE_TITLE": "Uma Calculator Admin",
+    "SITE_HEADER": "Uma Calculator",
+    "SITE_SUBHEADER": "Content management",
+}
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
