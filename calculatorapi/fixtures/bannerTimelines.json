@@ -4,8 +4,8 @@
     "pk": 1,
     "fields": {
       "name": "T.M. Opera",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-03-02T22:00:00Z",
+      "jp_end_date": "2021-03-09T21:59:59Z",
       "global_start_date": "2025-06-26T22:00:00Z",
       "global_end_date": "2025-07-03T21:59:59Z",
       "image": "banner_timelines/TM Opera O.jpg"
@@ -16,8 +16,8 @@
     "pk": 2,
     "fields": {
       "name": "Mihono Bourbon",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-03-09T22:00:00Z",
+      "jp_end_date": "2021-03-18T21:59:59Z",
       "global_start_date": "2025-07-02T22:00:00Z",
       "global_end_date": "2025-07-11T21:59:59Z",
       "image": "banner_timelines/Mihono Bourbon.jpg"
@@ -28,8 +28,8 @@
     "pk": 3,
     "fields": {
       "name": "Biwa Hayahide",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-03-18T22:00:00Z",
+      "jp_end_date": "2021-03-30T21:59:59Z",
       "global_start_date": "2025-07-10T22:00:00Z",
       "global_end_date": "2025-07-22T21:59:59Z",
       "image": "banner_timelines/Biwa Hayahide.jpg"
@@ -40,8 +40,8 @@
     "pk": 4,
     "fields": {
       "name": "Tokai Teio (Anime) + Mejiro Mcqueen (Anime)",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-03-30T22:00:00Z",
+      "jp_end_date": "2021-04-15T21:59:59Z",
       "global_start_date": "2025-07-16T22:00:00Z",
       "global_end_date": "2025-08-01T21:59:59Z",
       "image": "banner_timelines/Anime 2025.jpg"
@@ -52,8 +52,8 @@
     "pk": 5,
     "fields": {
       "name": "Curren Chan",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-04-15T22:00:00Z",
+      "jp_end_date": "2021-04-26T21:59:59Z",
       "global_start_date": "2025-07-27T22:00:00Z",
       "global_end_date": "2025-08-07T21:59:59Z",
       "image": "banner_timelines/Curren Chan.jpg"
@@ -64,8 +64,8 @@
     "pk": 6,
     "fields": {
       "name": "Narita Taishin",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-04-26T22:00:00Z",
+      "jp_end_date": "2021-05-06T21:59:59Z",
       "global_start_date": "2025-08-03T22:00:00Z",
       "global_end_date": "2025-08-13T21:59:59Z",
       "image": "banner_timelines/Narita Taishen.jpg"
@@ -76,8 +76,8 @@
     "pk": 7,
     "fields": {
       "name": "Smart Falcon",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-05-06T22:00:00Z",
+      "jp_end_date": "2021-05-17T21:59:59Z",
       "global_start_date": "2025-08-11T22:00:00Z",
       "global_end_date": "2025-08-22T21:59:59Z",
       "image": "banner_timelines/Smart Falcon.jpg"
@@ -88,8 +88,8 @@
     "pk": 8,
     "fields": {
       "name": "Narita Brian",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-05-17T22:00:00Z",
+      "jp_end_date": "2021-05-28T21:59:59Z",
       "global_start_date": "2025-08-20T22:00:00Z",
       "global_end_date": "2025-08-31T21:59:59Z",
       "image": "banner_timelines/Narita Brain.jpg"
@@ -100,8 +100,8 @@
     "pk": 9,
     "fields": {
       "name": "Air Groove (Wedding) + Mayano Top Gun (Wedding)",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-05-28T22:00:00Z",
+      "jp_end_date": "2021-06-10T21:59:59Z",
       "global_start_date": "2025-08-28T22:00:00Z",
       "global_end_date": "2025-09-10T21:59:59Z",
       "image": "banner_timelines/Wedding 2025.jpg"
@@ -112,8 +112,8 @@
     "pk": 10,
     "fields": {
       "name": "Seiun Sky",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-06-10T22:00:00Z",
+      "jp_end_date": "2021-06-21T21:59:59Z",
       "global_start_date": "2025-09-07T22:00:00Z",
       "global_end_date": "2025-09-18T21:59:59Z",
       "image": "banner_timelines/Seuin Sky.jpg"
@@ -124,8 +124,8 @@
     "pk": 11,
     "fields": {
       "name": "Hishi Amazon",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-06-21T22:00:00Z",
+      "jp_end_date": "2021-06-29T21:59:59Z",
       "global_start_date": "2025-09-17T22:00:00Z",
       "global_end_date": "2025-09-25T21:59:59Z",
       "image": "banner_timelines/Hishi Amazon.jpg"
@@ -136,8 +136,8 @@
     "pk": 12,
     "fields": {
       "name": "Grass Wonder (Fantasy) + El Condor Pasa (Fantasy)",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-06-29T22:00:00Z",
+      "jp_end_date": "2021-07-12T21:59:59Z",
       "global_start_date": "2025-09-21T22:00:00Z",
       "global_end_date": "2025-10-04T21:59:59Z",
       "image": "banner_timelines/Fantasy.jpg"
@@ -148,8 +148,8 @@
     "pk": 13,
     "fields": {
       "name": "Fuji Kiseki",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-07-12T22:00:00Z",
+      "jp_end_date": "2021-07-20T21:59:59Z",
       "global_start_date": "2025-10-02T22:00:00Z",
       "global_end_date": "2025-10-10T21:59:59Z",
       "image": "banner_timelines/Fuji Kiseki.jpg"
@@ -160,8 +160,8 @@
     "pk": 14,
     "fields": {
       "name": "Gold City",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-07-20T22:00:00Z",
+      "jp_end_date": "2021-07-29T21:59:59Z",
       "global_start_date": "2025-10-07T22:00:00Z",
       "global_end_date": "2025-10-16T21:59:59Z",
       "image": "banner_timelines/Gold City.jpg"
@@ -172,8 +172,8 @@
     "pk": 15,
     "fields": {
       "name": "Special Week (Summer) + Maruzensky (Summer)",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-07-29T22:00:00Z",
+      "jp_end_date": "2021-08-11T21:59:59Z",
       "global_start_date": "2025-10-14T22:00:00Z",
       "global_end_date": "2025-10-27T21:59:59Z",
       "image": "banner_timelines/Summer.jpg"
@@ -184,8 +184,8 @@
     "pk": 16,
     "fields": {
       "name": "Meisho Doto",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-08-11T22:00:00Z",
+      "jp_end_date": "2021-08-20T21:59:59Z",
       "global_start_date": "2025-10-21T22:00:00Z",
       "global_end_date": "2025-10-30T21:59:59Z",
       "image": "banner_timelines/Meisho Doto.jpg"
@@ -196,8 +196,8 @@
     "pk": 17,
     "fields": {
       "name": "Eishin Flash",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-08-20T22:00:00Z",
+      "jp_end_date": "2021-08-30T21:59:59Z",
       "global_start_date": "2025-10-30T22:00:00Z",
       "global_end_date": "2025-11-09T21:59:59Z",
       "image": "banner_timelines/Eishen Flash.jpg"
@@ -208,8 +208,8 @@
     "pk": 18,
     "fields": {
       "name": "Matikanefukukitaru (Full Armor)",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-08-30T22:00:00Z",
+      "jp_end_date": "2021-09-10T21:59:59Z",
       "global_start_date": "2025-11-06T22:00:00Z",
       "global_end_date": "2025-11-17T21:59:59Z",
       "image": "banner_timelines/Matikanefukitaru.jpg"
@@ -220,8 +220,8 @@
     "pk": 19,
     "fields": {
       "name": "Hishi Akebono",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-09-10T22:00:00Z",
+      "jp_end_date": "2021-09-20T21:59:59Z",
       "global_start_date": "2025-11-11T22:00:00Z",
       "global_end_date": "2025-11-21T21:59:59Z",
       "image": "banner_timelines/Hishi Akebono.jpg"
@@ -232,8 +232,8 @@
     "pk": 20,
     "fields": {
       "name": "Agnes Digital",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-09-20T22:00:00Z",
+      "jp_end_date": "2021-09-29T21:59:59Z",
       "global_start_date": "2025-11-19T22:00:00Z",
       "global_end_date": "2025-11-28T21:59:59Z",
       "image": "banner_timelines/Agnes Digital.jpg"
@@ -244,8 +244,8 @@
     "pk": 21,
     "fields": {
       "name": "Rice Shower (Halloween) + Super Creek (Halloween)",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-09-29T22:00:00Z",
+      "jp_end_date": "2021-10-11T21:59:59Z",
       "global_start_date": "2025-11-24T22:00:00Z",
       "global_end_date": "2025-12-06T21:59:59Z",
       "image": "banner_timelines/Halloween 2025.jpg"
@@ -256,8 +256,8 @@
     "pk": 22,
     "fields": {
       "name": "Kawakami Princess♡",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-10-11T22:00:00Z",
+      "jp_end_date": "2021-10-20T21:59:59Z",
       "global_start_date": "2025-12-01T22:00:00Z",
       "global_end_date": "2025-12-10T21:59:59Z",
       "image": "banner_timelines/Kamikawa Princess 2025.jpg"
@@ -268,8 +268,8 @@
     "pk": 23,
     "fields": {
       "name": "Manhattan Cafe",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-10-20T22:00:00Z",
+      "jp_end_date": "2021-10-28T21:59:59Z",
       "global_start_date": "2025-12-08T22:00:00Z",
       "global_end_date": "2025-12-16T21:59:59Z",
       "image": "banner_timelines/Manhatten Cafe.jpg"
@@ -280,8 +280,8 @@
     "pk": 24,
     "fields": {
       "name": "Symboli Rudolf (Festival) + Gold City (Festival)",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-10-28T22:00:00Z",
+      "jp_end_date": "2021-11-08T21:59:59Z",
       "global_start_date": "2025-12-14T22:00:00Z",
       "global_end_date": "2025-12-25T21:59:59Z",
       "image": "banner_timelines/Festival 2025.jpg"
@@ -292,8 +292,8 @@
     "pk": 25,
     "fields": {
       "name": "Tosen Jordan",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-11-08T22:00:00Z",
+      "jp_end_date": "2021-11-19T21:59:59Z",
       "global_start_date": "2025-12-18T22:00:00Z",
       "global_end_date": "2025-12-29T21:59:59Z",
       "image": "banner_timelines/Tosen Jordan.jpg"
@@ -304,8 +304,8 @@
     "pk": 26,
     "fields": {
       "name": "Mejiro Dober",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-11-19T22:00:00Z",
+      "jp_end_date": "2021-11-29T21:59:59Z",
       "global_start_date": "2025-12-28T22:00:00Z",
       "global_end_date": "2026-01-07T21:59:59Z",
       "image": "banner_timelines/Mejiro Dober.jpg"
@@ -316,8 +316,8 @@
     "pk": 27,
     "fields": {
       "name": "Oguri Cap (Christmas) + Biwa Hayahide (Christmas)",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-11-29T22:00:00Z",
+      "jp_end_date": "2021-12-14T21:59:59Z",
       "global_start_date": "2026-01-05T22:00:00Z",
       "global_end_date": "2026-01-20T21:59:59Z",
       "image": "banner_timelines/Christmas Oguri Cap.jpg"
@@ -328,8 +328,8 @@
     "pk": 28,
     "fields": {
       "name": "Fine Motion",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-12-14T22:00:00Z",
+      "jp_end_date": "2021-12-22T21:59:59Z",
       "global_start_date": "2026-01-15T22:00:00Z",
       "global_end_date": "2026-01-23T21:59:59Z",
       "image": "banner_timelines/Fine Motion.jpg"
@@ -340,8 +340,8 @@
     "pk": 29,
     "fields": {
       "name": "Tamamo Cross",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-12-22T22:00:00Z",
+      "jp_end_date": "2021-12-31T21:59:59Z",
       "global_start_date": "2026-01-22T22:00:00Z",
       "global_end_date": "2026-01-31T21:59:59Z",
       "image": "banner_timelines/Tamano Cross.jpg"
@@ -352,8 +352,8 @@
     "pk": 30,
     "fields": {
       "name": "Haru Urara (New Year) + TM Opera O (New Year)",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2021-12-31T22:00:00Z",
+      "jp_end_date": "2022-01-11T21:59:59Z",
       "global_start_date": "2026-01-29T22:00:00Z",
       "global_end_date": "2026-02-09T21:59:59Z",
       "image": "banner_timelines/New Year 2025.jpg"
@@ -364,8 +364,8 @@
     "pk": 31,
     "fields": {
       "name": "(All)",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2022-01-11T22:00:00Z",
+      "jp_end_date": "2022-01-20T21:59:59Z",
       "global_start_date": "2026-02-05T22:00:00Z",
       "global_end_date": "2026-02-14T21:59:59Z",
       "image": ""
@@ -376,8 +376,8 @@
     "pk": 32,
     "fields": {
       "name": "Sakura Chiyono O",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2022-01-20T22:00:00Z",
+      "jp_end_date": "2022-01-28T21:59:59Z",
       "global_start_date": "2026-02-11T22:00:00Z",
       "global_end_date": "2026-02-19T21:59:59Z",
       "image": "banner_timelines/Sakura Chiyono O.jpg"
@@ -388,8 +388,8 @@
     "pk": 33,
     "fields": {
       "name": "Mihono Bourbon (Valentine) + Eishin Flash (Valentine)",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2022-01-28T22:00:00Z",
+      "jp_end_date": "2022-02-08T21:59:59Z",
       "global_start_date": "2026-02-18T22:00:00Z",
       "global_end_date": "2026-03-01T21:59:59Z",
       "image": "banner_timelines/Valentine 2025.jpg"
@@ -400,8 +400,8 @@
     "pk": 34,
     "fields": {
       "name": "Mejiro Ardan",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2022-02-08T22:00:00Z",
+      "jp_end_date": "2022-02-16T21:59:59Z",
       "global_start_date": "2026-02-25T22:00:00Z",
       "global_end_date": "2026-03-05T21:59:59Z",
       "image": "banner_timelines/Mejiro Ardan.jpg"
@@ -412,8 +412,8 @@
     "pk": 35,
     "fields": {
       "name": "Admire Vega",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2022-02-16T22:00:00Z",
+      "jp_end_date": "2022-02-24T21:59:59Z",
       "global_start_date": "2026-03-05T22:00:00Z",
       "global_end_date": "2026-03-13T21:59:59Z",
       "image": "banner_timelines/Admire Vega.jpg"
@@ -424,8 +424,8 @@
     "pk": 36,
     "fields": {
       "name": "Kitasan Black + Matikanetannhauser",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2022-02-24T22:00:00Z",
+      "jp_end_date": "2022-03-07T21:59:59Z",
       "global_start_date": "2026-03-12T22:00:00Z",
       "global_end_date": "2026-03-23T21:59:59Z",
       "image": "banner_timelines/Kitasan Black.jpg"
@@ -436,8 +436,8 @@
     "pk": 37,
     "fields": {
       "name": "Satono Diamond",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2022-03-07T22:00:00Z",
+      "jp_end_date": "2022-03-18T21:59:59Z",
       "global_start_date": "2026-03-22T22:00:00Z",
       "global_end_date": "2026-04-02T21:59:59Z",
       "image": "banner_timelines/Satono Diamond.jpg"
@@ -448,8 +448,8 @@
     "pk": 38,
     "fields": {
       "name": "Mejiro Bright",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2022-03-18T22:00:00Z",
+      "jp_end_date": "2022-03-29T21:59:59Z",
       "global_start_date": "2026-03-26T22:00:00Z",
       "global_end_date": "2026-04-06T21:59:59Z",
       "image": "banner_timelines/Mejiro Bright.jpg"
@@ -460,8 +460,8 @@
     "pk": 39,
     "fields": {
       "name": "Seiun Sky (Ballroom) + Fuji Kiseki (Ballroom)",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2022-03-29T22:00:00Z",
+      "jp_end_date": "2022-04-11T21:59:59Z",
       "global_start_date": "2026-04-05T22:00:00Z",
       "global_end_date": "2026-04-18T21:59:59Z",
       "image": "banner_timelines/Ballroom 2026.jpg"
@@ -472,8 +472,8 @@
     "pk": 40,
     "fields": {
       "name": "Nishino Flower",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2022-04-11T22:00:00Z",
+      "jp_end_date": "2022-04-19T21:59:59Z",
       "global_start_date": "2026-04-12T22:00:00Z",
       "global_end_date": "2026-04-20T21:59:59Z",
       "image": "banner_timelines/Nishino Flower.jpg"
@@ -484,8 +484,8 @@
     "pk": 41,
     "fields": {
       "name": "Yaeno Muteki",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2022-04-19T22:00:00Z",
+      "jp_end_date": "2022-04-28T21:59:59Z",
       "global_start_date": "2026-04-20T22:00:00Z",
       "global_end_date": "2026-04-29T21:59:59Z",
       "image": "banner_timelines/Yaeno Muteki.jpg"
@@ -496,8 +496,8 @@
     "pk": 42,
     "fields": {
       "name": "Nice Nature (Cheerleader) + King Halo (Cheerleader)",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2022-04-28T22:00:00Z",
+      "jp_end_date": "2022-05-10T21:59:59Z",
       "global_start_date": "2026-04-26T22:00:00Z",
       "global_end_date": "2026-05-08T21:59:59Z",
       "image": "banner_timelines/Cheerleader.jpg"
@@ -508,8 +508,8 @@
     "pk": 43,
     "fields": {
       "name": "Ines Fujin ♡",
-      "jp_start_date": null,
-      "jp_end_date": null,
+      "jp_start_date": "2022-05-10T22:00:00Z",
+      "jp_end_date": "2022-05-20T21:59:59Z",
       "global_start_date": "2026-04-30T22:00:00Z",
       "global_end_date": "2026-05-10T21:59:59Z",
       "image": "banner_timelines/Ines Fujin.jpg"
@@ -520,10 +520,10 @@
     "pk": 44,
     "fields": {
       "name": "Mejiro Palmer",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-05-07T22:00:00Z",
-      "global_end_date": "2026-05-17T21:59:59Z",
+      "jp_start_date": "2022-05-20T22:00:00Z",
+      "jp_end_date": "2022-05-30T21:59:59Z",
+      "global_start_date": "2026-05-10T22:00:00Z",
+      "global_end_date": "2026-05-20T21:59:59Z",
       "image": "banner_timelines/Mejiro Palmer.jpg"
     }
   },
@@ -532,10 +532,10 @@
     "pk": 45,
     "fields": {
       "name": "Curren Chan (Wedding) + Fine Motion (Wedding)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-05-14T22:00:00Z",
-      "global_end_date": "2026-05-25T21:59:59Z",
+      "jp_start_date": "2022-05-30T22:00:00Z",
+      "jp_end_date": "2022-06-10T21:59:59Z",
+      "global_start_date": "2026-05-18T22:00:00Z",
+      "global_end_date": "2026-05-29T21:59:59Z",
       "image": "banner_timelines/Wedding 2026.jpg"
     }
   },
@@ -544,10 +544,10 @@
     "pk": 46,
     "fields": {
       "name": "Inari One",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-05-21T22:00:00Z",
-      "global_end_date": "2026-05-31T21:59:59Z",
+      "jp_start_date": "2022-06-10T22:00:00Z",
+      "jp_end_date": "2022-06-20T21:59:59Z",
+      "global_start_date": "2026-05-28T22:00:00Z",
+      "global_end_date": "2026-06-07T21:59:59Z",
       "image": "banner_timelines/Inari One.jpg"
     }
   },
@@ -556,10 +556,10 @@
     "pk": 47,
     "fields": {
       "name": "Sweep Tosho",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-05-28T22:00:00Z",
-      "global_end_date": "2026-06-07T21:59:59Z",
+      "jp_start_date": "2022-06-20T22:00:00Z",
+      "jp_end_date": "2022-06-30T21:59:59Z",
+      "global_start_date": "2026-06-04T22:00:00Z",
+      "global_end_date": "2026-06-14T21:59:59Z",
       "image": "banner_timelines/Sweep Tosho.jpg"
     }
   },
@@ -568,10 +568,10 @@
     "pk": 48,
     "fields": {
       "name": "Taiki Shuttle (Camping) + Mejiro Dober (Camping)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-06-04T22:00:00Z",
-      "global_end_date": "2026-06-15T21:59:59Z",
+      "jp_start_date": "2022-06-30T22:00:00Z",
+      "jp_end_date": "2022-07-11T21:59:59Z",
+      "global_start_date": "2026-06-11T22:00:00Z",
+      "global_end_date": "2026-06-22T21:59:59Z",
       "image": "banner_timelines/Camping.jpg"
     }
   },
@@ -580,10 +580,10 @@
     "pk": 49,
     "fields": {
       "name": "Air Shakur",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-06-12T22:00:00Z",
-      "global_end_date": "2026-06-21T21:59:59Z",
+      "jp_start_date": "2022-07-11T22:00:00Z",
+      "jp_end_date": "2022-07-20T21:59:59Z",
+      "global_start_date": "2026-06-18T22:00:00Z",
+      "global_end_date": "2026-06-27T21:59:59Z",
       "image": "banner_timelines/Air Shakur.jpg"
     }
   },
@@ -592,10 +592,10 @@
     "pk": 50,
     "fields": {
       "name": "Seiun Sky (Rerun) + Narita Brian (Rerun)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-06-18T22:00:00Z",
-      "global_end_date": "2026-06-27T21:59:59Z",
+      "jp_start_date": "2022-07-20T22:00:00Z",
+      "jp_end_date": "2022-07-29T21:59:59Z",
+      "global_start_date": "2026-06-25T22:00:00Z",
+      "global_end_date": "2026-07-04T21:59:59Z",
       "image": ""
     }
   },
@@ -604,10 +604,10 @@
     "pk": 51,
     "fields": {
       "name": "Mejiro McQueen (Summer) + Gold Ship (Summer)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-06-24T22:00:00Z",
-      "global_end_date": "2026-07-06T21:59:59Z",
+      "jp_start_date": "2022-07-29T22:00:00Z",
+      "jp_end_date": "2022-08-10T21:59:59Z",
+      "global_start_date": "2026-07-02T22:00:00Z",
+      "global_end_date": "2026-07-14T21:59:59Z",
       "image": "banner_timelines/Summer 2026.jpg"
     }
   },
@@ -616,10 +616,10 @@
     "pk": 52,
     "fields": {
       "name": "Bamboo Memory",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-07-02T22:00:00Z",
-      "global_end_date": "2026-07-11T21:59:59Z",
+      "jp_start_date": "2022-08-10T22:00:00Z",
+      "jp_end_date": "2022-08-19T21:59:59Z",
+      "global_start_date": "2026-07-07T22:00:00Z",
+      "global_end_date": "2026-07-16T21:59:59Z",
       "image": "banner_timelines/Bamboo Memory.jpg"
     }
   },
@@ -628,10 +628,10 @@
     "pk": 53,
     "fields": {
       "name": "Copano Rickey",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-07-10T22:00:00Z",
-      "global_end_date": "2026-07-20T21:59:59Z",
+      "jp_start_date": "2022-08-19T22:00:00Z",
+      "jp_end_date": "2022-08-29T21:59:59Z",
+      "global_start_date": "2026-07-16T22:00:00Z",
+      "global_end_date": "2026-07-26T21:59:59Z",
       "image": "banner_timelines/Copano Rickey.jpg"
     }
   },
@@ -640,10 +640,10 @@
     "pk": 54,
     "fields": {
       "name": "Smart Falcon (Grand Live)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-07-14T22:00:00Z",
-      "global_end_date": "2026-08-02T21:59:59Z",
+      "jp_start_date": "2022-08-24T22:00:00Z",
+      "jp_end_date": "2022-09-12T21:59:59Z",
+      "global_start_date": "2026-07-22T22:00:00Z",
+      "global_end_date": "2026-08-10T21:59:59Z",
       "image": "banner_timelines/Grand Live.jpg"
     }
   },
@@ -652,10 +652,10 @@
     "pk": 55,
     "fields": {
       "name": "Winning Ticket (Steampunk) + Narita Taishin (Steampunk)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-07-17T22:00:00Z",
-      "global_end_date": "2026-07-31T21:59:59Z",
+      "jp_start_date": "2022-08-29T22:00:00Z",
+      "jp_end_date": "2022-09-12T21:59:59Z",
+      "global_start_date": "2026-07-27T22:00:00Z",
+      "global_end_date": "2026-08-10T21:59:59Z",
       "image": "banner_timelines/Steampunk.jpg"
     }
   },
@@ -664,10 +664,10 @@
     "pk": 56,
     "fields": {
       "name": "Yukino Bijin",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-07-27T22:00:00Z",
-      "global_end_date": "2026-08-04T21:59:59Z",
+      "jp_start_date": "2022-09-12T22:00:00Z",
+      "jp_end_date": "2022-09-20T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Yukino Bijin.jpg"
     }
   },
@@ -676,10 +676,10 @@
     "pk": 57,
     "fields": {
       "name": "Seeking the Pearl",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-08-02T22:00:00Z",
-      "global_end_date": "2026-08-11T21:59:59Z",
+      "jp_start_date": "2022-09-20T22:00:00Z",
+      "jp_end_date": "2022-09-29T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Seeking the Pearl.jpg"
     }
   },
@@ -688,10 +688,10 @@
     "pk": 58,
     "fields": {
       "name": "Agnes Digital (Halloween) + Meisho Doto (Halloween)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-08-08T22:00:00Z",
-      "global_end_date": "2026-08-20T21:59:59Z",
+      "jp_start_date": "2022-09-29T22:00:00Z",
+      "jp_end_date": "2022-10-11T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Halloween 2026.jpg"
     }
   },
@@ -700,10 +700,10 @@
     "pk": 59,
     "fields": {
       "name": "Aston Machan",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-08-16T22:00:00Z",
-      "global_end_date": "2026-08-24T21:59:59Z",
+      "jp_start_date": "2022-10-11T22:00:00Z",
+      "jp_end_date": "2022-10-19T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Aston Machan.jpg"
     }
   },
@@ -712,10 +712,10 @@
     "pk": 60,
     "fields": {
       "name": "Seeking the Pearl (Rerun)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-08-20T22:00:00Z",
-      "global_end_date": "2026-08-27T21:59:59Z",
+      "jp_start_date": "2022-10-17T22:00:00Z",
+      "jp_end_date": "2022-10-24T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": ""
     }
   },
@@ -724,10 +724,10 @@
     "pk": 61,
     "fields": {
       "name": "Yamanin Zephyr",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-08-22T22:00:00Z",
-      "global_end_date": "2026-08-31T21:59:59Z",
+      "jp_start_date": "2022-10-19T22:00:00Z",
+      "jp_end_date": "2022-10-28T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Yamanin Zephyr.png"
     }
   },
@@ -736,10 +736,10 @@
     "pk": 62,
     "fields": {
       "name": "Tamamo Cross (Festival) + Inari One (Festival)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-08-28T22:00:00Z",
-      "global_end_date": "2026-09-09T21:59:59Z",
+      "jp_start_date": "2022-10-28T22:00:00Z",
+      "jp_end_date": "2022-11-09T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/(Festival).png"
     }
   },
@@ -748,10 +748,10 @@
     "pk": 63,
     "fields": {
       "name": "Nakayama Festa",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-09-05T22:00:00Z",
-      "global_end_date": "2026-09-13T21:59:59Z",
+      "jp_start_date": "2022-11-09T22:00:00Z",
+      "jp_end_date": "2022-11-17T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Nakayama Festa.png"
     }
   },
@@ -760,10 +760,10 @@
     "pk": 64,
     "fields": {
       "name": "Wonder Acute",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-09-10T22:00:00Z",
-      "global_end_date": "2026-09-21T21:59:59Z",
+      "jp_start_date": "2022-11-17T22:00:00Z",
+      "jp_end_date": "2022-11-28T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Wonder Acute.png"
     }
   },
@@ -772,10 +772,10 @@
     "pk": 65,
     "fields": {
       "name": "Vodka (Christmas) + Daiwa Scarlet (Christmas)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-09-18T22:00:00Z",
-      "global_end_date": "2026-10-02T21:59:59Z",
+      "jp_start_date": "2022-11-28T22:00:00Z",
+      "jp_end_date": "2022-12-12T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Vodka(Christmas).png"
     }
   },
@@ -784,10 +784,10 @@
     "pk": 66,
     "fields": {
       "name": "Zenno Rob Roy",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-09-28T22:00:00Z",
-      "global_end_date": "2026-10-06T21:59:59Z",
+      "jp_start_date": "2022-12-12T22:00:00Z",
+      "jp_end_date": "2022-12-20T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Zenno Rob Roy.png"
     }
   },
@@ -796,10 +796,10 @@
     "pk": 67,
     "fields": {
       "name": "Narita Brian (Blaze)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-10-03T22:00:00Z",
-      "global_end_date": "2026-10-12T21:59:59Z",
+      "jp_start_date": "2022-12-20T22:00:00Z",
+      "jp_end_date": "2022-12-29T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Narita Brian(Blaze).png"
     }
   },
@@ -808,10 +808,10 @@
     "pk": 68,
     "fields": {
       "name": "Kitasan Black (New Year) + Satono Diamond (New Year)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-10-09T22:00:00Z",
-      "global_end_date": "2026-10-21T21:59:59Z",
+      "jp_start_date": "2022-12-29T22:00:00Z",
+      "jp_end_date": "2023-01-10T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Kitasan Black (New Year) + Satono Diamond (New Year).png"
     }
   },
@@ -820,10 +820,10 @@
     "pk": 69,
     "fields": {
       "name": "Hokko Tarumae",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-10-18T22:00:00Z",
-      "global_end_date": "2026-10-28T21:59:59Z",
+      "jp_start_date": "2023-01-10T22:00:00Z",
+      "jp_end_date": "2023-01-20T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Hokko Tarumae.png"
     }
   },
@@ -832,10 +832,10 @@
     "pk": 70,
     "fields": {
       "name": "Daitaku Helios",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-10-25T22:00:00Z",
-      "global_end_date": "2026-11-04T21:59:59Z",
+      "jp_start_date": "2023-01-20T22:00:00Z",
+      "jp_end_date": "2023-01-30T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Daitaku Helios.png"
     }
   },
@@ -844,10 +844,10 @@
     "pk": 71,
     "fields": {
       "name": "Rice Shower (Halloween) + Haru Urara (New Year)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-10-25T22:00:00Z",
-      "global_end_date": "2026-11-04T21:59:59Z",
+      "jp_start_date": "2023-01-20T22:00:00Z",
+      "jp_end_date": "2023-01-30T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": ""
     }
   },
@@ -856,10 +856,10 @@
     "pk": 72,
     "fields": {
       "name": "Ines Fujin (Valentine) + Mejiro Ryan (Valentine)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-10-31T22:00:00Z",
-      "global_end_date": "2026-11-14T21:59:59Z",
+      "jp_start_date": "2023-01-30T22:00:00Z",
+      "jp_end_date": "2023-02-13T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Ines Fujin (Valentine) + Mejiro Ryan (Valentine).png"
     }
   },
@@ -868,10 +868,10 @@
     "pk": 73,
     "fields": {
       "name": "Mr. C.B. + Twin Turbo",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-11-20T22:00:00Z",
-      "global_end_date": "2026-12-14T21:59:59Z",
+      "jp_start_date": "2023-02-24T22:00:00Z",
+      "jp_end_date": "2023-03-20T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Mr. C.B. + Twin Turbo.png"
     }
   },
@@ -880,10 +880,10 @@
     "pk": 74,
     "fields": {
       "name": "Daiichi Ruby",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-12-01T22:00:00Z",
-      "global_end_date": "2026-12-11T21:59:59Z",
+      "jp_start_date": "2023-03-10T22:00:00Z",
+      "jp_end_date": "2023-03-20T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Daiichi Ruby.png"
     }
   },
@@ -892,10 +892,10 @@
     "pk": 75,
     "fields": {
       "name": "Symboli Kris S",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-12-08T22:00:00Z",
-      "global_end_date": "2026-12-17T21:59:59Z",
+      "jp_start_date": "2023-03-20T22:00:00Z",
+      "jp_end_date": "2023-03-29T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Symboli Kris S.png"
     }
   },
@@ -904,10 +904,10 @@
     "pk": 76,
     "fields": {
       "name": "Mejiro Ardan (Ballroom) + Sakura Chiyono O (Ballroom)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-12-14T22:00:00Z",
-      "global_end_date": "2026-12-26T21:59:59Z",
+      "jp_start_date": "2023-03-29T22:00:00Z",
+      "jp_end_date": "2023-04-10T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Mejiro Ardan (Ballroom) + Sakura Chiyono O (Ballroom).png"
     }
   },
@@ -916,10 +916,10 @@
     "pk": 77,
     "fields": {
       "name": "Sakura Laurel",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-12-22T22:00:00Z",
-      "global_end_date": "2026-12-31T21:59:59Z",
+      "jp_start_date": "2023-04-10T22:00:00Z",
+      "jp_end_date": "2023-04-19T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Sakura Laurel.png"
     }
   },
@@ -928,10 +928,10 @@
     "pk": 78,
     "fields": {
       "name": "Neo Universe",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2026-12-29T22:00:00Z",
-      "global_end_date": "2027-01-07T21:59:59Z",
+      "jp_start_date": "2023-04-19T22:00:00Z",
+      "jp_end_date": "2023-04-28T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Neo Universe.png"
     }
   },
@@ -940,10 +940,10 @@
     "pk": 79,
     "fields": {
       "name": "Matikanetannhauser (Sports Festival) + Sakura Bakushin O (Sports Festival)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-01-04T22:00:00Z",
-      "global_end_date": "2027-01-16T21:59:59Z",
+      "jp_start_date": "2023-04-28T22:00:00Z",
+      "jp_end_date": "2023-05-10T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Matikanetannhauser (Sports Festival) + Sakura Bakushin O (Sports Festival).png"
     }
   },
@@ -952,10 +952,10 @@
     "pk": 80,
     "fields": {
       "name": "Hishi Miracle",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-01-12T22:00:00Z",
-      "global_end_date": "2027-01-21T21:59:59Z",
+      "jp_start_date": "2023-05-10T22:00:00Z",
+      "jp_end_date": "2023-05-19T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Hishi Miracle.png"
     }
   },
@@ -964,10 +964,10 @@
     "pk": 81,
     "fields": {
       "name": "Tanino Gimlet",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-01-18T22:00:00Z",
-      "global_end_date": "2027-01-28T21:59:59Z",
+      "jp_start_date": "2023-05-19T22:00:00Z",
+      "jp_end_date": "2023-05-29T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Tanino Gimlet.png"
     }
   },
@@ -976,10 +976,10 @@
     "pk": 82,
     "fields": {
       "name": "Hishi Amazon (Wedding) + Nishino Flower (Wedding)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-01-25T22:00:00Z",
-      "global_end_date": "2027-02-05T21:59:59Z",
+      "jp_start_date": "2023-05-29T22:00:00Z",
+      "jp_end_date": "2023-06-09T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Hishi Amazon (Wedding) + Nishino Flower (Wedding).png"
     }
   },
@@ -988,10 +988,10 @@
     "pk": 83,
     "fields": {
       "name": "Taiki Shuttle (Camping) + Yamanin Zephyr (Rerun)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-02-02T22:00:00Z",
-      "global_end_date": "2027-02-12T21:59:59Z",
+      "jp_start_date": "2023-06-09T22:00:00Z",
+      "jp_end_date": "2023-06-19T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Taiki Shuttle (Camping) + Yamanin Zephyr.png"
     }
   },
@@ -1000,10 +1000,10 @@
     "pk": 84,
     "fields": {
       "name": "Marvelous Sunday",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-02-09T22:00:00Z",
-      "global_end_date": "2027-02-19T21:59:59Z",
+      "jp_start_date": "2023-06-19T22:00:00Z",
+      "jp_end_date": "2023-06-29T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Marvelous Sunday.png"
     }
   },
@@ -1012,10 +1012,10 @@
     "pk": 85,
     "fields": {
       "name": "Bamboo Memory (Summer Trip) + Tosen Jordan (Summer Trip)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-02-15T22:00:00Z",
-      "global_end_date": "2027-02-26T21:59:59Z",
+      "jp_start_date": "2023-06-29T22:00:00Z",
+      "jp_end_date": "2023-07-10T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Bamboo Memory (Summer Trip) + Tosen Jordan (Summer Trip).png"
     }
   },
@@ -1024,10 +1024,10 @@
     "pk": 86,
     "fields": {
       "name": "Katsuragi Ace",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-02-23T22:00:00Z",
-      "global_end_date": "2027-03-06T21:59:59Z",
+      "jp_start_date": "2023-07-10T22:00:00Z",
+      "jp_end_date": "2023-07-21T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Katsuragi Ace.png"
     }
   },
@@ -1036,10 +1036,10 @@
     "pk": 87,
     "fields": {
       "name": "Sirius Symboli",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-03-03T22:00:00Z",
-      "global_end_date": "2027-03-13T21:59:59Z",
+      "jp_start_date": "2023-07-21T22:00:00Z",
+      "jp_end_date": "2023-07-31T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Sirius Symboli.png"
     }
   },
@@ -1048,10 +1048,10 @@
     "pk": 88,
     "fields": {
       "name": "Agnes Tachyon (Summer) + Silence Suzuka (Summer)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-03-09T22:00:00Z",
-      "global_end_date": "2027-03-23T21:59:59Z",
+      "jp_start_date": "2023-07-31T22:00:00Z",
+      "jp_end_date": "2023-08-14T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Agnes Tachyon (Summer) + Silence Suzuka  (Summer).png"
     }
   },
@@ -1060,10 +1060,10 @@
     "pk": 89,
     "fields": {
       "name": "Narita Top Road",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-03-28T22:00:00Z",
-      "global_end_date": "2027-04-15T21:59:59Z",
+      "jp_start_date": "2023-08-24T22:00:00Z",
+      "jp_end_date": "2023-09-11T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Narita Top Road.png"
     }
   },
@@ -1072,10 +1072,10 @@
     "pk": 90,
     "fields": {
       "name": "Gold Ship (Project L'Arc)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-04-02T22:00:00Z",
-      "global_end_date": "2027-04-13T21:59:59Z",
+      "jp_start_date": "2023-08-31T22:00:00Z",
+      "jp_end_date": "2023-09-11T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Gold Ship (Project L_Arc).png"
     }
   },
@@ -1084,10 +1084,10 @@
     "pk": 91,
     "fields": {
       "name": "Satono Diamond (Project L'Arc)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-04-09T22:00:00Z",
-      "global_end_date": "2027-04-18T21:59:59Z",
+      "jp_start_date": "2023-09-11T22:00:00Z",
+      "jp_end_date": "2023-09-20T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Satono Diamond (Project L_Arc).png"
     }
   },
@@ -1096,10 +1096,10 @@
     "pk": 92,
     "fields": {
       "name": "K.S.Miracle",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-04-16T22:00:00Z",
-      "global_end_date": "2027-04-25T21:59:59Z",
+      "jp_start_date": "2023-09-20T22:00:00Z",
+      "jp_end_date": "2023-09-29T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/K.S.Miracle.png"
     }
   },
@@ -1108,10 +1108,10 @@
     "pk": 93,
     "fields": {
       "name": "Air Shakur (Halloween) + Symboli Kris S (Halloween)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-04-22T22:00:00Z",
-      "global_end_date": "2027-05-03T21:59:59Z",
+      "jp_start_date": "2023-09-29T22:00:00Z",
+      "jp_end_date": "2023-10-10T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Air Shakur (Halloween) + Symboli Kris S (Halloween).png"
     }
   },
@@ -1120,10 +1120,10 @@
     "pk": 94,
     "fields": {
       "name": "Mejiro Ramonu",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-05-06T22:00:00Z",
-      "global_end_date": "2027-05-17T21:59:59Z",
+      "jp_start_date": "2023-10-19T22:00:00Z",
+      "jp_end_date": "2023-10-30T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Mejiro Ramonu.png"
     }
   },
@@ -1132,10 +1132,10 @@
     "pk": 95,
     "fields": {
       "name": "Kawakami Princess (Festival) + Tokai Teio (Festival)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-05-13T22:00:00Z",
-      "global_end_date": "2027-05-23T21:59:59Z",
+      "jp_start_date": "2023-10-30T22:00:00Z",
+      "jp_end_date": "2023-11-09T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Kawakami Princess (Festival) + Tokai Teio (Festival).png"
     }
   },
@@ -1144,10 +1144,10 @@
     "pk": 96,
     "fields": {
       "name": "Mejiro McQueen",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-05-20T22:00:00Z",
-      "global_end_date": "2027-05-31T21:59:59Z",
+      "jp_start_date": "2023-11-09T22:00:00Z",
+      "jp_end_date": "2023-11-20T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": ""
     }
   },
@@ -1156,10 +1156,10 @@
     "pk": 97,
     "fields": {
       "name": "Tap Dance City",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-05-28T22:00:00Z",
-      "global_end_date": "2027-06-07T21:59:59Z",
+      "jp_start_date": "2023-11-20T22:00:00Z",
+      "jp_end_date": "2023-11-30T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Tap Dance City.png"
     }
   },
@@ -1168,10 +1168,10 @@
     "pk": 98,
     "fields": {
       "name": "Mejiro Palmer (Christmas) + Mejiro Bright (Christmas)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-06-03T22:00:00Z",
-      "global_end_date": "2027-06-14T21:59:59Z",
+      "jp_start_date": "2023-11-30T22:00:00Z",
+      "jp_end_date": "2023-12-11T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Mejiro Palmer (Christmas) + Mejiro Bright (Christmas).png"
     }
   },
@@ -1180,10 +1180,10 @@
     "pk": 99,
     "fields": {
       "name": "Cheval Grand",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-06-17T22:00:00Z",
-      "global_end_date": "2027-06-25T21:59:59Z",
+      "jp_start_date": "2023-12-20T22:00:00Z",
+      "jp_end_date": "2023-12-28T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Cheval Grand.png"
     }
   },
@@ -1192,10 +1192,10 @@
     "pk": 100,
     "fields": {
       "name": "Kitasan Black (Anime Collab)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-06-23T22:00:00Z",
-      "global_end_date": "2027-07-05T21:59:59Z",
+      "jp_start_date": "2023-12-28T22:00:00Z",
+      "jp_end_date": "2024-01-09T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Kitasan Black (Anime Collab).png"
     }
   },
@@ -1204,10 +1204,10 @@
     "pk": 101,
     "fields": {
       "name": "Vivlos",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-07-08T22:00:00Z",
-      "global_end_date": "2027-07-20T21:59:59Z",
+      "jp_start_date": "2024-01-19T22:00:00Z",
+      "jp_end_date": "2024-01-31T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Vivlos.png"
     }
   },
@@ -1216,10 +1216,10 @@
     "pk": 102,
     "fields": {
       "name": "Yukino Bijin (Valentine) + Manhattan Cafe (Valentine)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-07-16T22:00:00Z",
-      "global_end_date": "2027-07-30T21:59:59Z",
+      "jp_start_date": "2024-01-31T22:00:00Z",
+      "jp_end_date": "2024-02-14T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Yukino Bijin (Valentine) + Manhattan Cafe (Valentine).png"
     }
   },
@@ -1228,10 +1228,10 @@
     "pk": 103,
     "fields": {
       "name": "Duramente + Ikuno Dictus",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-08-04T22:00:00Z",
-      "global_end_date": "2027-08-30T21:59:59Z",
+      "jp_start_date": "2024-02-24T22:00:00Z",
+      "jp_end_date": "2024-03-21T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Duramente + Ikuno Dictus.png"
     }
   },
@@ -1240,10 +1240,10 @@
     "pk": 104,
     "fields": {
       "name": "Rhein Kraft",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-08-21T22:00:00Z",
-      "global_end_date": "2027-08-29T21:59:59Z",
+      "jp_start_date": "2024-03-21T22:00:00Z",
+      "jp_end_date": "2024-03-29T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Rhein Kraft.png"
     }
   },
@@ -1252,10 +1252,10 @@
     "pk": 105,
     "fields": {
       "name": "Daiichi Ruby (Ballroom) + Daitaku Helios (Ballroom)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-08-27T22:00:00Z",
-      "global_end_date": "2027-09-07T21:59:59Z",
+      "jp_start_date": "2024-03-29T22:00:00Z",
+      "jp_end_date": "2024-04-09T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Daiichi Ruby (Ballroom) + Daitaku Helios (Ballroom).png"
     }
   },
@@ -1264,10 +1264,10 @@
     "pk": 106,
     "fields": {
       "name": "Winning Ticket (U.A.F.)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-09-03T22:00:00Z",
-      "global_end_date": "2027-09-13T21:59:59Z",
+      "jp_start_date": "2024-04-09T22:00:00Z",
+      "jp_end_date": "2024-04-19T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Winning Ticket (U.A.F.).png"
     }
   },
@@ -1276,10 +1276,10 @@
     "pk": 107,
     "fields": {
       "name": "Super Creek (Warfare) + Yaeno Muteki (Warfare)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-09-18T22:00:00Z",
-      "global_end_date": "2027-09-28T21:59:59Z",
+      "jp_start_date": "2024-04-30T22:00:00Z",
+      "jp_end_date": "2024-05-10T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Super Creek (Warfare) + Yaeno Muteki (Warfare).png"
     }
   },
@@ -1288,10 +1288,10 @@
     "pk": 108,
     "fields": {
       "name": "Agnes Tachyon (Alt Version)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-09-25T22:00:00Z",
-      "global_end_date": "2027-10-05T21:59:59Z",
+      "jp_start_date": "2024-05-10T22:00:00Z",
+      "jp_end_date": "2024-05-20T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Agnes Tachyon (Alt Version).png"
     }
   },
@@ -1300,10 +1300,10 @@
     "pk": 109,
     "fields": {
       "name": "King Halo (Wedding) + Sweep Tosho (Wedding)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-10-08T22:00:00Z",
-      "global_end_date": "2027-10-22T21:59:59Z",
+      "jp_start_date": "2024-05-30T22:00:00Z",
+      "jp_end_date": "2024-06-13T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/King Halo (Wedding) + Sweep Tosho (Wedding).png"
     }
   },
@@ -1312,10 +1312,10 @@
     "pk": 110,
     "fields": {
       "name": "Dream Journey",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-10-27T22:00:00Z",
-      "global_end_date": "2027-11-19T21:59:59Z",
+      "jp_start_date": "2024-06-26T22:00:00Z",
+      "jp_end_date": "2024-07-19T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Dream Journey.png"
     }
   },
@@ -1324,10 +1324,10 @@
     "pk": 111,
     "fields": {
       "name": "Rice Shower (Great Food Festival)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-11-05T22:00:00Z",
-      "global_end_date": "2027-11-15T21:59:59Z",
+      "jp_start_date": "2024-07-09T22:00:00Z",
+      "jp_end_date": "2024-07-19T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Rice Shower (Great Food Festival).png"
     }
   },
@@ -1336,10 +1336,10 @@
     "pk": 112,
     "fields": {
       "name": "Eishin Flash (Summer Trip) + Hokko Tarumae (Summer Trip)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-11-19T22:00:00Z",
-      "global_end_date": "2027-12-05T21:59:59Z",
+      "jp_start_date": "2024-07-29T22:00:00Z",
+      "jp_end_date": "2024-08-14T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Eishin Flash (Summer Trip) + Hokko Tarumae (Summer Trip).png"
     }
   },
@@ -1348,10 +1348,10 @@
     "pk": 113,
     "fields": {
       "name": "(All) 2",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-11-30T22:00:00Z",
-      "global_end_date": "2027-12-10T21:59:59Z",
+      "jp_start_date": "2024-08-14T22:00:00Z",
+      "jp_end_date": "2024-08-24T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": ""
     }
   },
@@ -1360,10 +1360,10 @@
     "pk": 114,
     "fields": {
       "name": "Gentildonna",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-12-09T22:00:00Z",
-      "global_end_date": "2027-12-26T21:59:59Z",
+      "jp_start_date": "2024-08-24T22:00:00Z",
+      "jp_end_date": "2024-09-10T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Gentildonna.png"
     }
   },
@@ -1372,10 +1372,10 @@
     "pk": 115,
     "fields": {
       "name": "Neo Universe (Autumn) + Zenno Rob Roy (Autumn)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-12-13T22:00:00Z",
-      "global_end_date": "2027-12-24T21:59:59Z",
+      "jp_start_date": "2024-08-30T22:00:00Z",
+      "jp_end_date": "2024-09-10T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Neo Universe (Autumn) + Zenno Rob Roy (Autumn).png"
     }
   },
@@ -1384,10 +1384,10 @@
     "pk": 116,
     "fields": {
       "name": "Cesario",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2027-12-21T22:00:00Z",
-      "global_end_date": "2028-01-10T21:59:59Z",
+      "jp_start_date": "2024-09-10T22:00:00Z",
+      "jp_end_date": "2024-09-30T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Cesario.png"
     }
   },
@@ -1396,10 +1396,10 @@
     "pk": 117,
     "fields": {
       "name": "Seeking the Pearl (Halloween) + Mayano Top Gun (Halloween)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-01-03T22:00:00Z",
-      "global_end_date": "2028-01-14T21:59:59Z",
+      "jp_start_date": "2024-09-30T22:00:00Z",
+      "jp_end_date": "2024-10-11T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Seeking the Pearl (Halloween) + Mayano Top Gun (Halloween).png"
     }
   },
@@ -1408,10 +1408,10 @@
     "pk": 118,
     "fields": {
       "name": "Biwa Hayahide (Mecha)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-01-23T22:00:00Z",
-      "global_end_date": "2028-02-12T21:59:59Z",
+      "jp_start_date": "2024-10-29T22:00:00Z",
+      "jp_end_date": "2024-11-18T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Biwa Hayahide (Mecha).png"
     }
   },
@@ -1420,10 +1420,10 @@
     "pk": 119,
     "fields": {
       "name": "Narita Taishin (Mecha)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-01-30T22:00:00Z",
-      "global_end_date": "2028-02-09T21:59:59Z",
+      "jp_start_date": "2024-11-08T22:00:00Z",
+      "jp_end_date": "2024-11-18T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Narita Taishin (Mecha).png"
     }
   },
@@ -1432,10 +1432,10 @@
     "pk": 120,
     "fields": {
       "name": "Narita Top Road (Christmas) + Admire Vega (Christmas)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-02-13T22:00:00Z",
-      "global_end_date": "2028-02-25T21:59:59Z",
+      "jp_start_date": "2024-11-28T22:00:00Z",
+      "jp_end_date": "2024-12-10T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Narita Top Road (Christmas) + Admire Vega (Christmas).png"
     }
   },
@@ -1444,10 +1444,10 @@
     "pk": 121,
     "fields": {
       "name": "Win Variation",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-02-21T22:00:00Z",
-      "global_end_date": "2028-03-01T21:59:59Z",
+      "jp_start_date": "2024-12-10T22:00:00Z",
+      "jp_end_date": "2024-12-19T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Win Variation.png"
     }
   },
@@ -1456,10 +1456,10 @@
     "pk": 122,
     "fields": {
       "name": "Katsuragi Ace (New Year) + Mr. C.B. (New Year)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-03-04T22:00:00Z",
-      "global_end_date": "2028-03-18T21:59:59Z",
+      "jp_start_date": "2024-12-27T22:00:00Z",
+      "jp_end_date": "2025-01-10T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Katsuragi Ace (New Year) + Mr. C.B. (New Year).png"
     }
   },
@@ -1468,10 +1468,10 @@
     "pk": 123,
     "fields": {
       "name": "Maruzensky (New Year)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-03-14T22:00:00Z",
-      "global_end_date": "2028-03-24T21:59:59Z",
+      "jp_start_date": "2025-01-10T22:00:00Z",
+      "jp_end_date": "2025-01-20T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Maruzensky (New Year).png"
     }
   },
@@ -1480,10 +1480,10 @@
     "pk": 124,
     "fields": {
       "name": "Yamanin Zephyr (Valentine) + Aston Machan (Valentine)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-03-28T22:00:00Z",
-      "global_end_date": "2028-04-11T21:59:59Z",
+      "jp_start_date": "2025-01-31T22:00:00Z",
+      "jp_end_date": "2025-02-14T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": ""
     }
   },
@@ -1492,10 +1492,10 @@
     "pk": 125,
     "fields": {
       "name": "Orfevre",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-04-16T22:00:00Z",
-      "global_end_date": "2028-05-11T21:59:59Z",
+      "jp_start_date": "2025-02-24T22:00:00Z",
+      "jp_end_date": "2025-03-21T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Orfevre.png"
     }
   },
@@ -1504,10 +1504,10 @@
     "pk": 126,
     "fields": {
       "name": "Gran Alegria",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-04-27T22:00:00Z",
-      "global_end_date": "2028-05-07T21:59:59Z",
+      "jp_start_date": "2025-03-11T22:00:00Z",
+      "jp_end_date": "2025-03-21T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Gran Alegria.png"
     }
   },
@@ -1516,10 +1516,10 @@
     "pk": 127,
     "fields": {
       "name": "Tap Dance City (Ballroom) + Tanino Gimlet (Ballroom)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-05-11T22:00:00Z",
-      "global_end_date": "2028-05-21T21:59:59Z",
+      "jp_start_date": "2025-03-31T22:00:00Z",
+      "jp_end_date": "2025-04-10T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Ballroom.png"
     }
   },
@@ -1528,10 +1528,10 @@
     "pk": 128,
     "fields": {
       "name": "Sirius Symboli (The Twinkle Legends)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-05-18T22:00:00Z",
-      "global_end_date": "2028-05-29T21:59:59Z",
+      "jp_start_date": "2025-04-10T22:00:00Z",
+      "jp_end_date": "2025-04-21T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Sirius Symboli.png"
     }
   },
@@ -1540,10 +1540,10 @@
     "pk": 129,
     "fields": {
       "name": "Copano Rickey (Parade) + Smart Falcon (Parade)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-05-31T22:00:00Z",
-      "global_end_date": "2028-06-12T21:59:59Z",
+      "jp_start_date": "2025-04-30T22:00:00Z",
+      "jp_end_date": "2025-05-12T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Parade.png"
     }
   },
@@ -1552,10 +1552,10 @@
     "pk": 130,
     "fields": {
       "name": "Verxina",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-06-09T22:00:00Z",
-      "global_end_date": "2028-06-18T21:59:59Z",
+      "jp_start_date": "2025-05-12T22:00:00Z",
+      "jp_end_date": "2025-05-21T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Verxina.png"
     }
   },
@@ -1564,10 +1564,10 @@
     "pk": 131,
     "fields": {
       "name": "Cesario (Wedding) + Mejiro Ramonu (Wedding)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-06-21T22:00:00Z",
-      "global_end_date": "2028-07-05T21:59:59Z",
+      "jp_start_date": "2025-05-30T22:00:00Z",
+      "jp_end_date": "2025-06-13T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": ""
     }
   },
@@ -1576,10 +1576,10 @@
     "pk": 132,
     "fields": {
       "name": "Gold City (Deserted Island)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-07-10T22:00:00Z",
-      "global_end_date": "2028-08-04T21:59:59Z",
+      "jp_start_date": "2025-06-27T22:00:00Z",
+      "jp_end_date": "2025-07-22T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Gold City Island.png"
     }
   },
@@ -1588,10 +1588,10 @@
     "pk": 133,
     "fields": {
       "name": "Ines Fujin (Deserted Island)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-07-20T22:00:00Z",
-      "global_end_date": "2028-07-31T21:59:59Z",
+      "jp_start_date": "2025-07-11T22:00:00Z",
+      "jp_end_date": "2025-07-22T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Ines Fujin Island.png"
     }
   },
@@ -1600,10 +1600,10 @@
     "pk": 134,
     "fields": {
       "name": "Cheval Grand (Summer) + Satono Crown (Summer)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-08-03T22:00:00Z",
-      "global_end_date": "2028-08-17T21:59:59Z",
+      "jp_start_date": "2025-07-31T22:00:00Z",
+      "jp_end_date": "2025-08-14T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": ""
     }
   },
@@ -1612,10 +1612,10 @@
     "pk": 135,
     "fields": {
       "name": "Still in Love",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-08-21T22:00:00Z",
-      "global_end_date": "2028-09-16T21:59:59Z",
+      "jp_start_date": "2025-08-24T22:00:00Z",
+      "jp_end_date": "2025-09-19T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Still in Love.png"
     }
   },
@@ -1624,10 +1624,10 @@
     "pk": 136,
     "fields": {
       "name": "K.S.Miracle (Alt Version) + Hishi Miracle (Alt Version)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-08-24T22:00:00Z",
-      "global_end_date": "2028-09-04T21:59:59Z",
+      "jp_start_date": "2025-08-29T22:00:00Z",
+      "jp_end_date": "2025-09-09T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Alt 2025.png"
     }
   },
@@ -1636,10 +1636,10 @@
     "pk": 137,
     "fields": {
       "name": "Espoir City",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-09-01T22:00:00Z",
-      "global_end_date": "2028-09-11T21:59:59Z",
+      "jp_start_date": "2025-09-09T22:00:00Z",
+      "jp_end_date": "2025-09-19T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Espoir City.png"
     }
   },
@@ -1648,10 +1648,10 @@
     "pk": 138,
     "fields": {
       "name": "Hishi Akebono (Halloween) + Marvelous Sunday (Halloween)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-09-15T22:00:00Z",
-      "global_end_date": "2028-09-26T21:59:59Z",
+      "jp_start_date": "2025-09-29T22:00:00Z",
+      "jp_end_date": "2025-10-10T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": ""
     }
   },
@@ -1660,10 +1660,10 @@
     "pk": 139,
     "fields": {
       "name": "Tosen Jordan (Halloween)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-09-22T22:00:00Z",
-      "global_end_date": "2028-10-02T21:59:59Z",
+      "jp_start_date": "2025-10-10T22:00:00Z",
+      "jp_end_date": "2025-10-20T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Tosen Jordan Halloween.png"
     }
   },
@@ -1672,10 +1672,10 @@
     "pk": 140,
     "fields": {
       "name": "Jungle Pocket (Rerun)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-09-28T22:00:00Z",
-      "global_end_date": "2028-10-09T21:59:59Z",
+      "jp_start_date": "2025-10-18T22:00:00Z",
+      "jp_end_date": "2025-10-29T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Jungle Pocket.png"
     }
   },
@@ -1684,10 +1684,10 @@
     "pk": 141,
     "fields": {
       "name": "Transcend (Onsen)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-10-05T22:00:00Z",
-      "global_end_date": "2028-10-26T21:59:59Z",
+      "jp_start_date": "2025-10-29T22:00:00Z",
+      "jp_end_date": "2025-11-19T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Transcend Onsen.png"
     }
   },
@@ -1696,10 +1696,10 @@
     "pk": 142,
     "fields": {
       "name": "Wonder Acute (Onsen)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-10-14T22:00:00Z",
-      "global_end_date": "2028-10-23T21:59:59Z",
+      "jp_start_date": "2025-11-10T22:00:00Z",
+      "jp_end_date": "2025-11-19T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Wonder Acute Onsen.png"
     }
   },
@@ -1708,10 +1708,10 @@
     "pk": 143,
     "fields": {
       "name": "Nakayama Festa (Christmas) + Dream Journey (Christmas)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-10-26T22:00:00Z",
-      "global_end_date": "2028-11-08T21:59:59Z",
+      "jp_start_date": "2025-11-28T22:00:00Z",
+      "jp_end_date": "2025-12-11T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": ""
     }
   },
@@ -1720,10 +1720,10 @@
     "pk": 144,
     "fields": {
       "name": "Oguri Cap (Anime Collab)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-11-04T22:00:00Z",
-      "global_end_date": "2028-12-02T21:59:59Z",
+      "jp_start_date": "2025-12-11T22:00:00Z",
+      "jp_end_date": "2026-01-08T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Oguri Capped.png"
     }
   },
@@ -1732,10 +1732,10 @@
     "pk": 145,
     "fields": {
       "name": "Ikuno Dictus (New Year) + Sakura Laurel (New Year)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-11-14T22:00:00Z",
-      "global_end_date": "2028-11-27T21:59:59Z",
+      "jp_start_date": "2025-12-26T22:00:00Z",
+      "jp_end_date": "2026-01-08T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": ""
     }
   },
@@ -1744,10 +1744,10 @@
     "pk": 146,
     "fields": {
       "name": "Bubble Gum Fellow (New Year)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-11-23T22:00:00Z",
-      "global_end_date": "2028-12-04T21:59:59Z",
+      "jp_start_date": "2026-01-08T22:00:00Z",
+      "jp_end_date": "2026-01-19T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Bubble Gum Fellow.png"
     }
   },
@@ -1756,10 +1756,10 @@
     "pk": 147,
     "fields": {
       "name": "Taiki Shuttle (Valentine) + Sounds of Earth (Valentine)",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-12-08T22:00:00Z",
-      "global_end_date": "2028-12-23T21:59:59Z",
+      "jp_start_date": "2026-01-30T22:00:00Z",
+      "jp_end_date": "2026-02-14T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": "banner_timelines/Sounds of Earth.png"
     }
   },
@@ -1768,10 +1768,586 @@
     "pk": 148,
     "fields": {
       "name": "Almond Eye",
-      "jp_start_date": null,
-      "jp_end_date": null,
-      "global_start_date": "2028-12-28T22:00:00Z",
-      "global_end_date": "2029-01-31T21:59:59Z",
+      "jp_start_date": "2026-02-24T22:00:00Z",
+      "jp_end_date": "2026-03-30T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 149,
+    "fields": {
+      "name": "Special Week + Silence Suzuka + Tokai Teio + Maruzensky + Oguri Cap + Taiki Shuttle + Mejiro McQueen + Symboli Rudolf + Rice Shower",
+      "jp_start_date": "2021-02-24T22:00:00Z",
+      "jp_end_date": "2021-03-02T21:59:59Z",
+      "global_start_date": "2025-06-26T22:00:00Z",
+      "global_end_date": "2025-07-02T21:59:59Z",
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 150,
+    "fields": {
+      "name": "Shinko Windy",
+      "jp_start_date": "2023-02-13T22:00:00Z",
+      "jp_end_date": "2023-02-24T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 151,
+    "fields": {
+      "name": "Gold City + Tosen Jordan + Mejiro Palmer + Daitaku Helios",
+      "jp_start_date": "2023-04-28T22:00:00Z",
+      "jp_end_date": "2023-05-10T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 152,
+    "fields": {
+      "name": "Copano Rickey (Rerun) + Hokko Tarumae (Rerun)",
+      "jp_start_date": "2023-08-14T22:00:00Z",
+      "jp_end_date": "2023-08-24T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 153,
+    "fields": {
+      "name": "Support Only",
+      "jp_start_date": "2023-10-10T22:00:00Z",
+      "jp_end_date": "2023-10-19T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 154,
+    "fields": {
+      "name": "Satono Crown",
+      "jp_start_date": "2023-12-11T22:00:00Z",
+      "jp_end_date": "2023-12-20T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 155,
+    "fields": {
+      "name": "Nice Nature (New Year)",
+      "jp_start_date": "2024-01-09T22:00:00Z",
+      "jp_end_date": "2024-01-19T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 156,
+    "fields": {
+      "name": "Biko Pegasus",
+      "jp_start_date": "2024-02-14T22:00:00Z",
+      "jp_end_date": "2024-02-24T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 157,
+    "fields": {
+      "name": "Transcend",
+      "jp_start_date": "2024-03-12T22:00:00Z",
+      "jp_end_date": "2024-03-21T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 158,
+    "fields": {
+      "name": "Sounds of Earth",
+      "jp_start_date": "2024-04-19T22:00:00Z",
+      "jp_end_date": "2024-04-30T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 159,
+    "fields": {
+      "name": "Katsuragi Ace + Sakura Chiyono O + (Ballroom) + Hishi Amazon + (Wedding)",
+      "jp_start_date": "2024-04-30T22:00:00Z",
+      "jp_end_date": "2024-05-10T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 160,
+    "fields": {
+      "name": "North Flight",
+      "jp_start_date": "2024-05-20T22:00:00Z",
+      "jp_end_date": "2024-05-30T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 161,
+    "fields": {
+      "name": "Jungle Pocket",
+      "jp_start_date": "2024-06-13T22:00:00Z",
+      "jp_end_date": "2024-06-26T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 162,
+    "fields": {
+      "name": "Calstone Light O",
+      "jp_start_date": "2024-07-19T22:00:00Z",
+      "jp_end_date": "2024-07-29T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 163,
+    "fields": {
+      "name": "Durandal",
+      "jp_start_date": "2024-09-20T22:00:00Z",
+      "jp_end_date": "2024-09-30T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 164,
+    "fields": {
+      "name": "Bubble Gum Fellow",
+      "jp_start_date": "2024-10-11T22:00:00Z",
+      "jp_end_date": "2024-10-29T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 165,
+    "fields": {
+      "name": "Air Messiah",
+      "jp_start_date": "2024-11-18T22:00:00Z",
+      "jp_end_date": "2024-11-28T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 166,
+    "fields": {
+      "name": "Grass Wonder (New Year)",
+      "jp_start_date": "2024-12-19T22:00:00Z",
+      "jp_end_date": "2024-12-27T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 167,
+    "fields": {
+      "name": "Furioso",
+      "jp_start_date": "2025-01-20T22:00:00Z",
+      "jp_end_date": "2025-01-31T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 168,
+    "fields": {
+      "name": "Tsurumaru Tsuyoshi",
+      "jp_start_date": "2025-02-14T22:00:00Z",
+      "jp_end_date": "2025-02-24T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 169,
+    "fields": {
+      "name": "No Reason",
+      "jp_start_date": "2025-03-21T22:00:00Z",
+      "jp_end_date": "2025-03-31T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 170,
+    "fields": {
+      "name": "Fenomeno",
+      "jp_start_date": "2025-04-21T22:00:00Z",
+      "jp_end_date": "2025-04-30T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 171,
+    "fields": {
+      "name": "Oguri Cap + (Christmas) + Gold Ship (Summer) + (Project L'Arc) + Mejiro McQueen + (Summer) + (Anime Collab) + Tamamo Cross + (Festival) + Curren Chan + (Wedding) + Seiun Sky + (Ballroom) + Hishi Miracle + Biwa Hayahide + (Christmas) + (Mecha)",
+      "jp_start_date": "2025-04-30T22:00:00Z",
+      "jp_end_date": "2025-05-21T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 172,
+    "fields": {
+      "name": "Loves Only You",
+      "jp_start_date": "2025-05-21T22:00:00Z",
+      "jp_end_date": "2025-05-30T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 173,
+    "fields": {
+      "name": "Chrono Genesis",
+      "jp_start_date": "2025-06-13T22:00:00Z",
+      "jp_end_date": "2025-06-27T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 174,
+    "fields": {
+      "name": "Fusaichi Pandora",
+      "jp_start_date": "2025-07-22T22:00:00Z",
+      "jp_end_date": "2025-07-31T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 175,
+    "fields": {
+      "name": "Vivlos (Summer)",
+      "jp_start_date": "2025-08-14T22:00:00Z",
+      "jp_end_date": "2025-08-24T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 176,
+    "fields": {
+      "name": "Believe",
+      "jp_start_date": "2025-09-19T22:00:00Z",
+      "jp_end_date": "2025-09-29T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 177,
+    "fields": {
+      "name": "Dantsu Flame",
+      "jp_start_date": "2025-10-18T22:00:00Z",
+      "jp_end_date": "2025-10-29T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 178,
+    "fields": {
+      "name": "Buena Vista",
+      "jp_start_date": "2025-11-19T22:00:00Z",
+      "jp_end_date": "2025-11-28T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 179,
+    "fields": {
+      "name": "Stay Gold",
+      "jp_start_date": "2025-12-21T22:00:00Z",
+      "jp_end_date": "2026-01-19T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 180,
+    "fields": {
+      "name": "Gentildonna (Rerun)",
+      "jp_start_date": "2026-01-01T22:00:00Z",
+      "jp_end_date": "2026-01-19T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 181,
+    "fields": {
+      "name": "Orfevre (Rerun)",
+      "jp_start_date": "2026-01-01T22:00:00Z",
+      "jp_end_date": "2026-01-19T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 182,
+    "fields": {
+      "name": "Kiseki",
+      "jp_start_date": "2026-01-19T22:00:00Z",
+      "jp_end_date": "2026-01-30T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 183,
+    "fields": {
+      "name": "Royce and Royce",
+      "jp_start_date": "2026-02-14T22:00:00Z",
+      "jp_end_date": "2026-02-24T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 184,
+    "fields": {
+      "name": "Loves Only You (Beyond Dreams)",
+      "jp_start_date": "2026-03-11T22:00:00Z",
+      "jp_end_date": "2026-03-19T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 185,
+    "fields": {
+      "name": "Victoire Pisa",
+      "jp_start_date": "2026-03-19T22:00:00Z",
+      "jp_end_date": "2026-03-30T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 186,
+    "fields": {
+      "name": "Sakura Bakushin O (Ballroom) + North Flight (Ballroom)",
+      "jp_start_date": "2026-03-30T22:00:00Z",
+      "jp_end_date": "2026-04-10T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 187,
+    "fields": {
+      "name": "Lucky Lilac",
+      "jp_start_date": "2026-04-10T22:00:00Z",
+      "jp_end_date": "2026-04-20T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 188,
+    "fields": {
+      "name": "Admire Groove",
+      "jp_start_date": "2026-04-20T22:00:00Z",
+      "jp_end_date": "2026-04-30T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 189,
+    "fields": {
+      "name": "Fuji Kiseki (Cheerleader) + Jungle Pocket (Cheerleader)",
+      "jp_start_date": "2026-04-30T22:00:00Z",
+      "jp_end_date": "2026-05-11T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 190,
+    "fields": {
+      "name": "Fenomeno + Nakayama Festa + (Christmas) + Stay Gold + Dream Journey + (Christmas) + Orfevre + Gold Ship (Summer) + (Project L'Arc)",
+      "jp_start_date": "2026-04-30T22:00:00Z",
+      "jp_end_date": "2026-05-11T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 191,
+    "fields": {
+      "name": "Daring Heart",
+      "jp_start_date": "2026-05-11T22:00:00Z",
+      "jp_end_date": "2026-05-20T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 192,
+    "fields": {
+      "name": "Red Desire",
+      "jp_start_date": "2026-05-20T22:00:00Z",
+      "jp_end_date": "2026-05-29T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 193,
+    "fields": {
+      "name": "Manhatten Cafe (Wedding) + Gentildonna (Wedding)",
+      "jp_start_date": "2026-05-29T22:00:00Z",
+      "jp_end_date": "2026-06-15T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 194,
+    "fields": {
+      "name": "Curren Bouquetd'or",
+      "jp_start_date": "2026-06-15T22:00:00Z",
+      "jp_end_date": "2026-06-29T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 195,
+    "fields": {
+      "name": "Narita Top Road (Tracen-ken)",
+      "jp_start_date": "2026-06-29T22:00:00Z",
+      "jp_end_date": "2026-07-10T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": ""
+    }
+  },
+  {
+    "model": "calculatorapi.bannertimeline",
+    "pk": 196,
+    "fields": {
+      "name": "Fine Motion (Tracen-ken)",
+      "jp_start_date": "2026-07-10T22:00:00Z",
+      "jp_end_date": "2026-07-21T21:59:59Z",
+      "global_start_date": null,
+      "global_end_date": null,
       "image": ""
     }
   }
