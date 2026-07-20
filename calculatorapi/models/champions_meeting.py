@@ -3,8 +3,16 @@ from django.db import models
 class ChampionsMeeting(models.Model):
     name = models.CharField(max_length=255, null=False)
     cm_number = models.IntegerField(verbose_name="meeting number")
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
+    # JP server dates: always known well in advance (JP runs content first).
+    # Nullable so historical rows migrated from the old schema (which only had
+    # confirmed global dates) can be backfilled gradually in the admin.
+    jp_start_date = models.DateTimeField(blank=True, null=True)
+    jp_end_date = models.DateTimeField(blank=True, null=True)
+    # Global server dates: only filled once the meeting is officially confirmed
+    # (~1 month out). When null, the global dates are predicted from the JP
+    # dates (see calculatorapi/predictions.py).
+    global_start_date = models.DateTimeField(blank=True, null=True)
+    global_end_date = models.DateTimeField(blank=True, null=True)
     image = models.ImageField(upload_to="champions_meetings/", blank=True, null=True)
     track = models.CharField(max_length=255)
     surface_type = models.CharField(max_length=255)

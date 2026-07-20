@@ -5,50 +5,7 @@ from rest_framework import status
 from calculatorapi.models import BannerTimeline, BannerSupport, BannerUma
 from .uma import UmaSerializer
 from .support_card import SupportCardSerializer
-
-
-# One shared DateTimeField instance to reproduce DRF's exact ISO wire format
-# (e.g. "2025-06-26T22:00:00Z") when serializing resolved dates below.
-_DT = serializers.DateTimeField()
-
-
-class EffectiveDateMixin(serializers.Serializer):
-    """
-    Emits the RESOLVED global dates (confirmed-or-predicted) under the existing
-    `start_date`/`end_date` field names, plus an `is_predicted` flag, by looking
-    up this timeline's id in the `effective_dates` map passed via serializer
-    context. Keying by id (not queryset position) is what keeps every
-    serialization path — top-level, nested in uma/support banners, and inside
-    planned banners — consistent for a given timeline.
-
-    Falls back to the raw global_* fields when no map is in context, so the
-    serializer is still safe when used standalone.
-    """
-
-    start_date = serializers.SerializerMethodField()
-    end_date = serializers.SerializerMethodField()
-    is_predicted = serializers.SerializerMethodField()
-
-    def _entry(self, obj):
-        emap = self.context.get("effective_dates")
-        if emap is not None and obj.id in emap:
-            return emap[obj.id]
-        return {
-            "start_date": obj.global_start_date,
-            "end_date": obj.global_end_date,
-            "is_predicted": False,
-        }
-
-    def get_start_date(self, obj):
-        value = self._entry(obj)["start_date"]
-        return _DT.to_representation(value) if value is not None else None
-
-    def get_end_date(self, obj):
-        value = self._entry(obj)["end_date"]
-        return _DT.to_representation(value) if value is not None else None
-
-    def get_is_predicted(self, obj):
-        return self._entry(obj)["is_predicted"]
+from .mixins import EffectiveDateMixin
 
 
 class BannerTimelineSerializer(EffectiveDateMixin, serializers.ModelSerializer):

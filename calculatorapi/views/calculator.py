@@ -46,8 +46,12 @@ class CalculatorViewSet(ViewSet):
 
         # Resolve every timeline's effective (confirmed-or-predicted) global
         # dates once. Banner ordering now keys off these resolved dates rather
-        # than a DB column, so we sort in Python (the sets are small).
+        # than a DB column, so we sort in Python (the sets are small). Champions
+        # Meetings and League of Heroes events get their own maps — each content
+        # type predicts against its own anchor, so rows are never mixed.
         emap = build_effective_date_map()
+        cm_emap = build_effective_date_map(ChampionsMeeting)
+        loh_emap = build_effective_date_map(LeagueOfHeroes)
 
         banner_uma_data = sorted(
             BannerUma.objects.select_related("banner_timeline"),
@@ -71,8 +75,14 @@ class CalculatorViewSet(ViewSet):
             user_planned_banner_data = UserPlannedBanner.objects.none()
             user_stats_data = None
         events_data = GameEvent.objects.prefetch_related('rewards').order_by('start_date').all()
-        champions_meeting_data = ChampionsMeeting.objects.all()
-        league_of_heroes_event_data = LeagueOfHeroes.objects.all().order_by("start_date")
+        champions_meeting_data = sorted(
+            ChampionsMeeting.objects.all(),
+            key=lambda cm: effective_sort_key(cm_emap.get(cm.id)),
+        )
+        league_of_heroes_event_data = sorted(
+            LeagueOfHeroes.objects.all(),
+            key=lambda loh: effective_sort_key(loh_emap.get(loh.id)),
+        )
         banner_timeline_data = sorted(
             BannerTimeline.objects.prefetch_related("uma_banners", "support_banners"),
             key=lambda t: effective_sort_key(emap.get(t.id)),
@@ -93,8 +103,12 @@ class CalculatorViewSet(ViewSet):
                 user_planned_banner_data, many=True,
                 context={"effective_dates": emap, "request": request},
             ).data,
-            "champions_meeting_data": ChampionsMeetingSerializer(champions_meeting_data, many=True).data,
-            "league_of_heroes_event_data": LeagueOfHeroesSerializer(league_of_heroes_event_data, many=True).data,
+            "champions_meeting_data": ChampionsMeetingSerializer(
+                champions_meeting_data, many=True, context={"effective_dates": cm_emap}
+            ).data,
+            "league_of_heroes_event_data": LeagueOfHeroesSerializer(
+                league_of_heroes_event_data, many=True, context={"effective_dates": loh_emap}
+            ).data,
             "events_data": GameEventSerializer(events_data, many=True).data,
             "user_stats_data": user_stats_data,
             "banner_timeline_data": BannerTimelineForViewingSerializer(

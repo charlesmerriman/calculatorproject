@@ -15,6 +15,7 @@ from calculatorapi.models import (
     CustomUser,
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
     BannerTimeline, BannerUma, BannerSupport, UserPlannedBanner,
+    ChampionsMeeting, LeagueOfHeroes,
     ChangelogEntry, ChangelogChange,
 )
 
@@ -76,6 +77,44 @@ def make_support_banner(timeline=None, name='Test Support Banner'):
     return BannerSupport.objects.create(
         banner_timeline=timeline or make_timeline(),
         name=name,
+    )
+
+
+def make_champions_meeting(name='Test CM', cm_number=1, jp_start_date=None,
+                           jp_end_date=None, global_start_date=None,
+                           global_end_date=None):
+    """Create a ChampionsMeeting. Defaults to a CONFIRMED global meeting
+    (now → now+7d); pass jp_*/global_* explicitly for predicted rows. Track and
+    stat fields are filler — they don't affect date resolution."""
+    now = timezone.now()
+    if global_start_date is None and global_end_date is None and \
+            jp_start_date is None and jp_end_date is None:
+        global_start_date = now
+        global_end_date = now + datetime.timedelta(days=7)
+    return ChampionsMeeting.objects.create(
+        name=name, cm_number=cm_number,
+        jp_start_date=jp_start_date, jp_end_date=jp_end_date,
+        global_start_date=global_start_date, global_end_date=global_end_date,
+        track='Tokyo', surface_type='Turf', distance='Long', length='2400m',
+        track_condition='Good', season='Spring', weather='Sunny', direction='Right',
+        speed_recommendation=0, stamina_recommendation=0, power_recommendation=0,
+        guts_recommendation=0, wit_recommendation=0,
+    )
+
+
+def make_league_of_heroes(name='Test LoH', jp_start_date=None, jp_end_date=None,
+                          global_start_date=None, global_end_date=None):
+    """Create a LeagueOfHeroes event. Defaults to a CONFIRMED global event
+    (now → now+7d); pass jp_*/global_* explicitly for predicted rows."""
+    now = timezone.now()
+    if global_start_date is None and global_end_date is None and \
+            jp_start_date is None and jp_end_date is None:
+        global_start_date = now
+        global_end_date = now + datetime.timedelta(days=7)
+    return LeagueOfHeroes.objects.create(
+        name=name,
+        jp_start_date=jp_start_date, jp_end_date=jp_end_date,
+        global_start_date=global_start_date, global_end_date=global_end_date,
     )
 
 
@@ -359,6 +398,77 @@ class CalculatorGetTests(TestCase):
         planned_tl = res.data['user_planned_banner_data'][0]['banner_uma']['banner_timeline']
         self.assertEqual(planned_tl['start_date'], expected_start)
         self.assertTrue(planned_tl['is_predicted'])
+
+    def test_champions_meeting_exposes_resolved_and_predicted_fields(self):
+        make_champions_meeting(name='Confirmed CM')  # default: confirmed global
+        res = self.client.get('/calculator-data')
+        entry = res.data['champions_meeting_data'][0]
+        for key in ('start_date', 'end_date', 'is_predicted',
+                    'jp_start_date', 'global_start_date'):
+            self.assertIn(key, entry)
+        self.assertFalse(entry['is_predicted'])
+        self.assertTrue(entry['start_date'].endswith('Z'))
+
+    def test_league_of_heroes_exposes_resolved_and_predicted_fields(self):
+        make_league_of_heroes(name='Confirmed LoH')  # default: confirmed global
+        res = self.client.get('/calculator-data')
+        entry = res.data['league_of_heroes_event_data'][0]
+        for key in ('start_date', 'end_date', 'is_predicted',
+                    'jp_start_date', 'global_start_date'):
+            self.assertIn(key, entry)
+        self.assertFalse(entry['is_predicted'])
+        self.assertTrue(entry['start_date'].endswith('Z'))
+
+    def test_champions_meeting_predicts_from_jp_when_global_unconfirmed(self):
+        # Anchor: confirmed CM with a JP date. Target: JP-only, so predicted.
+        # Δjp = 30d × 0.7 = 21d -> 2025-06-22.
+        make_champions_meeting(
+            name='Anchor CM', cm_number=1,
+            jp_start_date=_dt(2025, 1, 1), jp_end_date=_dt(2025, 1, 8),
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        predicted = make_champions_meeting(
+            name='Predicted CM', cm_number=2,
+            jp_start_date=_dt(2025, 1, 31), jp_end_date=_dt(2025, 2, 7),
+        )
+        res = self.client.get('/calculator-data')
+        entry = next(c for c in res.data['champions_meeting_data'] if c['id'] == predicted.id)
+        self.assertTrue(entry['is_predicted'])
+        self.assertEqual(entry['start_date'], '2025-06-22T00:00:00Z')
+
+    def test_league_of_heroes_predicts_from_jp_when_global_unconfirmed(self):
+        make_league_of_heroes(
+            name='Anchor LoH',
+            jp_start_date=_dt(2025, 1, 1), jp_end_date=_dt(2025, 1, 8),
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        predicted = make_league_of_heroes(
+            name='Predicted LoH',
+            jp_start_date=_dt(2025, 1, 31), jp_end_date=_dt(2025, 2, 7),
+        )
+        res = self.client.get('/calculator-data')
+        entry = next(l for l in res.data['league_of_heroes_event_data'] if l['id'] == predicted.id)
+        self.assertTrue(entry['is_predicted'])
+        self.assertEqual(entry['start_date'], '2025-06-22T00:00:00Z')
+
+    def test_cm_and_loh_predictions_use_separate_anchors(self):
+        # A confirmed CM must NOT act as an anchor for LoH prediction (and vice
+        # versa) — each content type resolves against its own map.
+        make_champions_meeting(
+            name='CM Anchor', cm_number=1,
+            jp_start_date=_dt(2025, 1, 1), jp_end_date=_dt(2025, 1, 8),
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        # LoH with only a JP date and NO confirmed LoH anchor -> unresolved,
+        # not predicted off the CM anchor.
+        loh = make_league_of_heroes(
+            name='LoH JP only',
+            jp_start_date=_dt(2025, 1, 31), jp_end_date=_dt(2025, 2, 7),
+        )
+        res = self.client.get('/calculator-data')
+        entry = next(l for l in res.data['league_of_heroes_event_data'] if l['id'] == loh.id)
+        self.assertFalse(entry['is_predicted'])
+        self.assertIsNone(entry['start_date'])
 
 
 # ── Reference Endpoint Tests ──────────────────────────────────────────────────

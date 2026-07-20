@@ -155,8 +155,10 @@ erDiagram
         int id PK
         string name
         int cm_number
-        datetime start_date
-        datetime end_date
+        datetime jp_start_date "nullable"
+        datetime jp_end_date "nullable"
+        datetime global_start_date "nullable; set when confirmed"
+        datetime global_end_date "nullable; set when confirmed"
         string image
         string track
         string surface_type
@@ -227,13 +229,13 @@ The FK from `EventReward` to `GameEvent` allows null, meaning rewards can exist 
 
 Both serializers share an `EffectiveDateMixin` that emits **resolved** `start_date`/`end_date` (plus an `is_predicted` flag) under the original field names.
 
-### `BannerTimeline` dates are JP-based with predicted global dates
+### JP-based dates with predicted global dates
 
-The site targets the **global** server, but global banner dates are only confirmed ~1 month out. The model stores JP dates (`jp_start_date`/`jp_end_date`, always known) and confirmed global dates (`global_start_date`/`global_end_date`, null until confirmed). For unconfirmed banners the global dates are **predicted** from the JP schedule.
+The site targets the **global** server, but global dates are only confirmed ~1 month out. `BannerTimeline`, `ChampionsMeeting`, and `LeagueOfHeroes` all store JP dates (`jp_start_date`/`jp_end_date`, always known) and confirmed global dates (`global_start_date`/`global_end_date`, null until confirmed). For unconfirmed rows the global dates are **predicted** from the JP schedule. The three serializers share `EffectiveDateMixin`, and each content type is resolved into its **own** effective-date map (its own anchor set) — rows are never mixed across models.
 
 Prediction (fixed anchor, in `calculatorapi/predictions.py`):
-- **Anchor** = the banner with the greatest `jp_start_date` among those having BOTH a confirmed `global_start_date` and a `jp_start_date`.
+- **Anchor** = the row with the greatest `jp_start_date` among those having BOTH a confirmed `global_start_date` and a `jp_start_date`.
 - `predicted_global_start = anchor.global_start_date + (target.jp_start_date − anchor.jp_start_date) × 0.7`
 - `predicted_global_end = predicted_global_start + (target.jp_end_date − target.jp_start_date)`
 
-The calculator view builds a single effective-date map (keyed by timeline id) once per request and injects it via serializer context, so the resolved dates are consistent across every serialization path. **Prediction requires the anchor to have a `jp_start_date`** — historical rows migrate with JP dates null, so the most-recent confirmed banners must have their JP dates backfilled in the admin for prediction to activate.
+The calculator view builds one effective-date map per content type (keyed by row id) once per request and injects each via serializer context, so the resolved dates are consistent across every serialization path. **Prediction requires the anchor to have a `jp_start_date`** — historical rows migrate with JP dates null, so the most-recent confirmed rows must have their JP dates backfilled in the admin for prediction to activate.

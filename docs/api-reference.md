@@ -96,7 +96,7 @@ For anonymous requests, all reference keys are populated as usual but the two us
 }
 ```
 
-`user_planned_banner_data`, `banner_uma_data`, and `banner_support_data` are ordered by each timeline's **resolved** (confirmed-or-predicted) global start date, sorted server-side in Python since predicted dates aren't a DB column. `events_data` is ordered by `start_date`.
+`user_planned_banner_data`, `banner_uma_data`, `banner_support_data`, `champions_meeting_data`, and `league_of_heroes_event_data` are ordered by each row's **resolved** (confirmed-or-predicted) global start date, sorted server-side in Python since predicted dates aren't a DB column. `events_data` is ordered by `start_date`.
 
 ---
 
@@ -292,5 +292,47 @@ The `banner_timeline_data` key uses an expanded serializer that nests uma and su
   "image": "url | null",
   "banner_umas": [ { "id": 1, "name": "string", "free_pulls": 0, "admin_comments": "string | null", "umas": [ { ...uma + "recommendation": "string | null" } ] } ],
   "banner_supports": [ { ... } ]
+}
+```
+
+### `ChampionsMeeting` (from `champions_meeting_data`)
+
+Same **resolved-date** contract as `BannerTimeline`: `start_date`/`end_date` are the confirmed global dates when set, otherwise dates **predicted** from the JP schedule; `is_predicted` flags an estimate; the raw `jp_*`/`global_*` fields are exposed (`global_*` null until confirmed). Champions Meetings resolve against their own anchor set, independent of banners and League of Heroes.
+
+```json
+{
+  "id": 1,
+  "name": "string",
+  "start_date": "ISO8601 (resolved: confirmed or predicted)",
+  "end_date": "ISO8601 (resolved: confirmed or predicted)",
+  "is_predicted": false,
+  "jp_start_date": "ISO8601 | null",
+  "jp_end_date": "ISO8601 | null",
+  "global_start_date": "ISO8601 | null",
+  "global_end_date": "ISO8601 | null",
+  "image": "url | null",
+  "track": "string", "surface_type": "string", "distance": "string", "length": "string",
+  "track_condition": "string", "season": "string", "weather": "string", "direction": "string",
+  "speed_recommendation": 0, "stamina_recommendation": 0, "power_recommendation": 0,
+  "guts_recommendation": 0, "wit_recommendation": 0
+}
+```
+
+### `LeagueOfHeroes` (from `league_of_heroes_event_data`, and `GET /leagueofheroes`)
+
+Same resolved-date contract as above, with its own anchor set. Note the standalone `GET /leagueofheroes` route serves raw confirmed dates only (`is_predicted` is always `false` there); predictions are emitted only via `GET /calculator-data`.
+
+```json
+{
+  "id": 1,
+  "name": "string",
+  "start_date": "ISO8601 (resolved: confirmed or predicted)",
+  "end_date": "ISO8601 (resolved: confirmed or predicted)",
+  "is_predicted": false,
+  "jp_start_date": "ISO8601 | null",
+  "jp_end_date": "ISO8601 | null",
+  "global_start_date": "ISO8601 | null",
+  "global_end_date": "ISO8601 | null",
+  "image": "url | null"
 }
 ```

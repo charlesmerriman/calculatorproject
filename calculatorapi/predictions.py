@@ -1,25 +1,29 @@
 """
-Global-server date prediction for banner timelines.
+Global-server date prediction for JP-first content (banner timelines,
+Champions Meetings, League of Heroes events).
 
-The site plans pulls on the GLOBAL server, but global banner dates are only
-confirmed ~1 month out. Beyond that horizon we predict global dates from the
+The site plans pulls on the GLOBAL server, but global dates are only confirmed
+~1 month out. Beyond that horizon we predict global dates from the
 (always-known) JP schedule.
 
 This module is pure query logic — the math lives in `compute_effective_dates`
 (DB-free, unit-tested directly), with a thin ORM wrapper `build_effective_date_map`
-that feeds it — mirroring the split in `analytics.py`.
+that feeds it — mirroring the split in `analytics.py`. `compute_effective_dates`
+is model-agnostic (duck-typed, id-keyed), so any content type with the same
+jp_*/global_* date fields can reuse it; each model is resolved into its OWN map
+(its own anchor set) — rows are never mixed across models.
 
 Prediction model (fixed anchor):
-- The "anchor" is the banner with the greatest jp_start_date among banners that
-  have BOTH a confirmed global_start_date AND a jp_start_date.
-- For a banner awaiting confirmation (global_start_date is null) with a jp_start_date:
+- The "anchor" is the row with the greatest jp_start_date among rows that have
+  BOTH a confirmed global_start_date AND a jp_start_date.
+- For a row awaiting confirmation (global_start_date is null) with a jp_start_date:
       predicted_global_start = anchor.global_start_date
                                + (target.jp_start_date - anchor.jp_start_date) * FACTOR
       predicted_global_end   = predicted_global_start
                                + (target.jp_end_date - target.jp_start_date)
-  The 0.7 factor reflects global historically running banners faster than JP.
-- Confirmed banners pass through unchanged with is_predicted=False.
-- Banners with no usable dates (or when no anchor exists) resolve to
+  The 0.7 factor reflects global historically running content faster than JP.
+- Confirmed rows pass through unchanged with is_predicted=False.
+- Rows with no usable dates (or when no anchor exists) resolve to
   (None, None, False).
 """
 
@@ -101,10 +105,12 @@ def compute_effective_dates(rows):
     return result
 
 
-def build_effective_date_map():
-    """Fetch every timeline's raw dates in one query and resolve them. Covers
-    all ids so any serialization path can look up any timeline."""
-    rows = BannerTimeline.objects.values(
+def build_effective_date_map(model=BannerTimeline):
+    """Fetch every row's raw dates for `model` in one query and resolve them.
+    Covers all ids so any serialization path can look up any row. `model` must
+    expose the jp_*/global_* date fields; each model gets its own anchor set, so
+    pass one model at a time (never merge rows across content types)."""
+    rows = model.objects.values(
         "id",
         "jp_start_date",
         "jp_end_date",

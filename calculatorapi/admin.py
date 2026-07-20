@@ -152,8 +152,31 @@ class GlobalDatesFilter(admin.SimpleListFilter):
         return queryset
 
 
+class GlobalDatesStatusMixin:  # pylint: disable=too-few-public-methods
+    """
+    Adds a Confirmed/Predicted status badge column, shared by every JP-first
+    content admin (banners, Champions Meetings, League of Heroes). A row with a
+    global_start_date is confirmed; without one the app predicts its dates from
+    the JP schedule.
+    """
+
+    @admin.display(description="Status", ordering="global_start_date")
+    def global_dates_status(self, obj):
+        # Inline styles (not admin CSS classes) so the badge renders the same
+        # under any admin theme.
+        if obj.global_start_date:
+            color, background, label = "#166534", "#dcfce7", "Confirmed"
+        else:
+            color, background, label = "#92400e", "#fef3c7", "Predicted"
+        return format_html(
+            '<span style="color: {}; background: {}; padding: 2px 8px; '
+            'border-radius: 9999px; font-weight: 600;">{}</span>',
+            color, background, label,
+        )
+
+
 @admin.register(BannerTimeline)
-class BannerTimelineAdmin(ImagePreviewMixin, ModelAdmin):
+class BannerTimelineAdmin(GlobalDatesStatusMixin, ImagePreviewMixin, ModelAdmin):
     list_display = ("name", "jp_start_date", "global_start_date",
                     "global_end_date", "global_dates_status")
     list_filter = (GlobalDatesFilter,)
@@ -169,20 +192,6 @@ class BannerTimelineAdmin(ImagePreviewMixin, ModelAdmin):
         ("JP server dates (always known)", {"fields": ("jp_start_date", "jp_end_date")}),
         ("Global server dates (fill when confirmed)", {"fields": ("global_start_date", "global_end_date")}),
     )
-
-    @admin.display(description="Status", ordering="global_start_date")
-    def global_dates_status(self, obj):
-        # Inline styles (not admin CSS classes) so the badge renders the same
-        # under any admin theme.
-        if obj.global_start_date:
-            color, background, label = "#166534", "#dcfce7", "Confirmed"
-        else:
-            color, background, label = "#92400e", "#fef3c7", "Predicted"
-        return format_html(
-            '<span style="color: {}; background: {}; padding: 2px 8px; '
-            'border-radius: 9999px; font-weight: 600;">{}</span>',
-            color, background, label,
-        )
 
 
 class PlannedByColumnMixin:  # pylint: disable=too-few-public-methods
@@ -262,16 +271,25 @@ class EventRewardAdmin(ModelAdmin):
 
 
 @admin.register(ChampionsMeeting)
-class ChampionsMeetingAdmin(ImagePreviewMixin, ModelAdmin):
-    list_display = ("name", "cm_number", "start_date", "end_date")
-    date_hierarchy = "start_date"
-    ordering = ("-start_date",)
+class ChampionsMeetingAdmin(GlobalDatesStatusMixin, ImagePreviewMixin, ModelAdmin):
+    list_display = ("name", "cm_number", "jp_start_date", "global_start_date",
+                    "global_end_date", "global_dates_status")
+    list_filter = (GlobalDatesFilter,)
+    date_hierarchy = "global_start_date"
+    ordering = ("-global_start_date",)
     search_fields = ("name",)
     readonly_fields = ("image_preview",)
+    # Editors always fill the JP dates; global dates only once the meeting is
+    # confirmed (they're left blank until then, and the app predicts them).
     fieldsets = (
         (None, {
-            "fields": ("name", "cm_number", "start_date", "end_date",
-                       "image", "image_preview"),
+            "fields": ("name", "cm_number", "image", "image_preview"),
+        }),
+        ("JP server dates (always known)", {
+            "fields": ("jp_start_date", "jp_end_date"),
+        }),
+        ("Global server dates (fill when confirmed)", {
+            "fields": ("global_start_date", "global_end_date"),
         }),
         ("Track details", {
             "fields": ("track", "surface_type", "distance", "length",
@@ -296,12 +314,21 @@ class ChangelogEntryAdmin(ModelAdmin):
 
 
 @admin.register(LeagueOfHeroes)
-class LeagueOfHeroesAdmin(ImagePreviewMixin, ModelAdmin):
-    list_display = ("name", "start_date", "end_date")
-    date_hierarchy = "start_date"
-    ordering = ("-start_date",)
+class LeagueOfHeroesAdmin(GlobalDatesStatusMixin, ImagePreviewMixin, ModelAdmin):
+    list_display = ("name", "jp_start_date", "global_start_date",
+                    "global_end_date", "global_dates_status")
+    list_filter = (GlobalDatesFilter,)
+    date_hierarchy = "global_start_date"
+    ordering = ("-global_start_date",)
     search_fields = ("name",)
     readonly_fields = ("image_preview",)
+    # Editors always fill the JP dates; global dates only once the event is
+    # confirmed (they're left blank until then, and the app predicts them).
+    fieldsets = (
+        (None, {"fields": ("name", "image", "image_preview")}),
+        ("JP server dates (always known)", {"fields": ("jp_start_date", "jp_end_date")}),
+        ("Global server dates (fill when confirmed)", {"fields": ("global_start_date", "global_end_date")}),
+    )
 
 
 # ── 5. Rank / income tables ──────────────────────────────────────────────────

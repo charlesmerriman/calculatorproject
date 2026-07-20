@@ -42,12 +42,16 @@ If a featured uma or card doesn't exist yet, create it first under **Umas** /
 
 ### Confirmed vs. predicted dates
 
-A timeline's **JP server dates** are always filled in; the **global server
-dates** stay blank until the banner is officially confirmed — until then the
-site shows players dates *predicted* from the JP schedule. The timeline list
-shows each row's state as a **Confirmed** (green) or **Predicted** (amber)
-badge, and the **Global dates** filter in the sidebar lists everything still
-awaiting confirmation, so you can spot what needs dates filled in.
+A row's **JP server dates** are always filled in; the **global server dates**
+stay blank until the event is officially confirmed — until then the site shows
+players dates *predicted* from the JP schedule. The list shows each row's state
+as a **Confirmed** (green) or **Predicted** (amber) badge, and the **Global
+dates** filter in the sidebar lists everything still awaiting confirmation, so
+you can spot what needs dates filled in.
+
+This same JP/Global date system applies to **banner timelines, Champions
+Meetings, and League of Heroes events** — all three have split JP/Global date
+sections, the Confirmed/Predicted badge, and the Global dates filter.
 
 ### Seeing which banners players care about
 
@@ -74,10 +78,12 @@ site, and the home page shows how long ago the most recent entry was posted.
 
 ## Champions Meetings & League of Heroes
 
-- **Champions Meetings**: the form is grouped into basic info, **Track
-  details** (surface, distance, weather, …) and **Stat recommendations**.
-  Recommended umas are added at the bottom of the page with a search picker.
-- **League of Heroes events**: name, dates, and image.
+- **Champions Meetings**: the form is grouped into basic info, **JP / Global
+  server dates** (see *Confirmed vs. predicted dates* above), **Track details**
+  (surface, distance, weather, …) and **Stat recommendations**. Recommended umas
+  are added at the bottom of the page with a search picker.
+- **League of Heroes events**: name, **JP / Global server dates** (same
+  Confirmed/Predicted system), and image.
 
 ## Rank tables
 
