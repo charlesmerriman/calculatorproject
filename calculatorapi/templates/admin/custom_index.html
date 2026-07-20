@@ -1,13 +1,39 @@
 {% extends "admin/index.html" %}
 {% comment %}
-Admin landing page with a "Reports" card linking to the analytics dashboard.
-Activated via `admin.site.index_template` in calculatorapi/admin.py — the
-default index is otherwise untouched ({{ block.super }} renders it).
+Admin landing page: headline KPI cards + a "Reports" card linking to the
+analytics dashboard, then the default app list ({{ block.super }}).
+Activated via `admin.site.index_template` in calculatorapi/admin.py.
+
+  - `kpi_cards` is injected by calculatorapi.admin_dashboard.dashboard_callback
+    (wired through UNFOLD["DASHBOARD_CALLBACK"] in settings.py). It may be empty
+    if the aggregate query failed, in which case the card row is skipped.
+
 Styled with django-unfold's Tailwind utilities so it matches the theme
 (including dark mode) — the old stock-admin `.module` CSS no longer exists.
 {% endcomment %}
 
 {% block content %}
+{% if kpi_cards %}
+<div class="grid grid-cols-1 gap-4 mb-8 sm:grid-cols-2 lg:grid-cols-4">
+  {% for card in kpi_cards %}
+  <div class="border border-base-200 rounded-default shadow-xs p-4 dark:border-base-800">
+    <div class="flex items-center gap-2 mb-3 text-font-subtle-light dark:text-font-subtle-dark">
+      <span class="material-symbols-outlined text-lg leading-none">{{ card.icon }}</span>
+      <span class="text-sm font-medium">{{ card.title }}</span>
+    </div>
+    <div class="text-2xl font-semibold text-font-important-light truncate dark:text-font-important-dark">
+      {{ card.value }}
+    </div>
+    {% if card.footer %}
+    <div class="mt-1 text-sm text-font-subtle-light dark:text-font-subtle-dark">
+      {{ card.footer }}
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
 <div class="border border-base-200 mb-8 rounded-default shadow-xs dark:border-base-800">
   <div class="border-b border-base-200 px-4 py-3 font-semibold text-font-important-light dark:border-base-800 dark:text-font-important-dark">
     Reports

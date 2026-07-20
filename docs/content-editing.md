@@ -6,10 +6,14 @@ admin site. Written for content editors — no technical background needed.
 ## Logging in
 
 Go to `https://<your-domain>/admin/` and sign in with the staff account you
-were given. You'll land on **Content management**, which lists everything you
-can edit under **Uma Musume Data**, plus a **Reports** card linking to the
-analytics dashboard. The light/dark theme toggle is in the sidebar next to
-your account name.
+were given. You'll land on the **Dashboard**, which shows a few headline usage
+numbers at the top and a **Reports** card linking to the analytics dashboard.
+
+Everything you can edit is grouped in the left sidebar into sections —
+**Banners**, **Events & competitions**, **Characters**, **Income tables**,
+**Site content**, and **Users & access**. Click a section heading to expand or
+collapse it. The light/dark theme toggle is in the sidebar next to your account
+name.
 
 You will only see the models you have permission to edit. User accounts and
 players' saved plans are managed separately and never appear in your view.
@@ -28,7 +32,7 @@ Banners are organized in three levels:
 
 ### Adding a new banner, start to finish
 
-1. **Uma Musume Data → Banner timelines → Add**. Fill in the name, dates, and
+1. **Banners → Timelines → Add**. Fill in the name, dates, and
    image, then **Save and continue editing**.
 2. Still on the timeline page, add rows under **Uma banners** and/or
    **Support card banners** (name + free pulls). Save.
