@@ -4,10 +4,10 @@
         "pk": 1,
         "fields": {
             "name": "League of Heroes 1",
-            "jp_start_date": null,
-            "jp_end_date": null,
-            "global_start_date": "2027-01-13T00:00:00Z",
-            "global_end_date": "2027-01-19T00:00:00Z",
+            "jp_start_date": "2023-05-12T00:00:00Z",
+            "jp_end_date": "2023-05-18T00:00:00Z",
+            "global_start_date": "2027-01-20T00:00:00Z",
+            "global_end_date": "2027-01-26T00:00:00Z",
             "image": null
         }
     },
@@ -16,10 +16,10 @@
         "pk": 2,
         "fields": {
             "name": "League of Heroes 2",
-            "jp_start_date": null,
-            "jp_end_date": null,
-            "global_start_date": "2027-02-25T00:00:00Z",
-            "global_end_date": "2027-03-03T00:00:00Z",
+            "jp_start_date": "2023-07-13T00:00:00Z",
+            "jp_end_date": "2023-07-19T00:00:00Z",
+            "global_start_date": null,
+            "global_end_date": null,
             "image": null
         }
     },
@@ -28,10 +28,10 @@
         "pk": 3,
         "fields": {
             "name": "League of Heroes 3",
-            "jp_start_date": null,
-            "jp_end_date": null,
-            "global_start_date": "2027-04-11T00:00:00Z",
-            "global_end_date": "2027-04-17T00:00:00Z",
+            "jp_start_date": "2023-09-13T00:00:00Z",
+            "jp_end_date": "2023-09-19T00:00:00Z",
+            "global_start_date": null,
+            "global_end_date": null,
             "image": null
         }
     },
@@ -40,10 +40,10 @@
         "pk": 4,
         "fields": {
             "name": "League of Heroes 4",
-            "jp_start_date": null,
-            "jp_end_date": null,
-            "global_start_date": "2027-05-22T00:00:00Z",
-            "global_end_date": "2027-05-28T00:00:00Z",
+            "jp_start_date": "2023-11-12T00:00:00Z",
+            "jp_end_date": "2023-11-18T00:00:00Z",
+            "global_start_date": null,
+            "global_end_date": null,
             "image": null
         }
     },
@@ -52,10 +52,10 @@
         "pk": 5,
         "fields": {
             "name": "League of Heroes 5",
-            "jp_start_date": null,
-            "jp_end_date": null,
-            "global_start_date": "2027-07-03T00:00:00Z",
-            "global_end_date": "2027-07-09T00:00:00Z",
+            "jp_start_date": "2024-01-12T00:00:00Z",
+            "jp_end_date": "2024-01-18T00:00:00Z",
+            "global_start_date": null,
+            "global_end_date": null,
             "image": null
         }
     },
@@ -64,10 +64,10 @@
         "pk": 6,
         "fields": {
             "name": "League of Heroes 6",
-            "jp_start_date": null,
-            "jp_end_date": null,
-            "global_start_date": "2027-09-27T00:00:00Z",
-            "global_end_date": "2027-10-03T00:00:00Z",
+            "jp_start_date": "2024-05-14T00:00:00Z",
+            "jp_end_date": "2024-05-20T00:00:00Z",
+            "global_start_date": null,
+            "global_end_date": null,
             "image": null
         }
     },
@@ -76,10 +76,10 @@
         "pk": 7,
         "fields": {
             "name": "League of Heroes 7",
-            "jp_start_date": null,
-            "jp_end_date": null,
-            "global_start_date": "2027-11-14T00:00:00Z",
-            "global_end_date": "2027-11-20T00:00:00Z",
+            "jp_start_date": "2024-07-22T00:00:00Z",
+            "jp_end_date": "2024-07-28T00:00:00Z",
+            "global_start_date": null,
+            "global_end_date": null,
             "image": null
         }
     },
@@ -88,10 +88,10 @@
         "pk": 8,
         "fields": {
             "name": "League of Heroes 8",
-            "jp_start_date": null,
-            "jp_end_date": null,
-            "global_start_date": "2027-12-30T00:00:00Z",
-            "global_end_date": "2028-01-05T00:00:00Z",
+            "jp_start_date": "2024-09-23T00:00:00Z",
+            "jp_end_date": "2024-09-29T00:00:00Z",
+            "global_start_date": null,
+            "global_end_date": null,
             "image": null
         }
     },
@@ -100,10 +100,10 @@
         "pk": 9,
         "fields": {
             "name": "League of Heroes 9",
-            "jp_start_date": null,
-            "jp_end_date": null,
-            "global_start_date": "2028-02-08T00:00:00Z",
-            "global_end_date": "2028-02-14T00:00:00Z",
+            "jp_start_date": "2024-11-21T00:00:00Z",
+            "jp_end_date": "2024-11-27T00:00:00Z",
+            "global_start_date": null,
+            "global_end_date": null,
             "image": null
         }
     },
@@ -112,10 +112,10 @@
         "pk": 10,
         "fields": {
             "name": "League of Heroes 10",
-            "jp_start_date": null,
-            "jp_end_date": null,
-            "global_start_date": "2028-04-08T00:00:00Z",
-            "global_end_date": "2028-04-17T00:00:00Z",
+            "jp_start_date": "2025-02-16T00:00:00Z",
+            "jp_end_date": "2025-02-25T00:00:00Z",
+            "global_start_date": null,
+            "global_end_date": null,
             "image": null
         }
     },
@@ -124,10 +124,10 @@
         "pk": 11,
         "fields": {
             "name": "League of Heroes 11",
-            "jp_start_date": null,
-            "jp_end_date": null,
-            "global_start_date": "2028-06-17T00:00:00Z",
-            "global_end_date": "2028-06-26T00:00:00Z",
+            "jp_start_date": "2025-05-24T00:00:00Z",
+            "jp_end_date": "2025-06-02T00:00:00Z",
+            "global_start_date": null,
+            "global_end_date": null,
             "image": null
         }
     },
@@ -136,10 +136,10 @@
         "pk": 12,
         "fields": {
             "name": "League of Heroes 12",
-            "jp_start_date": null,
-            "jp_end_date": null,
-            "global_start_date": "2028-08-13T00:00:00Z",
-            "global_end_date": "2028-08-22T00:00:00Z",
+            "jp_start_date": "2025-08-15T00:00:00Z",
+            "jp_end_date": "2025-08-24T00:00:00Z",
+            "global_start_date": null,
+            "global_end_date": null,
             "image": null
         }
     },
@@ -148,10 +148,10 @@
         "pk": 13,
         "fields": {
             "name": "League of Heroes 13",
-            "jp_start_date": null,
-            "jp_end_date": null,
-            "global_start_date": "2028-09-10T00:00:00Z",
-            "global_end_date": "2028-09-16T00:00:00Z",
+            "jp_start_date": "2025-11-21T00:00:00Z",
+            "jp_end_date": "2025-11-30T00:00:00Z",
+            "global_start_date": null,
+            "global_end_date": null,
             "image": null
         }
     },
@@ -160,10 +160,10 @@
         "pk": 14,
         "fields": {
             "name": "League of Heroes 14",
-            "jp_start_date": null,
-            "jp_end_date": null,
-            "global_start_date": "2028-10-21T00:00:00Z",
-            "global_end_date": "2028-10-30T00:00:00Z",
+            "jp_start_date": "2026-02-15T00:00:00Z",
+            "jp_end_date": "2026-02-24T00:00:00Z",
+            "global_start_date": null,
+            "global_end_date": null,
             "image": null
         }
     },
@@ -172,10 +172,10 @@
         "pk": 15,
         "fields": {
             "name": "League of Heroes 15",
-            "jp_start_date": null,
-            "jp_end_date": null,
-            "global_start_date": "2028-12-19T00:00:00Z",
-            "global_end_date": "2028-12-28T00:00:00Z",
+            "jp_start_date": "2026-05-22T00:00:00Z",
+            "jp_end_date": "2026-05-31T00:00:00Z",
+            "global_start_date": null,
+            "global_end_date": null,
             "image": null
         }
     }
