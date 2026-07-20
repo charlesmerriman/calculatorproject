@@ -242,7 +242,7 @@ class UmaAdmin(ImagePreviewMixin, ModelAdmin):
 
 @admin.register(SupportCard)
 class SupportCardAdmin(ImagePreviewMixin, ModelAdmin):
-    list_display = ("image_preview", "name")
+    list_display = ("image_preview", "name", "game_id")
     list_display_links = ("name",)
     ordering = ("name",)
     search_fields = ("name",)  # required: autocomplete source for banner inlines

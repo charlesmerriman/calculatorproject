@@ -88,6 +88,7 @@ erDiagram
     SupportCard {
         int id PK
         string name
+        int game_id "unique, nullable; anchors image to the DO Space file for this card"
         string image
         string admin_comments
     }

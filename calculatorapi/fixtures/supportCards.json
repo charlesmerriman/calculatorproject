@@ -4,6 +4,7 @@
     "pk": 1,
     "fields": {
       "name": "Oguri Cap",
+      "game_id": 30024,
       "image": "support_cards/30024-Oguri-Cap-pwr.png",
       "admin_comments": ""
     }
@@ -13,6 +14,7 @@
     "pk": 2,
     "fields": {
       "name": "Twin Turbo",
+      "game_id": 30026,
       "image": "support_cards/30026-Twin-Turbo-spd.png",
       "admin_comments": ""
     }
@@ -22,6 +24,7 @@
     "pk": 3,
     "fields": {
       "name": "Mejiro Palmer",
+      "game_id": 30027,
       "image": "support_cards/30027-Mejiro-Palmer-gts.png",
       "admin_comments": ""
     }
@@ -31,6 +34,7 @@
     "pk": 4,
     "fields": {
       "name": "Kitasan Black",
+      "game_id": 30028,
       "image": "support_cards/30028-Kitasan-Black-spd.png",
       "admin_comments": ""
     }
@@ -40,6 +44,7 @@
     "pk": 5,
     "fields": {
       "name": "Satono Diamond",
+      "game_id": 30029,
       "image": "support_cards/30029-Satono-Diamond-stm.png",
       "admin_comments": ""
     }
@@ -49,6 +54,7 @@
     "pk": 6,
     "fields": {
       "name": "Yukino Bijin",
+      "game_id": 30031,
       "image": "support_cards/30031-Yukino-Bijin-wts.png",
       "admin_comments": ""
     }
@@ -58,6 +64,7 @@
     "pk": 7,
     "fields": {
       "name": "Yaeno Muteki",
+      "game_id": 30032,
       "image": "support_cards/30032-Yaeno-Muteki-pwr.png",
       "admin_comments": ""
     }
@@ -67,6 +74,7 @@
     "pk": 8,
     "fields": {
       "name": "Super Creek",
+      "game_id": 30016,
       "image": "support_cards/30016-Super-Creek-stm.png",
       "admin_comments": ""
     }
@@ -76,6 +84,7 @@
     "pk": 9,
     "fields": {
       "name": "Tazuna",
+      "game_id": 30021,
       "image": "support_cards/30021-Tazuna-Hayakawa-pls.png",
       "admin_comments": ""
     }
@@ -85,6 +94,7 @@
     "pk": 10,
     "fields": {
       "name": "Sakura Chiyono O",
+      "game_id": 30038,
       "image": "support_cards/30038-Sakura-Chiyono-O-stm.png",
       "admin_comments": ""
     }
@@ -94,6 +104,7 @@
     "pk": 11,
     "fields": {
       "name": "Hishi Akebono",
+      "game_id": 30040,
       "image": "support_cards/30040-Hishi-Akebono-gts.png",
       "admin_comments": ""
     }
@@ -103,6 +114,7 @@
     "pk": 12,
     "fields": {
       "name": "Kawakami Princess",
+      "game_id": 30039,
       "image": "support_cards/30039-Kawakami-Princess-spd.png",
       "admin_comments": ""
     }
@@ -112,6 +124,7 @@
     "pk": 13,
     "fields": {
       "name": "Silence Suzuka",
+      "game_id": 30002,
       "image": "support_cards/30002-Silence-Suzuka-spd.png",
       "admin_comments": ""
     }
@@ -121,6 +134,7 @@
     "pk": 14,
     "fields": {
       "name": "Tamamo Cross",
+      "game_id": 30009,
       "image": "support_cards/30009-Tamamo-Cross-stm.png",
       "admin_comments": ""
     }
@@ -130,6 +144,7 @@
     "pk": 15,
     "fields": {
       "name": "Bamboo Memory",
+      "game_id": 30042,
       "image": "support_cards/30042-Bamboo-Memory-pwr.png",
       "admin_comments": ""
     }
@@ -139,6 +154,7 @@
     "pk": 16,
     "fields": {
       "name": "King Halo",
+      "game_id": 30056,
       "image": "support_cards/30056-King-Halo-pwr.png",
       "admin_comments": ""
     }
@@ -148,6 +164,7 @@
     "pk": 17,
     "fields": {
       "name": "Seiun Sky",
+      "game_id": 30008,
       "image": "support_cards/30008-Seiun-Sky-stm.png",
       "admin_comments": ""
     }
@@ -157,6 +174,7 @@
     "pk": 18,
     "fields": {
       "name": "Mejiro Ryan 30048",
+      "game_id": 30048,
       "image": "support_cards/30048-Mejiro-Ryan-gts.png",
       "admin_comments": ""
     }
@@ -166,6 +184,7 @@
     "pk": 19,
     "fields": {
       "name": "Nishino Flower",
+      "game_id": 30018,
       "image": "support_cards/30018-Nishino-Flower-spd.png",
       "admin_comments": ""
     }
@@ -175,6 +194,7 @@
     "pk": 20,
     "fields": {
       "name": "Vodka",
+      "game_id": 30005,
       "image": "support_cards/30005-Vodka-pwr.png",
       "admin_comments": ""
     }
@@ -184,6 +204,7 @@
     "pk": 21,
     "fields": {
       "name": "Sweep Tosho",
+      "game_id": 30045,
       "image": "support_cards/30045-Sweep-Tosho-spd.png",
       "admin_comments": ""
     }
@@ -193,6 +214,7 @@
     "pk": 22,
     "fields": {
       "name": "Winning Ticket",
+      "game_id": 30012,
       "image": "support_cards/30012-Winning-Ticket-gts.png",
       "admin_comments": ""
     }
@@ -202,6 +224,7 @@
     "pk": 23,
     "fields": {
       "name": "Special Week",
+      "game_id": 30001,
       "image": "support_cards/30001-Special-Week-gts.png",
       "admin_comments": ""
     }
@@ -211,6 +234,7 @@
     "pk": 24,
     "fields": {
       "name": "Tokai Teio",
+      "game_id": 30003,
       "image": "support_cards/30003-Tokai-Teio-spd.png",
       "admin_comments": ""
     }
@@ -220,6 +244,7 @@
     "pk": 25,
     "fields": {
       "name": "Nice Nature",
+      "game_id": 30054,
       "image": "support_cards/30054-Nice-Nature-wts.png",
       "admin_comments": ""
     }
@@ -229,6 +254,7 @@
     "pk": 26,
     "fields": {
       "name": "Rice Shower",
+      "game_id": 30023,
       "image": "support_cards/30023-Rice-Shower-stm.png",
       "admin_comments": ""
     }
@@ -238,6 +264,7 @@
     "pk": 27,
     "fields": {
       "name": "Riko Kashimoto",
+      "game_id": 30036,
       "image": "support_cards/30036-Riko-Kashimoto-pls.png",
       "admin_comments": ""
     }
@@ -247,6 +274,7 @@
     "pk": 28,
     "fields": {
       "name": "Sakura Bakushin O",
+      "game_id": 30015,
       "image": "support_cards/30015-Sakura-Bakushin-O-spd.png",
       "admin_comments": ""
     }
@@ -256,6 +284,7 @@
     "pk": 29,
     "fields": {
       "name": "Biko Pegasus",
+      "game_id": 30020,
       "image": "support_cards/30020-Biko-Pegasus-spd.png",
       "admin_comments": ""
     }
@@ -265,6 +294,7 @@
     "pk": 30,
     "fields": {
       "name": "Ikuno Dictus",
+      "game_id": 30063,
       "image": "support_cards/30063-Ikuno-Dictus-gts.png",
       "admin_comments": ""
     }
@@ -274,6 +304,7 @@
     "pk": 31,
     "fields": {
       "name": "Zenno Rob Roy",
+      "game_id": 30065,
       "image": "support_cards/30065-Zenno-Rob-Roy-spd.png",
       "admin_comments": ""
     }
@@ -283,6 +314,7 @@
     "pk": 32,
     "fields": {
       "name": "Nakayama Festa Stamina",
+      "game_id": 30043,
       "image": "support_cards/30043-Nakayama-Festa-stm.png",
       "admin_comments": ""
     }
@@ -291,7 +323,8 @@
     "model": "calculatorapi.supportcard",
     "pk": 33,
     "fields": {
-      "name": "♡Curren Chan♡",
+      "name": "\u2661Curren Chan\u2661",
+      "game_id": 30237,
       "image": "support_cards/30237-Curren-Chan-gts.png",
       "admin_comments": ""
     }
@@ -301,6 +334,7 @@
     "pk": 34,
     "fields": {
       "name": "Narita Brian",
+      "game_id": 30044,
       "image": "support_cards/30044-Narita-Brian-spd.png",
       "admin_comments": ""
     }
@@ -310,6 +344,7 @@
     "pk": 35,
     "fields": {
       "name": "El Condor Pasa",
+      "game_id": 30007,
       "image": "support_cards/30007-El-Condor-Pasa-pwr.png",
       "admin_comments": ""
     }
@@ -319,6 +354,7 @@
     "pk": 36,
     "fields": {
       "name": "Daitaku Helios",
+      "game_id": 30071,
       "image": "support_cards/30071-Daitaku-Helios-pwr.png",
       "admin_comments": ""
     }
@@ -328,6 +364,7 @@
     "pk": 37,
     "fields": {
       "name": "Mayano Top Gun",
+      "game_id": 30072,
       "image": "support_cards/30072-Mayano-Top-Gun-spd.png",
       "admin_comments": ""
     }
@@ -337,6 +374,7 @@
     "pk": 38,
     "fields": {
       "name": "Narita Taishin",
+      "game_id": 30073,
       "image": "support_cards/30073-Narita-Taishin-wts.png",
       "admin_comments": ""
     }
@@ -346,6 +384,7 @@
     "pk": 39,
     "fields": {
       "name": "Manhattan Cafe 30075",
+      "game_id": 30075,
       "image": "support_cards/30075-Manhattan-Cafe-stm.png",
       "admin_comments": ""
     }
@@ -355,6 +394,7 @@
     "pk": 40,
     "fields": {
       "name": "Matikanefukukitaru",
+      "game_id": 30078,
       "image": "support_cards/30078-Matikanefukukitaru-spd.png",
       "admin_comments": ""
     }
@@ -364,6 +404,7 @@
     "pk": 41,
     "fields": {
       "name": "Admire Vega",
+      "game_id": 30077,
       "image": "support_cards/30077-Admire-Vega-pwr.png",
       "admin_comments": ""
     }
@@ -373,6 +414,7 @@
     "pk": 42,
     "fields": {
       "name": "S. Anshinzawa",
+      "game_id": 30080,
       "image": "support_cards/30080-Sasami-Anshinzawa-pls.png",
       "admin_comments": ""
     }
@@ -382,6 +424,7 @@
     "pk": 43,
     "fields": {
       "name": "Agnes Digital",
+      "game_id": 30085,
       "image": "support_cards/30085-Agnes-Digital-pwr.png",
       "admin_comments": ""
     }
@@ -391,6 +434,7 @@
     "pk": 44,
     "fields": {
       "name": "Fine Motion",
+      "game_id": 30010,
       "image": "support_cards/30010-Fine-Motion-wts.png",
       "admin_comments": ""
     }
@@ -400,6 +444,7 @@
     "pk": 45,
     "fields": {
       "name": "Narita Top Road",
+      "game_id": 30086,
       "image": "support_cards/30086-Narita-Top-Road-spd.png",
       "admin_comments": ""
     }
@@ -409,6 +454,7 @@
     "pk": 46,
     "fields": {
       "name": "Marvelous Sunday",
+      "game_id": 30074,
       "image": "support_cards/30074-Marvelous-Sunday-pwr.png",
       "admin_comments": ""
     }
@@ -418,6 +464,7 @@
     "pk": 47,
     "fields": {
       "name": "Curren Chan",
+      "game_id": 30068,
       "image": "support_cards/30068-Curren-Chan-wts.png",
       "admin_comments": ""
     }
@@ -427,6 +474,7 @@
     "pk": 48,
     "fields": {
       "name": "Symboli Rudolf",
+      "game_id": 30037,
       "image": "support_cards/30037-Symboli-Rudolf-gts.png",
       "admin_comments": ""
     }
@@ -436,6 +484,7 @@
     "pk": 49,
     "fields": {
       "name": "Sirius Symboli",
+      "game_id": 30091,
       "image": "support_cards/30091-Sirius-Symboli-wts.png",
       "admin_comments": ""
     }
@@ -444,7 +493,8 @@
     "model": "calculatorapi.supportcard",
     "pk": 50,
     "fields": {
-      "name": "Daiwa Scarlet ♡",
+      "name": "Daiwa Scarlet \u2661",
+      "game_id": 30227,
       "image": "support_cards/30227-Daiwa-Scarlet-wts.png",
       "admin_comments": ""
     }
@@ -454,6 +504,7 @@
     "pk": 51,
     "fields": {
       "name": "Ines Fujin",
+      "game_id": 30011,
       "image": "support_cards/30011-Ines-Fujin-gts.png",
       "admin_comments": ""
     }
@@ -463,6 +514,7 @@
     "pk": 52,
     "fields": {
       "name": "Seeking the Pearl",
+      "game_id": 30095,
       "image": "support_cards/30095-Seeking-the-Pearl-spd.png",
       "admin_comments": ""
     }
@@ -472,6 +524,7 @@
     "pk": 53,
     "fields": {
       "name": "Mr. C.B.",
+      "game_id": 30097,
       "image": "support_cards/30097-Mr.-C.B.-wts.png",
       "admin_comments": ""
     }
@@ -481,6 +534,7 @@
     "pk": 54,
     "fields": {
       "name": "Haru Urara",
+      "game_id": 30019,
       "image": "support_cards/30019-Haru-Urara-gts.png",
       "admin_comments": ""
     }
@@ -490,6 +544,7 @@
     "pk": 55,
     "fields": {
       "name": "Taiki Shuttle",
+      "game_id": 30053,
       "image": "support_cards/30053-Taiki-Shuttle-spd.png",
       "admin_comments": ""
     }
@@ -499,6 +554,7 @@
     "pk": 56,
     "fields": {
       "name": "Matikanetannhauser",
+      "game_id": 30030,
       "image": "support_cards/30030-Matikanetannhauser-gts.png",
       "admin_comments": ""
     }
@@ -508,6 +564,7 @@
     "pk": 57,
     "fields": {
       "name": "Air Groove",
+      "game_id": 30106,
       "image": "support_cards/30106-Air-Groove-pwr.png",
       "admin_comments": ""
     }
@@ -517,6 +574,7 @@
     "pk": 58,
     "fields": {
       "name": "The Throne's Assemblage",
+      "game_id": 30067,
       "image": "support_cards/30067-The-Thrones-Assemblage-frd.png",
       "admin_comments": ""
     }
@@ -526,6 +584,7 @@
     "pk": 59,
     "fields": {
       "name": "Maruzensky",
+      "game_id": 30107,
       "image": "support_cards/30107-Maruzensky-spd.png",
       "admin_comments": ""
     }
@@ -534,8 +593,9 @@
     "model": "calculatorapi.supportcard",
     "pk": 60,
     "fields": {
-      "name": "Nakayama Festa",
-      "image": "support_cards/30043-Nakayama-Festa-stm.png",
+      "name": "Nakayama Festa 30108",
+      "game_id": 30108,
+      "image": "support_cards/30108-Nakayama-Festa-wts.png",
       "admin_comments": ""
     }
   },
@@ -544,6 +604,7 @@
     "pk": 61,
     "fields": {
       "name": "Manhattan Cafe",
+      "game_id": 30110,
       "image": "support_cards/30110-Manhattan-Cafe-stm.png",
       "admin_comments": ""
     }
@@ -553,6 +614,7 @@
     "pk": 62,
     "fields": {
       "name": "Light Hello",
+      "game_id": 30052,
       "image": "support_cards/30052-Light-Hello-pls.png",
       "admin_comments": ""
     }
@@ -562,6 +624,7 @@
     "pk": 63,
     "fields": {
       "name": "Agnes Tachyon",
+      "game_id": 30101,
       "image": "support_cards/30101-Agnes-Tachyon-spd.png",
       "admin_comments": ""
     }
@@ -571,6 +634,7 @@
     "pk": 64,
     "fields": {
       "name": "Smart Falcon",
+      "game_id": 30017,
       "image": "support_cards/30017-Smart-Falcon-pwr.png",
       "admin_comments": ""
     }
@@ -580,15 +644,7 @@
     "pk": 65,
     "fields": {
       "name": "Daiichi Ruby",
-      "image": "support_cards/30114-Daiichi-Ruby-pwr.png",
-      "admin_comments": ""
-    }
-  },
-  {
-    "model": "calculatorapi.supportcard",
-    "pk": 66,
-    "fields": {
-      "name": "Daiichi Ruby (Rerun)",
+      "game_id": 30114,
       "image": "support_cards/30114-Daiichi-Ruby-pwr.png",
       "admin_comments": ""
     }
@@ -598,6 +654,7 @@
     "pk": 67,
     "fields": {
       "name": "Symboli Kris S Stamina",
+      "game_id": 30118,
       "image": "support_cards/30118-Symboli-Kris-S-stm.png",
       "admin_comments": ""
     }
@@ -607,6 +664,7 @@
     "pk": 68,
     "fields": {
       "name": "Eishin Flash",
+      "game_id": 30122,
       "image": "support_cards/30122-Eishin-Flash-spd.png",
       "admin_comments": ""
     }
@@ -616,6 +674,7 @@
     "pk": 69,
     "fields": {
       "name": "Yamanin Zephyr",
+      "game_id": 30126,
       "image": "support_cards/30126-Yamanin-Zephyr-gts.png",
       "admin_comments": ""
     }
@@ -625,6 +684,7 @@
     "pk": 70,
     "fields": {
       "name": "K.S.Miracle",
+      "game_id": 30130,
       "image": "support_cards/30130-K.S.Miracle-gts.png",
       "admin_comments": ""
     }
@@ -634,6 +694,7 @@
     "pk": 71,
     "fields": {
       "name": "Mejiro Ramonu",
+      "game_id": 30134,
       "image": "support_cards/30134-Mejiro-Ramonu-wts.png",
       "admin_comments": ""
     }
@@ -643,6 +704,7 @@
     "pk": 72,
     "fields": {
       "name": "Ancestors & Guides",
+      "game_id": 30137,
       "image": "support_cards/30137-Ancestors-Guides-frd.png",
       "admin_comments": ""
     }
@@ -652,6 +714,7 @@
     "pk": 73,
     "fields": {
       "name": "Mejiro McQueen",
+      "game_id": 30022,
       "image": "support_cards/30022-Mejiro-McQueen-stm.png",
       "admin_comments": ""
     }
@@ -661,6 +724,7 @@
     "pk": 74,
     "fields": {
       "name": "Mihono Bourbon",
+      "game_id": 30059,
       "image": "support_cards/30059-Mihono-Bourbon-stm.png",
       "admin_comments": ""
     }
@@ -670,6 +734,7 @@
     "pk": 75,
     "fields": {
       "name": "Sakura Laurel",
+      "game_id": 30125,
       "image": "support_cards/30125-Sakura-Laurel-stm.png",
       "admin_comments": ""
     }
@@ -679,6 +744,7 @@
     "pk": 76,
     "fields": {
       "name": "Jungle Pocket",
+      "game_id": 30147,
       "image": "support_cards/30147-Jungle-Pocket-spd.png",
       "admin_comments": ""
     }
@@ -688,6 +754,7 @@
     "pk": 77,
     "fields": {
       "name": "Daiwa Scarlet",
+      "game_id": 30047,
       "image": "support_cards/30047-Daiwa-Scarlet-pwr.png",
       "admin_comments": ""
     }
@@ -697,6 +764,7 @@
     "pk": 78,
     "fields": {
       "name": "Aston Machan",
+      "game_id": 30149,
       "image": "support_cards/30149-Aston-Machan-wts.png",
       "admin_comments": ""
     }
@@ -706,6 +774,7 @@
     "pk": 79,
     "fields": {
       "name": "TM Opera O",
+      "game_id": 30152,
       "image": "support_cards/30152-TM-Opera-O-wts.png",
       "admin_comments": ""
     }
@@ -715,6 +784,7 @@
     "pk": 80,
     "fields": {
       "name": "Gold City",
+      "game_id": 30014,
       "image": "support_cards/30014-Gold-City-spd.png",
       "admin_comments": ""
     }
@@ -724,6 +794,7 @@
     "pk": 81,
     "fields": {
       "name": "Wonder Acute",
+      "game_id": 30156,
       "image": "support_cards/30156-Wonder-Acute-pwr.png",
       "admin_comments": ""
     }
@@ -733,6 +804,7 @@
     "pk": 82,
     "fields": {
       "name": "Mei Satake",
+      "game_id": 30160,
       "image": "support_cards/30160-Mei-Satake-pls.png",
       "admin_comments": ""
     }
@@ -742,6 +814,7 @@
     "pk": 83,
     "fields": {
       "name": "Nakayama Festa Wit",
+      "game_id": 30163,
       "image": "support_cards/30163-Nakayama-Festa-wts.png",
       "admin_comments": ""
     }
@@ -751,6 +824,7 @@
     "pk": 84,
     "fields": {
       "name": "Hishi Amazon",
+      "game_id": 30164,
       "image": "support_cards/30164-Hishi-Amazon-pwr.png",
       "admin_comments": ""
     }
@@ -760,6 +834,7 @@
     "pk": 85,
     "fields": {
       "name": "Tanino Gimlet",
+      "game_id": 30145,
       "image": "support_cards/30145-Tanino-Gimlet-pwr.png",
       "admin_comments": ""
     }
@@ -769,6 +844,7 @@
     "pk": 86,
     "fields": {
       "name": "Tap Dance City",
+      "game_id": 30166,
       "image": "support_cards/30166-Tap-Dance-City-gts.png",
       "admin_comments": ""
     }
@@ -778,6 +854,7 @@
     "pk": 87,
     "fields": {
       "name": "Gold Ship",
+      "game_id": 30004,
       "image": "support_cards/30004-Gold-Ship-stm.png",
       "admin_comments": ""
     }
@@ -787,6 +864,7 @@
     "pk": 88,
     "fields": {
       "name": "Tsurumaru Tsuyoshi",
+      "game_id": 30169,
       "image": "support_cards/30169-Tsurumaru-Tsuyoshi-pwr.png",
       "admin_comments": ""
     }
@@ -796,6 +874,7 @@
     "pk": 89,
     "fields": {
       "name": "Sounds of Earth",
+      "game_id": 30173,
       "image": "support_cards/30173-Sounds-of-Earth-stm.png",
       "admin_comments": ""
     }
@@ -805,6 +884,7 @@
     "pk": 90,
     "fields": {
       "name": "Mejiro Dober",
+      "game_id": 30041,
       "image": "support_cards/30041-Mejiro-Dober-wts.png",
       "admin_comments": ""
     }
@@ -814,6 +894,7 @@
     "pk": 91,
     "fields": {
       "name": "Vivlos",
+      "game_id": 30177,
       "image": "support_cards/30177-Vivlos-gts.png",
       "admin_comments": ""
     }
@@ -823,6 +904,7 @@
     "pk": 92,
     "fields": {
       "name": "Duramente",
+      "game_id": 30178,
       "image": "support_cards/30178-Duramente-spd.png",
       "admin_comments": ""
     }
@@ -832,6 +914,7 @@
     "pk": 93,
     "fields": {
       "name": "Hokko Tarumae",
+      "game_id": 30182,
       "image": "support_cards/30182-Hokko-Tarumae-stm.png",
       "admin_comments": ""
     }
@@ -841,6 +924,7 @@
     "pk": 94,
     "fields": {
       "name": "Orfevre",
+      "game_id": 30187,
       "image": "support_cards/30187-Orfevre-gts.png",
       "admin_comments": ""
     }
@@ -850,6 +934,7 @@
     "pk": 95,
     "fields": {
       "name": "Ryoka Tsurugi",
+      "game_id": 30188,
       "image": "support_cards/30188-Ryoka-Tsurugi-pls.png",
       "admin_comments": ""
     }
@@ -859,6 +944,7 @@
     "pk": 96,
     "fields": {
       "name": "Cheval Grand",
+      "game_id": 30193,
       "image": "support_cards/30193-Cheval-Grand-stm.png",
       "admin_comments": ""
     }
@@ -868,6 +954,7 @@
     "pk": 97,
     "fields": {
       "name": "K.S.Miracle 30195",
+      "game_id": 30195,
       "image": "support_cards/30195-K.S.Miracle-pwr.png",
       "admin_comments": ""
     }
@@ -877,6 +964,7 @@
     "pk": 98,
     "fields": {
       "name": "Yamanin Zephyr 30196",
+      "game_id": 30196,
       "image": "support_cards/30196-Yamanin-Zephyr-spd.png",
       "admin_comments": ""
     }
@@ -886,6 +974,7 @@
     "pk": 99,
     "fields": {
       "name": "Neo Universe",
+      "game_id": 30198,
       "image": "support_cards/30198-Neo-Universe-wts.png",
       "admin_comments": ""
     }
@@ -895,6 +984,7 @@
     "pk": 100,
     "fields": {
       "name": "Hishi Miracle",
+      "game_id": 30199,
       "image": "support_cards/30199-Hishi-Miracle-stm.png",
       "admin_comments": ""
     }
@@ -904,6 +994,7 @@
     "pk": 101,
     "fields": {
       "name": "Yayoi Akikawa",
+      "game_id": 30207,
       "image": "support_cards/30207-Yayoi-Akikawa-pls.png",
       "admin_comments": ""
     }
@@ -913,6 +1004,7 @@
     "pk": 102,
     "fields": {
       "name": "Dantsu Flame",
+      "game_id": 30209,
       "image": "support_cards/30209-Dantsu-Flame-stm.png",
       "admin_comments": ""
     }
@@ -922,6 +1014,7 @@
     "pk": 103,
     "fields": {
       "name": "Copano Rickey",
+      "game_id": 30211,
       "image": "support_cards/30211-Copano-Rickey-wts.png",
       "admin_comments": ""
     }
@@ -931,6 +1024,7 @@
     "pk": 104,
     "fields": {
       "name": "Still in Love",
+      "game_id": 30215,
       "image": "support_cards/30215-Still-in-Love-spd.png",
       "admin_comments": ""
     }
@@ -940,6 +1034,7 @@
     "pk": 105,
     "fields": {
       "name": "Fuji Kiseki",
+      "game_id": 30219,
       "image": "support_cards/30219-Fuji-Kiseki-gts.png",
       "admin_comments": ""
     }
@@ -949,6 +1044,7 @@
     "pk": 106,
     "fields": {
       "name": "Espoir City",
+      "game_id": 30222,
       "image": "support_cards/30222-Espoir-City-pwr.png",
       "admin_comments": ""
     }
@@ -958,6 +1054,7 @@
     "pk": 107,
     "fields": {
       "name": "Air Shakur",
+      "game_id": 30092,
       "image": "support_cards/30092-Air-Shakur-spd.png",
       "admin_comments": ""
     }
@@ -967,6 +1064,7 @@
     "pk": 108,
     "fields": {
       "name": "Symboli Kris S Power",
+      "game_id": 30228,
       "image": "support_cards/30228-Symboli-Kris-S-pwr.png",
       "admin_comments": ""
     }
@@ -976,6 +1074,7 @@
     "pk": 109,
     "fields": {
       "name": "Meisho Doto",
+      "game_id": 30079,
       "image": "support_cards/30079-Meisho-Doto-stm.png",
       "admin_comments": ""
     }
@@ -985,6 +1084,7 @@
     "pk": 110,
     "fields": {
       "name": "Blast Onepiece",
+      "game_id": 30232,
       "image": "support_cards/30232-Blast-Onepiece-gts.png",
       "admin_comments": ""
     }
@@ -994,6 +1094,7 @@
     "pk": 111,
     "fields": {
       "name": "Mejiro Ardan",
+      "game_id": 30119,
       "image": "support_cards/30119-Mejiro-Ardan-spd.png",
       "admin_comments": ""
     }
@@ -1003,6 +1104,7 @@
     "pk": 112,
     "fields": {
       "name": "Almond Eye",
+      "game_id": 30242,
       "image": "support_cards/30242-Almond-Eye-spd.png",
       "admin_comments": ""
     }
@@ -1012,6 +1114,7 @@
     "pk": 113,
     "fields": {
       "name": "Embodiment of Legends",
+      "game_id": 30241,
       "image": "support_cards/30241-Embodiment-of-Legends-frd.png",
       "admin_comments": ""
     }
@@ -1021,6 +1124,7 @@
     "pk": 114,
     "fields": {
       "name": "Mejiro Bright",
+      "game_id": 30087,
       "image": "support_cards/30087-Mejiro-Bright-stm.png",
       "admin_comments": ""
     }
@@ -1030,6 +1134,7 @@
     "pk": 115,
     "fields": {
       "name": "Dream Journey",
+      "game_id": 30246,
       "image": "support_cards/30246-Dream-Journey-spd.png",
       "admin_comments": ""
     }
@@ -1039,6 +1144,7 @@
     "pk": 116,
     "fields": {
       "name": "Daring Tact",
+      "game_id": 30248,
       "image": "support_cards/30248-Daring-Tact-wts.png",
       "admin_comments": ""
     }
@@ -1048,6 +1154,7 @@
     "pk": 117,
     "fields": {
       "name": "Buena Vista",
+      "game_id": 30216,
       "image": "support_cards/30216-Buena-Vista-gts.png",
       "admin_comments": ""
     }
@@ -1057,6 +1164,7 @@
     "pk": 118,
     "fields": {
       "name": "Transcend",
+      "game_id": 30249,
       "image": "support_cards/30249-Transcend-gts.png",
       "admin_comments": ""
     }
@@ -1066,6 +1174,7 @@
     "pk": 119,
     "fields": {
       "name": "Daring Heart",
+      "game_id": 30254,
       "image": "support_cards/30254-Daring-Heart-wts.png",
       "admin_comments": ""
     }
@@ -1075,6 +1184,7 @@
     "pk": 120,
     "fields": {
       "name": "Rhein Kraft",
+      "game_id": 30194,
       "image": "support_cards/30194-Rhein-Kraft-gts.png",
       "admin_comments": ""
     }
@@ -1084,6 +1194,7 @@
     "pk": 121,
     "fields": {
       "name": "Tucker Bryne",
+      "game_id": 30257,
       "image": "support_cards/30257-Tucker-Bryne-pls.png",
       "admin_comments": ""
     }
@@ -1093,6 +1204,7 @@
     "pk": 122,
     "fields": {
       "name": "Mejiro Ryan",
+      "game_id": 30176,
       "image": "support_cards/30176-Mejiro-Ryan-gts.png",
       "admin_comments": ""
     }
@@ -1102,6 +1214,7 @@
     "pk": 123,
     "fields": {
       "name": "Win Variation",
+      "game_id": 30261,
       "image": "support_cards/30261-Win-Variation-wts.png",
       "admin_comments": ""
     }
@@ -1111,6 +1224,7 @@
     "pk": 124,
     "fields": {
       "name": "Stay Gold",
+      "game_id": 30264,
       "image": "support_cards/30264-Stay-Gold-gts.png",
       "admin_comments": ""
     }
@@ -1120,6 +1234,7 @@
     "pk": 125,
     "fields": {
       "name": "Admire Groove",
+      "game_id": 30265,
       "image": "support_cards/30265-Admire-Groove-spd.png",
       "admin_comments": ""
     }
@@ -1129,6 +1244,7 @@
     "pk": 126,
     "fields": {
       "name": "Calstone Light O",
+      "game_id": 30267,
       "image": "support_cards/30267-Calstone-Light-O-spd.png",
       "admin_comments": ""
     }
@@ -1138,6 +1254,7 @@
     "pk": 127,
     "fields": {
       "name": "Durandal",
+      "game_id": 30268,
       "image": "support_cards/30268-Durandal-wts.png",
       "admin_comments": ""
     }
@@ -1147,6 +1264,7 @@
     "pk": 128,
     "fields": {
       "name": "Daiichi Ruby 30270",
+      "game_id": 30270,
       "image": "support_cards/30270-Daiichi-Ruby-gts.png",
       "admin_comments": ""
     }
@@ -1156,6 +1274,7 @@
     "pk": 129,
     "fields": {
       "name": "Curren Bouquetd'or",
+      "game_id": 30274,
       "image": "support_cards/30274-Curren-Bouquetdor-stm.png",
       "admin_comments": ""
     }
@@ -1165,6 +1284,7 @@
     "pk": 130,
     "fields": {
       "name": "Kiyoko Hoshina",
+      "game_id": 30276,
       "image": "support_cards/30276-Kiyoko-Hoshina-pls.png",
       "admin_comments": ""
     }
@@ -1174,6 +1294,7 @@
     "pk": 131,
     "fields": {
       "name": "Fenomeno",
+      "game_id": 30279,
       "image": "support_cards/30279-Fenomeno-stm.png",
       "admin_comments": ""
     }
@@ -1183,6 +1304,7 @@
     "pk": 132,
     "fields": {
       "name": "Inari One",
+      "game_id": 30281,
       "image": "support_cards/30281-Inari-One-stm.png",
       "admin_comments": ""
     }
@@ -1192,6 +1314,7 @@
     "pk": 133,
     "fields": {
       "name": "Forever Young",
+      "game_id": 30289,
       "image": "support_cards/30289-Forever-Young-wts.png",
       "admin_comments": ""
     }
@@ -1201,6 +1324,7 @@
     "pk": 134,
     "fields": {
       "name": "Casino Drive",
+      "game_id": 30290,
       "image": "support_cards/30290-Casino-Drive-pls.png",
       "admin_comments": ""
     }
