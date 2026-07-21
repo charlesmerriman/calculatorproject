@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status, permissions
-from calculatorapi.models import GameEvent, EventReward
+from calculatorapi.models import GameEvent
 from calculatorapi.predictions import (
     build_game_event_confirmed_date_map,
     effective_sort_key,
@@ -9,31 +9,16 @@ from calculatorapi.predictions import (
 from calculatorapi.views.mixins import GameEventDateMixin
 
 
-class EventRewardNestedSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = EventReward
-        fields = (
-            "id",
-            "name",
-            "carat_amount",
-            "support_ticket_amount",
-            "uma_ticket_amount",
-            "sr_shard_amount",
-            "sr_crystal_amount",
-            "ssr_shard_amount",
-            "ssr_crystal_amount",
-            "date",
-        )
-
-
 class GameEventSerializer(GameEventDateMixin, serializers.ModelSerializer):
-    rewards = EventRewardNestedSerializer(many=True, read_only=True)
-
     class Meta:
         model = GameEvent
         fields = (
             "id", "name", "image", "start_date", "end_date", "is_predicted",
-            "banner_timeline", "rewards",
+            "banner_timeline",
+            "carat_amount", "carats_throughout",
+            "support_ticket_amount", "uma_ticket_amount",
+            "sr_shard_amount", "sr_crystal_amount",
+            "ssr_shard_amount", "ssr_crystal_amount",
         )
 
 
@@ -46,7 +31,7 @@ class GameEventViewSet(ViewSet):
         return [permissions.AllowAny()]
 
     def list(self, request):
-        game_events = GameEvent.objects.select_related("banner_timeline").prefetch_related("rewards").all()
+        game_events = GameEvent.objects.select_related("banner_timeline").all()
         # Standalone route serves confirmed dates only (no prediction), same
         # convention as /leagueofheroes — prediction is reserved for /calculator-data.
         emap = build_game_event_confirmed_date_map(game_events)

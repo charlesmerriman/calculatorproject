@@ -22,7 +22,7 @@ from calculatorapi.models import (
     CustomUser,
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
     BannerTimeline, BannerUma, BannerSupport, UserPlannedBanner,
-    ChampionsMeeting, LeagueOfHeroes, GameEvent, EventReward,
+    ChampionsMeeting, LeagueOfHeroes, GameEvent,
     ChangelogEntry, ChangelogChange,
 )
 
@@ -125,11 +125,12 @@ def make_league_of_heroes(name='Test LoH', jp_start_date=None, jp_end_date=None,
     )
 
 
-def make_game_event(name='Test Event', banner_timeline=None):
+def make_game_event(name='Test Event', banner_timeline=None, **reward_fields):
     """Create a GameEvent, optionally linked to a BannerTimeline. Dates are
     always derived from banner_timeline (or null when unlinked) — GameEvent
-    has no date fields of its own."""
-    return GameEvent.objects.create(name=name, banner_timeline=banner_timeline)
+    has no date fields of its own. Reward amounts (carat_amount,
+    carats_throughout, etc.) can be passed as kwargs; they default to 0."""
+    return GameEvent.objects.create(name=name, banner_timeline=banner_timeline, **reward_fields)
 
 
 def auth_client(user):
@@ -412,19 +413,18 @@ class GameEventPredictionTests(TestCase):
 
 class GameEventBannerTimelineDeletionTests(TestCase):
     """GameEvent.banner_timeline is SET_NULL, not CASCADE -- an event's own
-    content (image, EventReward payout schedule) outlives its linked banner."""
+    content (image, reward amounts) outlives its linked banner."""
 
     def test_deleting_banner_timeline_sets_game_event_banner_timeline_null(self):
         timeline = make_timeline(name='Doomed Banner')
-        event = make_game_event(name='Survives', banner_timeline=timeline)
-        reward = EventReward.objects.create(event=event, name='Bonus', date=timezone.now())
+        event = make_game_event(name='Survives', banner_timeline=timeline, carat_amount=100)
 
         timeline.delete()
 
         event.refresh_from_db()
         self.assertIsNone(event.banner_timeline_id)
         self.assertTrue(GameEvent.objects.filter(pk=event.pk).exists())
-        self.assertTrue(EventReward.objects.filter(pk=reward.pk).exists())
+        self.assertEqual(event.carat_amount, 100)
 
 
 _EXPECTED_GET_KEYS = {
@@ -598,7 +598,10 @@ class CalculatorGetTests(TestCase):
             name='Confirmed Banner',
             global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
         )
-        event = make_game_event(name='Linked Event', banner_timeline=timeline)
+        event = make_game_event(
+            name='Linked Event', banner_timeline=timeline,
+            carat_amount=80, carats_throughout=1050,
+        )
         res = self.client.get('/calculator-data')
         entry = next(e for e in res.data['events_data'] if e['id'] == event.id)
         for key in ('start_date', 'end_date', 'is_predicted', 'banner_timeline'):
@@ -608,6 +611,8 @@ class CalculatorGetTests(TestCase):
         self.assertEqual(entry['end_date'], '2025-06-12T00:00:00Z')
         self.assertFalse(entry['is_predicted'])
         self.assertEqual(entry['banner_timeline'], timeline.id)
+        self.assertEqual(entry['carat_amount'], 80)
+        self.assertEqual(entry['carats_throughout'], 1050)
 
     def test_game_event_predicts_via_linked_banner_timeline(self):
         make_timeline(
@@ -646,7 +651,7 @@ class ReferenceEndpointGuestAccessTests(TestCase):
         client = APIClient()
         for url in (
             '/clubranks', '/teamtrialranks', '/championsmeetingranks',
-            '/leagueofheroesranks', '/leagueofheroes', '/events', '/eventrewards',
+            '/leagueofheroesranks', '/leagueofheroes', '/events',
         ):
             with self.subTest(url=url):
                 self.assertEqual(client.get(url).status_code, 200)
@@ -1009,7 +1014,6 @@ class AdminSmokeTests(TestCase):
         'admin:calculatorapi_uma',
         'admin:calculatorapi_supportcard',
         'admin:calculatorapi_gameevent',
-        'admin:calculatorapi_eventreward',
         'admin:calculatorapi_championsmeeting',
         'admin:calculatorapi_leagueofheroes',
         'admin:calculatorapi_clubrank',
@@ -1097,8 +1101,8 @@ class ContentEditorGroupCommandTests(TestCase):
         call_command('create_content_editor_group', stdout=StringIO())
         self.assertEqual(Group.objects.filter(name='Content editors').count(), 1)
         group = Group.objects.get(name='Content editors')
-        # 18 content models x 4 permissions (add/change/delete/view)
-        self.assertEqual(group.permissions.count(), 72)
+        # 17 content models x 4 permissions (add/change/delete/view)
+        self.assertEqual(group.permissions.count(), 68)
 
     def test_command_grants_no_user_data_permissions(self):
         call_command('create_content_editor_group', stdout=StringIO())

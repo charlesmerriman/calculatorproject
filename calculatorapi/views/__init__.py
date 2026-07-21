@@ -18,6 +18,5 @@ from .banner_uma import BannerUmaSerializer
 from .banner_support import BannerSupportSerializer
 from .champions_meeting import ChampionsMeetingSerializer
 from .league_of_heroes import LeagueOfHeroesSerializer, LeagueOfHeroesViewSet
-from .event_reward import EventRewardsSerializer, EventRewardViewSet
 from .game_event import GameEventSerializer, GameEventViewSet
 from .changelog import ChangelogEntrySerializer, ChangelogEntryViewSet

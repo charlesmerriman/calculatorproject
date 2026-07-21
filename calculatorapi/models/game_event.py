@@ -18,5 +18,19 @@ class GameEvent(models.Model):
         related_name="game_events",
     )
 
+    # carat_amount (and the ticket/shard/crystal amounts below) are earned
+    # once this event's own resolved start_date passes -- there's no
+    # separate reward-level date. carats_throughout is prorated across
+    # start_date..end_date instead (see getThroughoutCaratsInWindow on the
+    # frontend), independent of start_date.
+    carat_amount = models.IntegerField(default=0)
+    carats_throughout = models.IntegerField(default=0)
+    support_ticket_amount = models.IntegerField(default=0)
+    uma_ticket_amount = models.IntegerField(default=0)
+    sr_shard_amount = models.IntegerField(default=0)
+    sr_crystal_amount = models.IntegerField(default=0)
+    ssr_shard_amount = models.IntegerField(default=0)
+    ssr_crystal_amount = models.IntegerField(default=0)
+
     def __str__(self):
         return str(self.name)

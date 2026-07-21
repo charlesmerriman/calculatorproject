@@ -8,7 +8,7 @@ Token authentication is required for all protected endpoints. Include the token 
 Authorization: Token <token>
 ```
 
-Read-only reference endpoints (rank tables, events, event rewards, League of Heroes) and `GET /calculator-data` are public. Note that a request carrying an *invalid* token still returns `401` even on public endpoints — DRF authenticates the token before checking permissions. Clients should drop a rejected token and retry without one.
+Read-only reference endpoints (rank tables, events, League of Heroes) and `GET /calculator-data` are public. Note that a request carrying an *invalid* token still returns `401` even on public endpoints — DRF authenticates the token before checking permissions. Clients should drop a rejected token and retry without one.
 
 Not part of the public API: `/admin/analytics/` is a staff-only aggregate analytics page served inside the Django admin (session auth, not token auth) — see [analytics.md](analytics.md).
 
@@ -154,8 +154,7 @@ These endpoints return static rank tables. All are public and support `list` and
 | `GET /teamtrialranks` | Team Trials rank tiers and weekly income amounts |
 | `GET /championsmeetingranks` | Champions Meeting placement tiers and per-event income amounts |
 | `GET /leagueofheroesranks` | League of Heroes rank tiers and income amounts |
-| `GET /events` | Game events with nested reward entries |
-| `GET /eventrewards` | Individual dated reward entries |
+| `GET /events` | Game events, including their own reward amounts |
 | `GET /changelog` | Patch-note entries (newest first) with nested, ordered change lines |
 
 All list responses return an array of the resource object. Retrieve by appending `/<id>`.
@@ -234,6 +233,11 @@ Champions Meeting rewards instead, some are multi-banner campaign events), in wh
 /events` route only ever resolves **confirmed** dates (no prediction) — the richer,
 possibly-predicted dates shown here are exclusive to `/calculator-data`.
 
+Reward amounts are fields on the event itself (no separate reward model/list).
+`carat_amount` and the ticket/shard/crystal fields are earned once `start_date` passes;
+`carats_throughout` is carats only, prorated client-side by elapsed time across
+`start_date`..`end_date` — see `backend/docs/income-calculation.md`.
+
 ```json
 {
   "id": 1,
@@ -243,20 +247,14 @@ possibly-predicted dates shown here are exclusive to `/calculator-data`.
   "end_date": "ISO8601 | null",
   "is_predicted": false,
   "banner_timeline": 1,
-  "rewards": [
-    {
-      "id": 1,
-      "name": "string",
-      "carat_amount": 0,
-      "support_ticket_amount": 0,
-      "uma_ticket_amount": 0,
-      "sr_shard_amount": 0,
-      "sr_crystal_amount": 0,
-      "ssr_shard_amount": 0,
-      "ssr_crystal_amount": 0,
-      "date": "ISO8601"
-    }
-  ]
+  "carat_amount": 0,
+  "carats_throughout": 0,
+  "support_ticket_amount": 0,
+  "uma_ticket_amount": 0,
+  "sr_shard_amount": 0,
+  "sr_crystal_amount": 0,
+  "ssr_shard_amount": 0,
+  "ssr_crystal_amount": 0
 }
 ```
 

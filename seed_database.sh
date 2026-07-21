@@ -21,7 +21,6 @@ python3 manage.py loaddata calculatorapi/fixtures/changelogEntries.json
 # Models with FK dependencies
 python3 manage.py loaddata calculatorapi/fixtures/bannerUmas.json
 python3 manage.py loaddata calculatorapi/fixtures/bannerSupports.json
-python3 manage.py loaddata calculatorapi/fixtures/eventRewards.json
 python3 manage.py loaddata calculatorapi/fixtures/changelogChanges.json
 
 # M2M through tables — both sides of the relationship must already exist

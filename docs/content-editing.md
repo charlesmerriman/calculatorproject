@@ -65,10 +65,18 @@ column header to sort by it.
 
 ## Events
 
-**Game events** hold an event's name, dates, and image; its dated **reward
-entries** (carats, tickets, shards, crystals) are edited in the table at the
-bottom of the same page. The calculator pays players these rewards on the
-dates you enter, so the amounts and dates directly affect projections.
+**Game events** hold an event's name, dates, and image; its **reward amounts**
+(carats, tickets, shards, crystals) are edited directly on the same page, under
+a **Rewards** section. There are two carat fields:
+
+- **Carat amount** — paid out in full as soon as the event starts (along with
+  every ticket/shard/crystal field on the page).
+- **Carats throughout** — spread evenly across the whole event's run instead of
+  paid all at once, for campaigns that trickle out carats day by day rather than
+  granting them in one lump.
+
+Both directly affect players' projections, so keep the amounts accurate to the
+in-game event.
 
 ## Changelog (patch notes)
 

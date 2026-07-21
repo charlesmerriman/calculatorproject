@@ -1,1802 +1,3334 @@
 [
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 1,
-  "fields": {
-    "name": "Special Week + Silence Suzuka + Tokai Teio + Maruzensky + Oguri Cap + Taiki Shuttle + Mejiro McQueen + Symboli Rudolf + Rice Shower",
-    "image": "",
-    "banner_timeline": 149
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 1,
+    "fields": {
+      "name": "Special Week + Silence Suzuka + Tokai Teio + Maruzensky + Oguri Cap + Taiki Shuttle + Mejiro McQueen + Symboli Rudolf + Rice Shower",
+      "image": null,
+      "banner_timeline": 149,
+      "carat_amount": 0,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 2,
+    "fields": {
+      "name": "T.M. Opera",
+      "image": null,
+      "banner_timeline": 1,
+      "carat_amount": 0,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 3,
+    "fields": {
+      "name": "Mihono Bourbon",
+      "image": null,
+      "banner_timeline": 2,
+      "carat_amount": 0,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 4,
+    "fields": {
+      "name": "Biwa Hayahide",
+      "image": null,
+      "banner_timeline": 3,
+      "carat_amount": 0,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 5,
+    "fields": {
+      "name": "Tokai Teio (Anime) + Mejiro Mcqueen (Anime)",
+      "image": null,
+      "banner_timeline": 4,
+      "carat_amount": 0,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 6,
+    "fields": {
+      "name": "Curren Chan",
+      "image": null,
+      "banner_timeline": 5,
+      "carat_amount": 0,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 7,
+    "fields": {
+      "name": "Narita Taishin",
+      "image": null,
+      "banner_timeline": 6,
+      "carat_amount": 0,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 8,
+    "fields": {
+      "name": "Smart Falcon",
+      "image": null,
+      "banner_timeline": 7,
+      "carat_amount": 0,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 9,
+    "fields": {
+      "name": "Narita Brian",
+      "image": null,
+      "banner_timeline": 8,
+      "carat_amount": 80,
+      "carats_throughout": 1050,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 10,
+    "fields": {
+      "name": "Air Groove (Wedding) + Mayano Top Gun (Wedding)",
+      "image": null,
+      "banner_timeline": 9,
+      "carat_amount": 0,
+      "carats_throughout": 1160,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 11,
+    "fields": {
+      "name": "Seiun Sky",
+      "image": null,
+      "banner_timeline": 10,
+      "carat_amount": 80,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 12,
+    "fields": {
+      "name": "Hishi Amazon",
+      "image": null,
+      "banner_timeline": 11,
+      "carat_amount": 80,
+      "carats_throughout": 1150,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 13,
+    "fields": {
+      "name": "Grass Wonder (Fantasy) + El Condor Pasa (Fantasy)",
+      "image": null,
+      "banner_timeline": 12,
+      "carat_amount": 0,
+      "carats_throughout": 1260,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 14,
+    "fields": {
+      "name": "Fuji Kiseki",
+      "image": null,
+      "banner_timeline": 13,
+      "carat_amount": 530,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 15,
+    "fields": {
+      "name": "Gold City",
+      "image": null,
+      "banner_timeline": 14,
+      "carat_amount": 380,
+      "carats_throughout": 480,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 16,
+    "fields": {
+      "name": "Special Week (Summer) + Maruzensky (Summer)",
+      "image": null,
+      "banner_timeline": 15,
+      "carat_amount": 300,
+      "carats_throughout": 1260,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 17,
+    "fields": {
+      "name": "Meisho Doto",
+      "image": null,
+      "banner_timeline": 16,
+      "carat_amount": 380,
+      "carats_throughout": 750,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 18,
+    "fields": {
+      "name": "Eishin Flash",
+      "image": null,
+      "banner_timeline": 17,
+      "carat_amount": 80,
+      "carats_throughout": 2200,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 19,
+    "fields": {
+      "name": "Matikanefukukitaru (Full Armor)",
+      "image": null,
+      "banner_timeline": 18,
+      "carat_amount": 4500,
+      "carats_throughout": 4000,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 20,
+    "fields": {
+      "name": "Hishi Akebono",
+      "image": null,
+      "banner_timeline": 19,
+      "carat_amount": 380,
+      "carats_throughout": 750,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 21,
+    "fields": {
+      "name": "Agnes Digital",
+      "image": null,
+      "banner_timeline": 20,
+      "carat_amount": 80,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 22,
+    "fields": {
+      "name": "Rice Shower (Halloween) + Super Creek (Halloween)",
+      "image": null,
+      "banner_timeline": 21,
+      "carat_amount": 300,
+      "carats_throughout": 2310,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 23,
+    "fields": {
+      "name": "Kawakami Princessâ¡",
+      "image": null,
+      "banner_timeline": null,
+      "carat_amount": 380,
+      "carats_throughout": 900,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 24,
+    "fields": {
+      "name": "Manhattan Cafe",
+      "image": null,
+      "banner_timeline": 23,
+      "carat_amount": 80,
+      "carats_throughout": 1050,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 25,
+    "fields": {
+      "name": "Symboli Rudolf (Festival) + Gold City (Festival)",
+      "image": null,
+      "banner_timeline": 24,
+      "carat_amount": 0,
+      "carats_throughout": 2610,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 26,
+    "fields": {
+      "name": "Tosen Jordan",
+      "image": null,
+      "banner_timeline": 25,
+      "carat_amount": 80,
+      "carats_throughout": 2400,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 4,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 27,
+    "fields": {
+      "name": "Mejiro Dober",
+      "image": null,
+      "banner_timeline": 26,
+      "carat_amount": 80,
+      "carats_throughout": 300,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 28,
+    "fields": {
+      "name": "Oguri Cap (Christmas) + Biwa Hayahide (Christmas)",
+      "image": null,
+      "banner_timeline": 27,
+      "carat_amount": 0,
+      "carats_throughout": 2460,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 29,
+    "fields": {
+      "name": "Fine Motion",
+      "image": null,
+      "banner_timeline": 28,
+      "carat_amount": 80,
+      "carats_throughout": 1850,
+      "support_ticket_amount": 3,
+      "uma_ticket_amount": 3,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 30,
+    "fields": {
+      "name": "Tamamo Cross",
+      "image": null,
+      "banner_timeline": 29,
+      "carat_amount": 560,
+      "carats_throughout": 1650,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 31,
+    "fields": {
+      "name": "Haru Urara (New Year) + TM Opera O (New Year)",
+      "image": null,
+      "banner_timeline": 30,
+      "carat_amount": 1500,
+      "carats_throughout": 4860,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 32,
+    "fields": {
+      "name": "(All)",
+      "image": null,
+      "banner_timeline": 31,
+      "carat_amount": 1080,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 33,
+    "fields": {
+      "name": "Sakura Chiyono O",
+      "image": null,
+      "banner_timeline": 32,
+      "carat_amount": 80,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 34,
+    "fields": {
+      "name": "Mihono Bourbon (Valentine) + Eishin Flash (Valentine)",
+      "image": null,
+      "banner_timeline": 33,
+      "carat_amount": 0,
+      "carats_throughout": 2160,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 35,
+    "fields": {
+      "name": "Mejiro Ardan",
+      "image": null,
+      "banner_timeline": 34,
+      "carat_amount": 80,
+      "carats_throughout": 1400,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 36,
+    "fields": {
+      "name": "Admire Vega",
+      "image": null,
+      "banner_timeline": 35,
+      "carat_amount": 80,
+      "carats_throughout": 1500,
+      "support_ticket_amount": 5,
+      "uma_ticket_amount": 5,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 37,
+    "fields": {
+      "name": "Kitasan Black + Matikanetannhauser",
+      "image": null,
+      "banner_timeline": 36,
+      "carat_amount": 3160,
+      "carats_throughout": 5940,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 4,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 4,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 38,
+    "fields": {
+      "name": "Satono Diamond",
+      "image": null,
+      "banner_timeline": 37,
+      "carat_amount": 80,
+      "carats_throughout": 3450,
+      "support_ticket_amount": 1,
+      "uma_ticket_amount": 1,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 39,
+    "fields": {
+      "name": "Mejiro Bright",
+      "image": null,
+      "banner_timeline": 38,
+      "carat_amount": 80,
+      "carats_throughout": 1830,
+      "support_ticket_amount": 5,
+      "uma_ticket_amount": 5,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 40,
+    "fields": {
+      "name": "Seiun Sky (Ballroom) + Fuji Kiseki (Ballroom)",
+      "image": null,
+      "banner_timeline": 39,
+      "carat_amount": 0,
+      "carats_throughout": 2460,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 41,
+    "fields": {
+      "name": "Nishino Flower",
+      "image": null,
+      "banner_timeline": 40,
+      "carat_amount": 80,
+      "carats_throughout": 150,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 42,
+    "fields": {
+      "name": "Yaeno Muteki",
+      "image": null,
+      "banner_timeline": 41,
+      "carat_amount": 1080,
+      "carats_throughout": 150,
+      "support_ticket_amount": 3,
+      "uma_ticket_amount": 3,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 2,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 43,
+    "fields": {
+      "name": "Nice Nature (Cheerleader) + King Halo (Cheerleader)",
+      "image": null,
+      "banner_timeline": 42,
+      "carat_amount": 0,
+      "carats_throughout": 7950,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 44,
+    "fields": {
+      "name": "Ines Fujin",
+      "image": null,
+      "banner_timeline": null,
+      "carat_amount": 0,
+      "carats_throughout": 1050,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 45,
+    "fields": {
+      "name": "Mejiro Palmer",
+      "image": null,
+      "banner_timeline": 44,
+      "carat_amount": 80,
+      "carats_throughout": 150,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 46,
+    "fields": {
+      "name": "Curren Chan (Wedding) + Fine Motion (Wedding)",
+      "image": null,
+      "banner_timeline": 45,
+      "carat_amount": 0,
+      "carats_throughout": 2310,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 47,
+    "fields": {
+      "name": "Inari One",
+      "image": null,
+      "banner_timeline": 46,
+      "carat_amount": 80,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 48,
+    "fields": {
+      "name": "Sweep Tosho",
+      "image": null,
+      "banner_timeline": 47,
+      "carat_amount": 80,
+      "carats_throughout": 2300,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 4,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 49,
+    "fields": {
+      "name": "Taiki Shuttle (Camping) + Mejiro Dober (Camping)",
+      "image": null,
+      "banner_timeline": 48,
+      "carat_amount": 0,
+      "carats_throughout": 2310,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 50,
+    "fields": {
+      "name": "Air Shakur",
+      "image": null,
+      "banner_timeline": 49,
+      "carat_amount": 80,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 51,
+    "fields": {
+      "name": "Seiun Sky (Rerun) + Narita Brian (Rerun)",
+      "image": null,
+      "banner_timeline": 50,
+      "carat_amount": 0,
+      "carats_throughout": 1780,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 2,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 52,
+    "fields": {
+      "name": "Mejiro McQueen (Summer) + Gold Ship (Summer)",
+      "image": null,
+      "banner_timeline": 51,
+      "carat_amount": 0,
+      "carats_throughout": 2160,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 53,
+    "fields": {
+      "name": "Bamboo Memory",
+      "image": null,
+      "banner_timeline": 52,
+      "carat_amount": 80,
+      "carats_throughout": 600,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 54,
+    "fields": {
+      "name": "Copano Rickey",
+      "image": null,
+      "banner_timeline": 53,
+      "carat_amount": 80,
+      "carats_throughout": 1100,
+      "support_ticket_amount": 4,
+      "uma_ticket_amount": 4,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 55,
+    "fields": {
+      "name": "Smart Falcon (Grand Live)",
+      "image": null,
+      "banner_timeline": 54,
+      "carat_amount": 3000,
+      "carats_throughout": 3500,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 56,
+    "fields": {
+      "name": "Winning Ticket (Steampunk) + Narita Taishin (Steampunk)",
+      "image": null,
+      "banner_timeline": 55,
+      "carat_amount": 0,
+      "carats_throughout": 2660,
+      "support_ticket_amount": 3,
+      "uma_ticket_amount": 3,
+      "sr_shard_amount": 4,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 57,
+    "fields": {
+      "name": "Yukino Bijin",
+      "image": null,
+      "banner_timeline": 56,
+      "carat_amount": 80,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 58,
+    "fields": {
+      "name": "Seeking the Pearl",
+      "image": null,
+      "banner_timeline": 57,
+      "carat_amount": 80,
+      "carats_throughout": 2200,
+      "support_ticket_amount": 3,
+      "uma_ticket_amount": 3,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 2,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 59,
+    "fields": {
+      "name": "Agnes Digital (Halloween) + Meisho Doto (Halloween)",
+      "image": null,
+      "banner_timeline": 58,
+      "carat_amount": 0,
+      "carats_throughout": 2310,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 60,
+    "fields": {
+      "name": "Aston Machan",
+      "image": null,
+      "banner_timeline": 59,
+      "carat_amount": 80,
+      "carats_throughout": 150,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 61,
+    "fields": {
+      "name": "Seeking the Pearl (Rerun)",
+      "image": null,
+      "banner_timeline": 60,
+      "carat_amount": 0,
+      "carats_throughout": 150,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 62,
+    "fields": {
+      "name": "Yamanin Zephyr",
+      "image": null,
+      "banner_timeline": 61,
+      "carat_amount": 80,
+      "carats_throughout": 2150,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 4,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 63,
+    "fields": {
+      "name": "Tamamo Cross (Festival) + Inari One (Festival)",
+      "image": null,
+      "banner_timeline": 62,
+      "carat_amount": 0,
+      "carats_throughout": 2310,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 64,
+    "fields": {
+      "name": "Nakayama Festa",
+      "image": null,
+      "banner_timeline": 63,
+      "carat_amount": 230,
+      "carats_throughout": 150,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 65,
+    "fields": {
+      "name": "Wonder Acute",
+      "image": null,
+      "banner_timeline": 64,
+      "carat_amount": 80,
+      "carats_throughout": 300,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 66,
+    "fields": {
+      "name": "Vodka (Christmas) + Daiwa Scarlet (Christmas)",
+      "image": null,
+      "banner_timeline": 65,
+      "carat_amount": 500,
+      "carats_throughout": 2610,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 67,
+    "fields": {
+      "name": "Zenno Rob Roy",
+      "image": null,
+      "banner_timeline": 66,
+      "carat_amount": 80,
+      "carats_throughout": 150,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 68,
+    "fields": {
+      "name": "Narita Brian (Blaze)",
+      "image": null,
+      "banner_timeline": 67,
+      "carat_amount": 0,
+      "carats_throughout": 950,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 69,
+    "fields": {
+      "name": "Kitasan Black (New Year) + Satono Diamond (New Year)",
+      "image": null,
+      "banner_timeline": 68,
+      "carat_amount": 1500,
+      "carats_throughout": 5610,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 70,
+    "fields": {
+      "name": "Hokko Tarumae",
+      "image": null,
+      "banner_timeline": 69,
+      "carat_amount": 80,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 71,
+    "fields": {
+      "name": "Daitaku Helios",
+      "image": null,
+      "banner_timeline": 70,
+      "carat_amount": 1080,
+      "carats_throughout": 150,
+      "support_ticket_amount": 3,
+      "uma_ticket_amount": 3,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 2,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 72,
+    "fields": {
+      "name": "Rice Shower (Halloween) + Haru Urara (New Year)",
+      "image": null,
+      "banner_timeline": 71,
+      "carat_amount": 0,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 73,
+    "fields": {
+      "name": "Ines Fujin (Valentine) + Mejiro Ryan (Valentine)",
+      "image": null,
+      "banner_timeline": 72,
+      "carat_amount": 0,
+      "carats_throughout": 2160,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 74,
+    "fields": {
+      "name": "Shinko Windy",
+      "image": null,
+      "banner_timeline": 150,
+      "carat_amount": 80,
+      "carats_throughout": 2150,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 75,
+    "fields": {
+      "name": "Mr. C.B. + Twin Turbo",
+      "image": null,
+      "banner_timeline": 73,
+      "carat_amount": 3240,
+      "carats_throughout": 5660,
+      "support_ticket_amount": 4,
+      "uma_ticket_amount": 4,
+      "sr_shard_amount": 5,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 5,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 76,
+    "fields": {
+      "name": "Daiichi Ruby",
+      "image": null,
+      "banner_timeline": 74,
+      "carat_amount": 0,
+      "carats_throughout": 2750,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 77,
+    "fields": {
+      "name": "Symboli Kris S",
+      "image": null,
+      "banner_timeline": 75,
+      "carat_amount": 80,
+      "carats_throughout": 1050,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 78,
+    "fields": {
+      "name": "Mejiro Ardan (Ballroom) + Sakura Chiyono O (Ballroom)",
+      "image": null,
+      "banner_timeline": 76,
+      "carat_amount": 0,
+      "carats_throughout": 2460,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 4,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 4,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 79,
+    "fields": {
+      "name": "Sakura Laurel",
+      "image": null,
+      "banner_timeline": 77,
+      "carat_amount": 80,
+      "carats_throughout": 150,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 80,
+    "fields": {
+      "name": "Neo Universe",
+      "image": null,
+      "banner_timeline": 78,
+      "carat_amount": 80,
+      "carats_throughout": 2200,
+      "support_ticket_amount": 3,
+      "uma_ticket_amount": 3,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 2,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 81,
+    "fields": {
+      "name": "Matikanetannhauser (Sports Festival) + Sakura Bakushin O (Sports Festival)",
+      "image": null,
+      "banner_timeline": 79,
+      "carat_amount": 0,
+      "carats_throughout": 2460,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 82,
+    "fields": {
+      "name": "Gold City + Tosen Jordan + Mejiro Palmer + Daitaku Helios",
+      "image": null,
+      "banner_timeline": 151,
+      "carat_amount": 0,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 83,
+    "fields": {
+      "name": "Hishi Miracle",
+      "image": null,
+      "banner_timeline": 80,
+      "carat_amount": 80,
+      "carats_throughout": 300,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 84,
+    "fields": {
+      "name": "Tanino Gimlet",
+      "image": null,
+      "banner_timeline": 81,
+      "carat_amount": 1080,
+      "carats_throughout": 150,
+      "support_ticket_amount": 3,
+      "uma_ticket_amount": 3,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 2,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 85,
+    "fields": {
+      "name": "Hishi Amazon (Wedding) + Nishino Flower (Wedding)",
+      "image": null,
+      "banner_timeline": 82,
+      "carat_amount": 0,
+      "carats_throughout": 2310,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 86,
+    "fields": {
+      "name": "Taiki Shuttle (Camping) + Yamanin Zephyr (Rerun)",
+      "image": null,
+      "banner_timeline": 83,
+      "carat_amount": 0,
+      "carats_throughout": 500,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 87,
+    "fields": {
+      "name": "Marvelous Sunday",
+      "image": null,
+      "banner_timeline": 84,
+      "carat_amount": 80,
+      "carats_throughout": 1200,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 88,
+    "fields": {
+      "name": "Bamboo Memory (Summer Trip) + Tosen Jordan (Summer Trip)",
+      "image": null,
+      "banner_timeline": 85,
+      "carat_amount": 0,
+      "carats_throughout": 2310,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 89,
+    "fields": {
+      "name": "Katsuragi Ace",
+      "image": null,
+      "banner_timeline": 86,
+      "carat_amount": 80,
+      "carats_throughout": 500,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 90,
+    "fields": {
+      "name": "Sirius Symboli",
+      "image": null,
+      "banner_timeline": 87,
+      "carat_amount": 80,
+      "carats_throughout": 1500,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 2,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 91,
+    "fields": {
+      "name": "Agnes Tachyon (Summer) + Silence Suzuka (Summer)",
+      "image": null,
+      "banner_timeline": 88,
+      "carat_amount": 0,
+      "carats_throughout": 2160,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 92,
+    "fields": {
+      "name": "Copano Rickey (Rerun) + Hokko Tarumae (Rerun)",
+      "image": null,
+      "banner_timeline": 152,
+      "carat_amount": 0,
+      "carats_throughout": 2500,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 93,
+    "fields": {
+      "name": "Narita Top Road",
+      "image": null,
+      "banner_timeline": 89,
+      "carat_amount": 3080,
+      "carats_throughout": 4000,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 4,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 94,
+    "fields": {
+      "name": "Gold Ship (Project L'Arc)",
+      "image": null,
+      "banner_timeline": 90,
+      "carat_amount": 0,
+      "carats_throughout": 2050,
+      "support_ticket_amount": 5,
+      "uma_ticket_amount": 5,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 95,
+    "fields": {
+      "name": "Satono Diamond (Project L'Arc)",
+      "image": null,
+      "banner_timeline": 91,
+      "carat_amount": 0,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 96,
+    "fields": {
+      "name": "K.S.Miracle",
+      "image": null,
+      "banner_timeline": 92,
+      "carat_amount": 1080,
+      "carats_throughout": 150,
+      "support_ticket_amount": 3,
+      "uma_ticket_amount": 3,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 2,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 97,
+    "fields": {
+      "name": "Air Shakur (Halloween) + Symboli Kris S (Halloween)",
+      "image": null,
+      "banner_timeline": 93,
+      "carat_amount": 0,
+      "carats_throughout": 2810,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 5,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 4,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 98,
+    "fields": {
+      "name": "Jungle Pocket + Maruzensky +",
+      "image": null,
+      "banner_timeline": null,
+      "carat_amount": 0,
+      "carats_throughout": 150,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 99,
+    "fields": {
+      "name": "Mejiro Ramonu",
+      "image": null,
+      "banner_timeline": 94,
+      "carat_amount": 80,
+      "carats_throughout": 1200,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 100,
+    "fields": {
+      "name": "Kawakami Princess (Festival) + Tokai Teio (Festival)",
+      "image": null,
+      "banner_timeline": 95,
+      "carat_amount": 0,
+      "carats_throughout": 2660,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 5,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 4,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 101,
+    "fields": {
+      "name": "Mejiro McQueen",
+      "image": null,
+      "banner_timeline": 96,
+      "carat_amount": 0,
+      "carats_throughout": 300,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 102,
+    "fields": {
+      "name": "Tap Dance City",
+      "image": null,
+      "banner_timeline": 97,
+      "carat_amount": 80,
+      "carats_throughout": 1800,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 2,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 103,
+    "fields": {
+      "name": "Mejiro Palmer (Christmas) + Mejiro Bright (Christmas)",
+      "image": null,
+      "banner_timeline": 98,
+      "carat_amount": 500,
+      "carats_throughout": 2960,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 5,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 4,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 104,
+    "fields": {
+      "name": "Satono Crown",
+      "image": null,
+      "banner_timeline": 154,
+      "carat_amount": 80,
+      "carats_throughout": 150,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 105,
+    "fields": {
+      "name": "Cheval Grand",
+      "image": null,
+      "banner_timeline": 99,
+      "carat_amount": 1080,
+      "carats_throughout": 450,
+      "support_ticket_amount": 3,
+      "uma_ticket_amount": 3,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 2,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 106,
+    "fields": {
+      "name": "Kitasan Black (Anime Collab)",
+      "image": null,
+      "banner_timeline": 100,
+      "carat_amount": 1500,
+      "carats_throughout": 10460,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 10,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 9,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 107,
+    "fields": {
+      "name": "Nice Nature (New Year)",
+      "image": null,
+      "banner_timeline": 155,
+      "carat_amount": 0,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 108,
+    "fields": {
+      "name": "Vivlos",
+      "image": null,
+      "banner_timeline": 101,
+      "carat_amount": 80,
+      "carats_throughout": 900,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 109,
+    "fields": {
+      "name": "Yukino Bijin (Valentine) + Manhattan Cafe (Valentine)",
+      "image": null,
+      "banner_timeline": 102,
+      "carat_amount": 0,
+      "carats_throughout": 2660,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 5,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 4,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 110,
+    "fields": {
+      "name": "Biko Pegasus",
+      "image": null,
+      "banner_timeline": 156,
+      "carat_amount": 80,
+      "carats_throughout": 2150,
+      "support_ticket_amount": 1,
+      "uma_ticket_amount": 1,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 111,
+    "fields": {
+      "name": "Duramente + Ikuno Dictus",
+      "image": null,
+      "banner_timeline": 103,
+      "carat_amount": 3160,
+      "carats_throughout": 5700,
+      "support_ticket_amount": 4,
+      "uma_ticket_amount": 4,
+      "sr_shard_amount": 4,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 112,
+    "fields": {
+      "name": "Transcend",
+      "image": null,
+      "banner_timeline": 157,
+      "carat_amount": 80,
+      "carats_throughout": 2750,
+      "support_ticket_amount": 1,
+      "uma_ticket_amount": 1,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 113,
+    "fields": {
+      "name": "Rhein Kraft",
+      "image": null,
+      "banner_timeline": 104,
+      "carat_amount": 80,
+      "carats_throughout": 1530,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 114,
+    "fields": {
+      "name": "Daiichi Ruby (Ballroom) + Daitaku Helios (Ballroom)",
+      "image": null,
+      "banner_timeline": 105,
+      "carat_amount": 500,
+      "carats_throughout": 8210,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 10,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 9,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 115,
+    "fields": {
+      "name": "Winning Ticket (U.A.F.)",
+      "image": null,
+      "banner_timeline": 106,
+      "carat_amount": 0,
+      "carats_throughout": 150,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 116,
+    "fields": {
+      "name": "Sounds of Earth",
+      "image": null,
+      "banner_timeline": 158,
+      "carat_amount": 80,
+      "carats_throughout": 1800,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 2,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 117,
+    "fields": {
+      "name": "Super Creek (Warfare) + Yaeno Muteki (Warfare)",
+      "image": null,
+      "banner_timeline": 107,
+      "carat_amount": 0,
+      "carats_throughout": 3710,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 5,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 4,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 118,
+    "fields": {
+      "name": "Katsuragi Ace + Sakura Chiyono O + (Ballroom) + Hishi Amazon + (Wedding)",
+      "image": null,
+      "banner_timeline": 159,
+      "carat_amount": 0,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 119,
+    "fields": {
+      "name": "Agnes Tachyon (Alt Version)",
+      "image": null,
+      "banner_timeline": 108,
+      "carat_amount": 0,
+      "carats_throughout": 150,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 120,
+    "fields": {
+      "name": "North Flight",
+      "image": null,
+      "banner_timeline": 160,
+      "carat_amount": 80,
+      "carats_throughout": 1200,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 121,
+    "fields": {
+      "name": "King Halo (Wedding) + Sweep Tosho (Wedding)",
+      "image": null,
+      "banner_timeline": 109,
+      "carat_amount": 0,
+      "carats_throughout": 3410,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 5,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 4,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 122,
+    "fields": {
+      "name": "Jungle Pocket",
+      "image": null,
+      "banner_timeline": 161,
+      "carat_amount": 80,
+      "carats_throughout": 300,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 123,
+    "fields": {
+      "name": "Dream Journey",
+      "image": null,
+      "banner_timeline": 110,
+      "carat_amount": 1580,
+      "carats_throughout": 3450,
+      "support_ticket_amount": 4,
+      "uma_ticket_amount": 4,
+      "sr_shard_amount": 5,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 4,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 124,
+    "fields": {
+      "name": "Rice Shower (Great Food Festival)",
+      "image": null,
+      "banner_timeline": 111,
+      "carat_amount": 0,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 125,
+    "fields": {
+      "name": "Calstone Light O",
+      "image": null,
+      "banner_timeline": 162,
+      "carat_amount": 80,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 126,
+    "fields": {
+      "name": "Eishin Flash (Summer Trip) + Hokko Tarumae (Summer Trip)",
+      "image": null,
+      "banner_timeline": 112,
+      "carat_amount": 0,
+      "carats_throughout": 7910,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 10,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 9,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 127,
+    "fields": {
+      "name": "(All) 2",
+      "image": null,
+      "banner_timeline": 113,
+      "carat_amount": 0,
+      "carats_throughout": 3500,
+      "support_ticket_amount": 3,
+      "uma_ticket_amount": 3,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 2,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 128,
+    "fields": {
+      "name": "Gentildonna",
+      "image": null,
+      "banner_timeline": 114,
+      "carat_amount": 3080,
+      "carats_throughout": 4000,
+      "support_ticket_amount": 1,
+      "uma_ticket_amount": 1,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 2,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 129,
+    "fields": {
+      "name": "Neo Universe (Autumn) + Zenno Rob Roy (Autumn)",
+      "image": null,
+      "banner_timeline": 115,
+      "carat_amount": 0,
+      "carats_throughout": 2910,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 3,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 130,
+    "fields": {
+      "name": "Cesario",
+      "image": null,
+      "banner_timeline": 116,
+      "carat_amount": 80,
+      "carats_throughout": 1400,
+      "support_ticket_amount": 1,
+      "uma_ticket_amount": 1,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 131,
+    "fields": {
+      "name": "Durandal",
+      "image": null,
+      "banner_timeline": 163,
+      "carat_amount": 80,
+      "carats_throughout": 780,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 132,
+    "fields": {
+      "name": "Seeking the Pearl (Halloween) + Mayano Top Gun (Halloween)",
+      "image": null,
+      "banner_timeline": 117,
+      "carat_amount": 0,
+      "carats_throughout": 3710,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 5,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 4,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 133,
+    "fields": {
+      "name": "Bubble Gum Fellow",
+      "image": null,
+      "banner_timeline": 164,
+      "carat_amount": 1080,
+      "carats_throughout": 300,
+      "support_ticket_amount": 3,
+      "uma_ticket_amount": 3,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 2,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 134,
+    "fields": {
+      "name": "Biwa Hayahide (Mecha)",
+      "image": null,
+      "banner_timeline": 118,
+      "carat_amount": 0,
+      "carats_throughout": 5400,
+      "support_ticket_amount": 4,
+      "uma_ticket_amount": 4,
+      "sr_shard_amount": 5,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 4,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 135,
+    "fields": {
+      "name": "Narita Taishin (Mecha)",
+      "image": null,
+      "banner_timeline": 119,
+      "carat_amount": 0,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 136,
+    "fields": {
+      "name": "Air Messiah",
+      "image": null,
+      "banner_timeline": 165,
+      "carat_amount": 80,
+      "carats_throughout": 300,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 137,
+    "fields": {
+      "name": "Narita Top Road (Christmas) + Admire Vega (Christmas)",
+      "image": null,
+      "banner_timeline": 120,
+      "carat_amount": 0,
+      "carats_throughout": 8210,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 10,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 9,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 138,
+    "fields": {
+      "name": "Win Variation",
+      "image": null,
+      "banner_timeline": 121,
+      "carat_amount": 580,
+      "carats_throughout": 1800,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 2,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 139,
+    "fields": {
+      "name": "Grass Wonder (New Year)",
+      "image": null,
+      "banner_timeline": 166,
+      "carat_amount": 0,
+      "carats_throughout": 300,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 140,
+    "fields": {
+      "name": "Katsuragi Ace (New Year) + Mr. C.B. (New Year)",
+      "image": null,
+      "banner_timeline": 122,
+      "carat_amount": 1500,
+      "carats_throughout": 6860,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 5,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 4,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 141,
+    "fields": {
+      "name": "Maruzensky (New Year)",
+      "image": null,
+      "banner_timeline": 123,
+      "carat_amount": 0,
+      "carats_throughout": 900,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 142,
+    "fields": {
+      "name": "Furioso",
+      "image": null,
+      "banner_timeline": 167,
+      "carat_amount": 80,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 143,
+    "fields": {
+      "name": "Yamanin Zephyr (Valentine) + Aston Machan (Valentine)",
+      "image": null,
+      "banner_timeline": 124,
+      "carat_amount": 0,
+      "carats_throughout": 3410,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 5,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 4,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 144,
+    "fields": {
+      "name": "Tsurumaru Tsuyoshi",
+      "image": null,
+      "banner_timeline": 168,
+      "carat_amount": 80,
+      "carats_throughout": 2150,
+      "support_ticket_amount": 1,
+      "uma_ticket_amount": 1,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 145,
+    "fields": {
+      "name": "Orfevre",
+      "image": null,
+      "banner_timeline": 125,
+      "carat_amount": 3080,
+      "carats_throughout": 5550,
+      "support_ticket_amount": 4,
+      "uma_ticket_amount": 4,
+      "sr_shard_amount": 4,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 146,
+    "fields": {
+      "name": "Gran Alegria",
+      "image": null,
+      "banner_timeline": 126,
+      "carat_amount": 80,
+      "carats_throughout": 3650,
+      "support_ticket_amount": 1,
+      "uma_ticket_amount": 1,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 147,
+    "fields": {
+      "name": "No Reason",
+      "image": null,
+      "banner_timeline": 169,
+      "carat_amount": 80,
+      "carats_throughout": 150,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 148,
+    "fields": {
+      "name": "Tap Dance City (Ballroom) + Tanino Gimlet (Ballroom)",
+      "image": null,
+      "banner_timeline": 127,
+      "carat_amount": 500,
+      "carats_throughout": 8360,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 10,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 9,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 149,
+    "fields": {
+      "name": "Sirius Symboli (The Twinkle Legends)",
+      "image": null,
+      "banner_timeline": 128,
+      "carat_amount": 0,
+      "carats_throughout": 150,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 150,
+    "fields": {
+      "name": "Fenomeno",
+      "image": null,
+      "banner_timeline": 170,
+      "carat_amount": 80,
+      "carats_throughout": 300,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 151,
+    "fields": {
+      "name": "Copano Rickey (Parade) + Smart Falcon (Parade)",
+      "image": null,
+      "banner_timeline": 129,
+      "carat_amount": 0,
+      "carats_throughout": 3560,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 5,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 4,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 152,
+    "fields": {
+      "name": "Oguri Cap + (Christmas) + Gold Ship (Summer) + (Project L'Arc) + Mejiro McQueen + (Summer) + (Anime Collab) + Tamamo Cross + (Festival) + Curren Chan + (Wedding) + Seiun Sky + (Ballroom) + Hishi Miracle + Biwa Hayahide + (Christmas) + (Mecha)",
+      "image": null,
+      "banner_timeline": 171,
+      "carat_amount": 0,
+      "carats_throughout": 300,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 153,
+    "fields": {
+      "name": "Verxina",
+      "image": null,
+      "banner_timeline": 130,
+      "carat_amount": 80,
+      "carats_throughout": 900,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 154,
+    "fields": {
+      "name": "Loves Only You",
+      "image": null,
+      "banner_timeline": 172,
+      "carat_amount": 80,
+      "carats_throughout": 150,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 155,
+    "fields": {
+      "name": "Cesario (Wedding) + Mejiro Ramonu (Wedding)",
+      "image": null,
+      "banner_timeline": 131,
+      "carat_amount": 0,
+      "carats_throughout": 3710,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 5,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 4,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 156,
+    "fields": {
+      "name": "Chrono Genesis",
+      "image": null,
+      "banner_timeline": 173,
+      "carat_amount": 80,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 157,
+    "fields": {
+      "name": "Gold City (Deserted Island)",
+      "image": null,
+      "banner_timeline": 132,
+      "carat_amount": 0,
+      "carats_throughout": 4200,
+      "support_ticket_amount": 4,
+      "uma_ticket_amount": 4,
+      "sr_shard_amount": 4,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 158,
+    "fields": {
+      "name": "Ines Fujin (Deserted Island)",
+      "image": null,
+      "banner_timeline": 133,
+      "carat_amount": 0,
+      "carats_throughout": 900,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 159,
+    "fields": {
+      "name": "Fusaichi Pandora",
+      "image": null,
+      "banner_timeline": 174,
+      "carat_amount": 80,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 160,
+    "fields": {
+      "name": "Cheval Grand (Summer) + Satono Crown (Summer)",
+      "image": null,
+      "banner_timeline": 134,
+      "carat_amount": 0,
+      "carats_throughout": 7910,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 10,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 9,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 161,
+    "fields": {
+      "name": "Vivlos (Summer)",
+      "image": null,
+      "banner_timeline": 175,
+      "carat_amount": 0,
+      "carats_throughout": 2000,
+      "support_ticket_amount": 1,
+      "uma_ticket_amount": 1,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 162,
+    "fields": {
+      "name": "Still in Love",
+      "image": null,
+      "banner_timeline": 135,
+      "carat_amount": 3080,
+      "carats_throughout": 3500,
+      "support_ticket_amount": 1,
+      "uma_ticket_amount": 1,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 163,
+    "fields": {
+      "name": "K.S.Miracle (Alt Version) + Hishi Miracle (Alt Version)",
+      "image": null,
+      "banner_timeline": 136,
+      "carat_amount": 0,
+      "carats_throughout": 3410,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 5,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 4,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 164,
+    "fields": {
+      "name": "Espoir City",
+      "image": null,
+      "banner_timeline": 137,
+      "carat_amount": 80,
+      "carats_throughout": 1400,
+      "support_ticket_amount": 1,
+      "uma_ticket_amount": 1,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 165,
+    "fields": {
+      "name": "Believe",
+      "image": null,
+      "banner_timeline": 176,
+      "carat_amount": 80,
+      "carats_throughout": 150,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 166,
+    "fields": {
+      "name": "Hishi Akebono (Halloween) + Marvelous Sunday (Halloween)",
+      "image": null,
+      "banner_timeline": 138,
+      "carat_amount": 0,
+      "carats_throughout": 3710,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 5,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 4,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 167,
+    "fields": {
+      "name": "Tosen Jordan (Halloween)",
+      "image": null,
+      "banner_timeline": 139,
+      "carat_amount": 0,
+      "carats_throughout": 1050,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 168,
+    "fields": {
+      "name": "Dantsu Flame",
+      "image": null,
+      "banner_timeline": 177,
+      "carat_amount": 80,
+      "carats_throughout": 450,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 169,
+    "fields": {
+      "name": "Jungle Pocket (Rerun)",
+      "image": null,
+      "banner_timeline": 140,
+      "carat_amount": 0,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 170,
+    "fields": {
+      "name": "Transcend (Onsen)",
+      "image": null,
+      "banner_timeline": 141,
+      "carat_amount": 0,
+      "carats_throughout": 4350,
+      "support_ticket_amount": 4,
+      "uma_ticket_amount": 4,
+      "sr_shard_amount": 4,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 171,
+    "fields": {
+      "name": "Wonder Acute (Onsen)",
+      "image": null,
+      "banner_timeline": 142,
+      "carat_amount": 0,
+      "carats_throughout": 900,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 172,
+    "fields": {
+      "name": "Buena Vista",
+      "image": null,
+      "banner_timeline": 178,
+      "carat_amount": 80,
+      "carats_throughout": 150,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 173,
+    "fields": {
+      "name": "Nakayama Festa (Christmas) + Dream Journey (Christmas)",
+      "image": null,
+      "banner_timeline": 143,
+      "carat_amount": 0,
+      "carats_throughout": 8210,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 10,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 9,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 174,
+    "fields": {
+      "name": "Oguri Cap (Anime Collab)",
+      "image": null,
+      "banner_timeline": 144,
+      "carat_amount": 500,
+      "carats_throughout": 1350,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 175,
+    "fields": {
+      "name": "Stay Gold",
+      "image": null,
+      "banner_timeline": 179,
+      "carat_amount": 80,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 176,
+    "fields": {
+      "name": "Ikuno Dictus (New Year) + Sakura Laurel (New Year)",
+      "image": null,
+      "banner_timeline": 145,
+      "carat_amount": 1500,
+      "carats_throughout": 7310,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 5,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 4,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 177,
+    "fields": {
+      "name": "Gentildonna (Rerun)",
+      "image": null,
+      "banner_timeline": 180,
+      "carat_amount": 0,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 178,
+    "fields": {
+      "name": "Orfevre (Rerun)",
+      "image": null,
+      "banner_timeline": 181,
+      "carat_amount": 0,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 179,
+    "fields": {
+      "name": "Bubble Gum Fellow (New Year)",
+      "image": null,
+      "banner_timeline": 146,
+      "carat_amount": 0,
+      "carats_throughout": 900,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 180,
+    "fields": {
+      "name": "Kiseki",
+      "image": null,
+      "banner_timeline": 182,
+      "carat_amount": 80,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 181,
+    "fields": {
+      "name": "Taiki Shuttle (Valentine) + Sounds of Earth (Valentine)",
+      "image": null,
+      "banner_timeline": 147,
+      "carat_amount": 0,
+      "carats_throughout": 3410,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 5,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 4,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 182,
+    "fields": {
+      "name": "Royce and Royce",
+      "image": null,
+      "banner_timeline": 183,
+      "carat_amount": 80,
+      "carats_throughout": 2150,
+      "support_ticket_amount": 1,
+      "uma_ticket_amount": 1,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 183,
+    "fields": {
+      "name": "Almond Eye",
+      "image": null,
+      "banner_timeline": 148,
+      "carat_amount": 3080,
+      "carats_throughout": 5550,
+      "support_ticket_amount": 4,
+      "uma_ticket_amount": 4,
+      "sr_shard_amount": 4,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 184,
+    "fields": {
+      "name": "Loves Only You (Beyond Dreams)",
+      "image": null,
+      "banner_timeline": 184,
+      "carat_amount": 0,
+      "carats_throughout": 3650,
+      "support_ticket_amount": 1,
+      "uma_ticket_amount": 1,
+      "sr_shard_amount": 2,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 185,
+    "fields": {
+      "name": "Victoire Pisa",
+      "image": null,
+      "banner_timeline": 185,
+      "carat_amount": 80,
+      "carats_throughout": 150,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 186,
+    "fields": {
+      "name": "Sakura Bakushin O (Ballroom) + North Flight (Ballroom)",
+      "image": null,
+      "banner_timeline": 186,
+      "carat_amount": 0,
+      "carats_throughout": 8360,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 10,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 9,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 187,
+    "fields": {
+      "name": "Lucky Lilac",
+      "image": null,
+      "banner_timeline": 187,
+      "carat_amount": 80,
+      "carats_throughout": 1050,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 188,
+    "fields": {
+      "name": "Admire Groove",
+      "image": null,
+      "banner_timeline": 188,
+      "carat_amount": 80,
+      "carats_throughout": 150,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 189,
+    "fields": {
+      "name": "Fuji Kiseki (Cheerleader) + Jungle Pocket (Cheerleader)",
+      "image": null,
+      "banner_timeline": 189,
+      "carat_amount": 0,
+      "carats_throughout": 3410,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 5,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 4,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 190,
+    "fields": {
+      "name": "Fenomeno + Nakayama Festa + (Christmas) + Stay Gold + Dream Journey + (Christmas) + Orfevre + Gold Ship (Summer) + (Project L'Arc)",
+      "image": null,
+      "banner_timeline": 190,
+      "carat_amount": 0,
+      "carats_throughout": 0,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 191,
+    "fields": {
+      "name": "Daring Heart",
+      "image": null,
+      "banner_timeline": 191,
+      "carat_amount": 0,
+      "carats_throughout": 1050,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 192,
+    "fields": {
+      "name": "Red Desire",
+      "image": null,
+      "banner_timeline": 192,
+      "carat_amount": 0,
+      "carats_throughout": 150,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 0,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 0,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 193,
+    "fields": {
+      "name": "Manhatten Cafe (Wedding) + Gentildonna (Wedding)",
+      "image": null,
+      "banner_timeline": 193,
+      "carat_amount": 0,
+      "carats_throughout": 3710,
+      "support_ticket_amount": 2,
+      "uma_ticket_amount": 2,
+      "sr_shard_amount": 5,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 4,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 194,
+    "fields": {
+      "name": "Curren Bouquetd'or",
+      "image": null,
+      "banner_timeline": 194,
+      "carat_amount": 0,
+      "carats_throughout": 1050,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 195,
+    "fields": {
+      "name": "Narita Top Road (Tracen-ken)",
+      "image": null,
+      "banner_timeline": 195,
+      "carat_amount": 0,
+      "carats_throughout": 4050,
+      "support_ticket_amount": 4,
+      "uma_ticket_amount": 4,
+      "sr_shard_amount": 4,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 3,
+      "ssr_crystal_amount": 0
+    }
+  },
+  {
+    "model": "calculatorapi.gameevent",
+    "pk": 196,
+    "fields": {
+      "name": "Fine Motion (Tracen-ken)",
+      "image": null,
+      "banner_timeline": 196,
+      "carat_amount": 0,
+      "carats_throughout": 900,
+      "support_ticket_amount": 0,
+      "uma_ticket_amount": 0,
+      "sr_shard_amount": 1,
+      "sr_crystal_amount": 0,
+      "ssr_shard_amount": 1,
+      "ssr_crystal_amount": 0
+    }
   }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 2,
-  "fields": {
-    "name": "T.M. Opera",
-    "image": "",
-    "banner_timeline": 1
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 3,
-  "fields": {
-    "name": "Mihono Bourbon",
-    "image": "",
-    "banner_timeline": 2
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 4,
-  "fields": {
-    "name": "Biwa Hayahide",
-    "image": "",
-    "banner_timeline": 3
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 5,
-  "fields": {
-    "name": "Tokai Teio + Mejiro Mcqueen",
-    "image": "",
-    "banner_timeline": 4
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 6,
-  "fields": {
-    "name": "Curren Chan",
-    "image": "",
-    "banner_timeline": 5
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 7,
-  "fields": {
-    "name": "Narita Taishin",
-    "image": "",
-    "banner_timeline": 6
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 8,
-  "fields": {
-    "name": "Smart Falcon",
-    "image": "",
-    "banner_timeline": 7
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 9,
-  "fields": {
-    "name": "Narita Brian",
-    "image": "",
-    "banner_timeline": 8
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 10,
-  "fields": {
-    "name": "Air Groove (Wedding) + Mayano Top Gun (Wedding)",
-    "image": "",
-    "banner_timeline": 9
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 11,
-  "fields": {
-    "name": "Seiun Sky",
-    "image": "",
-    "banner_timeline": 10
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 12,
-  "fields": {
-    "name": "Hishi Amazon",
-    "image": "",
-    "banner_timeline": 11
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 13,
-  "fields": {
-    "name": "Grass Wonder (Fantasy) + El Condor Pasa (Fantasy)",
-    "image": "",
-    "banner_timeline": 12
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 14,
-  "fields": {
-    "name": "Fuji Kiseki",
-    "image": "",
-    "banner_timeline": 13
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 15,
-  "fields": {
-    "name": "Gold City",
-    "image": "",
-    "banner_timeline": 14
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 16,
-  "fields": {
-    "name": "Special Week (Summer) + Maruzensky (Summer)",
-    "image": "",
-    "banner_timeline": 15
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 17,
-  "fields": {
-    "name": "Meisho Doto",
-    "image": "",
-    "banner_timeline": 16
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 18,
-  "fields": {
-    "name": "Eishin Flash",
-    "image": "",
-    "banner_timeline": 17
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 19,
-  "fields": {
-    "name": "Matikanefukukitaru (Full Armor)",
-    "image": "",
-    "banner_timeline": 18
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 20,
-  "fields": {
-    "name": "Hishi Akebono",
-    "image": "",
-    "banner_timeline": 19
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 21,
-  "fields": {
-    "name": "Agnes Digital",
-    "image": "",
-    "banner_timeline": 20
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 22,
-  "fields": {
-    "name": "Rice Shower (Halloween) + Super Creek (Halloween)",
-    "image": "",
-    "banner_timeline": 21
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 23,
-  "fields": {
-    "name": "Kawakami Princess♡",
-    "image": "",
-    "banner_timeline": 22
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 24,
-  "fields": {
-    "name": "Manhattan Cafe",
-    "image": "",
-    "banner_timeline": 23
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 25,
-  "fields": {
-    "name": "Symboli Rudolf (Festival) + Gold City (Festival)",
-    "image": "",
-    "banner_timeline": 24
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 26,
-  "fields": {
-    "name": "Tosen Jordan",
-    "image": "",
-    "banner_timeline": 25
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 27,
-  "fields": {
-    "name": "Mejiro Dober",
-    "image": "",
-    "banner_timeline": 26
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 28,
-  "fields": {
-    "name": "Oguri Cap (Christmas) + Biwa Hayahide (Christmas)",
-    "image": "",
-    "banner_timeline": 27
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 29,
-  "fields": {
-    "name": "Fine Motion",
-    "image": "",
-    "banner_timeline": 28
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 30,
-  "fields": {
-    "name": "Tamamo Cross",
-    "image": "",
-    "banner_timeline": 29
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 31,
-  "fields": {
-    "name": "Haru Urara (New Year) + TM Opera O (New Year)",
-    "image": "",
-    "banner_timeline": 30
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 32,
-  "fields": {
-    "name": "(All)",
-    "image": "",
-    "banner_timeline": 31
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 33,
-  "fields": {
-    "name": "Sakura Chiyono O",
-    "image": "",
-    "banner_timeline": 32
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 34,
-  "fields": {
-    "name": "Mihono Bourbon (Valentine) + Eishin Flash (Valentine)",
-    "image": "",
-    "banner_timeline": 33
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 35,
-  "fields": {
-    "name": "Mejiro Ardan",
-    "image": "",
-    "banner_timeline": 34
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 36,
-  "fields": {
-    "name": "Admire Vega",
-    "image": "",
-    "banner_timeline": 35
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 37,
-  "fields": {
-    "name": "Kitasan Black + Matikanetannhauser",
-    "image": "",
-    "banner_timeline": 36
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 38,
-  "fields": {
-    "name": "Satono Diamond",
-    "image": "",
-    "banner_timeline": 37
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 39,
-  "fields": {
-    "name": "Mejiro Bright",
-    "image": "",
-    "banner_timeline": 38
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 40,
-  "fields": {
-    "name": "Seiun Sky (Ballroom) + Fuji Kiseki (Ballroom)",
-    "image": "",
-    "banner_timeline": 39
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 41,
-  "fields": {
-    "name": "Nishino Flower",
-    "image": "",
-    "banner_timeline": 40
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 42,
-  "fields": {
-    "name": "Yaeno Muteki",
-    "image": "",
-    "banner_timeline": 41
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 43,
-  "fields": {
-    "name": "Nice Nature (Cheerleader) + King Halo (Cheerleader)",
-    "image": "",
-    "banner_timeline": 42
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 44,
-  "fields": {
-    "name": "Ines Fujin♡",
-    "image": "",
-    "banner_timeline": 43
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 45,
-  "fields": {
-    "name": "Mejiro Palmer",
-    "image": "",
-    "banner_timeline": 44
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 46,
-  "fields": {
-    "name": "Curren Chan (Wedding) + Fine Motion (Wedding)",
-    "image": "",
-    "banner_timeline": 45
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 47,
-  "fields": {
-    "name": "Inari One",
-    "image": "",
-    "banner_timeline": 46
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 48,
-  "fields": {
-    "name": "Sweep Tosho",
-    "image": "",
-    "banner_timeline": 47
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 49,
-  "fields": {
-    "name": "Taiki Shuttle (Camping) + Mejiro Dober (Camping)",
-    "image": "",
-    "banner_timeline": 48
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 50,
-  "fields": {
-    "name": "Air Shakur",
-    "image": "",
-    "banner_timeline": 49
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 51,
-  "fields": {
-    "name": "Seiun Sky (Rerun) + Narita Brian (Rerun)",
-    "image": "",
-    "banner_timeline": 50
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 52,
-  "fields": {
-    "name": "Mejiro McQueen (Summer) + Gold Ship (Summer)",
-    "image": "",
-    "banner_timeline": 51
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 53,
-  "fields": {
-    "name": "Bamboo Memory",
-    "image": "",
-    "banner_timeline": 52
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 54,
-  "fields": {
-    "name": "Copano Rickey",
-    "image": "",
-    "banner_timeline": 53
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 55,
-  "fields": {
-    "name": "Smart Falcon (Grand Live)",
-    "image": "",
-    "banner_timeline": 54
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 56,
-  "fields": {
-    "name": "Winning Ticket (Steampunk) + Narita Taishin (Steampunk)",
-    "image": "",
-    "banner_timeline": 55
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 57,
-  "fields": {
-    "name": "Yukino Bijin",
-    "image": "",
-    "banner_timeline": 56
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 58,
-  "fields": {
-    "name": "Seeking the Pearl",
-    "image": "",
-    "banner_timeline": 57
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 59,
-  "fields": {
-    "name": "Agnes Digital (Halloween) + Meisho Doto (Halloween)",
-    "image": "",
-    "banner_timeline": 58
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 60,
-  "fields": {
-    "name": "Aston Machan",
-    "image": "",
-    "banner_timeline": 59
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 61,
-  "fields": {
-    "name": "Seeking the Pearl (Rerun)",
-    "image": "",
-    "banner_timeline": 57
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 62,
-  "fields": {
-    "name": "Yamanin Zephyr",
-    "image": "",
-    "banner_timeline": 61
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 63,
-  "fields": {
-    "name": "Tamamo Cross (Festival) + Inari One (Festival)",
-    "image": "",
-    "banner_timeline": 62
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 64,
-  "fields": {
-    "name": "Nakayama Festa",
-    "image": "",
-    "banner_timeline": 63
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 65,
-  "fields": {
-    "name": "Wonder Acute",
-    "image": "",
-    "banner_timeline": 64
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 66,
-  "fields": {
-    "name": "Vodka (Christmas) + Daiwa Scarlet (Christmas)",
-    "image": "",
-    "banner_timeline": 65
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 67,
-  "fields": {
-    "name": "Zenno Rob Roy",
-    "image": "",
-    "banner_timeline": 66
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 68,
-  "fields": {
-    "name": "Narita Brian (Blaze)",
-    "image": "",
-    "banner_timeline": 67
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 69,
-  "fields": {
-    "name": "Kitasan Black (New Year) + Satono Diamond (New Year)",
-    "image": "",
-    "banner_timeline": 68
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 70,
-  "fields": {
-    "name": "Hokko Tarumae",
-    "image": "",
-    "banner_timeline": 69
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 71,
-  "fields": {
-    "name": "Daitaku Helios",
-    "image": "",
-    "banner_timeline": 70
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 72,
-  "fields": {
-    "name": "Rice Shower (Halloween) + Haru Urara (New Year)",
-    "image": "",
-    "banner_timeline": 71
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 73,
-  "fields": {
-    "name": "Ines Fujin (Valentine) + Mejiro Ryan (Valentine)",
-    "image": "",
-    "banner_timeline": 72
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 74,
-  "fields": {
-    "name": "Shinko Windy",
-    "image": "",
-    "banner_timeline": 150
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 75,
-  "fields": {
-    "name": "Mr. C.B. + Twin Turbo",
-    "image": "",
-    "banner_timeline": 73
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 76,
-  "fields": {
-    "name": "Daiichi Ruby",
-    "image": "",
-    "banner_timeline": 74
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 77,
-  "fields": {
-    "name": "Symboli Kris S",
-    "image": "",
-    "banner_timeline": 75
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 78,
-  "fields": {
-    "name": "Mejiro Ardan (Ballroom) + Sakura Chiyono O (Ballroom)",
-    "image": "",
-    "banner_timeline": 76
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 79,
-  "fields": {
-    "name": "Sakura Laurel",
-    "image": "",
-    "banner_timeline": 77
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 80,
-  "fields": {
-    "name": "Neo Universe",
-    "image": "",
-    "banner_timeline": 78
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 81,
-  "fields": {
-    "name": "Matikanetannhauser (Sports Festival) + Sakura Bakushin O (Sports Festival)",
-    "image": "",
-    "banner_timeline": 79
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 82,
-  "fields": {
-    "name": "Gold City + Tosen Jordan + Mejiro Palmer + Daitaku Helios",
-    "image": "",
-    "banner_timeline": 151
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 83,
-  "fields": {
-    "name": "Hishi Miracle",
-    "image": "",
-    "banner_timeline": 80
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 84,
-  "fields": {
-    "name": "Champions Meeting 2027-01-13",
-    "image": "",
-    "banner_timeline": null
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 85,
-  "fields": {
-    "name": "Tanino Gimlet",
-    "image": "",
-    "banner_timeline": 81
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 86,
-  "fields": {
-    "name": "Hishi Amazon (Wedding) + Nishino Flower (Wedding)",
-    "image": "",
-    "banner_timeline": 82
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 87,
-  "fields": {
-    "name": "Taiki Shuttle (Camping) + Yamanin Zephyr (Rerun)",
-    "image": "",
-    "banner_timeline": 83
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 88,
-  "fields": {
-    "name": "Marvelous Sunday",
-    "image": "",
-    "banner_timeline": 84
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 89,
-  "fields": {
-    "name": "Bamboo Memory (Summer Trip) + Tosen Jordan (Summer Trip)",
-    "image": "",
-    "banner_timeline": 85
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 90,
-  "fields": {
-    "name": "Katsuragi Ace",
-    "image": "",
-    "banner_timeline": 86
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 91,
-  "fields": {
-    "name": "Champions Meeting 2027-02-25",
-    "image": "",
-    "banner_timeline": null
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 92,
-  "fields": {
-    "name": "Sirius Symboli",
-    "image": "",
-    "banner_timeline": 87
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 93,
-  "fields": {
-    "name": "Agnes Tachyon (Summer) + Silence Suzuka (Summer)",
-    "image": "",
-    "banner_timeline": 88
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 94,
-  "fields": {
-    "name": "Copano Rickey (Rerun) + Hokko Tarumae (Rerun)",
-    "image": "",
-    "banner_timeline": 152
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 95,
-  "fields": {
-    "name": "Narita Top Road",
-    "image": "",
-    "banner_timeline": 89
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 96,
-  "fields": {
-    "name": "Gold Ship (Project L'Arc)",
-    "image": "",
-    "banner_timeline": 90
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 97,
-  "fields": {
-    "name": "Satono Diamond (Project L'Arc)",
-    "image": "",
-    "banner_timeline": 91
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 98,
-  "fields": {
-    "name": "Champions Meeting 2027-04-11",
-    "image": "",
-    "banner_timeline": null
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 99,
-  "fields": {
-    "name": "K.S.Miracle",
-    "image": "",
-    "banner_timeline": 92
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 100,
-  "fields": {
-    "name": "Air Shakur (Halloween) + Symboli Kris S (Halloween)",
-    "image": "",
-    "banner_timeline": 93
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 101,
-  "fields": {
-    "name": "Jungle Pocket + Maruzensky +",
-    "image": "",
-    "banner_timeline": null
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 102,
-  "fields": {
-    "name": "Mejiro Ramonu",
-    "image": "",
-    "banner_timeline": 94
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 103,
-  "fields": {
-    "name": "Kawakami Princess (Festival) + Tokai Teio (Festival)",
-    "image": "",
-    "banner_timeline": 95
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 104,
-  "fields": {
-    "name": "Mejiro McQueen",
-    "image": "",
-    "banner_timeline": 96
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 105,
-  "fields": {
-    "name": "Champions Meeting 2027-05-22",
-    "image": "",
-    "banner_timeline": null
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 106,
-  "fields": {
-    "name": "Tap Dance City",
-    "image": "",
-    "banner_timeline": 97
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 107,
-  "fields": {
-    "name": "Mejiro Palmer (Christmas) + Mejiro Bright (Christmas)",
-    "image": "",
-    "banner_timeline": 98
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 108,
-  "fields": {
-    "name": "Satono Crown",
-    "image": "",
-    "banner_timeline": 154
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 109,
-  "fields": {
-    "name": "Cheval Grand",
-    "image": "",
-    "banner_timeline": 99
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 110,
-  "fields": {
-    "name": "Kitasan Black (Anime Collab)",
-    "image": "",
-    "banner_timeline": 100
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 111,
-  "fields": {
-    "name": "Nice Nature (New Year)",
-    "image": "",
-    "banner_timeline": 155
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 112,
-  "fields": {
-    "name": "Champions Meeting 2027-07-03",
-    "image": "",
-    "banner_timeline": null
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 113,
-  "fields": {
-    "name": "Vivlos",
-    "image": "",
-    "banner_timeline": 101
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 114,
-  "fields": {
-    "name": "Yukino Bijin (Valentine) + Manhattan Cafe (Valentine)",
-    "image": "",
-    "banner_timeline": 102
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 115,
-  "fields": {
-    "name": "Biko Pegasus",
-    "image": "",
-    "banner_timeline": 156
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 116,
-  "fields": {
-    "name": "Duramente + Ikuno Dictus",
-    "image": "",
-    "banner_timeline": 103
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 117,
-  "fields": {
-    "name": "Transcend",
-    "image": "",
-    "banner_timeline": 157
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 118,
-  "fields": {
-    "name": "Rhein Kraft",
-    "image": "",
-    "banner_timeline": 104
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 119,
-  "fields": {
-    "name": "Daiichi Ruby (Ballroom) + Daitaku Helios (Ballroom)",
-    "image": "",
-    "banner_timeline": 105
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 120,
-  "fields": {
-    "name": "Winning Ticket (U.A.F.)",
-    "image": "",
-    "banner_timeline": 106
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 121,
-  "fields": {
-    "name": "Sounds of Earth",
-    "image": "",
-    "banner_timeline": 158
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 122,
-  "fields": {
-    "name": "Super Creek (Warfare) + Yaeno Muteki (Warfare)",
-    "image": "",
-    "banner_timeline": 107
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 123,
-  "fields": {
-    "name": "Katsuragi Ace + Sakura Chiyono O + (Ballroom) + Hishi Amazon + (Wedding)",
-    "image": "",
-    "banner_timeline": 159
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 124,
-  "fields": {
-    "name": "Agnes Tachyon (Alt Version)",
-    "image": "",
-    "banner_timeline": 108
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 125,
-  "fields": {
-    "name": "Champions Meeting 2027-09-27",
-    "image": "",
-    "banner_timeline": null
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 126,
-  "fields": {
-    "name": "North Flight",
-    "image": "",
-    "banner_timeline": 160
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 127,
-  "fields": {
-    "name": "King Halo (Wedding) + Sweep Tosho (Wedding)",
-    "image": "",
-    "banner_timeline": 109
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 128,
-  "fields": {
-    "name": "Jungle Pocket",
-    "image": "",
-    "banner_timeline": 161
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 129,
-  "fields": {
-    "name": "Dream Journey",
-    "image": "",
-    "banner_timeline": 110
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 130,
-  "fields": {
-    "name": "Rice Shower (Great Food Festival)",
-    "image": "",
-    "banner_timeline": 111
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 131,
-  "fields": {
-    "name": "Calstone Light O",
-    "image": "",
-    "banner_timeline": 162
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 132,
-  "fields": {
-    "name": "Champions Meeting 2027-11-14",
-    "image": "",
-    "banner_timeline": null
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 133,
-  "fields": {
-    "name": "Eishin Flash (Summer Trip) + Hokko Tarumae (Summer Trip)",
-    "image": "",
-    "banner_timeline": 112
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 134,
-  "fields": {
-    "name": "(All) 2",
-    "image": "",
-    "banner_timeline": 113
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 135,
-  "fields": {
-    "name": "Gentildonna",
-    "image": "",
-    "banner_timeline": 114
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 136,
-  "fields": {
-    "name": "Neo Universe (Autumn) + Zenno Rob Roy (Autumn)",
-    "image": "",
-    "banner_timeline": 115
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 137,
-  "fields": {
-    "name": "Cesario",
-    "image": "",
-    "banner_timeline": 116
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 138,
-  "fields": {
-    "name": "Durandal",
-    "image": "",
-    "banner_timeline": 163
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 139,
-  "fields": {
-    "name": "Champions Meeting 2027-12-30",
-    "image": "",
-    "banner_timeline": null
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 140,
-  "fields": {
-    "name": "Seeking the Pearl (Halloween) + Mayano Top Gun (Halloween)",
-    "image": "",
-    "banner_timeline": 117
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 141,
-  "fields": {
-    "name": "Bubble Gum Fellow",
-    "image": "",
-    "banner_timeline": 164
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 142,
-  "fields": {
-    "name": "Biwa Hayahide (Mecha)",
-    "image": "",
-    "banner_timeline": 118
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 143,
-  "fields": {
-    "name": "Narita Taishin (Mecha)",
-    "image": "",
-    "banner_timeline": 119
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 144,
-  "fields": {
-    "name": "Air Messiah",
-    "image": "",
-    "banner_timeline": 165
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 145,
-  "fields": {
-    "name": "Champions Meeting 2028-02-08",
-    "image": "",
-    "banner_timeline": null
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 146,
-  "fields": {
-    "name": "Narita Top Road (Christmas) + Admire Vega (Christmas)",
-    "image": "",
-    "banner_timeline": 120
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 147,
-  "fields": {
-    "name": "Win Variation",
-    "image": "",
-    "banner_timeline": 121
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 148,
-  "fields": {
-    "name": "Grass Wonder (New Year)",
-    "image": "",
-    "banner_timeline": 166
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 149,
-  "fields": {
-    "name": "Katsuragi Ace (New Year) + Mr. C.B. (New Year)",
-    "image": "",
-    "banner_timeline": 122
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 150,
-  "fields": {
-    "name": "Maruzensky (New Year)",
-    "image": "",
-    "banner_timeline": 123
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 151,
-  "fields": {
-    "name": "Furioso",
-    "image": "",
-    "banner_timeline": 167
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 152,
-  "fields": {
-    "name": "Yamanin Zephyr (Valentine) + Aston Machan (Valentine)",
-    "image": "",
-    "banner_timeline": 124
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 153,
-  "fields": {
-    "name": "Tsurumaru Tsuyoshi",
-    "image": "",
-    "banner_timeline": 168
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 154,
-  "fields": {
-    "name": "Champions Meeting 2028-04-08",
-    "image": "",
-    "banner_timeline": null
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 155,
-  "fields": {
-    "name": "Orfevre",
-    "image": "",
-    "banner_timeline": 125
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 156,
-  "fields": {
-    "name": "Gran Alegria",
-    "image": "",
-    "banner_timeline": 126
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 157,
-  "fields": {
-    "name": "No Reason",
-    "image": "",
-    "banner_timeline": 169
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 158,
-  "fields": {
-    "name": "Tap Dance City (Ballroom) + Tanino Gimlet (Ballroom)",
-    "image": "",
-    "banner_timeline": 127
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 159,
-  "fields": {
-    "name": "Sirius Symboli (The Twinkle Legends)",
-    "image": "",
-    "banner_timeline": 128
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 160,
-  "fields": {
-    "name": "Fenomeno",
-    "image": "",
-    "banner_timeline": 170
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 161,
-  "fields": {
-    "name": "Copano Rickey (Parade) + Smart Falcon (Parade)",
-    "image": "",
-    "banner_timeline": 129
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 162,
-  "fields": {
-    "name": "Oguri Cap + (Christmas) + Gold Ship + (Summer) + (Project L'Arc) + Mejiro McQueen + (Summer) + (Anime Collab) + Tamamo Cross + (Festival) + Curren Chan + (Wedding) + Seiun Sky + (Ballroom) + Hishi Miracle + Biwa Hayahide + (Christmas) + (Mecha)",
-    "image": "",
-    "banner_timeline": 171
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 163,
-  "fields": {
-    "name": "Verxina",
-    "image": "",
-    "banner_timeline": 130
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 164,
-  "fields": {
-    "name": "Loves Only You",
-    "image": "",
-    "banner_timeline": 172
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 165,
-  "fields": {
-    "name": "Champions Meeting 2028-06-17",
-    "image": "",
-    "banner_timeline": null
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 166,
-  "fields": {
-    "name": "Cesario (Wedding) + Mejiro Ramonu (Wedding)",
-    "image": "",
-    "banner_timeline": 131
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 167,
-  "fields": {
-    "name": "Chrono Genesis",
-    "image": "",
-    "banner_timeline": 173
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 168,
-  "fields": {
-    "name": "Gold City (Deserted Island)",
-    "image": "",
-    "banner_timeline": 132
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 169,
-  "fields": {
-    "name": "Ines Fujin (Deserted Island)",
-    "image": "",
-    "banner_timeline": 133
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 170,
-  "fields": {
-    "name": "Fusaichi Pandora",
-    "image": "",
-    "banner_timeline": 174
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 171,
-  "fields": {
-    "name": "Cheval Grand (Summer) + Satono Crown (Summer)",
-    "image": "",
-    "banner_timeline": 134
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 172,
-  "fields": {
-    "name": "Vivlos (Summer)",
-    "image": "",
-    "banner_timeline": 175
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 173,
-  "fields": {
-    "name": "Champions Meeting 2028-08-13",
-    "image": "",
-    "banner_timeline": null
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 174,
-  "fields": {
-    "name": "Still in Love",
-    "image": "",
-    "banner_timeline": 135
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 175,
-  "fields": {
-    "name": "K.S.Miracle (Alt Version) + Hishi Miracle (Alt Version)",
-    "image": "",
-    "banner_timeline": 136
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 176,
-  "fields": {
-    "name": "Espoir City",
-    "image": "",
-    "banner_timeline": 137
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 177,
-  "fields": {
-    "name": "Believe",
-    "image": "",
-    "banner_timeline": 176
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 178,
-  "fields": {
-    "name": "Hishi Akebono (Halloween) + Marvelous Sunday (Halloween)",
-    "image": "",
-    "banner_timeline": 138
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 179,
-  "fields": {
-    "name": "Tosen Jordan (Halloween)",
-    "image": "",
-    "banner_timeline": 139
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 180,
-  "fields": {
-    "name": "Dantsu Flame",
-    "image": "",
-    "banner_timeline": 177
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 181,
-  "fields": {
-    "name": "Jungle Pocket",
-    "image": "",
-    "banner_timeline": 140
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 182,
-  "fields": {
-    "name": "Transcend (Onsen)",
-    "image": "",
-    "banner_timeline": 141
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 183,
-  "fields": {
-    "name": "Wonder Acute (Onsen)",
-    "image": "",
-    "banner_timeline": 142
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 184,
-  "fields": {
-    "name": "Buena Vista",
-    "image": "",
-    "banner_timeline": 178
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 185,
-  "fields": {
-    "name": "Champions Meeting 2028-10-21",
-    "image": "",
-    "banner_timeline": null
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 186,
-  "fields": {
-    "name": "Nakayama Festa (Christmas) + Dream Journey (Christmas)",
-    "image": "",
-    "banner_timeline": 143
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 187,
-  "fields": {
-    "name": "Oguri Cap (Anime Collab)",
-    "image": "",
-    "banner_timeline": 144
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 188,
-  "fields": {
-    "name": "Stay Gold",
-    "image": "",
-    "banner_timeline": 179
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 189,
-  "fields": {
-    "name": "Ikuno Dictus (New Year) + Sakura Laurel (New Year)",
-    "image": "",
-    "banner_timeline": 145
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 190,
-  "fields": {
-    "name": "Gentildonna",
-    "image": "",
-    "banner_timeline": 180
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 191,
-  "fields": {
-    "name": "Orfevre",
-    "image": "",
-    "banner_timeline": 181
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 192,
-  "fields": {
-    "name": "Bubble Gum Fellow (New Year)",
-    "image": "",
-    "banner_timeline": 146
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 193,
-  "fields": {
-    "name": "Kiseki",
-    "image": "",
-    "banner_timeline": 182
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 194,
-  "fields": {
-    "name": "Taiki Shuttle (Valentine) + Sounds of Earth (Valentine)",
-    "image": "",
-    "banner_timeline": 147
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 195,
-  "fields": {
-    "name": "Royce and Royce",
-    "image": "",
-    "banner_timeline": 183
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 196,
-  "fields": {
-    "name": "Champions Meeting 2028-12-19",
-    "image": "",
-    "banner_timeline": null
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 197,
-  "fields": {
-    "name": "Almond Eye",
-    "image": "",
-    "banner_timeline": 148
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 198,
-  "fields": {
-    "name": "Event 2029-01-07",
-    "image": "",
-    "banner_timeline": null
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 199,
-  "fields": {
-    "name": "Event 2029-01-13",
-    "image": "",
-    "banner_timeline": null
-  }
-},
-{
-  "model": "calculatorapi.gameevent",
-  "pk": 200,
-  "fields": {
-    "name": "Event 2029-01-20",
-    "image": "",
-    "banner_timeline": null
-  }
-}
 ]

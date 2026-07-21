@@ -41,7 +41,7 @@ calculatorapi/
 | `BannerTimeline` | A time window grouping one or more gacha banners |
 | `BannerUma` / `BannerSupport` | Gacha banners with M2M relationships to Uma/SupportCard via through tables |
 | `UserPlannedBanner` | A user's pull plan — FK to either `banner_uma` or `banner_support` (never both), plus `number_of_pulls` |
-| `GameEvent` / `EventReward` | In-game events with dated reward schedules used in the resource projection |
+| `GameEvent` | In-game events; reward amounts (`carat_amount`, `carats_throughout`, tickets, shards, crystals) are fields on the event itself, used in the resource projection |
 | `ChampionsMeeting` | Racing event with track metadata and per-stat Uma recommendations |
 | `*Rank` tables | `ClubRank`, `TeamTrialsRank`, `ChampionsMeetingRank`, `LeagueOfHeroesRank` — income amounts per rank tier |
 
@@ -55,7 +55,7 @@ Manual routes:
 
 SimpleRouter-registered read-only ViewSets:
 - `/teamtrialranks`, `/clubranks`, `/championsmeetingranks`, `/leagueofheroesranks`
-- `/events`, `/eventrewards`
+- `/events`
 
 ### Content editing via Django admin
 

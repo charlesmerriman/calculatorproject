@@ -1,9 +1,8 @@
 """
 generate_event_fixtures.py
 
-Parses the Uma Musume global timeline CSV and generates two Django fixture files:
+Parses the Uma Musume global timeline CSV and generates one Django fixture file:
   - calculatorapi/fixtures/gameEvents.json
-  - calculatorapi/fixtures/eventRewards.json
 
 Run from the backend/ directory:
     python scripts/generate_event_fixtures.py [path/to/csv]
@@ -20,6 +19,20 @@ derives dates from them), and neither do rows whose name has no single
 matching banner (multi-Uma campaign-wide rows, etc.) -- those events are
 simply left unlinked, which is expected, not an error.
 
+Reward amounts (carat_amount, carats_throughout, ticket/shard amounts) live
+directly on GameEvent -- there's no separate EventReward row/model. carat_amount
+is the "Carat First Day" column (earned once the event's own resolved start_date
+passes); carats_throughout is the "Carat Throughout" column (prorated across the
+event's start_date..end_date by the frontend, see getThroughoutCaratsInWindow).
+The CSV has no "Carat Last Day" column anymore -- that category was retired.
+
+Two kinds of rows are skipped entirely (not emitted as GameEvents):
+  - Champions Meeting / League of Heroes rows (Banner Type -1, identified by a
+    "CM #"/"LoH #" tag rather than a distinct type value) -- those payouts are
+    tracked by the separate ChampionsMeeting/LeagueOfHeroes models.
+  - Placeholder rows with no Banner Uma AND no Banner Support (a calendar slot
+    with nothing announced/decided yet).
+
 The CSV's header row has "Global Start Date" listed twice (the second is
 actually the end date) -- csv.DictReader would silently let the second
 column overwrite the first, so date columns are read positionally instead.
@@ -31,7 +44,7 @@ import sys
 from pathlib import Path
 
 DEFAULT_CSV = Path(
-    "/mnt/c/Users/Zac82/Downloads/Timeline Master 4.511-5.0 - Filter Sheet (2).csv"
+    "/mnt/c/Users/Zac82/Downloads/Timeline Master 5.4+ - CSV Download.csv"
 )
 OUT_DIR = Path(__file__).parent.parent / "calculatorapi" / "fixtures"
 
@@ -70,9 +83,6 @@ def derive_name(row: dict, banner_type: int, start_date: str) -> str:
     uma = row.get("Banner Uma", "").strip()
     support = row.get("Banner Support", "").strip()
 
-    if banner_type == -1:
-        return f"Champions Meeting {start_date}"
-
     if uma:
         return uma
 
@@ -88,32 +98,11 @@ def derive_name(row: dict, banner_type: int, start_date: str) -> str:
     return f"Event {start_date}"
 
 
-def make_reward(pk, event_pk, name, carat, uma_tix, sup_tix, ssr_shard, sr_shard, date):
-    return {
-        "model": "calculatorapi.eventreward",
-        "pk": pk,
-        "fields": {
-            "event": event_pk,
-            "name": name,
-            "carat_amount": carat,
-            "support_ticket_amount": sup_tix,
-            "uma_ticket_amount": uma_tix,
-            "sr_shard_amount": sr_shard,
-            "sr_crystal_amount": 0,
-            "ssr_shard_amount": ssr_shard,
-            "ssr_crystal_amount": 0,
-            "date": date,
-        },
-    }
-
-
 def generate(csv_path: Path):
     banner_timeline_lookup = load_banner_timeline_lookup()
 
     events = []
-    rewards = []
     event_pk = 1
-    reward_pk = 1
     skipped = 0
 
     with open(csv_path, newline="", encoding="utf-8-sig") as f:
@@ -149,33 +138,36 @@ def generate(csv_path: Path):
         except ValueError:
             banner_type = 0
 
+        # Champions Meeting / League of Heroes rows are tracked entirely by
+        # their own models (ChampionsMeeting/LeagueOfHeroes) -- skip
+        # unconditionally. CM and LoH rows share Banner Type -1 and are only
+        # distinguished by a "CM #"/"LoH #" tag, but neither ever becomes a
+        # GameEvent.
+        if banner_type == -1:
+            skipped += 1
+            continue
+
+        uma_name = row.get("Banner Uma", "").strip()
+        support_name = row.get("Banner Support", "").strip()
+
+        # Placeholder rows: no banner has been announced/decided for this
+        # calendar slot yet.
+        if not uma_name and not support_name:
+            skipped += 1
+            continue
+
         carat_first = parse_int(row.get("Carat First Day", ""))
         carat_thru = parse_int(row.get("Carat Throughout", ""))
-        carat_last = parse_int(row.get("Carat Last Day", ""))
         uma_tix = parse_int(row.get("Tickets Uma", ""))
         sup_tix = parse_int(row.get("Tickets Support", ""))
         ssr_shard = parse_int(row.get("SSR Shard", ""))
         sr_shard = parse_int(row.get("SR Shard", ""))
 
-        has_rewards = any(
-            [carat_first, carat_thru, carat_last, uma_tix, sup_tix, ssr_shard, sr_shard]
-        )
-
-        # Champions Meeting rows: only include when there are actual rewards
-        # (carat payouts are already tracked via the ChampionsMeeting model).
-        # CM/LoH rows never resolve to a banner_timeline either way -- that
-        # system is unrelated to gacha banners.
-        if banner_type == -1 and not has_rewards:
-            skipped += 1
-            continue
-
         name = derive_name(row, banner_type, start)
 
-        # Resolve banner_timeline via (JP Start Date, name); CM/LoH rows and
-        # rows with no single-banner name (multi-Uma campaign rows) simply
-        # won't match -- they stay unlinked (null dates), by design.
-        uma_name = row.get("Banner Uma", "").strip()
-        support_name = row.get("Banner Support", "").strip()
+        # Resolve banner_timeline via (JP Start Date, name); rows with no
+        # single-banner name (multi-Uma campaign-wide rows) simply won't
+        # match -- they stay unlinked (null dates), by design.
         banner_timeline_id = banner_timeline_lookup.get(
             (jp_start, norm(uma_name))
         ) or banner_timeline_lookup.get((jp_start, norm(support_name)))
@@ -188,48 +180,21 @@ def generate(csv_path: Path):
                     "name": name,
                     "image": None,
                     "banner_timeline": banner_timeline_id,
+                    "carat_amount": carat_first,
+                    "carats_throughout": carat_thru,
+                    "support_ticket_amount": sup_tix,
+                    "uma_ticket_amount": uma_tix,
+                    "sr_shard_amount": sr_shard,
+                    "sr_crystal_amount": 0,
+                    "ssr_shard_amount": ssr_shard,
+                    "ssr_crystal_amount": 0,
                 },
             }
         )
 
-        # First-day EventReward (only when non-zero)
-        if carat_first > 0:
-            rewards.append(
-                make_reward(
-                    reward_pk,
-                    event_pk,
-                    f"{name} Day 1 Bonus",
-                    carat_first,
-                    0,
-                    0,
-                    0,
-                    0,
-                    f"{start}T00:00:00Z",
-                )
-            )
-            reward_pk += 1
-
-        # End-of-event EventReward (throughout + last-day carats + tickets + shards)
-        end_carat = carat_thru + carat_last
-        if any([end_carat, uma_tix, sup_tix, ssr_shard, sr_shard]):
-            rewards.append(
-                make_reward(
-                    reward_pk,
-                    event_pk,
-                    f"{name} Campaign Rewards",
-                    end_carat,
-                    uma_tix,
-                    sup_tix,
-                    ssr_shard,
-                    sr_shard,
-                    f"{end}T00:00:00Z",
-                )
-            )
-            reward_pk += 1
-
         event_pk += 1
 
-    return events, rewards, skipped
+    return events, skipped
 
 
 def main():
@@ -242,21 +207,16 @@ def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     print(f"Reading {csv_path} ...")
-    events, rewards, skipped = generate(csv_path)
+    events, skipped = generate(csv_path)
 
     events_path = OUT_DIR / "gameEvents.json"
-    rewards_path = OUT_DIR / "eventRewards.json"
 
     with open(events_path, "w", encoding="utf-8") as f:
         json.dump(events, f, indent=2, ensure_ascii=False)
 
-    with open(rewards_path, "w", encoding="utf-8") as f:
-        json.dump(rewards, f, indent=2, ensure_ascii=False)
-
     print("Done.")
     print(f"  GameEvents:   {len(events):>4}  → {events_path}")
-    print(f"  EventRewards: {len(rewards):>4}  → {rewards_path}")
-    print(f"  Rows skipped: {skipped:>4}  (no dates or CM with no rewards)")
+    print(f"  Rows skipped: {skipped:>4}  (no dates, CM/LoH, or placeholder)")
 
 
 if __name__ == "__main__":

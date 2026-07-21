@@ -39,7 +39,7 @@ from .models import (
     BannerTimeline, BannerUma, BannerSupport,
     ChampionsMeeting, ChampionsMeetingUmaRecommendation,
     SupportsOnSupportBanner, UmasOnUmaBanner,
-    GameEvent, EventReward, LeagueOfHeroes,
+    GameEvent, LeagueOfHeroes,
     ChangelogEntry, ChangelogChange,
 )
 
@@ -99,18 +99,6 @@ class SupportOnBannerInline(TabularInline):
     """The support cards featured on a support banner."""
     model = SupportsOnSupportBanner
     autocomplete_fields = ("support_card",)
-    extra = 1
-
-
-class EventRewardInline(TabularInline):
-    """An event's dated reward entries, edited on the event page."""
-    model = EventReward
-    fields = (
-        "name", "date", "carat_amount",
-        "uma_ticket_amount", "support_ticket_amount",
-        "ssr_crystal_amount", "sr_crystal_amount",
-        "ssr_shard_amount", "sr_shard_amount",
-    )
     extra = 1
 
 
@@ -252,15 +240,25 @@ class SupportCardAdmin(ImagePreviewMixin, ModelAdmin):
 
 @admin.register(GameEvent)
 class GameEventAdmin(ImagePreviewMixin, ModelAdmin):
-    list_display = ("name", "banner_timeline", "confirmed_start_date", "confirmed_end_date")
+    list_display = (
+        "name", "banner_timeline", "confirmed_start_date", "confirmed_end_date",
+        "carat_amount", "carats_throughout",
+    )
     date_hierarchy = "banner_timeline__global_start_date"
     ordering = ("-banner_timeline__global_start_date",)
-    search_fields = ("name",)  # required: autocomplete source for EventRewardAdmin
+    search_fields = ("name",)
     autocomplete_fields = ("banner_timeline",)
     list_select_related = ("banner_timeline",)
     readonly_fields = ("image_preview",)
-    fieldsets = ((None, {"fields": ("name", "banner_timeline", "image", "image_preview")}),)
-    inlines = (EventRewardInline,)
+    fieldsets = (
+        (None, {"fields": ("name", "banner_timeline", "image", "image_preview")}),
+        ("Rewards", {"fields": (
+            "carat_amount", "carats_throughout",
+            "uma_ticket_amount", "support_ticket_amount",
+            "ssr_shard_amount", "sr_shard_amount",
+            "ssr_crystal_amount", "sr_crystal_amount",
+        )}),
+    )
 
     @admin.display(description="Start date")
     def confirmed_start_date(self, obj):
@@ -276,17 +274,6 @@ class GameEventAdmin(ImagePreviewMixin, ModelAdmin):
         if obj.banner_timeline_id is None or obj.banner_timeline.global_end_date is None:
             return "—"
         return obj.banner_timeline.global_end_date + GAME_EVENT_END_DATE_BUFFER
-
-
-@admin.register(EventReward)
-class EventRewardAdmin(ModelAdmin):
-    """Kept top-level for browsing/searching all rewards across events."""
-    list_display = ("name", "event", "date", "carat_amount")
-    list_select_related = ("event",)
-    date_hierarchy = "date"
-    ordering = ("-date",)
-    search_fields = ("name", "event__name")
-    autocomplete_fields = ("event",)
 
 
 @admin.register(ChampionsMeeting)

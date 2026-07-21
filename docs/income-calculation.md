@@ -110,14 +110,10 @@ Paid once per League of Heroes event. The projection adds this payout for each `
 
 ## Event Rewards
 
-`GameEvent` entries contain dated `EventReward` rows, each specifying amounts for:
-- `carat_amount`
-- `uma_ticket_amount`
-- `support_ticket_amount`
-- `sr_shard_amount` / `sr_crystal_amount`
-- `ssr_shard_amount` / `ssr_crystal_amount`
+Each `GameEvent` carries its own reward amounts directly (no separate reward model): `carat_amount`, `carats_throughout`, `uma_ticket_amount`, `support_ticket_amount`, `sr_shard_amount` / `sr_crystal_amount`, `ssr_shard_amount` / `ssr_crystal_amount`. These fall into two categories:
 
-The projection adds a reward if its `date` falls strictly after the previous banner's end date and on or before the current banner's end date. All resource types are accumulated (not just carats).
+- **Immediate (`carat_amount` + all ticket/shard/crystal amounts)**: earned in full as soon as the event's own resolved `start_date` passes. The projection adds these if `start_date` falls strictly after the previous banner's end date and on or before the current banner's end date, same rule as the other date-gated income sources.
+- **Throughout (`carats_throughout`)**: carats only, prorated by elapsed time across the event's own `start_date`..`end_date` span rather than granted in one lump. A banner window earns `carats_throughout × (overlap between the window and the event's span) / (event's total span)`. This is computed on real elapsed time (milliseconds), not calendar days — the event's `end_date` isn't guaranteed midnight-aligned (it trails the linked banner's resolved end by a flat 4 days) — and is independent of `start_date`. See `getThroughoutCaratsInWindow` in `frontend/src/utils/incomeCalculationUtils.ts`.
 
 ---
 

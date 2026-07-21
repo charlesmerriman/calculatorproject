@@ -75,7 +75,7 @@ class CalculatorViewSet(ViewSet):
         else:
             user_planned_banner_data = UserPlannedBanner.objects.none()
             user_stats_data = None
-        events_data = GameEvent.objects.select_related("banner_timeline").prefetch_related('rewards').all()
+        events_data = GameEvent.objects.select_related("banner_timeline").all()
         # GameEvent has no dates of its own — resolved via the BannerTimeline
         # emap already built above (reusing it, not a new anchor computation).
         game_event_emap = build_game_event_date_map(events_data, emap)

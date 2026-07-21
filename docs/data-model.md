@@ -120,20 +120,14 @@ erDiagram
         string name
         string image
         int banner_timeline_id FK "nullable"
-    }
-
-    EventReward {
-        int id PK
-        int event_id FK
-        string name
         int carat_amount
+        int carats_throughout
         int support_ticket_amount
         int uma_ticket_amount
         int sr_shard_amount
         int sr_crystal_amount
         int ssr_shard_amount
         int ssr_crystal_amount
-        datetime date
     }
 
     ChangelogEntry {
@@ -193,7 +187,6 @@ erDiagram
     UserPlannedBanner }o--o| BannerUma : "banner_uma"
     UserPlannedBanner }o--o| BannerSupport : "banner_support"
 
-    EventReward }o--|| GameEvent : "event"
     GameEvent }o--o| BannerTimeline : "banner_timeline"
     ChangelogChange }o--|| ChangelogEntry : "entry"
 ```
@@ -218,9 +211,9 @@ This is the discriminated union that the frontend mirrors with the `SavedPlanned
 
 `UmasOnUmaBanner` and `SupportsOnSupportBanner` are explicit through models (not Django's auto-generated M2M table) because they carry a `recommendation` field — freeform admin notes about whether a card/uma on a banner is worth pulling. This text is exposed by the `BannerTimelineForViewingSerializer` used in `banner_timeline_data`.
 
-### `EventReward.event` is nullable
+### `GameEvent` reward amounts are fields, not a separate model
 
-The FK from `EventReward` to `GameEvent` allows null, meaning rewards can exist in the database without being attached to a named event. In practice all rewards are attached to an event, but the schema permits orphaned rewards.
+Reward amounts used to live on a separate `EventReward` model, one-to-many with `GameEvent`. In practice every event had at most one immediate reward and one throughout-the-event reward, so the two were folded directly onto `GameEvent` as fields instead: `carat_amount` (+ the ticket/shard/crystal fields) is earned once the event's own resolved `start_date` passes, and `carats_throughout` is prorated by elapsed time across `start_date`..`end_date` (computed client-side — see `getThroughoutCaratsInWindow` in `frontend/src/utils/incomeCalculationUtils.ts`), independent of `start_date`. Only carats are ever distributed this way; tickets/shards/crystals are always a lump on `start_date`.
 
 ### `BannerTimeline` has two serializers
 
@@ -245,6 +238,6 @@ The calculator view builds one effective-date map per content type (keyed by row
 
 Unlike `BannerTimeline`/`ChampionsMeeting`/`LeagueOfHeroes`, `GameEvent` has no `jp_*`/`global_*` columns of its own — it never runs its own anchor/prediction math. Instead it holds a nullable `banner_timeline` FK, and its `start_date`/`end_date`/`is_predicted` are resolved by looking that FK up in the *existing* `BannerTimeline` effective-date map (`game_event_effective_dates()` in `calculatorapi/predictions.py`, mirroring the same cross-model-lookup pattern `planned_effective_start()` uses for `UserPlannedBanner`): `start_date` is the linked banner's own resolved start, `end_date` is the banner's resolved end **plus 4 days**, and `is_predicted` propagates from the banner's entry.
 
-`banner_timeline` is nullable (`on_delete=SET_NULL`) because not every event corresponds to a single banner — some tie to Champions Meeting rewards instead, some are campaign-wide events spanning multiple banners at once, and some are future placeholders — and because an event's own content (image, its `EventReward` payout schedule) stays meaningful even if the banner it was tied to is later deleted. An unlinked (or unresolvable) event simply resolves to `null` dates, same as any other "no anchor" case in this system.
+`banner_timeline` is nullable (`on_delete=SET_NULL`) because not every event corresponds to a single banner — some tie to Champions Meeting rewards instead, some are campaign-wide events spanning multiple banners at once, and some are future placeholders — and because an event's own content (image, reward amounts) stays meaningful even if the banner it was tied to is later deleted. An unlinked (or unresolvable) event simply resolves to `null` dates, same as any other "no anchor" case in this system.
 
 The standalone `/events` route serves **confirmed-only** dates (`game_event_confirmed_dates()`, no prediction), matching the same convention used by `/leagueofheroes` — prediction is reserved for `/calculator-data`, which builds the richer map (`build_game_event_date_map()`) and reuses the request's single `BannerTimeline` emap rather than computing a second one.

@@ -45,7 +45,6 @@ dump calculatorapi.ChangelogEntry       $F/changelogEntries.json
 # Models with FK dependencies
 dump calculatorapi.BannerUma            $F/bannerUmas.json
 dump calculatorapi.BannerSupport        $F/bannerSupports.json
-dump calculatorapi.EventReward          $F/eventRewards.json
 dump calculatorapi.ChangelogChange      $F/changelogChanges.json
 
 # M2M through tables
