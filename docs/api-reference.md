@@ -96,7 +96,7 @@ For anonymous requests, all reference keys are populated as usual but the two us
 }
 ```
 
-`user_planned_banner_data`, `banner_uma_data`, `banner_support_data`, `champions_meeting_data`, and `league_of_heroes_event_data` are ordered by each row's **resolved** (confirmed-or-predicted) global start date, sorted server-side in Python since predicted dates aren't a DB column. `events_data` is ordered by `start_date`.
+`user_planned_banner_data`, `banner_uma_data`, `banner_support_data`, `champions_meeting_data`, `league_of_heroes_event_data`, and `events_data` are all ordered by each row's **resolved** (confirmed-or-predicted) global start date, sorted server-side in Python since predicted dates aren't a DB column.
 
 ---
 
@@ -225,13 +225,24 @@ On GET, `banner_uma` and `banner_support` are expanded to nested objects (not ID
 ```
 
 ### `GameEvent`
+
+`start_date`/`end_date`/`is_predicted` are RESOLVED from the linked `banner_timeline`
+(not stored columns) — `end_date` trails the banner's own resolved end date by 4 days.
+`banner_timeline` is a nullable id: not every event ties to a single banner (some tie to
+Champions Meeting rewards instead, some are multi-banner campaign events), in which case
+`start_date`/`end_date` are `null` and `is_predicted` is `false`. The standalone `GET
+/events` route only ever resolves **confirmed** dates (no prediction) — the richer,
+possibly-predicted dates shown here are exclusive to `/calculator-data`.
+
 ```json
 {
   "id": 1,
   "name": "string",
   "image": "url | null",
-  "start_date": "ISO8601",
-  "end_date": "ISO8601",
+  "start_date": "ISO8601 | null",
+  "end_date": "ISO8601 | null",
+  "is_predicted": false,
+  "banner_timeline": 1,
   "rewards": [
     {
       "id": 1,

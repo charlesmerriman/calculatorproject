@@ -119,8 +119,7 @@ erDiagram
         int id PK
         string name
         string image
-        datetime start_date
-        datetime end_date
+        int banner_timeline_id FK "nullable"
     }
 
     EventReward {
@@ -195,6 +194,7 @@ erDiagram
     UserPlannedBanner }o--o| BannerSupport : "banner_support"
 
     EventReward }o--|| GameEvent : "event"
+    GameEvent }o--o| BannerTimeline : "banner_timeline"
     ChangelogChange }o--|| ChangelogEntry : "entry"
 ```
 
@@ -240,3 +240,11 @@ Prediction (fixed anchor, in `calculatorapi/predictions.py`):
 - `predicted_global_end = predicted_global_start + (target.jp_end_date − target.jp_start_date)`
 
 The calculator view builds one effective-date map per content type (keyed by row id) once per request and injects each via serializer context, so the resolved dates are consistent across every serialization path. **Prediction requires the anchor to have a `jp_start_date`** — historical rows migrate with JP dates null, so the most-recent confirmed rows must have their JP dates backfilled in the admin for prediction to activate.
+
+### `GameEvent` dates are derived from its linked `BannerTimeline`, not owned
+
+Unlike `BannerTimeline`/`ChampionsMeeting`/`LeagueOfHeroes`, `GameEvent` has no `jp_*`/`global_*` columns of its own — it never runs its own anchor/prediction math. Instead it holds a nullable `banner_timeline` FK, and its `start_date`/`end_date`/`is_predicted` are resolved by looking that FK up in the *existing* `BannerTimeline` effective-date map (`game_event_effective_dates()` in `calculatorapi/predictions.py`, mirroring the same cross-model-lookup pattern `planned_effective_start()` uses for `UserPlannedBanner`): `start_date` is the linked banner's own resolved start, `end_date` is the banner's resolved end **plus 4 days**, and `is_predicted` propagates from the banner's entry.
+
+`banner_timeline` is nullable (`on_delete=SET_NULL`) because not every event corresponds to a single banner — some tie to Champions Meeting rewards instead, some are campaign-wide events spanning multiple banners at once, and some are future placeholders — and because an event's own content (image, its `EventReward` payout schedule) stays meaningful even if the banner it was tied to is later deleted. An unlinked (or unresolvable) event simply resolves to `null` dates, same as any other "no anchor" case in this system.
+
+The standalone `/events` route serves **confirmed-only** dates (`game_event_confirmed_dates()`, no prediction), matching the same convention used by `/leagueofheroes` — prediction is reserved for `/calculator-data`, which builds the richer map (`build_game_event_date_map()`) and reuses the request's single `BannerTimeline` emap rather than computing a second one.

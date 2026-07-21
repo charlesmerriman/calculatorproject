@@ -10,12 +10,19 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 
 from calculatorapi.analytics import build_analytics_report
-from calculatorapi.predictions import PREDICTION_FACTOR, compute_effective_dates
+from calculatorapi.predictions import (
+    PREDICTION_FACTOR,
+    GAME_EVENT_END_DATE_BUFFER,
+    compute_effective_dates,
+    game_event_effective_dates,
+    game_event_confirmed_dates,
+    build_effective_date_map,
+)
 from calculatorapi.models import (
     CustomUser,
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
     BannerTimeline, BannerUma, BannerSupport, UserPlannedBanner,
-    ChampionsMeeting, LeagueOfHeroes,
+    ChampionsMeeting, LeagueOfHeroes, GameEvent, EventReward,
     ChangelogEntry, ChangelogChange,
 )
 
@@ -116,6 +123,13 @@ def make_league_of_heroes(name='Test LoH', jp_start_date=None, jp_end_date=None,
         jp_start_date=jp_start_date, jp_end_date=jp_end_date,
         global_start_date=global_start_date, global_end_date=global_end_date,
     )
+
+
+def make_game_event(name='Test Event', banner_timeline=None):
+    """Create a GameEvent, optionally linked to a BannerTimeline. Dates are
+    always derived from banner_timeline (or null when unlinked) — GameEvent
+    has no date fields of its own."""
+    return GameEvent.objects.create(name=name, banner_timeline=banner_timeline)
 
 
 def auth_client(user):
@@ -304,6 +318,115 @@ class PredictionUnitTests(TestCase):
         self.assertTrue(out["is_predicted"])
 
 
+class GameEventPredictionTests(TestCase):
+    """game_event_effective_dates/game_event_confirmed_dates: GameEvent has no
+    date fields of its own, so these resolve purely via the linked
+    BannerTimeline's own (already-built) effective-date map."""
+
+    def test_confirmed_banner_gives_end_date_plus_buffer(self):
+        timeline = make_timeline(
+            name='Confirmed',
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        event = make_game_event(banner_timeline=timeline)
+        emap = build_effective_date_map()
+        out = game_event_effective_dates(event, emap)
+        self.assertEqual(out['start_date'], _dt(2025, 6, 1))
+        self.assertEqual(out['end_date'], _dt(2025, 6, 8) + GAME_EVENT_END_DATE_BUFFER)
+        self.assertFalse(out['is_predicted'])
+
+    def test_predicted_banner_propagates_is_predicted(self):
+        make_timeline(
+            name='Anchor',
+            jp_start_date=_dt(2025, 1, 1), jp_end_date=_dt(2025, 1, 8),
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        predicted_tl = make_timeline(
+            name='Predicted',
+            jp_start_date=_dt(2025, 1, 31), jp_end_date=_dt(2025, 2, 7),
+        )
+        event = make_game_event(banner_timeline=predicted_tl)
+        emap = build_effective_date_map()
+        out = game_event_effective_dates(event, emap)
+        # Δjp = 30d × 0.7 = 21d -> 2025-06-22; banner runs 7d -> 2025-06-29.
+        self.assertTrue(out['is_predicted'])
+        self.assertEqual(out['start_date'], _dt(2025, 6, 22))
+        self.assertEqual(out['end_date'], _dt(2025, 6, 29) + GAME_EVENT_END_DATE_BUFFER)
+
+    def test_unlinked_event_resolves_to_null(self):
+        event = make_game_event(banner_timeline=None)
+        emap = build_effective_date_map()
+        out = game_event_effective_dates(event, emap)
+        self.assertIsNone(out['start_date'])
+        self.assertIsNone(out['end_date'])
+        self.assertFalse(out['is_predicted'])
+
+    def test_linked_but_unresolvable_banner_resolves_to_null(self):
+        # A banner with neither JP nor global dates has no resolvable entry.
+        timeline = make_timeline(name='No dates at all')
+        timeline.global_start_date = None
+        timeline.global_end_date = None
+        timeline.save()
+        event = make_game_event(banner_timeline=timeline)
+        emap = build_effective_date_map()
+        out = game_event_effective_dates(event, emap)
+        self.assertIsNone(out['start_date'])
+        self.assertFalse(out['is_predicted'])
+
+    def test_confirmed_dates_never_predicts(self):
+        # game_event_confirmed_dates (used by the standalone /events route)
+        # must show null rather than a prediction for a JP-only banner.
+        make_timeline(
+            name='Anchor',
+            jp_start_date=_dt(2025, 1, 1), jp_end_date=_dt(2025, 1, 8),
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        predicted_tl = make_timeline(
+            name='Predicted',
+            jp_start_date=_dt(2025, 1, 31), jp_end_date=_dt(2025, 2, 7),
+        )
+        event = make_game_event(banner_timeline=predicted_tl)
+        event = GameEvent.objects.select_related('banner_timeline').get(pk=event.pk)
+        out = game_event_confirmed_dates(event)
+        self.assertIsNone(out['start_date'])
+        self.assertFalse(out['is_predicted'])
+
+    def test_confirmed_dates_reads_raw_banner_dates(self):
+        timeline = make_timeline(
+            name='Confirmed',
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        event = make_game_event(banner_timeline=timeline)
+        event = GameEvent.objects.select_related('banner_timeline').get(pk=event.pk)
+        out = game_event_confirmed_dates(event)
+        self.assertEqual(out['start_date'], _dt(2025, 6, 1))
+        self.assertEqual(out['end_date'], _dt(2025, 6, 8) + GAME_EVENT_END_DATE_BUFFER)
+        self.assertFalse(out['is_predicted'])
+
+    def test_confirmed_dates_unlinked_is_null(self):
+        event = make_game_event(banner_timeline=None)
+        out = game_event_confirmed_dates(event)
+        self.assertIsNone(out['start_date'])
+        self.assertFalse(out['is_predicted'])
+
+
+class GameEventBannerTimelineDeletionTests(TestCase):
+    """GameEvent.banner_timeline is SET_NULL, not CASCADE -- an event's own
+    content (image, EventReward payout schedule) outlives its linked banner."""
+
+    def test_deleting_banner_timeline_sets_game_event_banner_timeline_null(self):
+        timeline = make_timeline(name='Doomed Banner')
+        event = make_game_event(name='Survives', banner_timeline=timeline)
+        reward = EventReward.objects.create(event=event, name='Bonus', date=timezone.now())
+
+        timeline.delete()
+
+        event.refresh_from_db()
+        self.assertIsNone(event.banner_timeline_id)
+        self.assertTrue(GameEvent.objects.filter(pk=event.pk).exists())
+        self.assertTrue(EventReward.objects.filter(pk=reward.pk).exists())
+
+
 _EXPECTED_GET_KEYS = {
     'club_rank_data', 'team_trials_rank_data', 'champions_meeting_rank_data',
     'league_of_heroes_rank_data', 'banner_uma_data', 'banner_support_data',
@@ -470,6 +593,49 @@ class CalculatorGetTests(TestCase):
         self.assertFalse(entry['is_predicted'])
         self.assertIsNone(entry['start_date'])
 
+    def test_game_event_exposes_resolved_and_predicted_fields(self):
+        timeline = make_timeline(
+            name='Confirmed Banner',
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        event = make_game_event(name='Linked Event', banner_timeline=timeline)
+        res = self.client.get('/calculator-data')
+        entry = next(e for e in res.data['events_data'] if e['id'] == event.id)
+        for key in ('start_date', 'end_date', 'is_predicted', 'banner_timeline'):
+            self.assertIn(key, entry)
+        self.assertEqual(entry['start_date'], '2025-06-01T00:00:00Z')
+        # end_date trails the banner's own end_date by GAME_EVENT_END_DATE_BUFFER (4 days).
+        self.assertEqual(entry['end_date'], '2025-06-12T00:00:00Z')
+        self.assertFalse(entry['is_predicted'])
+        self.assertEqual(entry['banner_timeline'], timeline.id)
+
+    def test_game_event_predicts_via_linked_banner_timeline(self):
+        make_timeline(
+            name='Anchor',
+            jp_start_date=_dt(2025, 1, 1), jp_end_date=_dt(2025, 1, 8),
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        predicted_tl = make_timeline(
+            name='Predicted',
+            jp_start_date=_dt(2025, 1, 31), jp_end_date=_dt(2025, 2, 7),
+        )
+        event = make_game_event(name='Predicted Event', banner_timeline=predicted_tl)
+        res = self.client.get('/calculator-data')
+        entry = next(e for e in res.data['events_data'] if e['id'] == event.id)
+        # Δjp = 30d × 0.7 = 21d -> 2025-06-22; banner runs 7d -> 2025-06-29; +4d buffer.
+        self.assertTrue(entry['is_predicted'])
+        self.assertEqual(entry['start_date'], '2025-06-22T00:00:00Z')
+        self.assertEqual(entry['end_date'], '2025-07-03T00:00:00Z')
+
+    def test_game_event_with_no_banner_timeline_resolves_null_dates(self):
+        event = make_game_event(name='Unlinked Event', banner_timeline=None)
+        res = self.client.get('/calculator-data')
+        entry = next(e for e in res.data['events_data'] if e['id'] == event.id)
+        self.assertIsNone(entry['start_date'])
+        self.assertIsNone(entry['end_date'])
+        self.assertFalse(entry['is_predicted'])
+        self.assertIsNone(entry['banner_timeline'])
+
 
 # ── Reference Endpoint Tests ──────────────────────────────────────────────────
 
@@ -489,6 +655,26 @@ class ReferenceEndpointGuestAccessTests(TestCase):
         # Guests (and non-admin users) must not be able to write reference data.
         res = APIClient().post('/events', {'name': 'x'})
         self.assertIn(res.status_code, (401, 403))
+
+    def test_events_endpoint_serves_confirmed_only_no_prediction(self):
+        # The standalone /events route must never predict -- a JP-only banner
+        # should show null dates here, even though the same event predicts
+        # through /calculator-data (test_game_event_predicts_via_linked_banner_timeline).
+        make_timeline(
+            name='Anchor',
+            jp_start_date=_dt(2025, 1, 1), jp_end_date=_dt(2025, 1, 8),
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        predicted_tl = make_timeline(
+            name='Predicted',
+            jp_start_date=_dt(2025, 1, 31), jp_end_date=_dt(2025, 2, 7),
+        )
+        event = make_game_event(name='Predicted Event', banner_timeline=predicted_tl)
+        res = APIClient().get('/events')
+        entry = next(e for e in res.data if e['id'] == event.id)
+        self.assertIsNone(entry['start_date'])
+        self.assertIsNone(entry['end_date'])
+        self.assertFalse(entry['is_predicted'])
 
 
 # ── Calculator PATCH Tests ────────────────────────────────────────────────────

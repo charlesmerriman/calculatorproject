@@ -32,6 +32,7 @@ from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
+from .predictions import GAME_EVENT_END_DATE_BUFFER
 from .models import (
     CustomUser, Uma, SupportCard, UserPlannedBanner,
     TeamTrialsRank, ClubRank, ChampionsMeetingRank, LeagueOfHeroesRank,
@@ -251,12 +252,30 @@ class SupportCardAdmin(ImagePreviewMixin, ModelAdmin):
 
 @admin.register(GameEvent)
 class GameEventAdmin(ImagePreviewMixin, ModelAdmin):
-    list_display = ("name", "start_date", "end_date")
-    date_hierarchy = "start_date"
-    ordering = ("-start_date",)
+    list_display = ("name", "banner_timeline", "confirmed_start_date", "confirmed_end_date")
+    date_hierarchy = "banner_timeline__global_start_date"
+    ordering = ("-banner_timeline__global_start_date",)
     search_fields = ("name",)  # required: autocomplete source for EventRewardAdmin
+    autocomplete_fields = ("banner_timeline",)
+    list_select_related = ("banner_timeline",)
     readonly_fields = ("image_preview",)
+    fieldsets = ((None, {"fields": ("name", "banner_timeline", "image", "image_preview")}),)
     inlines = (EventRewardInline,)
+
+    @admin.display(description="Start date")
+    def confirmed_start_date(self, obj):
+        # Admin-display only, no prediction math -- just the linked banner's
+        # own confirmed date, same rule GameEventSerializer's confirmed-only
+        # variant uses for the standalone /events route.
+        if obj.banner_timeline_id is None:
+            return "—"
+        return obj.banner_timeline.global_start_date or "—"
+
+    @admin.display(description="End date")
+    def confirmed_end_date(self, obj):
+        if obj.banner_timeline_id is None or obj.banner_timeline.global_end_date is None:
+            return "—"
+        return obj.banner_timeline.global_end_date + GAME_EVENT_END_DATE_BUFFER
 
 
 @admin.register(EventReward)

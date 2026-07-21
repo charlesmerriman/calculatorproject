@@ -5,6 +5,7 @@ from rest_framework import permissions, status
 from django.db import transaction
 from calculatorapi.predictions import (
     build_effective_date_map,
+    build_game_event_date_map,
     effective_sort_key,
     planned_effective_start,
 )
@@ -74,7 +75,14 @@ class CalculatorViewSet(ViewSet):
         else:
             user_planned_banner_data = UserPlannedBanner.objects.none()
             user_stats_data = None
-        events_data = GameEvent.objects.prefetch_related('rewards').order_by('start_date').all()
+        events_data = GameEvent.objects.select_related("banner_timeline").prefetch_related('rewards').all()
+        # GameEvent has no dates of its own — resolved via the BannerTimeline
+        # emap already built above (reusing it, not a new anchor computation).
+        game_event_emap = build_game_event_date_map(events_data, emap)
+        events_data = sorted(
+            events_data,
+            key=lambda ge: effective_sort_key(game_event_emap.get(ge.id)),
+        )
         champions_meeting_data = sorted(
             ChampionsMeeting.objects.all(),
             key=lambda cm: effective_sort_key(cm_emap.get(cm.id)),
@@ -109,7 +117,9 @@ class CalculatorViewSet(ViewSet):
             "league_of_heroes_event_data": LeagueOfHeroesSerializer(
                 league_of_heroes_event_data, many=True, context={"effective_dates": loh_emap}
             ).data,
-            "events_data": GameEventSerializer(events_data, many=True).data,
+            "events_data": GameEventSerializer(
+                events_data, many=True, context={"effective_dates": game_event_emap}
+            ).data,
             "user_stats_data": user_stats_data,
             "banner_timeline_data": BannerTimelineForViewingSerializer(
                 banner_timeline_data, many=True, context={"effective_dates": emap}

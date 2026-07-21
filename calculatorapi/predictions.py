@@ -27,9 +27,12 @@ Prediction model (fixed anchor):
   (None, None, False).
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from .models import BannerTimeline
+
+# GameEvent's end date always trails its linked banner's end date by this much.
+GAME_EVENT_END_DATE_BUFFER = timedelta(days=4)
 
 # Sentinel used only to order rows that have no resolved start date; it never
 # gets compared against a real datetime (the leading bool flag separates the
@@ -138,3 +141,66 @@ def planned_effective_start(planned_banner, emap):
     elif planned_banner.banner_support_id is not None:
         timeline_id = planned_banner.banner_support.banner_timeline_id
     return emap.get(timeline_id)
+
+
+def game_event_effective_dates(game_event, banner_timeline_emap):
+    """
+    Resolve a GameEvent's dates by following its banner_timeline FK into an
+    already-built BannerTimeline effective-date map (from
+    build_effective_date_map(BannerTimeline)) — no new anchor/prediction math
+    of GameEvent's own, mirroring planned_effective_start's cross-model lookup.
+
+    end_date trails the banner's resolved end_date by GAME_EVENT_END_DATE_BUFFER;
+    is_predicted propagates from the banner's own entry. Unlinked events (or a
+    linked banner with no resolved start_date) resolve to (None, None, False) —
+    some events (Champions Meeting tie-ins, campaign-wide events spanning
+    multiple banners) never have a banner to derive from, by design.
+    """
+    entry = banner_timeline_emap.get(game_event.banner_timeline_id)
+    if entry is None or entry["start_date"] is None:
+        return {"start_date": None, "end_date": None, "is_predicted": False}
+    end_date = entry["end_date"] + GAME_EVENT_END_DATE_BUFFER if entry["end_date"] is not None else None
+    return {
+        "start_date": entry["start_date"],
+        "end_date": end_date,
+        "is_predicted": entry["is_predicted"],
+    }
+
+
+def build_game_event_date_map(game_events, banner_timeline_emap):
+    """Wraps game_event_effective_dates over a queryset/iterable of GameEvent
+    rows, resolving each via the shared BannerTimeline map. Used by
+    /calculator-data, which needs prediction for unconfirmed banners."""
+    return {
+        game_event.id: game_event_effective_dates(game_event, banner_timeline_emap)
+        for game_event in game_events
+    }
+
+
+def game_event_confirmed_dates(game_event):
+    """
+    Non-predicting variant: reads the linked banner's raw (confirmed-only)
+    global_start_date/global_end_date directly — never predicts, always
+    is_predicted=False. Mirrors the convention that standalone reference
+    routes (e.g. /leagueofheroes) serve confirmed dates only, with prediction
+    reserved for /calculator-data. Caller must select_related("banner_timeline").
+    """
+    banner_timeline = game_event.banner_timeline
+    if banner_timeline is None or banner_timeline.global_start_date is None:
+        return {"start_date": None, "end_date": None, "is_predicted": False}
+    global_end = banner_timeline.global_end_date
+    end_date = global_end + GAME_EVENT_END_DATE_BUFFER if global_end is not None else None
+    return {
+        "start_date": banner_timeline.global_start_date,
+        "end_date": end_date,
+        "is_predicted": False,
+    }
+
+
+def build_game_event_confirmed_date_map(game_events):
+    """Wraps game_event_confirmed_dates over a queryset/iterable of GameEvent
+    rows. Used by the standalone /events route."""
+    return {
+        game_event.id: game_event_confirmed_dates(game_event)
+        for game_event in game_events
+    }
