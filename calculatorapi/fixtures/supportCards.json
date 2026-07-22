@@ -83,7 +83,7 @@
     "model": "calculatorapi.supportcard",
     "pk": 9,
     "fields": {
-      "name": "Tazuna",
+      "name": "Tazuna Hayakawa",
       "game_id": 30021,
       "image": "support_cards/30021-Tazuna-Hayakawa-pls.png",
       "admin_comments": ""
@@ -173,7 +173,7 @@
     "model": "calculatorapi.supportcard",
     "pk": 18,
     "fields": {
-      "name": "Mejiro Ryan 30048",
+      "name": "Mejiro Ryan",
       "game_id": 30048,
       "image": "support_cards/30048-Mejiro-Ryan-gts.png",
       "admin_comments": ""
@@ -313,7 +313,7 @@
     "model": "calculatorapi.supportcard",
     "pk": 32,
     "fields": {
-      "name": "Nakayama Festa Stamina",
+      "name": "Nakayama Festa",
       "game_id": 30043,
       "image": "support_cards/30043-Nakayama-Festa-stm.png",
       "admin_comments": ""
@@ -323,7 +323,7 @@
     "model": "calculatorapi.supportcard",
     "pk": 33,
     "fields": {
-      "name": "\u2661Curren Chan\u2661",
+      "name": "Curren Chan",
       "game_id": 30237,
       "image": "support_cards/30237-Curren-Chan-gts.png",
       "admin_comments": ""
@@ -383,7 +383,7 @@
     "model": "calculatorapi.supportcard",
     "pk": 39,
     "fields": {
-      "name": "Manhattan Cafe 30075",
+      "name": "Manhattan Cafe",
       "game_id": 30075,
       "image": "support_cards/30075-Manhattan-Cafe-stm.png",
       "admin_comments": ""
@@ -413,7 +413,7 @@
     "model": "calculatorapi.supportcard",
     "pk": 42,
     "fields": {
-      "name": "S. Anshinzawa",
+      "name": "Sasami Anshinzawa",
       "game_id": 30080,
       "image": "support_cards/30080-Sasami-Anshinzawa-pls.png",
       "admin_comments": ""
@@ -493,7 +493,7 @@
     "model": "calculatorapi.supportcard",
     "pk": 50,
     "fields": {
-      "name": "Daiwa Scarlet \u2661",
+      "name": "Daiwa Scarlet",
       "game_id": 30227,
       "image": "support_cards/30227-Daiwa-Scarlet-wts.png",
       "admin_comments": ""
@@ -593,7 +593,7 @@
     "model": "calculatorapi.supportcard",
     "pk": 60,
     "fields": {
-      "name": "Nakayama Festa 30108",
+      "name": "Nakayama Festa",
       "game_id": 30108,
       "image": "support_cards/30108-Nakayama-Festa-wts.png",
       "admin_comments": ""
@@ -653,7 +653,7 @@
     "model": "calculatorapi.supportcard",
     "pk": 67,
     "fields": {
-      "name": "Symboli Kris S Stamina",
+      "name": "Symboli Kris S",
       "game_id": 30118,
       "image": "support_cards/30118-Symboli-Kris-S-stm.png",
       "admin_comments": ""
@@ -813,7 +813,7 @@
     "model": "calculatorapi.supportcard",
     "pk": 83,
     "fields": {
-      "name": "Nakayama Festa Wit",
+      "name": "Nakayama Festa",
       "game_id": 30163,
       "image": "support_cards/30163-Nakayama-Festa-wts.png",
       "admin_comments": ""
@@ -953,7 +953,7 @@
     "model": "calculatorapi.supportcard",
     "pk": 97,
     "fields": {
-      "name": "K.S.Miracle 30195",
+      "name": "K.S.Miracle",
       "game_id": 30195,
       "image": "support_cards/30195-K.S.Miracle-pwr.png",
       "admin_comments": ""
@@ -963,7 +963,7 @@
     "model": "calculatorapi.supportcard",
     "pk": 98,
     "fields": {
-      "name": "Yamanin Zephyr 30196",
+      "name": "Yamanin Zephyr",
       "game_id": 30196,
       "image": "support_cards/30196-Yamanin-Zephyr-spd.png",
       "admin_comments": ""
@@ -1063,7 +1063,7 @@
     "model": "calculatorapi.supportcard",
     "pk": 108,
     "fields": {
-      "name": "Symboli Kris S Power",
+      "name": "Symboli Kris S",
       "game_id": 30228,
       "image": "support_cards/30228-Symboli-Kris-S-pwr.png",
       "admin_comments": ""
@@ -1263,7 +1263,7 @@
     "model": "calculatorapi.supportcard",
     "pk": 128,
     "fields": {
-      "name": "Daiichi Ruby 30270",
+      "name": "Daiichi Ruby",
       "game_id": 30270,
       "image": "support_cards/30270-Daiichi-Ruby-gts.png",
       "admin_comments": ""
@@ -1326,6 +1326,3906 @@
       "name": "Casino Drive",
       "game_id": 30290,
       "image": "support_cards/30290-Casino-Drive-pls.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 135,
+    "fields": {
+      "name": "Special Week",
+      "game_id": 10001,
+      "image": "support_cards/10001-Special-Week-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 136,
+    "fields": {
+      "name": "Silence Suzuka",
+      "game_id": 10002,
+      "image": "support_cards/10002-Silence-Suzuka-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 137,
+    "fields": {
+      "name": "Tokai Teio",
+      "game_id": 10003,
+      "image": "support_cards/10003-Tokai-Teio-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 138,
+    "fields": {
+      "name": "Maruzensky",
+      "game_id": 10004,
+      "image": "support_cards/10004-Maruzensky-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 139,
+    "fields": {
+      "name": "Oguri Cap",
+      "game_id": 10005,
+      "image": "support_cards/10005-Oguri-Cap-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 140,
+    "fields": {
+      "name": "Gold Ship",
+      "game_id": 10006,
+      "image": "support_cards/10006-Gold-Ship-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 141,
+    "fields": {
+      "name": "Vodka",
+      "game_id": 10007,
+      "image": "support_cards/10007-Vodka-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 142,
+    "fields": {
+      "name": "Taiki Shuttle",
+      "game_id": 10008,
+      "image": "support_cards/10008-Taiki-Shuttle-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 143,
+    "fields": {
+      "name": "Grass Wonder",
+      "game_id": 10009,
+      "image": "support_cards/10009-Grass-Wonder-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 144,
+    "fields": {
+      "name": "Mejiro McQueen",
+      "game_id": 10010,
+      "image": "support_cards/10010-Mejiro-McQueen-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 145,
+    "fields": {
+      "name": "El Condor Pasa",
+      "game_id": 10011,
+      "image": "support_cards/10011-El-Condor-Pasa-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 146,
+    "fields": {
+      "name": "TM Opera O",
+      "game_id": 10012,
+      "image": "support_cards/10012-TM-Opera-O-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 147,
+    "fields": {
+      "name": "Symboli Rudolf",
+      "game_id": 10013,
+      "image": "support_cards/10013-Symboli-Rudolf-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 148,
+    "fields": {
+      "name": "Seiun Sky",
+      "game_id": 10014,
+      "image": "support_cards/10014-Seiun-Sky-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 149,
+    "fields": {
+      "name": "Rice Shower",
+      "game_id": 10015,
+      "image": "support_cards/10015-Rice-Shower-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 150,
+    "fields": {
+      "name": "Winning Ticket",
+      "game_id": 10016,
+      "image": "support_cards/10016-Winning-Ticket-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 151,
+    "fields": {
+      "name": "Gold City",
+      "game_id": 10017,
+      "image": "support_cards/10017-Gold-City-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 152,
+    "fields": {
+      "name": "Sakura Bakushin O",
+      "game_id": 10018,
+      "image": "support_cards/10018-Sakura-Bakushin-O-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 153,
+    "fields": {
+      "name": "Super Creek",
+      "game_id": 10019,
+      "image": "support_cards/10019-Super-Creek-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 154,
+    "fields": {
+      "name": "Haru Urara",
+      "game_id": 10020,
+      "image": "support_cards/10020-Haru-Urara-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 155,
+    "fields": {
+      "name": "Tazuna Hayakawa",
+      "game_id": 10021,
+      "image": "support_cards/10021-Tazuna-Hayakawa-pls.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 156,
+    "fields": {
+      "name": "Aoi Kiryuin",
+      "game_id": 10022,
+      "image": "support_cards/10022-Aoi-Kiryuin-pls.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 157,
+    "fields": {
+      "name": "Daiwa Scarlet",
+      "game_id": 10023,
+      "image": "support_cards/10023-Daiwa-Scarlet-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 158,
+    "fields": {
+      "name": "Hishi Amazon",
+      "game_id": 10024,
+      "image": "support_cards/10024-Hishi-Amazon-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 159,
+    "fields": {
+      "name": "Air Groove",
+      "game_id": 10025,
+      "image": "support_cards/10025-Air-Groove-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 160,
+    "fields": {
+      "name": "Agnes Digital",
+      "game_id": 10026,
+      "image": "support_cards/10026-Agnes-Digital-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 161,
+    "fields": {
+      "name": "Tamamo Cross",
+      "game_id": 10027,
+      "image": "support_cards/10027-Tamamo-Cross-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 162,
+    "fields": {
+      "name": "Fine Motion",
+      "game_id": 10028,
+      "image": "support_cards/10028-Fine-Motion-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 163,
+    "fields": {
+      "name": "Biwa Hayahide",
+      "game_id": 10029,
+      "image": "support_cards/10029-Biwa-Hayahide-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 164,
+    "fields": {
+      "name": "Mayano Top Gun",
+      "game_id": 10030,
+      "image": "support_cards/10030-Mayano-Top-Gun-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 165,
+    "fields": {
+      "name": "Manhattan Cafe",
+      "game_id": 10031,
+      "image": "support_cards/10031-Manhattan-Cafe-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 166,
+    "fields": {
+      "name": "Mihono Bourbon",
+      "game_id": 10032,
+      "image": "support_cards/10032-Mihono-Bourbon-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 167,
+    "fields": {
+      "name": "Mejiro Ryan",
+      "game_id": 10033,
+      "image": "support_cards/10033-Mejiro-Ryan-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 168,
+    "fields": {
+      "name": "Yukino Bijin",
+      "game_id": 10034,
+      "image": "support_cards/10034-Yukino-Bijin-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 169,
+    "fields": {
+      "name": "Ines Fujin",
+      "game_id": 10035,
+      "image": "support_cards/10035-Ines-Fujin-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 170,
+    "fields": {
+      "name": "Agnes Tachyon",
+      "game_id": 10036,
+      "image": "support_cards/10036-Agnes-Tachyon-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 171,
+    "fields": {
+      "name": "Air Shakur",
+      "game_id": 10037,
+      "image": "support_cards/10037-Air-Shakur-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 172,
+    "fields": {
+      "name": "Eishin Flash",
+      "game_id": 10038,
+      "image": "support_cards/10038-Eishin-Flash-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 173,
+    "fields": {
+      "name": "Smart Falcon",
+      "game_id": 10039,
+      "image": "support_cards/10039-Smart-Falcon-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 174,
+    "fields": {
+      "name": "Narita Taishin",
+      "game_id": 10040,
+      "image": "support_cards/10040-Narita-Taishin-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 175,
+    "fields": {
+      "name": "Nishino Flower",
+      "game_id": 10041,
+      "image": "support_cards/10041-Nishino-Flower-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 176,
+    "fields": {
+      "name": "Biko Pegasus",
+      "game_id": 10042,
+      "image": "support_cards/10042-Biko-Pegasus-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 177,
+    "fields": {
+      "name": "Marvelous Sunday",
+      "game_id": 10043,
+      "image": "support_cards/10043-Marvelous-Sunday-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 178,
+    "fields": {
+      "name": "Matikanefukukitaru",
+      "game_id": 10044,
+      "image": "support_cards/10044-Matikanefukukitaru-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 179,
+    "fields": {
+      "name": "Meisho Doto",
+      "game_id": 10045,
+      "image": "support_cards/10045-Meisho-Doto-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 180,
+    "fields": {
+      "name": "Mejiro Dober",
+      "game_id": 10046,
+      "image": "support_cards/10046-Mejiro-Dober-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 181,
+    "fields": {
+      "name": "Nice Nature",
+      "game_id": 10047,
+      "image": "support_cards/10047-Nice-Nature-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 182,
+    "fields": {
+      "name": "King Halo",
+      "game_id": 10048,
+      "image": "support_cards/10048-King-Halo-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 183,
+    "fields": {
+      "name": "Fuji Kiseki",
+      "game_id": 10049,
+      "image": "support_cards/10049-Fuji-Kiseki-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 184,
+    "fields": {
+      "name": "Sweep Tosho",
+      "game_id": 10050,
+      "image": "support_cards/10050-Sweep-Tosho-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 185,
+    "fields": {
+      "name": "Twin Turbo",
+      "game_id": 10051,
+      "image": "support_cards/10051-Twin-Turbo-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 186,
+    "fields": {
+      "name": "Daitaku Helios",
+      "game_id": 10052,
+      "image": "support_cards/10052-Daitaku-Helios-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 187,
+    "fields": {
+      "name": "Ikuno Dictus",
+      "game_id": 10053,
+      "image": "support_cards/10053-Ikuno-Dictus-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 188,
+    "fields": {
+      "name": "Mejiro Palmer",
+      "game_id": 10054,
+      "image": "support_cards/10054-Mejiro-Palmer-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 189,
+    "fields": {
+      "name": "Kitasan Black",
+      "game_id": 10055,
+      "image": "support_cards/10055-Kitasan-Black-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 190,
+    "fields": {
+      "name": "Satono Diamond",
+      "game_id": 10056,
+      "image": "support_cards/10056-Satono-Diamond-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 191,
+    "fields": {
+      "name": "Matikanetannhauser",
+      "game_id": 10057,
+      "image": "support_cards/10057-Matikanetannhauser-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 192,
+    "fields": {
+      "name": "Yaeno Muteki",
+      "game_id": 10058,
+      "image": "support_cards/10058-Yaeno-Muteki-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 193,
+    "fields": {
+      "name": "Zenno Rob Roy",
+      "game_id": 10059,
+      "image": "support_cards/10059-Zenno-Rob-Roy-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 194,
+    "fields": {
+      "name": "Riko Kashimoto",
+      "game_id": 10060,
+      "image": "support_cards/10060-Riko-Kashimoto-pls.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 195,
+    "fields": {
+      "name": "Seeking the Pearl",
+      "game_id": 10061,
+      "image": "support_cards/10061-Seeking-the-Pearl-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 196,
+    "fields": {
+      "name": "Sakura Chiyono O",
+      "game_id": 10062,
+      "image": "support_cards/10062-Sakura-Chiyono-O-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 197,
+    "fields": {
+      "name": "Kawakami Princess",
+      "game_id": 10063,
+      "image": "support_cards/10063-Kawakami-Princess-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 198,
+    "fields": {
+      "name": "Hishi Akebono",
+      "game_id": 10064,
+      "image": "support_cards/10064-Hishi-Akebono-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 199,
+    "fields": {
+      "name": "Bamboo Memory",
+      "game_id": 10065,
+      "image": "support_cards/10065-Bamboo-Memory-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 200,
+    "fields": {
+      "name": "Shinko Windy",
+      "game_id": 10066,
+      "image": "support_cards/10066-Shinko-Windy-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 201,
+    "fields": {
+      "name": "Nakayama Festa",
+      "game_id": 10067,
+      "image": "support_cards/10067-Nakayama-Festa-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 202,
+    "fields": {
+      "name": "Inari One",
+      "game_id": 10068,
+      "image": "support_cards/10068-Inari-One-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 203,
+    "fields": {
+      "name": "Mejiro Ardan",
+      "game_id": 10069,
+      "image": "support_cards/10069-Mejiro-Ardan-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 204,
+    "fields": {
+      "name": "Tosen Jordan",
+      "game_id": 10070,
+      "image": "support_cards/10070-Tosen-Jordan-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 205,
+    "fields": {
+      "name": "Sirius Symboli",
+      "game_id": 10071,
+      "image": "support_cards/10071-Sirius-Symboli-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 206,
+    "fields": {
+      "name": "Narita Brian",
+      "game_id": 10072,
+      "image": "support_cards/10072-Narita-Brian-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 207,
+    "fields": {
+      "name": "Curren Chan",
+      "game_id": 10073,
+      "image": "support_cards/10073-Curren-Chan-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 208,
+    "fields": {
+      "name": "Sasami Anshinzawa",
+      "game_id": 10074,
+      "image": "support_cards/10074-Sasami-Anshinzawa-pls.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 209,
+    "fields": {
+      "name": "Admire Vega",
+      "game_id": 10075,
+      "image": "support_cards/10075-Admire-Vega-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 210,
+    "fields": {
+      "name": "Mejiro Bright",
+      "game_id": 10076,
+      "image": "support_cards/10076-Mejiro-Bright-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 211,
+    "fields": {
+      "name": "Narita Top Road",
+      "game_id": 10077,
+      "image": "support_cards/10077-Narita-Top-Road-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 212,
+    "fields": {
+      "name": "Mr. C.B.",
+      "game_id": 10078,
+      "image": "support_cards/10078-Mr.-C.B.-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 213,
+    "fields": {
+      "name": "Daiichi Ruby",
+      "game_id": 10079,
+      "image": "support_cards/10079-Daiichi-Ruby-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 214,
+    "fields": {
+      "name": "K.S.Miracle",
+      "game_id": 10080,
+      "image": "support_cards/10080-K.S.Miracle-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 215,
+    "fields": {
+      "name": "Tsurumaru Tsuyoshi",
+      "game_id": 10081,
+      "image": "support_cards/10081-Tsurumaru-Tsuyoshi-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 216,
+    "fields": {
+      "name": "Symboli Kris S",
+      "game_id": 10082,
+      "image": "support_cards/10082-Symboli-Kris-S-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 217,
+    "fields": {
+      "name": "Light Hello",
+      "game_id": 10083,
+      "image": "support_cards/10083-Light-Hello-pls.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 218,
+    "fields": {
+      "name": "Tanino Gimlet",
+      "game_id": 10084,
+      "image": "support_cards/10084-Tanino-Gimlet-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 219,
+    "fields": {
+      "name": "Sakura Laurel",
+      "game_id": 10085,
+      "image": "support_cards/10085-Sakura-Laurel-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 220,
+    "fields": {
+      "name": "Yamanin Zephyr",
+      "game_id": 10086,
+      "image": "support_cards/10086-Yamanin-Zephyr-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 221,
+    "fields": {
+      "name": "Aston Machan",
+      "game_id": 10087,
+      "image": "support_cards/10087-Aston-Machan-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 222,
+    "fields": {
+      "name": "Mejiro Ramonu",
+      "game_id": 10088,
+      "image": "support_cards/10088-Mejiro-Ramonu-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 223,
+    "fields": {
+      "name": "Jungle Pocket",
+      "game_id": 10089,
+      "image": "support_cards/10089-Jungle-Pocket-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 224,
+    "fields": {
+      "name": "Hokko Tarumae",
+      "game_id": 10090,
+      "image": "support_cards/10090-Hokko-Tarumae-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 225,
+    "fields": {
+      "name": "Katsuragi Ace",
+      "game_id": 10091,
+      "image": "support_cards/10091-Katsuragi-Ace-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 226,
+    "fields": {
+      "name": "Copano Rickey",
+      "game_id": 10092,
+      "image": "support_cards/10092-Copano-Rickey-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 227,
+    "fields": {
+      "name": "Wonder Acute",
+      "game_id": 10093,
+      "image": "support_cards/10093-Wonder-Acute-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 228,
+    "fields": {
+      "name": "Mei Satake",
+      "game_id": 10094,
+      "image": "support_cards/10094-Mei-Satake-pls.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 229,
+    "fields": {
+      "name": "Tap Dance City",
+      "game_id": 10095,
+      "image": "support_cards/10095-Tap-Dance-City-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 230,
+    "fields": {
+      "name": "Still in Love",
+      "game_id": 10096,
+      "image": "support_cards/10096-Still-in-Love-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 231,
+    "fields": {
+      "name": "Verxina",
+      "game_id": 10097,
+      "image": "support_cards/10097-Verxina-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 232,
+    "fields": {
+      "name": "Sounds of Earth",
+      "game_id": 10098,
+      "image": "support_cards/10098-Sounds-of-Earth-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 233,
+    "fields": {
+      "name": "Vivlos",
+      "game_id": 10099,
+      "image": "support_cards/10099-Vivlos-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 234,
+    "fields": {
+      "name": "Royce and Royce",
+      "game_id": 10100,
+      "image": "support_cards/10100-Royce-and-Royce-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 235,
+    "fields": {
+      "name": "Duramente",
+      "game_id": 10101,
+      "image": "support_cards/10101-Duramente-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 236,
+    "fields": {
+      "name": "North Flight",
+      "game_id": 10102,
+      "image": "support_cards/10102-North-Flight-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 237,
+    "fields": {
+      "name": "Orfevre",
+      "game_id": 10103,
+      "image": "support_cards/10103-Orfevre-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 238,
+    "fields": {
+      "name": "Ryoka Tsurugi",
+      "game_id": 10104,
+      "image": "support_cards/10104-Ryoka-Tsurugi-pls.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 239,
+    "fields": {
+      "name": "Cheval Grand",
+      "game_id": 10105,
+      "image": "support_cards/10105-Cheval-Grand-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 240,
+    "fields": {
+      "name": "Neo Universe",
+      "game_id": 10106,
+      "image": "support_cards/10106-Neo-Universe-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 241,
+    "fields": {
+      "name": "Hishi Miracle",
+      "game_id": 10107,
+      "image": "support_cards/10107-Hishi-Miracle-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 242,
+    "fields": {
+      "name": "Dantsu Flame",
+      "game_id": 10108,
+      "image": "support_cards/10108-Dantsu-Flame-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 243,
+    "fields": {
+      "name": "Yayoi Akikawa",
+      "game_id": 10109,
+      "image": "support_cards/10109-Yayoi-Akikawa-pls.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 244,
+    "fields": {
+      "name": "Espoir City",
+      "game_id": 10110,
+      "image": "support_cards/10110-Espoir-City-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 245,
+    "fields": {
+      "name": "Bubble Gum Fellow",
+      "game_id": 10111,
+      "image": "support_cards/10111-Bubble-Gum-Fellow-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 246,
+    "fields": {
+      "name": "Gentildonna",
+      "game_id": 10113,
+      "image": "support_cards/10113-Gentildonna-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 247,
+    "fields": {
+      "name": "Rhein Kraft",
+      "game_id": 10114,
+      "image": "support_cards/10114-Rhein-Kraft-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 248,
+    "fields": {
+      "name": "Cesario",
+      "game_id": 10115,
+      "image": "support_cards/10115-Cesario-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 249,
+    "fields": {
+      "name": "Blast Onepiece",
+      "game_id": 10116,
+      "image": "support_cards/10116-Blast-Onepiece-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 250,
+    "fields": {
+      "name": "No Reason",
+      "game_id": 10117,
+      "image": "support_cards/10117-No-Reason-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 251,
+    "fields": {
+      "name": "Buena Vista",
+      "game_id": 10118,
+      "image": "support_cards/10118-Buena-Vista-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 252,
+    "fields": {
+      "name": "Dream Journey",
+      "game_id": 10119,
+      "image": "support_cards/10119-Dream-Journey-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 253,
+    "fields": {
+      "name": "Daring Tact",
+      "game_id": 10120,
+      "image": "support_cards/10120-Daring-Tact-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 254,
+    "fields": {
+      "name": "Daring Heart",
+      "game_id": 10121,
+      "image": "support_cards/10121-Daring-Heart-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 255,
+    "fields": {
+      "name": "Almond Eye",
+      "game_id": 10122,
+      "image": "support_cards/10122-Almond-Eye-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 256,
+    "fields": {
+      "name": "Lucky Lilac",
+      "game_id": 10123,
+      "image": "support_cards/10123-Lucky-Lilac-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 257,
+    "fields": {
+      "name": "Gran Alegria",
+      "game_id": 10124,
+      "image": "support_cards/10124-Gran-Alegria-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 258,
+    "fields": {
+      "name": "Transcend",
+      "game_id": 10125,
+      "image": "support_cards/10125-Transcend-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 259,
+    "fields": {
+      "name": "Curren Bouquetd'or",
+      "game_id": 10126,
+      "image": "support_cards/10126-Curren-Bouquetdor-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 260,
+    "fields": {
+      "name": "Air Messiah",
+      "game_id": 10127,
+      "image": "support_cards/10127-Air-Messiah-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 261,
+    "fields": {
+      "name": "Tucker Bryne",
+      "game_id": 10128,
+      "image": "support_cards/10128-Tucker-Bryne-pls.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 262,
+    "fields": {
+      "name": "Fusaichi Pandora",
+      "game_id": 10129,
+      "image": "support_cards/10129-Fusaichi-Pandora-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 263,
+    "fields": {
+      "name": "Win Variation",
+      "game_id": 10131,
+      "image": "support_cards/10131-Win-Variation-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 264,
+    "fields": {
+      "name": "Stay Gold",
+      "game_id": 10132,
+      "image": "support_cards/10132-Stay-Gold-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 265,
+    "fields": {
+      "name": "Admire Groove",
+      "game_id": 10133,
+      "image": "support_cards/10133-Admire-Groove-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 266,
+    "fields": {
+      "name": "Chrono Genesis",
+      "game_id": 10134,
+      "image": "support_cards/10134-Chrono-Genesis-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 267,
+    "fields": {
+      "name": "Calstone Light O",
+      "game_id": 10135,
+      "image": "support_cards/10135-Calstone-Light-O-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 268,
+    "fields": {
+      "name": "Durandal",
+      "game_id": 10136,
+      "image": "support_cards/10136-Durandal-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 269,
+    "fields": {
+      "name": "Sakura Chitose O",
+      "game_id": 10137,
+      "image": "support_cards/10137-Sakura-Chitose-O-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 270,
+    "fields": {
+      "name": "Kiyoko Hoshina",
+      "game_id": 10138,
+      "image": "support_cards/10138-Kiyoko-Hoshina-pls.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 271,
+    "fields": {
+      "name": "Fenomeno",
+      "game_id": 10139,
+      "image": "support_cards/10139-Fenomeno-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 272,
+    "fields": {
+      "name": "Forever Young",
+      "game_id": 10140,
+      "image": "support_cards/10140-Forever-Young-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 273,
+    "fields": {
+      "name": "Casino Drive",
+      "game_id": 10141,
+      "image": "support_cards/10141-Casino-Drive-pls.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 274,
+    "fields": {
+      "name": "Red Desire",
+      "game_id": 10142,
+      "image": "support_cards/10142-Red-Desire-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 275,
+    "fields": {
+      "name": "Victoire Pisa",
+      "game_id": 10143,
+      "image": "support_cards/10143-Victoire-Pisa-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 276,
+    "fields": {
+      "name": "Fuji Kiseki",
+      "game_id": 20001,
+      "image": "support_cards/20001-Fuji-Kiseki-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 277,
+    "fields": {
+      "name": "Daiwa Scarlet",
+      "game_id": 20002,
+      "image": "support_cards/20002-Daiwa-Scarlet-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 278,
+    "fields": {
+      "name": "Hishi Amazon",
+      "game_id": 20003,
+      "image": "support_cards/20003-Hishi-Amazon-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 279,
+    "fields": {
+      "name": "Air Groove",
+      "game_id": 20004,
+      "image": "support_cards/20004-Air-Groove-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 280,
+    "fields": {
+      "name": "Agnes Digital",
+      "game_id": 20005,
+      "image": "support_cards/20005-Agnes-Digital-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 281,
+    "fields": {
+      "name": "Biwa Hayahide",
+      "game_id": 20006,
+      "image": "support_cards/20006-Biwa-Hayahide-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 282,
+    "fields": {
+      "name": "Mayano Top Gun",
+      "game_id": 20007,
+      "image": "support_cards/20007-Mayano-Top-Gun-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 283,
+    "fields": {
+      "name": "Manhattan Cafe",
+      "game_id": 20008,
+      "image": "support_cards/20008-Manhattan-Cafe-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 284,
+    "fields": {
+      "name": "Mihono Bourbon",
+      "game_id": 20009,
+      "image": "support_cards/20009-Mihono-Bourbon-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 285,
+    "fields": {
+      "name": "Mejiro Ryan",
+      "game_id": 20010,
+      "image": "support_cards/20010-Mejiro-Ryan-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 286,
+    "fields": {
+      "name": "Yukino Bijin",
+      "game_id": 20011,
+      "image": "support_cards/20011-Yukino-Bijin-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 287,
+    "fields": {
+      "name": "Agnes Tachyon",
+      "game_id": 20012,
+      "image": "support_cards/20012-Agnes-Tachyon-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 288,
+    "fields": {
+      "name": "Eishin Flash",
+      "game_id": 20013,
+      "image": "support_cards/20013-Eishin-Flash-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 289,
+    "fields": {
+      "name": "Narita Taishin",
+      "game_id": 20014,
+      "image": "support_cards/20014-Narita-Taishin-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 290,
+    "fields": {
+      "name": "Marvelous Sunday",
+      "game_id": 20015,
+      "image": "support_cards/20015-Marvelous-Sunday-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 291,
+    "fields": {
+      "name": "Matikanefukukitaru",
+      "game_id": 20016,
+      "image": "support_cards/20016-Matikanefukukitaru-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 292,
+    "fields": {
+      "name": "Meisho Doto",
+      "game_id": 20017,
+      "image": "support_cards/20017-Meisho-Doto-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 293,
+    "fields": {
+      "name": "Mejiro Dober",
+      "game_id": 20018,
+      "image": "support_cards/20018-Mejiro-Dober-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 294,
+    "fields": {
+      "name": "Nice Nature",
+      "game_id": 20019,
+      "image": "support_cards/20019-Nice-Nature-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 295,
+    "fields": {
+      "name": "King Halo",
+      "game_id": 20020,
+      "image": "support_cards/20020-King-Halo-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 296,
+    "fields": {
+      "name": "Aoi Kiryuin",
+      "game_id": 20021,
+      "image": "support_cards/20021-Aoi-Kiryuin-pls.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 297,
+    "fields": {
+      "name": "Tamamo Cross",
+      "game_id": 20022,
+      "image": "support_cards/20022-Tamamo-Cross-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 298,
+    "fields": {
+      "name": "Sweep Tosho",
+      "game_id": 20023,
+      "image": "support_cards/20023-Sweep-Tosho-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 299,
+    "fields": {
+      "name": "Daitaku Helios",
+      "game_id": 20024,
+      "image": "support_cards/20024-Daitaku-Helios-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 300,
+    "fields": {
+      "name": "Ikuno Dictus",
+      "game_id": 20025,
+      "image": "support_cards/20025-Ikuno-Dictus-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 301,
+    "fields": {
+      "name": "Nice Nature",
+      "game_id": 20026,
+      "image": "support_cards/20026-Nice-Nature-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 302,
+    "fields": {
+      "name": "Nishino Flower",
+      "game_id": 20027,
+      "image": "support_cards/20027-Nishino-Flower-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 303,
+    "fields": {
+      "name": "Zenno Rob Roy",
+      "game_id": 20028,
+      "image": "support_cards/20028-Zenno-Rob-Roy-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 304,
+    "fields": {
+      "name": "Seeking the Pearl",
+      "game_id": 20029,
+      "image": "support_cards/20029-Seeking-the-Pearl-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 305,
+    "fields": {
+      "name": "Ines Fujin",
+      "game_id": 20030,
+      "image": "support_cards/20030-Ines-Fujin-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 306,
+    "fields": {
+      "name": "Shinko Windy",
+      "game_id": 20031,
+      "image": "support_cards/20031-Shinko-Windy-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 307,
+    "fields": {
+      "name": "Inari One",
+      "game_id": 20032,
+      "image": "support_cards/20032-Inari-One-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 308,
+    "fields": {
+      "name": "El Condor Pasa",
+      "game_id": 20033,
+      "image": "support_cards/20033-El-Condor-Pasa-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 309,
+    "fields": {
+      "name": "Mejiro Ardan",
+      "game_id": 20034,
+      "image": "support_cards/20034-Mejiro-Ardan-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 310,
+    "fields": {
+      "name": "Tosen Jordan",
+      "game_id": 20035,
+      "image": "support_cards/20035-Tosen-Jordan-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 311,
+    "fields": {
+      "name": "Mejiro Palmer",
+      "game_id": 20036,
+      "image": "support_cards/20036-Mejiro-Palmer-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 312,
+    "fields": {
+      "name": "Fine Motion",
+      "game_id": 20037,
+      "image": "support_cards/20037-Fine-Motion-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 313,
+    "fields": {
+      "name": "Sirius Symboli",
+      "game_id": 20038,
+      "image": "support_cards/20038-Sirius-Symboli-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 314,
+    "fields": {
+      "name": "Vodka",
+      "game_id": 20039,
+      "image": "support_cards/20039-Vodka-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 315,
+    "fields": {
+      "name": "Mejiro Ryan",
+      "game_id": 20040,
+      "image": "support_cards/20040-Mejiro-Ryan-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 316,
+    "fields": {
+      "name": "Admire Vega",
+      "game_id": 20041,
+      "image": "support_cards/20041-Admire-Vega-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 317,
+    "fields": {
+      "name": "Sakura Bakushin O",
+      "game_id": 20042,
+      "image": "support_cards/20042-Sakura-Bakushin-O-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 318,
+    "fields": {
+      "name": "Special Week",
+      "game_id": 20043,
+      "image": "support_cards/20043-Special-Week-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 319,
+    "fields": {
+      "name": "Curren Chan",
+      "game_id": 20044,
+      "image": "support_cards/20044-Curren-Chan-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 320,
+    "fields": {
+      "name": "Smart Falcon",
+      "game_id": 20045,
+      "image": "support_cards/20045-Smart-Falcon-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 321,
+    "fields": {
+      "name": "Sweep Tosho",
+      "game_id": 20046,
+      "image": "support_cards/20046-Sweep-Tosho-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 322,
+    "fields": {
+      "name": "Tokai Teio",
+      "game_id": 20047,
+      "image": "support_cards/20047-Tokai-Teio-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 323,
+    "fields": {
+      "name": "Oguri Cap",
+      "game_id": 20048,
+      "image": "support_cards/20048-Oguri-Cap-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 324,
+    "fields": {
+      "name": "Gold City",
+      "game_id": 20049,
+      "image": "support_cards/20049-Gold-City-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 325,
+    "fields": {
+      "name": "Seiun Sky",
+      "game_id": 20050,
+      "image": "support_cards/20050-Seiun-Sky-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 326,
+    "fields": {
+      "name": "K.S.Miracle",
+      "game_id": 20051,
+      "image": "support_cards/20051-K.S.Miracle-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 327,
+    "fields": {
+      "name": "Tsurumaru Tsuyoshi",
+      "game_id": 20052,
+      "image": "support_cards/20052-Tsurumaru-Tsuyoshi-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 328,
+    "fields": {
+      "name": "Narita Top Road",
+      "game_id": 20053,
+      "image": "support_cards/20053-Narita-Top-Road-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 329,
+    "fields": {
+      "name": "TM Opera O",
+      "game_id": 20054,
+      "image": "support_cards/20054-TM-Opera-O-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 330,
+    "fields": {
+      "name": "Aston Machan",
+      "game_id": 20055,
+      "image": "support_cards/20055-Aston-Machan-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 331,
+    "fields": {
+      "name": "Jungle Pocket",
+      "game_id": 20056,
+      "image": "support_cards/20056-Jungle-Pocket-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 332,
+    "fields": {
+      "name": "Mejiro Dober",
+      "game_id": 20057,
+      "image": "support_cards/20057-Mejiro-Dober-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 333,
+    "fields": {
+      "name": "Symboli Rudolf",
+      "game_id": 20058,
+      "image": "support_cards/20058-Symboli-Rudolf-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 334,
+    "fields": {
+      "name": "Agnes Tachyon",
+      "game_id": 20059,
+      "image": "support_cards/20059-Agnes-Tachyon-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 335,
+    "fields": {
+      "name": "Hishi Akebono",
+      "game_id": 20060,
+      "image": "support_cards/20060-Hishi-Akebono-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 336,
+    "fields": {
+      "name": "Gold Ship",
+      "game_id": 20061,
+      "image": "support_cards/20061-Gold-Ship-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 337,
+    "fields": {
+      "name": "Maruzensky",
+      "game_id": 20062,
+      "image": "support_cards/20062-Maruzensky-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 338,
+    "fields": {
+      "name": "Silence Suzuka",
+      "game_id": 20063,
+      "image": "support_cards/20063-Silence-Suzuka-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 339,
+    "fields": {
+      "name": "Copano Rickey",
+      "game_id": 20064,
+      "image": "support_cards/20064-Copano-Rickey-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 340,
+    "fields": {
+      "name": "Grass Wonder",
+      "game_id": 20065,
+      "image": "support_cards/20065-Grass-Wonder-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 341,
+    "fields": {
+      "name": "Kitasan Black",
+      "game_id": 20066,
+      "image": "support_cards/20066-Kitasan-Black-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 342,
+    "fields": {
+      "name": "Taiki Shuttle",
+      "game_id": 20067,
+      "image": "support_cards/20067-Taiki-Shuttle-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 343,
+    "fields": {
+      "name": "Nice Nature",
+      "game_id": 20068,
+      "image": "support_cards/20068-Nice-Nature-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 344,
+    "fields": {
+      "name": "Matikanetannhauser",
+      "game_id": 20069,
+      "image": "support_cards/20069-Matikanetannhauser-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 345,
+    "fields": {
+      "name": "Verxina",
+      "game_id": 20070,
+      "image": "support_cards/20070-Verxina-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 346,
+    "fields": {
+      "name": "Royce and Royce",
+      "game_id": 20071,
+      "image": "support_cards/20071-Royce-and-Royce-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 347,
+    "fields": {
+      "name": "Tanino Gimlet",
+      "game_id": 20072,
+      "image": "support_cards/20072-Tanino-Gimlet-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 348,
+    "fields": {
+      "name": "Tosen Jordan",
+      "game_id": 20073,
+      "image": "support_cards/20073-Tosen-Jordan-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 349,
+    "fields": {
+      "name": "Yaeno Muteki",
+      "game_id": 20074,
+      "image": "support_cards/20074-Yaeno-Muteki-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 350,
+    "fields": {
+      "name": "Tap Dance City",
+      "game_id": 20075,
+      "image": "support_cards/20075-Tap-Dance-City-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 351,
+    "fields": {
+      "name": "Air Shakur",
+      "game_id": 20076,
+      "image": "support_cards/20076-Air-Shakur-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 352,
+    "fields": {
+      "name": "Dantsu Flame",
+      "game_id": 20077,
+      "image": "support_cards/20077-Dantsu-Flame-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 353,
+    "fields": {
+      "name": "Matikanefukukitaru",
+      "game_id": 20078,
+      "image": "support_cards/20078-Matikanefukukitaru-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 354,
+    "fields": {
+      "name": "Marvelous Sunday",
+      "game_id": 20079,
+      "image": "support_cards/20079-Marvelous-Sunday-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 355,
+    "fields": {
+      "name": "Sakura Laurel",
+      "game_id": 20080,
+      "image": "support_cards/20080-Sakura-Laurel-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 356,
+    "fields": {
+      "name": "North Flight",
+      "game_id": 20081,
+      "image": "support_cards/20081-North-Flight-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 357,
+    "fields": {
+      "name": "Bubble Gum Fellow",
+      "game_id": 20082,
+      "image": "support_cards/20082-Bubble-Gum-Fellow-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 358,
+    "fields": {
+      "name": "Mejiro Ramonu",
+      "game_id": 20083,
+      "image": "support_cards/20083-Mejiro-Ramonu-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 359,
+    "fields": {
+      "name": "Lucky Lilac",
+      "game_id": 20084,
+      "image": "support_cards/20084-Lucky-Lilac-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 360,
+    "fields": {
+      "name": "Mejiro McQueen",
+      "game_id": 20085,
+      "image": "support_cards/20085-Mejiro-McQueen-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 361,
+    "fields": {
+      "name": "Rice Shower",
+      "game_id": 20086,
+      "image": "support_cards/20086-Rice-Shower-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 362,
+    "fields": {
+      "name": "Daring Heart",
+      "game_id": 20087,
+      "image": "support_cards/20087-Daring-Heart-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 363,
+    "fields": {
+      "name": "Curren Bouquetd'or",
+      "game_id": 20088,
+      "image": "support_cards/20088-Curren-Bouquetdor-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 364,
+    "fields": {
+      "name": "Kawakami Princess",
+      "game_id": 20089,
+      "image": "support_cards/20089-Kawakami-Princess-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 365,
+    "fields": {
+      "name": "Biko Pegasus",
+      "game_id": 20090,
+      "image": "support_cards/20090-Biko-Pegasus-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 366,
+    "fields": {
+      "name": "Sakura Chitose O",
+      "game_id": 20091,
+      "image": "support_cards/20091-Sakura-Chitose-O-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 367,
+    "fields": {
+      "name": "Hokko Tarumae",
+      "game_id": 20092,
+      "image": "support_cards/20092-Hokko-Tarumae-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 368,
+    "fields": {
+      "name": "Mejiro Dober",
+      "game_id": 20093,
+      "image": "support_cards/20093-Mejiro-Dober-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 369,
+    "fields": {
+      "name": "Satono Diamond",
+      "game_id": 20094,
+      "image": "support_cards/20094-Satono-Diamond-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 370,
+    "fields": {
+      "name": "Red Desire",
+      "game_id": 20095,
+      "image": "support_cards/20095-Red-Desire-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 371,
+    "fields": {
+      "name": "Taiki Shuttle",
+      "game_id": 20096,
+      "image": "support_cards/20096-Taiki-Shuttle-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 372,
+    "fields": {
+      "name": "Grass Wonder",
+      "game_id": 30006,
+      "image": "support_cards/30006-Grass-Wonder-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 373,
+    "fields": {
+      "name": "Air Shakur",
+      "game_id": 30013,
+      "image": "support_cards/30013-Air-Shakur-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 374,
+    "fields": {
+      "name": "Special Week",
+      "game_id": 30025,
+      "image": "support_cards/30025-Special-Week-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 375,
+    "fields": {
+      "name": "Winning Ticket",
+      "game_id": 30033,
+      "image": "support_cards/30033-Winning-Ticket-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 376,
+    "fields": {
+      "name": "Rice Shower",
+      "game_id": 30034,
+      "image": "support_cards/30034-Rice-Shower-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 377,
+    "fields": {
+      "name": "Winning Ticket",
+      "game_id": 30046,
+      "image": "support_cards/30046-Winning-Ticket-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 378,
+    "fields": {
+      "name": "Seiun Sky",
+      "game_id": 30055,
+      "image": "support_cards/30055-Seiun-Sky-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 379,
+    "fields": {
+      "name": "Gold Ship",
+      "game_id": 30057,
+      "image": "support_cards/30057-Gold-Ship-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 380,
+    "fields": {
+      "name": "Tokai Teio",
+      "game_id": 30058,
+      "image": "support_cards/30058-Tokai-Teio-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 381,
+    "fields": {
+      "name": "Twin Turbo",
+      "game_id": 30060,
+      "image": "support_cards/30060-Twin-Turbo-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 382,
+    "fields": {
+      "name": "Biwa Hayahide",
+      "game_id": 30061,
+      "image": "support_cards/30061-Biwa-Hayahide-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 383,
+    "fields": {
+      "name": "Silence Suzuka",
+      "game_id": 30062,
+      "image": "support_cards/30062-Silence-Suzuka-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 384,
+    "fields": {
+      "name": "Tamamo Cross",
+      "game_id": 30064,
+      "image": "support_cards/30064-Tamamo-Cross-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 385,
+    "fields": {
+      "name": "Mihono Bourbon",
+      "game_id": 30066,
+      "image": "support_cards/30066-Mihono-Bourbon-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 386,
+    "fields": {
+      "name": "Narita Brian",
+      "game_id": 30069,
+      "image": "support_cards/30069-Narita-Brian-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 387,
+    "fields": {
+      "name": "Yukino Bijin",
+      "game_id": 30070,
+      "image": "support_cards/30070-Yukino-Bijin-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 388,
+    "fields": {
+      "name": "Silence Suzuka",
+      "game_id": 30076,
+      "image": "support_cards/30076-Silence-Suzuka-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 389,
+    "fields": {
+      "name": "Team Sirius",
+      "game_id": 30081,
+      "image": "support_cards/30081-Team-Sirius-frd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 390,
+    "fields": {
+      "name": "Nishino Flower",
+      "game_id": 30082,
+      "image": "support_cards/30082-Nishino-Flower-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 391,
+    "fields": {
+      "name": "Sakura Bakushin O",
+      "game_id": 30083,
+      "image": "support_cards/30083-Sakura-Bakushin-O-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 392,
+    "fields": {
+      "name": "Tosen Jordan",
+      "game_id": 30084,
+      "image": "support_cards/30084-Tosen-Jordan-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 393,
+    "fields": {
+      "name": "Satono Diamond",
+      "game_id": 30088,
+      "image": "support_cards/30088-Satono-Diamond-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 394,
+    "fields": {
+      "name": "Marvelous Sunday",
+      "game_id": 30089,
+      "image": "support_cards/30089-Marvelous-Sunday-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 395,
+    "fields": {
+      "name": "Symboli Rudolf",
+      "game_id": 30090,
+      "image": "support_cards/30090-Symboli-Rudolf-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 396,
+    "fields": {
+      "name": "Daiwa Scarlet",
+      "game_id": 30093,
+      "image": "support_cards/30093-Daiwa-Scarlet-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 397,
+    "fields": {
+      "name": "Bamboo Memory",
+      "game_id": 30094,
+      "image": "support_cards/30094-Bamboo-Memory-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 398,
+    "fields": {
+      "name": "Kawakami Princess",
+      "game_id": 30096,
+      "image": "support_cards/30096-Kawakami-Princess-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 399,
+    "fields": {
+      "name": "Haru Urara",
+      "game_id": 30098,
+      "image": "support_cards/30098-Haru-Urara-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 400,
+    "fields": {
+      "name": "Ikuno Dictus",
+      "game_id": 30099,
+      "image": "support_cards/30099-Ikuno-Dictus-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 401,
+    "fields": {
+      "name": "Rice Shower",
+      "game_id": 30100,
+      "image": "support_cards/30100-Rice-Shower-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 402,
+    "fields": {
+      "name": "El Condor Pasa",
+      "game_id": 30102,
+      "image": "support_cards/30102-El-Condor-Pasa-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 403,
+    "fields": {
+      "name": "Matikanetannhauser",
+      "game_id": 30103,
+      "image": "support_cards/30103-Matikanetannhauser-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 404,
+    "fields": {
+      "name": "Zenno Rob Roy",
+      "game_id": 30104,
+      "image": "support_cards/30104-Zenno-Rob-Roy-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 405,
+    "fields": {
+      "name": "Special Week",
+      "game_id": 30105,
+      "image": "support_cards/30105-Special-Week-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 406,
+    "fields": {
+      "name": "Sakura Chiyono O",
+      "game_id": 30109,
+      "image": "support_cards/30109-Sakura-Chiyono-O-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 407,
+    "fields": {
+      "name": "Tokai Teio",
+      "game_id": 30111,
+      "image": "support_cards/30111-Tokai-Teio-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 408,
+    "fields": {
+      "name": "Twin Turbo",
+      "game_id": 30112,
+      "image": "support_cards/30112-Twin-Turbo-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 409,
+    "fields": {
+      "name": "Biwa Hayahide",
+      "game_id": 30113,
+      "image": "support_cards/30113-Biwa-Hayahide-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 410,
+    "fields": {
+      "name": "Mejiro Palmer",
+      "game_id": 30115,
+      "image": "support_cards/30115-Mejiro-Palmer-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 411,
+    "fields": {
+      "name": "Daitaku Helios",
+      "game_id": 30116,
+      "image": "support_cards/30116-Daitaku-Helios-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 412,
+    "fields": {
+      "name": "Shinko Windy",
+      "game_id": 30117,
+      "image": "support_cards/30117-Shinko-Windy-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 413,
+    "fields": {
+      "name": "Yaeno Muteki",
+      "game_id": 30120,
+      "image": "support_cards/30120-Yaeno-Muteki-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 414,
+    "fields": {
+      "name": "Mihono Bourbon",
+      "game_id": 30121,
+      "image": "support_cards/30121-Mihono-Bourbon-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 415,
+    "fields": {
+      "name": "Narita Brian",
+      "game_id": 30123,
+      "image": "support_cards/30123-Narita-Brian-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 416,
+    "fields": {
+      "name": "Air Groove",
+      "game_id": 30124,
+      "image": "support_cards/30124-Air-Groove-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 417,
+    "fields": {
+      "name": "Special Week",
+      "game_id": 30127,
+      "image": "support_cards/30127-Special-Week-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 418,
+    "fields": {
+      "name": "Sweep Tosho",
+      "game_id": 30128,
+      "image": "support_cards/30128-Sweep-Tosho-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 419,
+    "fields": {
+      "name": "Grass Wonder",
+      "game_id": 30129,
+      "image": "support_cards/30129-Grass-Wonder-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 420,
+    "fields": {
+      "name": "Marvelous Sunday",
+      "game_id": 30131,
+      "image": "support_cards/30131-Marvelous-Sunday-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 421,
+    "fields": {
+      "name": "Biko Pegasus",
+      "game_id": 30132,
+      "image": "support_cards/30132-Biko-Pegasus-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 422,
+    "fields": {
+      "name": "Hishi Akebono",
+      "game_id": 30133,
+      "image": "support_cards/30133-Hishi-Akebono-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 423,
+    "fields": {
+      "name": "Katsuragi Ace",
+      "game_id": 30135,
+      "image": "support_cards/30135-Katsuragi-Ace-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 424,
+    "fields": {
+      "name": "Symboli Kris S",
+      "game_id": 30136,
+      "image": "support_cards/30136-Symboli-Kris-S-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 425,
+    "fields": {
+      "name": "Nice Nature",
+      "game_id": 30138,
+      "image": "support_cards/30138-Nice-Nature-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 426,
+    "fields": {
+      "name": "Mejiro McQueen",
+      "game_id": 30139,
+      "image": "support_cards/30139-Mejiro-McQueen-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 427,
+    "fields": {
+      "name": "Tokai Teio",
+      "game_id": 30140,
+      "image": "support_cards/30140-Tokai-Teio-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 428,
+    "fields": {
+      "name": "Mihono Bourbon",
+      "game_id": 30141,
+      "image": "support_cards/30141-Mihono-Bourbon-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 429,
+    "fields": {
+      "name": "Sakura Laurel",
+      "game_id": 30142,
+      "image": "support_cards/30142-Sakura-Laurel-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 430,
+    "fields": {
+      "name": "Ikuno Dictus",
+      "game_id": 30143,
+      "image": "support_cards/30143-Ikuno-Dictus-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 431,
+    "fields": {
+      "name": "Oguri Cap",
+      "game_id": 30146,
+      "image": "support_cards/30146-Oguri-Cap-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 432,
+    "fields": {
+      "name": "Daiwa Scarlet",
+      "game_id": 30148,
+      "image": "support_cards/30148-Daiwa-Scarlet-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 433,
+    "fields": {
+      "name": "Vodka",
+      "game_id": 30150,
+      "image": "support_cards/30150-Vodka-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 434,
+    "fields": {
+      "name": "Mayano Top Gun",
+      "game_id": 30151,
+      "image": "support_cards/30151-Mayano-Top-Gun-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 435,
+    "fields": {
+      "name": "Gold City",
+      "game_id": 30153,
+      "image": "support_cards/30153-Gold-City-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 436,
+    "fields": {
+      "name": "Mejiro Palmer",
+      "game_id": 30154,
+      "image": "support_cards/30154-Mejiro-Palmer-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 437,
+    "fields": {
+      "name": "Daitaku Helios",
+      "game_id": 30155,
+      "image": "support_cards/30155-Daitaku-Helios-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 438,
+    "fields": {
+      "name": "Manhattan Cafe",
+      "game_id": 30157,
+      "image": "support_cards/30157-Manhattan-Cafe-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 439,
+    "fields": {
+      "name": "Jungle Pocket",
+      "game_id": 30158,
+      "image": "support_cards/30158-Jungle-Pocket-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 440,
+    "fields": {
+      "name": "Air Groove",
+      "game_id": 30159,
+      "image": "support_cards/30159-Air-Groove-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 441,
+    "fields": {
+      "name": "El Condor Pasa",
+      "game_id": 30161,
+      "image": "support_cards/30161-El-Condor-Pasa-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 442,
+    "fields": {
+      "name": "Admire Vega",
+      "game_id": 30162,
+      "image": "support_cards/30162-Admire-Vega-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 443,
+    "fields": {
+      "name": "Tanino Gimlet",
+      "game_id": 30165,
+      "image": "support_cards/30165-Tanino-Gimlet-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 444,
+    "fields": {
+      "name": "Fine Motion",
+      "game_id": 30167,
+      "image": "support_cards/30167-Fine-Motion-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 445,
+    "fields": {
+      "name": "Gold Ship",
+      "game_id": 30168,
+      "image": "support_cards/30168-Gold-Ship-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 446,
+    "fields": {
+      "name": "King Halo",
+      "game_id": 30170,
+      "image": "support_cards/30170-King-Halo-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 447,
+    "fields": {
+      "name": "Haru Urara",
+      "game_id": 30171,
+      "image": "support_cards/30171-Haru-Urara-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 448,
+    "fields": {
+      "name": "Mejiro McQueen",
+      "game_id": 30172,
+      "image": "support_cards/30172-Mejiro-McQueen-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 449,
+    "fields": {
+      "name": "Mejiro Dober",
+      "game_id": 30174,
+      "image": "support_cards/30174-Mejiro-Dober-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 450,
+    "fields": {
+      "name": "Mejiro Ramonu",
+      "game_id": 30175,
+      "image": "support_cards/30175-Mejiro-Ramonu-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 451,
+    "fields": {
+      "name": "Satono Diamond",
+      "game_id": 30179,
+      "image": "support_cards/30179-Satono-Diamond-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 452,
+    "fields": {
+      "name": "Carvers of History",
+      "game_id": 30180,
+      "image": "support_cards/30180-Carvers-of-History-frd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 453,
+    "fields": {
+      "name": "Twin Turbo",
+      "game_id": 30181,
+      "image": "support_cards/30181-Twin-Turbo-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 454,
+    "fields": {
+      "name": "Winning Ticket",
+      "game_id": 30183,
+      "image": "support_cards/30183-Winning-Ticket-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 455,
+    "fields": {
+      "name": "Sakura Bakushin O",
+      "game_id": 30184,
+      "image": "support_cards/30184-Sakura-Bakushin-O-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 456,
+    "fields": {
+      "name": "North Flight",
+      "game_id": 30185,
+      "image": "support_cards/30185-North-Flight-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 457,
+    "fields": {
+      "name": "Gentildonna",
+      "game_id": 30186,
+      "image": "support_cards/30186-Gentildonna-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 458,
+    "fields": {
+      "name": "Kitasan Black",
+      "game_id": 30189,
+      "image": "support_cards/30189-Kitasan-Black-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 459,
+    "fields": {
+      "name": "Duramente",
+      "game_id": 30190,
+      "image": "support_cards/30190-Duramente-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 460,
+    "fields": {
+      "name": "Sounds of Earth",
+      "game_id": 30191,
+      "image": "support_cards/30191-Sounds-of-Earth-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 461,
+    "fields": {
+      "name": "Vivlos",
+      "game_id": 30192,
+      "image": "support_cards/30192-Vivlos-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 462,
+    "fields": {
+      "name": "Bamboo Memory",
+      "game_id": 30197,
+      "image": "support_cards/30197-Bamboo-Memory-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 463,
+    "fields": {
+      "name": "No Reason",
+      "game_id": 30200,
+      "image": "support_cards/30200-No-Reason-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 464,
+    "fields": {
+      "name": "Narita Taishin",
+      "game_id": 30201,
+      "image": "support_cards/30201-Narita-Taishin-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 465,
+    "fields": {
+      "name": "Vodka",
+      "game_id": 30202,
+      "image": "support_cards/30202-Vodka-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 466,
+    "fields": {
+      "name": "Jungle Pocket",
+      "game_id": 30203,
+      "image": "support_cards/30203-Jungle-Pocket-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 467,
+    "fields": {
+      "name": "Seiun Sky",
+      "game_id": 30204,
+      "image": "support_cards/30204-Seiun-Sky-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 468,
+    "fields": {
+      "name": "Verxina",
+      "game_id": 30205,
+      "image": "support_cards/30205-Verxina-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 469,
+    "fields": {
+      "name": "Vivlos",
+      "game_id": 30206,
+      "image": "support_cards/30206-Vivlos-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 470,
+    "fields": {
+      "name": "Nishino Flower",
+      "game_id": 30208,
+      "image": "support_cards/30208-Nishino-Flower-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 471,
+    "fields": {
+      "name": "Smart Falcon",
+      "game_id": 30210,
+      "image": "support_cards/30210-Smart-Falcon-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 472,
+    "fields": {
+      "name": "Wonder Acute",
+      "game_id": 30212,
+      "image": "support_cards/30212-Wonder-Acute-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 473,
+    "fields": {
+      "name": "Tokai Teio",
+      "game_id": 30213,
+      "image": "support_cards/30213-Tokai-Teio-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 474,
+    "fields": {
+      "name": "Fine Motion",
+      "game_id": 30214,
+      "image": "support_cards/30214-Fine-Motion-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 475,
+    "fields": {
+      "name": "Cesario",
+      "game_id": 30217,
+      "image": "support_cards/30217-Cesario-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 476,
+    "fields": {
+      "name": "Taiki Shuttle",
+      "game_id": 30218,
+      "image": "support_cards/30218-Taiki-Shuttle-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 477,
+    "fields": {
+      "name": "Symboli Kris S",
+      "game_id": 30220,
+      "image": "support_cards/30220-Symboli-Kris-S-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 478,
+    "fields": {
+      "name": "Satono Diamond",
+      "game_id": 30221,
+      "image": "support_cards/30221-Satono-Diamond-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 479,
+    "fields": {
+      "name": "Hishi Amazon",
+      "game_id": 30223,
+      "image": "support_cards/30223-Hishi-Amazon-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 480,
+    "fields": {
+      "name": "Narita Brian",
+      "game_id": 30224,
+      "image": "support_cards/30224-Narita-Brian-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 481,
+    "fields": {
+      "name": "Matikanefukukitaru",
+      "game_id": 30225,
+      "image": "support_cards/30225-Matikanefukukitaru-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 482,
+    "fields": {
+      "name": "Air Shakur",
+      "game_id": 30226,
+      "image": "support_cards/30226-Air-Shakur-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 483,
+    "fields": {
+      "name": "Agnes Digital",
+      "game_id": 30229,
+      "image": "support_cards/30229-Agnes-Digital-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 484,
+    "fields": {
+      "name": "Meisho Doto",
+      "game_id": 30230,
+      "image": "support_cards/30230-Meisho-Doto-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 485,
+    "fields": {
+      "name": "TM Opera O",
+      "game_id": 30231,
+      "image": "support_cards/30231-TM-Opera-O-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 486,
+    "fields": {
+      "name": "Symboli Rudolf",
+      "game_id": 30233,
+      "image": "support_cards/30233-Symboli-Rudolf-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 487,
+    "fields": {
+      "name": "Mejiro Ardan",
+      "game_id": 30234,
+      "image": "support_cards/30234-Mejiro-Ardan-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 488,
+    "fields": {
+      "name": "Maruzensky",
+      "game_id": 30235,
+      "image": "support_cards/30235-Maruzensky-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 489,
+    "fields": {
+      "name": "Seeking the Pearl",
+      "game_id": 30236,
+      "image": "support_cards/30236-Seeking-the-Pearl-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 490,
+    "fields": {
+      "name": "Ikuno Dictus",
+      "game_id": 30238,
+      "image": "support_cards/30238-Ikuno-Dictus-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 491,
+    "fields": {
+      "name": "Nice Nature",
+      "game_id": 30239,
+      "image": "support_cards/30239-Nice-Nature-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 492,
+    "fields": {
+      "name": "Jungle Pocket",
+      "game_id": 30240,
+      "image": "support_cards/30240-Jungle-Pocket-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 493,
+    "fields": {
+      "name": "Gran Alegria",
+      "game_id": 30243,
+      "image": "support_cards/30243-Gran-Alegria-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 494,
+    "fields": {
+      "name": "Mejiro Bright",
+      "game_id": 30244,
+      "image": "support_cards/30244-Mejiro-Bright-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 495,
+    "fields": {
+      "name": "Vodka",
+      "game_id": 30245,
+      "image": "support_cards/30245-Vodka-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 496,
+    "fields": {
+      "name": "Symboli Kris S",
+      "game_id": 30247,
+      "image": "support_cards/30247-Symboli-Kris-S-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 497,
+    "fields": {
+      "name": "Buena Vista",
+      "game_id": 30250,
+      "image": "support_cards/30250-Buena-Vista-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 498,
+    "fields": {
+      "name": "Espoir City",
+      "game_id": 30251,
+      "image": "support_cards/30251-Espoir-City-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 499,
+    "fields": {
+      "name": "Silence Suzuka",
+      "game_id": 30252,
+      "image": "support_cards/30252-Silence-Suzuka-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 500,
+    "fields": {
+      "name": "Rhein Kraft",
+      "game_id": 30253,
+      "image": "support_cards/30253-Rhein-Kraft-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 501,
+    "fields": {
+      "name": "Air Messiah",
+      "game_id": 30255,
+      "image": "support_cards/30255-Air-Messiah-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 502,
+    "fields": {
+      "name": "Tamamo Cross",
+      "game_id": 30256,
+      "image": "support_cards/30256-Tamamo-Cross-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 503,
+    "fields": {
+      "name": "Mejiro Ryan",
+      "game_id": 30258,
+      "image": "support_cards/30258-Mejiro-Ryan-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 504,
+    "fields": {
+      "name": "Fusaichi Pandora",
+      "game_id": 30259,
+      "image": "support_cards/30259-Fusaichi-Pandora-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 505,
+    "fields": {
+      "name": "Mejiro McQueen",
+      "game_id": 30260,
+      "image": "support_cards/30260-Mejiro-McQueen-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 506,
+    "fields": {
+      "name": "Duramente",
+      "game_id": 30262,
+      "image": "support_cards/30262-Duramente-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 507,
+    "fields": {
+      "name": "Vivlos",
+      "game_id": 30263,
+      "image": "support_cards/30263-Vivlos-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 508,
+    "fields": {
+      "name": "Chrono Genesis",
+      "game_id": 30266,
+      "image": "support_cards/30266-Chrono-Genesis-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 509,
+    "fields": {
+      "name": "Dantsu Flame",
+      "game_id": 30269,
+      "image": "support_cards/30269-Dantsu-Flame-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 510,
+    "fields": {
+      "name": "Fuji Kiseki",
+      "game_id": 30271,
+      "image": "support_cards/30271-Fuji-Kiseki-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 511,
+    "fields": {
+      "name": "Eishin Flash",
+      "game_id": 30272,
+      "image": "support_cards/30272-Eishin-Flash-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 512,
+    "fields": {
+      "name": "Tosen Jordan",
+      "game_id": 30273,
+      "image": "support_cards/30273-Tosen-Jordan-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 513,
+    "fields": {
+      "name": "Tokai Teio",
+      "game_id": 30275,
+      "image": "support_cards/30275-Tokai-Teio-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 514,
+    "fields": {
+      "name": "Mihono Bourbon",
+      "game_id": 30277,
+      "image": "support_cards/30277-Mihono-Bourbon-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 515,
+    "fields": {
+      "name": "Gold Ship",
+      "game_id": 30278,
+      "image": "support_cards/30278-Gold-Ship-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 516,
+    "fields": {
+      "name": "Orfevre",
+      "game_id": 30280,
+      "image": "support_cards/30280-Orfevre-stm.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 517,
+    "fields": {
+      "name": "Air Groove",
+      "game_id": 30282,
+      "image": "support_cards/30282-Air-Groove-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 518,
+    "fields": {
+      "name": "Fine Motion",
+      "game_id": 30283,
+      "image": "support_cards/30283-Fine-Motion-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 519,
+    "fields": {
+      "name": "Bubble Gum Fellow",
+      "game_id": 30284,
+      "image": "support_cards/30284-Bubble-Gum-Fellow-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 520,
+    "fields": {
+      "name": "King Halo",
+      "game_id": 30285,
+      "image": "support_cards/30285-King-Halo-gts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 521,
+    "fields": {
+      "name": "Matikanefukukitaru",
+      "game_id": 30286,
+      "image": "support_cards/30286-Matikanefukukitaru-spd.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 522,
+    "fields": {
+      "name": "Neo Universe",
+      "game_id": 30287,
+      "image": "support_cards/30287-Neo-Universe-pwr.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 523,
+    "fields": {
+      "name": "Silence Suzuka",
+      "game_id": 30288,
+      "image": "support_cards/30288-Silence-Suzuka-wts.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.supportcard",
+    "pk": 524,
+    "fields": {
+      "name": "Victoire Pisa",
+      "game_id": 30291,
+      "image": "support_cards/30291-Victoire-Pisa-spd.png",
       "admin_comments": ""
     }
   }

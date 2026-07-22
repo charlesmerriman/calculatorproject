@@ -15,4 +15,7 @@ class SupportCard(models.Model):
     admin_comments = models.TextField(blank=True, null=True, help_text="Notes for editors.")
 
     def __str__(self):
-        return f"{self.name}"
+        # Many characters have 2-3 support cards sharing the exact same name
+        # (different rarities/reprints) - appending game_id keeps admin
+        # autocomplete/search results unambiguous.
+        return f"{self.name} ({self.game_id})" if self.game_id else self.name

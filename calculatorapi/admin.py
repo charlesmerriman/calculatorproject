@@ -234,7 +234,7 @@ class SupportCardAdmin(ImagePreviewMixin, ModelAdmin):
     list_display = ("image_preview", "name", "game_id")
     list_display_links = ("name",)
     ordering = ("name",)
-    search_fields = ("name",)  # required: autocomplete source for banner inlines
+    search_fields = ("name", "=game_id")  # required: autocomplete source for banner inlines
     readonly_fields = ("image_preview",)
 
 
