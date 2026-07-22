@@ -12,12 +12,21 @@ admin's autocomplete happened to show first - in practice this meant nearly
 every banner ended up linked to that character's *oldest* SSR card,
 regardless of which one the banner actually featured.
 
-The fix: a featured SSR card almost always debuts on the exact same day as
-its banner. For each join row, look at the linked card's name, find every
-SSR (game_id >= 30000) variant of that name, and if exactly one of them has
-a source-data release_ja date equal to the banner's banner_timeline
-jp_start_date, that's the correct card. Only auto-apply exact, unambiguous
-date matches - anything else is left untouched and reported for manual
+The fix runs two tiers of date matching against each join row's linked
+card name and its banner's banner_timeline jp_start_date, applying the
+first one that produces a confident answer:
+
+  Tier 1 (debut match): exactly one same-name SSR variant has a source-data
+  release_ja equal to jp_start_date - the card debuted alongside this banner.
+
+  Tier 2 (rerun match): no exact debut match, but among same-name SSR
+  variants released on or before jp_start_date (a banner can't feature a
+  card that doesn't exist yet), the most recently-released one beats the
+  next-most-recent by at least 14 days. A tighter margin means two cards
+  launched close together in time and there's no confident way to tell
+  which one a later rerun banner is reusing, so it's left alone.
+
+Anything neither tier resolves is left untouched and reported for manual
 review rather than guessed at.
 
 Special case: banners whose name contains "(Rerun)" intentionally re-feature
@@ -42,8 +51,44 @@ BANNER_TIMELINES_PATH = FIXTURES_DIR / "bannerTimelines.json"
 JOIN_PATH = FIXTURES_DIR / "supportsOnSupportBanner.json"
 
 
+MIN_RERUN_MARGIN_DAYS = 14
+
+
 def load(path: Path) -> list[dict]:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def resolve(
+    variants: list[tuple[int, int]],
+    release_ja_by_game_id: dict[int, str | None],
+    jp_start: str,
+) -> tuple[int, int, str] | None:
+    """
+    Returns (game_id, pk, reason) for the confident match, or None.
+    `variants` is [(game_id, pk), ...] for one card name.
+    """
+    exact = [
+        (gid, pk) for gid, pk in variants
+        if release_ja_by_game_id.get(gid) == jp_start
+    ]
+    if len(exact) == 1:
+        return (*exact[0], "debut")
+
+    jp_start_date = date.fromisoformat(jp_start)
+    preceding = sorted(
+        (
+            (date.fromisoformat(release_ja_by_game_id[gid]), gid, pk)
+            for gid, pk in variants
+            if release_ja_by_game_id.get(gid) and date.fromisoformat(release_ja_by_game_id[gid]) <= jp_start_date
+        ),
+        reverse=True,
+    )
+    if not preceding:
+        return None
+    if len(preceding) > 1 and (preceding[0][0] - preceding[1][0]).days < MIN_RERUN_MARGIN_DAYS:
+        return None  # two candidates launched too close together to tell apart
+    _, best_gid, best_pk = preceding[0]
+    return best_gid, best_pk, "rerun"
 
 
 def main() -> None:
@@ -87,21 +132,18 @@ def main() -> None:
             continue  # only one possible card for this name - nothing to check
 
         jp_start = bt_by_pk[banner["banner_timeline"]]["jp_start_date"][:10]
-        exact = [
-            (gid, pk) for gid, pk in variants
-            if release_ja_by_game_id.get(gid) == jp_start
-        ]
+        result = resolve(variants, release_ja_by_game_id, jp_start)
 
-        if len(exact) != 1:
+        if result is None:
             unresolved.append(
                 (row["pk"], banner["name"], name, current_fields["game_id"], jp_start)
             )
             continue
 
-        best_gid, best_pk = exact[0]
+        best_gid, best_pk, reason = result
         if best_pk != current_pk:
             changes.append(
-                (row["pk"], banner["name"], name, current_fields["game_id"], best_gid)
+                (row["pk"], banner["name"], name, current_fields["game_id"], best_gid, reason)
             )
             fields["support_card"] = best_pk
 
@@ -111,11 +153,11 @@ def main() -> None:
         )
 
     print(f"{len(sob)} join rows checked, {rerun_skipped} rerun banner(s) skipped by name")
-    print(f"\n{len(changes)} corrected (exact release-date match found a different card):")
-    for join_pk, banner_name, card_name, old_gid, new_gid in changes:
-        print(f"  join pk={join_pk:3d}  '{banner_name}'  {card_name}: {old_gid} -> {new_gid}")
+    print(f"\n{len(changes)} corrected:")
+    for join_pk, banner_name, card_name, old_gid, new_gid, reason in changes:
+        print(f"  join pk={join_pk:3d}  '{banner_name}'  {card_name}: {old_gid} -> {new_gid}  ({reason})")
 
-    print(f"\n{len(unresolved)} left unchanged - no single exact date match, needs manual review:")
+    print(f"\n{len(unresolved)} left unchanged - no confident match, needs manual review:")
     for join_pk, banner_name, card_name, current_gid, jp_start in unresolved:
         print(f"  join pk={join_pk:3d}  '{banner_name}'  {card_name}: currently {current_gid}  (banner jp_start={jp_start})")
 

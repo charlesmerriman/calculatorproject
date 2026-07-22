@@ -211,7 +211,7 @@
     "pk": 24,
     "fields": {
       "banner_support": 16,
-      "support_card": 24,
+      "support_card": 380,
       "recommendation": ""
     }
   },
@@ -301,7 +301,7 @@
     "pk": 34,
     "fields": {
       "banner_support": 22,
-      "support_card": 17,
+      "support_card": 378,
       "recommendation": ""
     }
   },
@@ -562,7 +562,7 @@
     "pk": 63,
     "fields": {
       "banner_support": 41,
-      "support_card": 2,
+      "support_card": 381,
       "recommendation": ""
     }
   },
@@ -616,7 +616,7 @@
     "pk": 69,
     "fields": {
       "banner_support": 44,
-      "support_card": 26,
+      "support_card": 376,
       "recommendation": ""
     }
   },
@@ -724,7 +724,7 @@
     "pk": 81,
     "fields": {
       "banner_support": 52,
-      "support_card": 30,
+      "support_card": 400,
       "recommendation": ""
     }
   },
@@ -733,7 +733,7 @@
     "pk": 82,
     "fields": {
       "banner_support": 52,
-      "support_card": 6,
+      "support_card": 387,
       "recommendation": ""
     }
   },
@@ -796,7 +796,7 @@
     "pk": 89,
     "fields": {
       "banner_support": 56,
-      "support_card": 13,
+      "support_card": 388,
       "recommendation": ""
     }
   },
@@ -985,7 +985,7 @@
     "pk": 110,
     "fields": {
       "banner_support": 69,
-      "support_card": 24,
+      "support_card": 407,
       "recommendation": ""
     }
   },
@@ -1048,7 +1048,7 @@
     "pk": 117,
     "fields": {
       "banner_support": 74,
-      "support_card": 1,
+      "support_card": 431,
       "recommendation": ""
     }
   },
@@ -1093,7 +1093,7 @@
     "pk": 122,
     "fields": {
       "banner_support": 77,
-      "support_card": 57,
+      "support_card": 416,
       "recommendation": ""
     }
   },
@@ -1228,7 +1228,7 @@
     "pk": 137,
     "fields": {
       "banner_support": 86,
-      "support_card": 2,
+      "support_card": 408,
       "recommendation": ""
     }
   },
@@ -1291,7 +1291,7 @@
     "pk": 144,
     "fields": {
       "banner_support": 91,
-      "support_card": 73,
+      "support_card": 426,
       "recommendation": ""
     }
   },
@@ -1300,7 +1300,7 @@
     "pk": 145,
     "fields": {
       "banner_support": 91,
-      "support_card": 23,
+      "support_card": 417,
       "recommendation": ""
     }
   },
