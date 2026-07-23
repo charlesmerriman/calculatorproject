@@ -1771,5 +1771,482 @@
       "image": "umas/112901-Almond-Eye.png",
       "admin_comments": ""
     }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 198,
+    "fields": {
+      "name": "Special Week",
+      "image": "umas/100101-Special-Week.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 199,
+    "fields": {
+      "name": "Special Week (Commander)",
+      "image": "umas/100103-Special-Week-Commander.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 200,
+    "fields": {
+      "name": "Silence Suzuka",
+      "image": "umas/100201-Silence-Suzuka.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 201,
+    "fields": {
+      "name": "Tokai Teio",
+      "image": "umas/100301-Tokai-Teio.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 202,
+    "fields": {
+      "name": "Maruzensky",
+      "image": "umas/100401-Maruzensky.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 203,
+    "fields": {
+      "name": "Oguri Cap",
+      "image": "umas/100601-Oguri-Cap.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 204,
+    "fields": {
+      "name": "Gold Ship",
+      "image": "umas/100701-Gold-Ship.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 205,
+    "fields": {
+      "name": "Vodka",
+      "image": "umas/100801-Vodka.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 206,
+    "fields": {
+      "name": "Daiwa Scarlet",
+      "image": "umas/100901-Daiwa-Scarlet.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 207,
+    "fields": {
+      "name": "Taiki Shuttle",
+      "image": "umas/101001-Taiki-Shuttle.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 208,
+    "fields": {
+      "name": "Grass Wonder",
+      "image": "umas/101101-Grass-Wonder.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 209,
+    "fields": {
+      "name": "Grass Wonder (New Year)",
+      "image": "umas/101103-Grass-Wonder-New-Year.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 210,
+    "fields": {
+      "name": "Mejiro McQueen",
+      "image": "umas/101301-Mejiro-McQueen.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 211,
+    "fields": {
+      "name": "El Condor Pasa",
+      "image": "umas/101401-El-Condor-Pasa.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 212,
+    "fields": {
+      "name": "Symboli Rudolf",
+      "image": "umas/101701-Symboli-Rudolf.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 213,
+    "fields": {
+      "name": "Air Groove",
+      "image": "umas/101801-Air-Groove.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 214,
+    "fields": {
+      "name": "Mayano Top Gun",
+      "image": "umas/102401-Mayano-Top-Gun.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 215,
+    "fields": {
+      "name": "Mejiro Ryan",
+      "image": "umas/102701-Mejiro-Ryan.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 216,
+    "fields": {
+      "name": "Rice Shower",
+      "image": "umas/103001-Rice-Shower.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 217,
+    "fields": {
+      "name": "Agnes Tachyon",
+      "image": "umas/103201-Agnes-Tachyon.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 218,
+    "fields": {
+      "name": "Winning Ticket",
+      "image": "umas/103501-Winning-Ticket.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 219,
+    "fields": {
+      "name": "Sakura Bakushin O",
+      "image": "umas/104101-Sakura-Bakushin-O.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 220,
+    "fields": {
+      "name": "Shinko Windy",
+      "image": "umas/104301-Shinko-Windy.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 221,
+    "fields": {
+      "name": "Super Creek",
+      "image": "umas/104501-Super-Creek.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 222,
+    "fields": {
+      "name": "Haru Urara",
+      "image": "umas/105201-Haru-Urara.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 223,
+    "fields": {
+      "name": "Biko Pegasus",
+      "image": "umas/105401-Biko-Pegasus.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 224,
+    "fields": {
+      "name": "Matikanefukukitaru",
+      "image": "umas/105601-Matikanefukukitaru.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 225,
+    "fields": {
+      "name": "Nice Nature",
+      "image": "umas/106001-Nice-Nature.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 226,
+    "fields": {
+      "name": "Nice Nature (New Year)",
+      "image": "umas/106003-Nice-Nature-New-Year.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 227,
+    "fields": {
+      "name": "King Halo",
+      "image": "umas/106101-King-Halo.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 228,
+    "fields": {
+      "name": "Tsurumaru Tsuyoshi",
+      "image": "umas/107301-Tsurumaru-Tsuyoshi.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 229,
+    "fields": {
+      "name": "Furioso",
+      "image": "umas/107901-Furioso.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 230,
+    "fields": {
+      "name": "Transcend",
+      "image": "umas/108001-Transcend.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 231,
+    "fields": {
+      "name": "North Flight",
+      "image": "umas/108201-North-Flight.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 232,
+    "fields": {
+      "name": "Satono Crown",
+      "image": "umas/108801-Satono-Crown.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 233,
+    "fields": {
+      "name": "Vivlos (Summer)",
+      "image": "umas/109102-Vivlos-Summer.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 234,
+    "fields": {
+      "name": "Dantsu Flame",
+      "image": "umas/109201-Dantsu-Flame.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 235,
+    "fields": {
+      "name": "Believe",
+      "image": "umas/109501-Believe.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 236,
+    "fields": {
+      "name": "No Reason",
+      "image": "umas/109601-No-Reason.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 237,
+    "fields": {
+      "name": "Sounds of Earth",
+      "image": "umas/110201-Sounds-of-Earth.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 238,
+    "fields": {
+      "name": "Royce and Royce",
+      "image": "umas/110301-Royce-and-Royce.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 239,
+    "fields": {
+      "name": "Rhein Kraft (Alt Version)",
+      "image": "umas/110902-Rhein-Kraft-Alt-Version.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 240,
+    "fields": {
+      "name": "Air Messiah",
+      "image": "umas/111101-Air-Messiah.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 241,
+    "fields": {
+      "name": "Fusaichi Pandora",
+      "image": "umas/111301-Fusaichi-Pandora.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 242,
+    "fields": {
+      "name": "Buena Vista",
+      "image": "umas/111401-Buena-Vista.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 243,
+    "fields": {
+      "name": "Calstone Light O",
+      "image": "umas/112001-Calstone-Light-O.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 244,
+    "fields": {
+      "name": "Durandal",
+      "image": "umas/112101-Durandal.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 245,
+    "fields": {
+      "name": "Bubble Gum Fellow",
+      "image": "umas/112401-Bubble-Gum-Fellow.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 246,
+    "fields": {
+      "name": "Fenomeno",
+      "image": "umas/112701-Fenomeno.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 247,
+    "fields": {
+      "name": "Loves Only You",
+      "image": "umas/113201-Loves-Only-You.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 248,
+    "fields": {
+      "name": "Chrono Genesis",
+      "image": "umas/113301-Chrono-Genesis.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 249,
+    "fields": {
+      "name": "Stay Gold",
+      "image": "umas/113501-Stay-Gold.png",
+      "admin_comments": ""
+    }
+  },
+  {
+    "model": "calculatorapi.uma",
+    "pk": 250,
+    "fields": {
+      "name": "Kiseki",
+      "image": "umas/113701-Kiseki.png",
+      "admin_comments": ""
+    }
   }
 ]

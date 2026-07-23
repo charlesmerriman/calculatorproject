@@ -214,7 +214,7 @@
     "pk": 22,
     "fields": {
       "banner_timeline": 22,
-      "name": "Kawakami Princess\u2661",
+      "name": "Kawakami Princess♡",
       "admin_comments": "",
       "free_pulls": 0
     }
@@ -424,7 +424,7 @@
     "pk": 43,
     "fields": {
       "banner_timeline": 43,
-      "name": "Ines Fujin \u2661",
+      "name": "Ines Fujin ♡",
       "admin_comments": "",
       "free_pulls": 0
     }
@@ -1465,6 +1465,346 @@
     "fields": {
       "banner_timeline": 148,
       "name": "Almond Eye",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 149,
+    "fields": {
+      "banner_timeline": 150,
+      "name": "Shinko Windy",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 150,
+    "fields": {
+      "banner_timeline": 151,
+      "name": "Gold City + Tosen Jordan + Mejiro Palmer + Daitaku Helios",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 151,
+    "fields": {
+      "banner_timeline": 152,
+      "name": "Copano Rickey (Rerun) + Hokko Tarumae (Rerun)",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 152,
+    "fields": {
+      "banner_timeline": 154,
+      "name": "Satono Crown",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 153,
+    "fields": {
+      "banner_timeline": 155,
+      "name": "Nice Nature (New Year)",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 154,
+    "fields": {
+      "banner_timeline": 156,
+      "name": "Biko Pegasus",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 155,
+    "fields": {
+      "banner_timeline": 157,
+      "name": "Transcend",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 156,
+    "fields": {
+      "banner_timeline": 158,
+      "name": "Sounds of Earth",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 157,
+    "fields": {
+      "banner_timeline": 159,
+      "name": "Katsuragi Ace + Sakura Chiyono O + (Ballroom) + Hishi Amazon + (Wedding)",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 158,
+    "fields": {
+      "banner_timeline": 160,
+      "name": "North Flight",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 159,
+    "fields": {
+      "banner_timeline": 161,
+      "name": "Jungle Pocket",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 160,
+    "fields": {
+      "banner_timeline": 162,
+      "name": "Calstone Light O",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 161,
+    "fields": {
+      "banner_timeline": 163,
+      "name": "Durandal",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 162,
+    "fields": {
+      "banner_timeline": 164,
+      "name": "Bubble Gum Fellow",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 163,
+    "fields": {
+      "banner_timeline": 165,
+      "name": "Air Messiah",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 164,
+    "fields": {
+      "banner_timeline": 166,
+      "name": "Grass Wonder (New Year)",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 165,
+    "fields": {
+      "banner_timeline": 167,
+      "name": "Furioso",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 166,
+    "fields": {
+      "banner_timeline": 168,
+      "name": "Tsurumaru Tsuyoshi",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 167,
+    "fields": {
+      "banner_timeline": 169,
+      "name": "No Reason",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 168,
+    "fields": {
+      "banner_timeline": 170,
+      "name": "Fenomeno",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 169,
+    "fields": {
+      "banner_timeline": 171,
+      "name": "Oguri Cap + (Christmas) + Gold Ship (Summer) + (Project L'Arc) + Mejiro McQueen + (Summer) + (Anime Collab) + Tamamo Cross + (Festival) + Curren Chan + (Wedding) + Seiun Sky + (Ballroom) + Hishi Miracle + Biwa Hayahide + (Christmas) + (Mecha)",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 170,
+    "fields": {
+      "banner_timeline": 172,
+      "name": "Loves Only You",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 171,
+    "fields": {
+      "banner_timeline": 173,
+      "name": "Chrono Genesis",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 172,
+    "fields": {
+      "banner_timeline": 174,
+      "name": "Fusaichi Pandora",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 173,
+    "fields": {
+      "banner_timeline": 175,
+      "name": "Vivlos (Summer)",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 174,
+    "fields": {
+      "banner_timeline": 176,
+      "name": "Believe",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 175,
+    "fields": {
+      "banner_timeline": 177,
+      "name": "Dantsu Flame",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 176,
+    "fields": {
+      "banner_timeline": 178,
+      "name": "Buena Vista",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 177,
+    "fields": {
+      "banner_timeline": 179,
+      "name": "Stay Gold",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 178,
+    "fields": {
+      "banner_timeline": 180,
+      "name": "Gentildonna (Rerun)",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 179,
+    "fields": {
+      "banner_timeline": 181,
+      "name": "Orfevre (Rerun)",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 180,
+    "fields": {
+      "banner_timeline": 182,
+      "name": "Kiseki",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 181,
+    "fields": {
+      "banner_timeline": 183,
+      "name": "Royce and Royce",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.banneruma",
+    "pk": 182,
+    "fields": {
+      "banner_timeline": 190,
+      "name": "Fenomeno + Nakayama Festa + (Christmas) + Stay Gold + Dream Journey + (Christmas) + Orfevre + Gold Ship (Summer) + (Project L'Arc)",
       "admin_comments": "",
       "free_pulls": 0
     }

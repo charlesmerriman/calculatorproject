@@ -716,7 +716,7 @@
       "jp_end_date": "2022-10-24T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Seeking the Pearl.jpg"
     }
   },
   {
@@ -1568,7 +1568,7 @@
       "jp_end_date": "2025-06-13T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Wedding 2026.jpg"
     }
   },
   {
@@ -1604,7 +1604,7 @@
       "jp_end_date": "2025-08-14T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Summer 2026.jpg"
     }
   },
   {
@@ -1777,18 +1777,6 @@
   },
   {
     "model": "calculatorapi.bannertimeline",
-    "pk": 149,
-    "fields": {
-      "name": "Special Week + Silence Suzuka + Tokai Teio + Maruzensky + Oguri Cap + Taiki Shuttle + Mejiro McQueen + Symboli Rudolf + Rice Shower",
-      "jp_start_date": "2021-02-24T22:00:00Z",
-      "jp_end_date": "2021-03-02T21:59:59Z",
-      "global_start_date": "2025-06-26T22:00:00Z",
-      "global_end_date": "2025-07-02T21:59:59Z",
-      "image": ""
-    }
-  },
-  {
-    "model": "calculatorapi.bannertimeline",
     "pk": 150,
     "fields": {
       "name": "Shinko Windy",
@@ -1796,7 +1784,7 @@
       "jp_end_date": "2023-02-24T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Shinko Windy.png"
     }
   },
   {
@@ -1820,7 +1808,7 @@
       "jp_end_date": "2023-08-24T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Copano Rickey (Rerun) + Hokko Tarumae (Rerun).png"
     }
   },
   {
@@ -1844,7 +1832,7 @@
       "jp_end_date": "2023-12-20T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Satono Crown.png"
     }
   },
   {
@@ -1856,7 +1844,7 @@
       "jp_end_date": "2024-01-19T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Nice Nature (New Year).png"
     }
   },
   {
@@ -1868,7 +1856,7 @@
       "jp_end_date": "2024-02-24T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Biko Pegasus.png"
     }
   },
   {
@@ -1880,7 +1868,7 @@
       "jp_end_date": "2024-03-21T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Transcend.png"
     }
   },
   {
@@ -1892,7 +1880,7 @@
       "jp_end_date": "2024-04-30T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Sounds of Earth.png"
     }
   },
   {
@@ -1916,7 +1904,7 @@
       "jp_end_date": "2024-05-30T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/North Flight.png"
     }
   },
   {
@@ -1928,7 +1916,7 @@
       "jp_end_date": "2024-06-26T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Jungle Pocket.png"
     }
   },
   {
@@ -1940,7 +1928,7 @@
       "jp_end_date": "2024-07-29T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Calstone Light O.png"
     }
   },
   {
@@ -1952,7 +1940,7 @@
       "jp_end_date": "2024-09-30T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Durandal.png"
     }
   },
   {
@@ -1964,7 +1952,7 @@
       "jp_end_date": "2024-10-29T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Bubble Gum Fellow.png"
     }
   },
   {
@@ -1976,7 +1964,7 @@
       "jp_end_date": "2024-11-28T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Air Messiah.png"
     }
   },
   {
@@ -1988,7 +1976,7 @@
       "jp_end_date": "2024-12-27T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Grass Wonder (New Year).png"
     }
   },
   {
@@ -2000,7 +1988,7 @@
       "jp_end_date": "2025-01-31T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Furioso.png"
     }
   },
   {
@@ -2024,7 +2012,7 @@
       "jp_end_date": "2025-03-31T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/No Reason.png"
     }
   },
   {
@@ -2036,7 +2024,7 @@
       "jp_end_date": "2025-04-30T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Fenomeno.png"
     }
   },
   {
@@ -2060,7 +2048,7 @@
       "jp_end_date": "2025-05-30T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Loves Only You.png"
     }
   },
   {
@@ -2072,7 +2060,7 @@
       "jp_end_date": "2025-06-27T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Chrono Genesis.png"
     }
   },
   {
@@ -2084,7 +2072,7 @@
       "jp_end_date": "2025-07-31T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Fusaichi Pandora.png"
     }
   },
   {
@@ -2108,7 +2096,7 @@
       "jp_end_date": "2025-09-29T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Believe.png"
     }
   },
   {
@@ -2120,7 +2108,7 @@
       "jp_end_date": "2025-10-29T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Danstu Flame.png"
     }
   },
   {
@@ -2132,7 +2120,7 @@
       "jp_end_date": "2025-11-28T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Buena Vista.png"
     }
   },
   {
@@ -2144,7 +2132,7 @@
       "jp_end_date": "2026-01-19T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Stay Gold.png"
     }
   },
   {
@@ -2156,7 +2144,7 @@
       "jp_end_date": "2026-01-19T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Gentildonna.png"
     }
   },
   {
@@ -2168,7 +2156,7 @@
       "jp_end_date": "2026-01-19T21:59:59Z",
       "global_start_date": null,
       "global_end_date": null,
-      "image": ""
+      "image": "banner_timelines/Orfevre.png"
     }
   },
   {

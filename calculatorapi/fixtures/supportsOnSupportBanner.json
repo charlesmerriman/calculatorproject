@@ -2086,5 +2086,176 @@
       "support_card": 134,
       "recommendation": ""
     }
+  },
+  {
+    "model": "calculatorapi.supportsonsupportbanner",
+    "pk": 253,
+    "fields": {
+      "banner_support": 149,
+      "support_card": 138,
+      "recommendation": null
+    }
+  },
+  {
+    "model": "calculatorapi.supportsonsupportbanner",
+    "pk": 254,
+    "fields": {
+      "banner_support": 149,
+      "support_card": 175,
+      "recommendation": null
+    }
+  },
+  {
+    "model": "calculatorapi.supportsonsupportbanner",
+    "pk": 255,
+    "fields": {
+      "banner_support": 150,
+      "support_card": 222,
+      "recommendation": null
+    }
+  },
+  {
+    "model": "calculatorapi.supportsonsupportbanner",
+    "pk": 256,
+    "fields": {
+      "banner_support": 150,
+      "support_card": 138,
+      "recommendation": null
+    }
+  },
+  {
+    "model": "calculatorapi.supportsonsupportbanner",
+    "pk": 537,
+    "fields": {
+      "banner_support": 179,
+      "support_card": 253,
+      "recommendation": null
+    }
+  },
+  {
+    "model": "calculatorapi.supportsonsupportbanner",
+    "pk": 538,
+    "fields": {
+      "banner_support": 179,
+      "support_card": 254,
+      "recommendation": null
+    }
+  },
+  {
+    "model": "calculatorapi.supportsonsupportbanner",
+    "pk": 539,
+    "fields": {
+      "banner_support": 180,
+      "support_card": 221,
+      "recommendation": null
+    }
+  },
+  {
+    "model": "calculatorapi.supportsonsupportbanner",
+    "pk": 550,
+    "fields": {
+      "banner_support": 182,
+      "support_card": 229,
+      "recommendation": null
+    }
+  },
+  {
+    "model": "calculatorapi.supportsonsupportbanner",
+    "pk": 551,
+    "fields": {
+      "banner_support": 182,
+      "support_card": 160,
+      "recommendation": null
+    }
+  },
+  {
+    "model": "calculatorapi.supportsonsupportbanner",
+    "pk": 552,
+    "fields": {
+      "banner_support": 183,
+      "support_card": 196,
+      "recommendation": null
+    }
+  },
+  {
+    "model": "calculatorapi.supportsonsupportbanner",
+    "pk": 553,
+    "fields": {
+      "banner_support": 184,
+      "support_card": 137,
+      "recommendation": null
+    }
+  },
+  {
+    "model": "calculatorapi.supportsonsupportbanner",
+    "pk": 554,
+    "fields": {
+      "banner_support": 184,
+      "support_card": 172,
+      "recommendation": null
+    }
+  },
+  {
+    "model": "calculatorapi.supportsonsupportbanner",
+    "pk": 555,
+    "fields": {
+      "banner_support": 185,
+      "support_card": 190,
+      "recommendation": null
+    }
+  },
+  {
+    "model": "calculatorapi.supportsonsupportbanner",
+    "pk": 556,
+    "fields": {
+      "banner_support": 185,
+      "support_card": 257,
+      "recommendation": null
+    }
+  },
+  {
+    "model": "calculatorapi.supportsonsupportbanner",
+    "pk": 557,
+    "fields": {
+      "banner_support": 186,
+      "support_card": 137,
+      "recommendation": null
+    }
+  },
+  {
+    "model": "calculatorapi.supportsonsupportbanner",
+    "pk": 558,
+    "fields": {
+      "banner_support": 186,
+      "support_card": 172,
+      "recommendation": null
+    }
+  },
+  {
+    "model": "calculatorapi.supportsonsupportbanner",
+    "pk": 559,
+    "fields": {
+      "banner_support": 187,
+      "support_card": 155,
+      "recommendation": null
+    }
+  },
+  {
+    "model": "calculatorapi.supportsonsupportbanner",
+    "pk": 560,
+    "fields": {
+      "banner_support": 187,
+      "support_card": 179,
+      "recommendation": null
+    }
+  },
+  {
+    "model": "calculatorapi.supportsonsupportbanner",
+    "pk": 561,
+    "fields": {
+      "banner_support": 188,
+      "support_card": 181,
+      "recommendation": null
+    }
   }
 ]

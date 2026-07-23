@@ -234,7 +234,7 @@
     "pk": 24,
     "fields": {
       "banner_timeline": 24,
-      "name": "\u2661Curren Chan\u2661 + Narita Brian",
+      "name": "♡Curren Chan♡ + Narita Brian",
       "admin_comments": "",
       "free_pulls": 0
     }
@@ -394,7 +394,7 @@
     "pk": 40,
     "fields": {
       "banner_timeline": 40,
-      "name": "Daiwa Scarlet \u2661",
+      "name": "Daiwa Scarlet ♡",
       "admin_comments": "",
       "free_pulls": 0
     }
@@ -1465,6 +1465,116 @@
     "fields": {
       "banner_timeline": 148,
       "name": "Forever Young + Casino Drive",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.bannersupport",
+    "pk": 149,
+    "fields": {
+      "banner_timeline": 150,
+      "name": "Maruzensky + Nishino Flower",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.bannersupport",
+    "pk": 150,
+    "fields": {
+      "banner_timeline": 152,
+      "name": "Mejiro Ramonu + Maruzensky",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.bannersupport",
+    "pk": 179,
+    "fields": {
+      "banner_timeline": 186,
+      "name": "Daring Tact + Daring Heart",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.bannersupport",
+    "pk": 180,
+    "fields": {
+      "banner_timeline": 187,
+      "name": "Aston Machan",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.bannersupport",
+    "pk": 182,
+    "fields": {
+      "banner_timeline": 189,
+      "name": "Tap Dance City + Agnes Digital",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.bannersupport",
+    "pk": 183,
+    "fields": {
+      "banner_timeline": 191,
+      "name": "Sakura Chiyono O",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.bannersupport",
+    "pk": 184,
+    "fields": {
+      "banner_timeline": 192,
+      "name": "Tokai Teio + Eishin Flash",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.bannersupport",
+    "pk": 185,
+    "fields": {
+      "banner_timeline": 193,
+      "name": "Satono Diamond + Gran Alegria",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.bannersupport",
+    "pk": 186,
+    "fields": {
+      "banner_timeline": 194,
+      "name": "Tokai Teio + Eishin Flash",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.bannersupport",
+    "pk": 187,
+    "fields": {
+      "banner_timeline": 195,
+      "name": "Tazuna Hayakawa + Meisho Doto",
+      "admin_comments": "",
+      "free_pulls": 0
+    }
+  },
+  {
+    "model": "calculatorapi.bannersupport",
+    "pk": 188,
+    "fields": {
+      "banner_timeline": 196,
+      "name": "Nice Nature",
       "admin_comments": "",
       "free_pulls": 0
     }
