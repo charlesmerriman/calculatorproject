@@ -109,7 +109,13 @@ class CalculatorViewSet(ViewSet):
             ).data,
             "user_planned_banner_data": UserPlannedBannerSerializer(
                 user_planned_banner_data, many=True,
-                context={"effective_dates": emap, "request": request},
+                # No "request" in context on purpose: with it, DRF's ImageField
+                # emits absolute URLs via request.build_absolute_uri(), which
+                # behind the prod reverse proxy point at the wrong (internal/http)
+                # host and break the nested banner images. Every other serializer
+                # here omits request and emits relative /media/... URLs that the
+                # frontend/ingress resolves correctly — keep this one consistent.
+                context={"effective_dates": emap},
             ).data,
             "champions_meeting_data": ChampionsMeetingSerializer(
                 champions_meeting_data, many=True, context={"effective_dates": cm_emap}
