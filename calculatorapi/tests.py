@@ -701,6 +701,19 @@ class CalculatorPatchTests(TestCase):
         self.user.refresh_from_db()
         self.assertEqual(self.user.current_carat, 9999)
 
+    def test_patch_stats_updates_misc_earnings_toggle(self):
+        # misc_earnings defaults to True; confirm the serializer accepts and
+        # persists a toggle-off through the same PATCH path as the other stats.
+        self.assertTrue(self.user.misc_earnings)
+        res = self.client.patch(
+            '/calculator-data',
+            {'user_stats_data': {'misc_earnings': False}},
+            format='json',
+        )
+        self.assertEqual(res.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertFalse(self.user.misc_earnings)
+
     def test_patch_invalid_stats_returns_400(self):
         res = self.client.patch(
             '/calculator-data',

@@ -26,6 +26,10 @@ class CustomUser(AbstractUser):
     ssr_crystals = models.IntegerField(default=0)
     daily_carat = models.BooleanField(default=False)
     training_pass = models.BooleanField(default=False)
+    # Approximates the sheet's "Misc Earnings" (gifts, team trials, careers):
+    # a flat monthly carat estimate. On by default to match the source sheet,
+    # which is the reference the projection is calibrated against.
+    misc_earnings = models.BooleanField(default=True)
     current_carat = models.IntegerField(default=0)
     current_paid_carat = models.IntegerField(default=0)
     uma_ticket = models.IntegerField(default=0)

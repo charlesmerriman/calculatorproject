@@ -395,7 +395,7 @@ class CustomUserAdmin(UserAdmin, ModelAdmin):
             "fields": (
                 "club_rank", "team_trials_rank",
                 "champions_meeting_rank", "league_of_heroes_rank",
-                "daily_carat", "training_pass",
+                "daily_carat", "training_pass", "misc_earnings",
                 "current_carat", "current_paid_carat",
                 "uma_ticket", "support_ticket",
                 "ssr_crystals", "sr_crystals", "ssr_shards", "sr_shards",

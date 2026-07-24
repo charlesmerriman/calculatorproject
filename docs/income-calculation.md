@@ -27,6 +27,28 @@ If the user enables the **Daily Carat** toggle, an additional **50 carats/day** 
 
 ---
 
+## Misc Earnings Approximation (monthly, toggle — on by default)
+
+A flat **1,800 carats/month** approximating miscellaneous earnings the projection doesn't
+model individually — gifts, Team Trials extras, and career-mode rewards. This mirrors the
+source sheet's "Misc Earnings" figure, which the projection is calibrated against.
+
+Gated behind the user's `misc_earnings` boolean (`CustomUser.misc_earnings`,
+`default=True`). Credited on month boundaries, the same mechanism as Club Rank (the
+projection counts how many 1st-of-month boundaries fall in the window). Constant:
+`MISC_EARNINGS_PER_MONTH` in `frontend/src/constants/gameConstants.ts`.
+
+---
+
+## 50-Day Login Bonus (monthly, always on)
+
+A flat **~170 carats/month** from the game's recurring 50-day login campaign. This is
+universal income (like the base daily carats), so there is **no toggle** — it always
+applies. Credited on month boundaries. Constant: `FIFTY_DAY_LOGIN_PER_MONTH` in
+`frontend/src/constants/gameConstants.ts` (approximate; tune there).
+
+---
+
 ## Training Pass (monthly, day 24)
 
 > **Available from August 15, 2027.** No training pass income is projected for any period before this date — neither the paid reward nor the free tier.
