@@ -8,7 +8,8 @@
             "uma_ticket_amount": 5,
             "support_ticket_amount": 5,
             "ssr_shard_amount": 0,
-            "sr_shard_amount": 0
+            "sr_shard_amount": 0,
+            "sort_order": 1
         }
     },
     {
@@ -20,7 +21,8 @@
             "uma_ticket_amount": 4,
             "support_ticket_amount": 4,
             "ssr_shard_amount": 0,
-            "sr_shard_amount": 0
+            "sr_shard_amount": 0,
+            "sort_order": 2
         }
     },
     {
@@ -28,11 +30,12 @@
         "pk": 3,
         "fields": {
             "name": "Third",
-            "income_amount": 1700,
+            "income_amount": 1600,
             "uma_ticket_amount": 3,
             "support_ticket_amount": 3,
             "ssr_shard_amount": 0,
-            "sr_shard_amount": 0
+            "sr_shard_amount": 0,
+            "sort_order": 3
         }
     },
     {
@@ -40,11 +43,12 @@
         "pk": 4,
         "fields": {
             "name": "Group B 1st",
-            "income_amount": 1600,
+            "income_amount": 1800,
             "uma_ticket_amount": 3,
             "support_ticket_amount": 3,
             "ssr_shard_amount": 0,
-            "sr_shard_amount": 0
+            "sr_shard_amount": 0,
+            "sort_order": 4
         }
     },
     {
@@ -56,19 +60,60 @@
             "uma_ticket_amount": 2,
             "support_ticket_amount": 2,
             "ssr_shard_amount": 0,
-            "sr_shard_amount": 0
+            "sr_shard_amount": 0,
+            "sort_order": 5
         }
     },
     {
         "model": "calculatorapi.championsmeetingrank",
         "pk": 6,
         "fields": {
-            "name": "Open League",
-            "income_amount": 1100,
+            "name": "Open League 1st",
+            "income_amount": 1500,
             "uma_ticket_amount": 3,
             "support_ticket_amount": 3,
             "ssr_shard_amount": 0,
-            "sr_shard_amount": 0
+            "sr_shard_amount": 0,
+            "sort_order": 7
+        }
+    },
+    {
+        "model": "calculatorapi.championsmeetingrank",
+        "pk": 7,
+        "fields": {
+            "name": "Group B 3rd",
+            "income_amount": 1000,
+            "uma_ticket_amount": 1,
+            "support_ticket_amount": 1,
+            "ssr_shard_amount": 0,
+            "sr_shard_amount": 0,
+            "sort_order": 6
+        }
+    },
+    {
+        "model": "calculatorapi.championsmeetingrank",
+        "pk": 8,
+        "fields": {
+            "name": "Open League 2nd",
+            "income_amount": 1250,
+            "uma_ticket_amount": 2,
+            "support_ticket_amount": 2,
+            "ssr_shard_amount": 0,
+            "sr_shard_amount": 0,
+            "sort_order": 8
+        }
+    },
+    {
+        "model": "calculatorapi.championsmeetingrank",
+        "pk": 9,
+        "fields": {
+            "name": "Open League 3rd",
+            "income_amount": 1000,
+            "uma_ticket_amount": 1,
+            "support_ticket_amount": 1,
+            "ssr_shard_amount": 0,
+            "sr_shard_amount": 0,
+            "sort_order": 9
         }
     }
 ]

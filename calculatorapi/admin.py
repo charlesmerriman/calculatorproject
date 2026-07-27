@@ -360,11 +360,13 @@ class TeamTrialsRankAdmin(ModelAdmin):
 
 @admin.register(ChampionsMeetingRank)
 class ChampionsMeetingRankAdmin(ModelAdmin):
-    list_display = ("name", "income_amount", "uma_ticket_amount",
+    # sort_order is editable here so content editors control the dropdown order
+    # directly (placements don't sort logically by income). Lower = higher up.
+    list_display = ("name", "sort_order", "income_amount", "uma_ticket_amount",
                     "support_ticket_amount", "ssr_shard_amount", "sr_shard_amount")
-    list_editable = ("income_amount", "uma_ticket_amount",
+    list_editable = ("sort_order", "income_amount", "uma_ticket_amount",
                      "support_ticket_amount", "ssr_shard_amount", "sr_shard_amount")
-    ordering = ("income_amount",)
+    ordering = ("sort_order",)
 
 
 @admin.register(LeagueOfHeroesRank)
@@ -396,6 +398,7 @@ class CustomUserAdmin(UserAdmin, ModelAdmin):
                 "club_rank", "team_trials_rank",
                 "champions_meeting_rank", "league_of_heroes_rank",
                 "daily_carat", "training_pass", "misc_earnings",
+                "monthly_shop_tickets", "discounted_paid_pulls", "full_price_paid_pulls",
                 "current_carat", "current_paid_carat",
                 "uma_ticket", "support_ticket",
                 "ssr_crystals", "sr_crystals", "ssr_shards", "sr_shards",

@@ -34,7 +34,9 @@ class UserStatsSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             "current_carat", "current_paid_carat", "uma_ticket", "support_ticket",
-            "daily_carat", "training_pass", "misc_earnings", "sr_shards", "sr_crystals", "ssr_shards", "ssr_crystals",
+            "daily_carat", "training_pass", "misc_earnings",
+            "monthly_shop_tickets", "discounted_paid_pulls", "full_price_paid_pulls",
+            "sr_shards", "sr_crystals", "ssr_shards", "ssr_crystals",
             "club_rank", "team_trials_rank", "champions_meeting_rank", "league_of_heroes_rank",
         ]
 

@@ -4,7 +4,9 @@
         "pk": 1,
         "fields": {
             "name": "Silver 4",
-            "income_amount": 390
+            "income_amount": 400,
+            "uma_ticket_amount": 0,
+            "support_ticket_amount": 0
         }
     },
     {
@@ -12,7 +14,9 @@
         "pk": 2,
         "fields": {
             "name": "Gold 1",
-            "income_amount": 540
+            "income_amount": 550,
+            "uma_ticket_amount": 0,
+            "support_ticket_amount": 0
         }
     },
     {
@@ -20,7 +24,9 @@
         "pk": 3,
         "fields": {
             "name": "Gold 2",
-            "income_amount": 690
+            "income_amount": 700,
+            "uma_ticket_amount": 1,
+            "support_ticket_amount": 1
         }
     },
     {
@@ -28,7 +34,9 @@
         "pk": 4,
         "fields": {
             "name": "Gold 3",
-            "income_amount": 990
+            "income_amount": 1000,
+            "uma_ticket_amount": 1,
+            "support_ticket_amount": 1
         }
     },
     {
@@ -36,7 +44,9 @@
         "pk": 5,
         "fields": {
             "name": "Gold 4",
-            "income_amount": 1290
+            "income_amount": 1300,
+            "uma_ticket_amount": 2,
+            "support_ticket_amount": 2
         }
     },
     {
@@ -44,7 +54,9 @@
         "pk": 6,
         "fields": {
             "name": "Platinum 1",
-            "income_amount": 1790
+            "income_amount": 1800,
+            "uma_ticket_amount": 2,
+            "support_ticket_amount": 2
         }
     },
     {
@@ -52,7 +64,9 @@
         "pk": 7,
         "fields": {
             "name": "Platinum 2",
-            "income_amount": 2290
+            "income_amount": 2300,
+            "uma_ticket_amount": 2,
+            "support_ticket_amount": 2
         }
     },
     {
@@ -60,7 +74,9 @@
         "pk": 8,
         "fields": {
             "name": "Platinum 3",
-            "income_amount": 2790
+            "income_amount": 2800,
+            "uma_ticket_amount": 2,
+            "support_ticket_amount": 2
         }
     },
     {
@@ -68,7 +84,9 @@
         "pk": 9,
         "fields": {
             "name": "Platinum 4",
-            "income_amount": 3290
+            "income_amount": 3300,
+            "uma_ticket_amount": 2,
+            "support_ticket_amount": 2
         }
     }
 ]

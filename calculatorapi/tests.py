@@ -714,6 +714,28 @@ class CalculatorPatchTests(TestCase):
         self.user.refresh_from_db()
         self.assertFalse(self.user.misc_earnings)
 
+    def test_patch_stats_updates_pull_strategy_toggles(self):
+        # The three toggles added for the Settings menu round-trip through the
+        # same partial-PATCH path. Confirm their defaults, then flip each and
+        # verify it persists.
+        self.assertFalse(self.user.monthly_shop_tickets)
+        self.assertFalse(self.user.discounted_paid_pulls)
+        self.assertTrue(self.user.full_price_paid_pulls)
+        res = self.client.patch(
+            '/calculator-data',
+            {'user_stats_data': {
+                'monthly_shop_tickets': True,
+                'discounted_paid_pulls': True,
+                'full_price_paid_pulls': False,
+            }},
+            format='json',
+        )
+        self.assertEqual(res.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.monthly_shop_tickets)
+        self.assertTrue(self.user.discounted_paid_pulls)
+        self.assertFalse(self.user.full_price_paid_pulls)
+
     def test_patch_invalid_stats_returns_400(self):
         res = self.client.patch(
             '/calculator-data',
