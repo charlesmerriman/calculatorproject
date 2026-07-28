@@ -48,7 +48,7 @@ schedule absolute, so adding or removing banners never changes the total. Consta
 
 ## Monthly Shop Tickets (monthly, opt-in — off by default)
 
-Each month the in-game shop lets you buy **3 uma tickets** and **4 support tickets** with a
+Each month the in-game shop lets you buy **4 uma tickets** and **4 support tickets** with a
 currency the calculator doesn't track, so when enabled these are credited as pure ticket
 income at **no carat cost**. Gated behind `CustomUser.monthly_shop_tickets` (`default=False`).
 Credited on month boundaries, the same mechanism as Club Rank. Constants

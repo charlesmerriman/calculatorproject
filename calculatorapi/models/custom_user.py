@@ -30,7 +30,7 @@ class CustomUser(AbstractUser):
     # a flat monthly carat estimate. On by default to match the source sheet,
     # which is the reference the projection is calibrated against.
     misc_earnings = models.BooleanField(default=True)
-    # Monthly shop tickets: the game lets you buy 3 uma + 4 support gacha
+    # Monthly shop tickets: the game lets you buy 4 uma + 4 support gacha
     # tickets every month with a currency not tracked here, so when enabled the
     # projection simply credits those tickets monthly at no carat cost.
     monthly_shop_tickets = models.BooleanField(default=False)
