@@ -27,16 +27,22 @@ If the user enables the **Daily Carat** toggle, an additional **50 carats/day** 
 
 ---
 
-## Misc Earnings Approximation (monthly, toggle — on by default)
+## Misc Earnings Approximation (rolling 30-day cycle, toggle — on by default)
 
-A flat **1,800 carats/month** approximating miscellaneous earnings the projection doesn't
-model individually — gifts, Team Trials extras, and career-mode rewards. This mirrors the
-source sheet's "Misc Earnings" figure, which the projection is calibrated against.
+A flat **1,800 carats per 30 days** approximating miscellaneous earnings the projection
+doesn't model individually — gifts, Team Trials extras, and career-mode rewards. This
+mirrors the source sheet's "Misc Earnings" figure, which the projection is calibrated
+against.
 
 Gated behind the user's `misc_earnings` boolean (`CustomUser.misc_earnings`,
-`default=True`). Credited on month boundaries, the same mechanism as Club Rank (the
-projection counts how many 1st-of-month boundaries fall in the window). Constant:
-`MISC_EARNINGS_PER_MONTH` in `frontend/src/constants/gameConstants.ts`.
+`default=True`). Unlike the other flat incomes here, it is **not** credited on
+1st-of-month boundaries: it accrues over a rolling 30-day cycle **anchored to the day the
+user opens the calculator**. The first payout therefore lands 30 days out, and a banner
+ending sooner than that earns none of it; further payouts land every 30 days after
+(day 60, day 90, …). Anchoring to today rather than to each banner's window keeps the
+schedule absolute, so adding or removing banners never changes the total. Constants:
+`MISC_EARNINGS_PER_CYCLE` / `MISC_EARNINGS_CYCLE_DAYS` in
+`frontend/src/constants/gameConstants.ts`.
 
 ---
 
