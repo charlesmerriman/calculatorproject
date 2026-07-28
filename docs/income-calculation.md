@@ -70,12 +70,16 @@ applies. Credited on month boundaries. Constant: `FIFTY_DAY_LOGIN_PER_MONTH` in
 
 > **Available from August 15, 2027.** No training pass income is projected for any period before this date — neither the paid reward nor the free tier.
 
-| State | Income |
-|---|---|
-| Training pass active | **+2,200 carats** on the 24th of each month |
-| No training pass | **+500 carats** per calendar month (free tier) |
+Carats and tickets behave differently: the paid carat reward **replaces** the free tier's, while the tickets **stack** on top of it.
 
-The 500-carat figure is the free tier of the Training Pass — it applies to all accounts once the feature launches, regardless of whether the paid pass is active.
+| State | Carats | Uma tickets | Support tickets |
+|---|---|---|---|
+| Training pass active | **+2,200** on the 24th of each month | **4/month** (2 free + 2 paid bonus) | **4/month** (2 free + 2 paid bonus) |
+| No training pass | **+500** per calendar month (free tier) | **2/month** | **2/month** |
+
+The 500-carat figure is the free tier of the Training Pass — it applies to all accounts once the feature launches, regardless of whether the paid pass is active. The same is true of the 2 free-tier tickets of each type.
+
+**Payout day.** All tickets — free tier included — are delivered on the 24th, because the pass resets as a unit. The free tier's 500 carats remain on the 1st of the month, so a free-tier account draws its carats and its tickets on different days. Constants: `TRAINING_PASS_FREE_UMA_TICKETS`, `TRAINING_PASS_FREE_SUPPORT_TICKETS`, `TRAINING_PASS_PAID_BONUS_UMA_TICKETS`, `TRAINING_PASS_PAID_BONUS_SUPPORT_TICKETS` in `frontend/src/constants/gameConstants.ts`.
 
 ---
 
