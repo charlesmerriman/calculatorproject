@@ -21,9 +21,33 @@ The cycle repeats every 7 days. Day 0 is anchored to the day the user opens the 
 
 ---
 
-## Daily Carat Bonus (opt-in)
+## Daily Carat Pack (opt-in)
 
-If the user enables the **Daily Carat** toggle, an additional **50 carats/day** is added for every day in the projection window. This represents a separate daily login reward distinct from the base 75.
+If the user enables the **Daily Carat** toggle, the pack contributes income of two different
+kinds:
+
+| Part | Amount | Schedule | Balance credited |
+|---|---|---|---|
+| Daily drip | **50 carats/day** | every day in the projection window | **free** carats |
+| Purchase bonus | **500 carats** | every 30 days, first payout 30 days out | **paid** carats |
+
+The daily 50 is a separate daily login reward distinct from the base 75, and behaves like
+every other income source — it lands in the free/earned balance.
+
+The **500-carat purchase bonus** is the money part of the pack, so it lands in the **paid**
+balance (`current_paid_carat`) — making it the *only* income source in the whole projection
+that credits paid carats, and therefore the only thing that keeps discounted paid pulls
+funded over a long horizon.
+
+Its schedule is a rolling 30-day cycle **anchored to the day the user opens the calculator**,
+identical to the Misc Earnings machinery below (`calculateIntervalOccurrences`). The first
+payout lands on day 30, then day 60, day 90, and so on — never on day 0, since the pack the
+user holds *today* is assumed to be already reflected in the paid-carat balance they entered.
+A banner ending sooner than 30 days out therefore sees no purchase bonus at all. Anchoring to
+today rather than to each banner's window keeps the payout instants absolute, so adding or
+removing banners never changes the total. Constants: `DAILY_CARAT_PACK_PER_DAY`,
+`DAILY_CARAT_PACK_PAID_CARATS` / `DAILY_CARAT_PACK_CYCLE_DAYS` in
+`frontend/src/constants/gameConstants.ts`.
 
 ---
 
@@ -74,10 +98,12 @@ Carats and tickets behave differently: the paid carat reward **replaces** the fr
 
 | State | Carats | Uma tickets | Support tickets |
 |---|---|---|---|
-| Training pass active | **+2,200** on the 24th of each month | **4/month** (2 free + 2 paid bonus) | **4/month** (2 free + 2 paid bonus) |
-| No training pass | **+500** per calendar month (free tier) | **2/month** | **2/month** |
+| Training pass active | **+2,200** on the 24th of each month (**1,850 free + 350 paid**) | **4/month** (2 free + 2 paid bonus) | **4/month** (2 free + 2 paid bonus) |
+| No training pass | **+500** per calendar month (free tier, all free carats) | **2/month** | **2/month** |
 
 The 500-carat figure is the free tier of the Training Pass — it applies to all accounts once the feature launches, regardless of whether the paid pass is active. The same is true of the 2 free-tier tickets of each type.
+
+**Free/paid carat split.** Like the Daily Carat Pack, part of the paid pass's reward is purchased currency: 350 of the 2,200 land in the **paid** balance (the only one that can buy discounted pulls), the other 1,850 in the free balance. The free tier's 500 is entirely free carats. The 2,200 total is unaffected, so with the default toggles (discounted pulls off, full-price paid pulls on) projections are unchanged — the split only matters to accounts using discounted pulls. Constants: `TRAINING_PASS_MONTHLY_FREE_CARATS` / `TRAINING_PASS_MONTHLY_PAID_CARATS` in `frontend/src/constants/gameConstants.ts`, with `TRAINING_PASS_MONTHLY_REWARD` derived from their sum.
 
 **Payout day.** All tickets — free tier included — are delivered on the 24th, because the pass resets as a unit. The free tier's 500 carats remain on the 1st of the month, so a free-tier account draws its carats and its tickets on different days. Constants: `TRAINING_PASS_FREE_UMA_TICKETS`, `TRAINING_PASS_FREE_SUPPORT_TICKETS`, `TRAINING_PASS_PAID_BONUS_UMA_TICKETS`, `TRAINING_PASS_PAID_BONUS_SUPPORT_TICKETS` in `frontend/src/constants/gameConstants.ts`.
 
@@ -166,8 +192,10 @@ Each `GameEvent` carries its own reward amounts directly (no separate reward mod
 ## Pull Costs
 
 After recording the forecast for a banner, the projection deducts the pull cost. Carats are
-tracked as two separate balances: **free carats** (`current_carat`, which receive all
-income) and **paid carats** (`current_paid_carat`, purchased with money — they never grow).
+tracked as two separate balances: **free carats** (`current_carat`, which receive nearly all
+income) and **paid carats** (`current_paid_carat`, purchased with money — they grow only from
+the Daily Carat Pack's 500-carat purchase bonus every 30 days and the paid Training Pass's
+350 carats on the 24th).
 The spend order for a banner's `number_of_pulls`, after subtracting the banner's `free_pulls`,
 is:
 
