@@ -81,12 +81,40 @@ Credited on month boundaries, the same mechanism as Club Rank. Constants
 
 ---
 
-## 50-Day Login Bonus (monthly, always on)
+## 50-Day Login Bonus (rolling 50-day cycle, always on)
 
-A flat **~170 carats/month** from the game's recurring 50-day login campaign. This is
+**150 carats** each time the game's recurring 50-day login campaign completes. This is
 universal income (like the base daily carats), so there is **no toggle** — it always
-applies. Credited on month boundaries. Constant: `FIFTY_DAY_LOGIN_PER_MONTH` in
-`frontend/src/constants/gameConstants.ts` (approximate; tune there).
+applies.
+
+Its schedule is a rolling 50-day cycle **anchored to the day the user opens the
+calculator**, the same machinery as Misc Earnings and the Daily Carat Pack purchase bonus
+(`calculateIntervalOccurrences`). The first payout lands on day 50, then day 100, day 150,
+and so on — never on day 0, since the campaign the user is partway through right now is
+assumed already reflected in the balance they entered. A banner ending sooner than 50 days
+out therefore earns none of it. Anchoring to today rather than to each banner's window
+keeps the payout instants absolute, so adding or removing banners never changes the total.
+
+Constants: `FIFTY_DAY_LOGIN_PER_CYCLE` / `FIFTY_DAY_LOGIN_CYCLE_DAYS` in
+`frontend/src/constants/gameConstants.ts`.
+
+---
+
+## Valentine's Day Gift (annual, always on)
+
+**500 carats** granted once a year on **February 14**. Universal income with **no toggle**,
+credited in full on the day itself.
+
+Unlike the rolling-cycle incomes above, this is a fixed calendar date, so it uses
+`calculateAnnualDateOccurrences` — absolute annual instants, counted the same half-open
+`(start, end]` way as the 1st-of-month incomes so a February 14 landing on a banner
+boundary is paid by exactly one window. Constants: `VALENTINES_CARATS`, `VALENTINES_MONTH`
+(0-indexed, so `1` = February), `VALENTINES_DAY` in
+`frontend/src/constants/gameConstants.ts`.
+
+> Note: the Income tab's *average monthly* figure (`useAverageMonthlyIncome`) averages a
+> fixed 5-month forward window, so this only shows up there when that window happens to
+> span February 14. The per-banner projection is unaffected and always counts it correctly.
 
 ---
 
