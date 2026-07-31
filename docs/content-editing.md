@@ -106,6 +106,33 @@ rows as you need, then press **Save** once at the bottom. Only change these
 when the game itself rebalances payouts — they feed every player's income
 projection.
 
+## Images
+
+Anywhere you see an **Image** field, you have two ways to fill it:
+
+- **Upload a new file** — use the upload box exactly as before. The file is
+  stored automatically; you don't need to put it anywhere yourself first.
+- **Choose from library** — click this button to browse every image already
+  on the site. Search by file name, or switch folders (umas, support cards,
+  banner timelines, …) with the dropdown to reuse an image from a different
+  section — handy when an event or Champions Meeting should carry the same
+  artwork as its banner.
+
+Picking from the library does **not** make a second copy, so reusing one image
+in several places is free and stays consistent everywhere it appears.
+
+A few things worth knowing:
+
+- If you pick from the library and upload a file in the same edit, the
+  **uploaded file wins**. Use **Undo** next to the selection if you change
+  your mind before saving.
+- The library list is remembered for a few minutes for speed. If you just
+  uploaded something in another tab and don't see it yet, press the **refresh**
+  icon at the top of the picker.
+- If the picker says it can't load the library, the site can still upload
+  files normally — tell the site owner, it means the image storage is
+  unreachable.
+
 ## A few care notes
 
 - **Deleting a timeline deletes its banners**, and deleting a banner removes
