@@ -40,7 +40,7 @@ that credits paid carats, and therefore the only thing that keeps discounted pai
 funded over a long horizon.
 
 Its schedule is a rolling 30-day cycle **anchored to the day the user opens the calculator**,
-identical to the Misc Earnings machinery below (`calculateIntervalOccurrences`). The first
+identical to the 50-Day Login Bonus machinery below (`calculateIntervalOccurrences`). The first
 payout lands on day 30, then day 60, day 90, and so on — never on day 0, since the pack the
 user holds *today* is assumed to be already reflected in the paid-carat balance they entered.
 A banner ending sooner than 30 days out therefore sees no purchase bonus at all. Anchoring to
@@ -51,22 +51,28 @@ removing banners never changes the total. Constants: `DAILY_CARAT_PACK_PER_DAY`,
 
 ---
 
-## Misc Earnings Approximation (rolling 30-day cycle, toggle — on by default)
+## Misc Earnings Approximation (daily drip after a 30-day ramp-in, toggle — on by default)
 
-A flat **1,800 carats per 30 days** approximating miscellaneous earnings the projection
-doesn't model individually — gifts, Team Trials extras, and career-mode rewards. This
-mirrors the source sheet's "Misc Earnings" figure, which the projection is calibrated
-against.
+A flat **60 carats per day** approximating miscellaneous earnings the projection doesn't
+model individually — gifts, Team Trials extras, and career-mode rewards. This mirrors the
+source sheet's "Misc Earnings" figure, which the projection is calibrated against; the
+sheet accrues it per-day in exactly this way.
 
 Gated behind the user's `misc_earnings` boolean (`CustomUser.misc_earnings`,
 `default=True`). Unlike the other flat incomes here, it is **not** credited on
-1st-of-month boundaries: it accrues over a rolling 30-day cycle **anchored to the day the
-user opens the calculator**. The first payout therefore lands 30 days out, and a banner
-ending sooner than that earns none of it; further payouts land every 30 days after
-(day 60, day 90, …). Anchoring to today rather than to each banner's window keeps the
-schedule absolute, so adding or removing banners never changes the total. Constants:
-`MISC_EARNINGS_PER_CYCLE` / `MISC_EARNINGS_CYCLE_DAYS` in
-`frontend/src/constants/gameConstants.ts`.
+1st-of-month boundaries, and unlike the rolling-cycle incomes it doesn't arrive in lumps:
+after a **30-day ramp-in anchored to the day the user opens the calculator**, every single
+day earns 60. Days 1–30 earn nothing (so a banner ending inside the ramp-in gets none of
+it) and the drip starts on day 31. Anchoring to today rather than to each banner's window
+keeps the drip's start instant absolute, so adding or removing banners never changes the
+total — see `countDaysAfterDelay`, which clamps each window's start forward to that
+instant before counting days. Constants: `MISC_EARNINGS_PER_DAY` /
+`MISC_EARNINGS_DELAY_DAYS` in `frontend/src/constants/gameConstants.ts`.
+
+> **Why a drip, not a lump.** This previously paid **1,800 every 30 days**. Same long-run
+> rate (60 × 30 = 1,800), but the lump produced a 0–1,800 sawtooth against the sheet: a
+> banner's estimate jumped by 1,800 the moment its end date crossed a cycle boundary, so
+> two plans a day apart could read very differently for no real reason.
 
 ---
 
@@ -88,8 +94,9 @@ universal income (like the base daily carats), so there is **no toggle** — it 
 applies.
 
 Its schedule is a rolling 50-day cycle **anchored to the day the user opens the
-calculator**, the same machinery as Misc Earnings and the Daily Carat Pack purchase bonus
-(`calculateIntervalOccurrences`). The first payout lands on day 50, then day 100, day 150,
+calculator**, the same machinery as the Daily Carat Pack purchase bonus
+(`calculateIntervalOccurrences` — Misc Earnings drips daily instead). The first payout
+lands on day 50, then day 100, day 150,
 and so on — never on day 0, since the campaign the user is partway through right now is
 assumed already reflected in the balance they entered. A banner ending sooner than 50 days
 out therefore earns none of it. Anchoring to today rather than to each banner's window
