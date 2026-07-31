@@ -1,0 +1,47 @@
+{% comment %}
+Image field widget: unfold's themed upload control, plus a "Choose from
+library" button that opens the bucket picker (static/admin/spaces-image-picker.js).
+
+The upload control is included verbatim rather than reimplemented so it keeps
+inheriting unfold's styling and any upstream changes. Everything below the
+include is the picker.
+
+The hidden input is what actually gets submitted; SpacesImagePickerForm reads
+it and assigns the key to the model field. See calculatorapi/admin_image_picker.py.
+{% endcomment %}
+{% load i18n %}
+
+{% include "unfold/widgets/clearable_file_input.html" %}
+
+<div class="spaces-picker"
+     data-endpoint="{{ widget.library.endpoint }}"
+     data-prefix="{{ widget.library.prefix }}"
+     data-file-input="{{ widget.attrs.id }}">
+
+    <input type="hidden"
+           name="{{ widget.library.key_input_name }}"
+           value=""
+           data-role="key">
+
+    <div class="spaces-picker__bar">
+        <button type="button" class="spaces-picker__browse" data-role="open">
+            <span class="material-symbols-outlined">photo_library</span>
+            {% trans "Choose from library" %}
+        </button>
+        <span class="spaces-picker__hint">
+            {% trans "Reuse an image already uploaded, or pick a file above to add a new one." %}
+        </span>
+    </div>
+
+    {# Populated by JS once a library image is picked; submitting saves it. #}
+    <div class="spaces-picker__chosen" data-role="chosen" hidden>
+        <img class="spaces-picker__chosen-thumb" data-role="chosen-thumb" alt="">
+        <div class="spaces-picker__chosen-text">
+            <strong>{% trans "Selected from library" %}</strong>
+            <span data-role="chosen-name"></span>
+        </div>
+        <button type="button" class="spaces-picker__undo" data-role="clear">
+            {% trans "Undo" %}
+        </button>
+    </div>
+</div>

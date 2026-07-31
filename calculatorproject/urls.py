@@ -13,6 +13,7 @@ from calculatorapi.views import (
     GameEventViewSet,
     ChangelogEntryViewSet,
 )
+from calculatorapi.views.admin_images import admin_image_library
 from calculatorapi.views.analytics import analytics_dashboard
 from calculatorapi.views.user import user_login, user_logout
 from calculatorapi.views.social_auth import social_auth_start, social_auth_complete
@@ -52,6 +53,14 @@ urlpatterns = [
         "admin/analytics/",
         admin.site.admin_view(analytics_dashboard),
         name="admin-analytics",
+    ),
+    # Same placement rule as analytics above: before admin.site.urls, and
+    # admin_view() makes it staff-only. Feeds the "choose an existing image"
+    # picker on the content change forms.
+    path(
+        "admin/image-library/",
+        admin.site.admin_view(admin_image_library),
+        name="admin-image-library",
     ),
     path("admin/", admin.site.urls),
     path(

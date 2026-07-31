@@ -4,6 +4,10 @@ Admin configuration, organized for a non-technical content editor.
 Layout of this file:
   1. Site branding
   2. Shared helpers (image thumbnails)
+     Image *upload* fields additionally get a "Choose from library" button,
+     which lets an editor reuse a file already in the media bucket instead of
+     re-uploading it. That machinery lives in admin_image_picker.py; admins
+     opt in by mixing in SpacesImagePickerMixin (no other configuration).
   3. Inlines (children edited on their parent's page)
   4. Game content admins (what the "Content editors" group manages)
   5. Rank / income tables
@@ -32,6 +36,7 @@ from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
+from .admin_image_picker import SpacesImagePickerMixin
 from .predictions import GAME_EVENT_END_DATE_BUFFER
 from .models import (
     CustomUser, Uma, SupportCard, UserPlannedBanner,
@@ -166,7 +171,8 @@ class GlobalDatesStatusMixin:  # pylint: disable=too-few-public-methods
 
 
 @admin.register(BannerTimeline)
-class BannerTimelineAdmin(GlobalDatesStatusMixin, ImagePreviewMixin, ModelAdmin):
+class BannerTimelineAdmin(GlobalDatesStatusMixin, ImagePreviewMixin,
+                          SpacesImagePickerMixin, ModelAdmin):
     list_display = ("name", "jp_start_date", "global_start_date",
                     "global_end_date", "global_dates_status")
     list_filter = (GlobalDatesFilter,)
@@ -222,7 +228,7 @@ class BannerSupportAdmin(PlannedByColumnMixin, ModelAdmin):
 
 
 @admin.register(Uma)
-class UmaAdmin(ImagePreviewMixin, ModelAdmin):
+class UmaAdmin(ImagePreviewMixin, SpacesImagePickerMixin, ModelAdmin):
     list_display = ("image_preview", "name")
     list_display_links = ("name",)
     ordering = ("name",)
@@ -231,7 +237,7 @@ class UmaAdmin(ImagePreviewMixin, ModelAdmin):
 
 
 @admin.register(SupportCard)
-class SupportCardAdmin(ImagePreviewMixin, ModelAdmin):
+class SupportCardAdmin(ImagePreviewMixin, SpacesImagePickerMixin, ModelAdmin):
     list_display = ("image_preview", "name", "game_id")
     list_display_links = ("name",)
     ordering = ("name",)
@@ -240,7 +246,7 @@ class SupportCardAdmin(ImagePreviewMixin, ModelAdmin):
 
 
 @admin.register(GameEvent)
-class GameEventAdmin(ImagePreviewMixin, ModelAdmin):
+class GameEventAdmin(ImagePreviewMixin, SpacesImagePickerMixin, ModelAdmin):
     list_display = (
         "name", "banner_timeline", "confirmed_start_date", "confirmed_end_date",
         "carat_amount", "carats_throughout",
@@ -278,7 +284,8 @@ class GameEventAdmin(ImagePreviewMixin, ModelAdmin):
 
 
 @admin.register(ChampionsMeeting)
-class ChampionsMeetingAdmin(GlobalDatesStatusMixin, ImagePreviewMixin, ModelAdmin):
+class ChampionsMeetingAdmin(GlobalDatesStatusMixin, ImagePreviewMixin,
+                            SpacesImagePickerMixin, ModelAdmin):
     list_display = ("name", "cm_number", "jp_start_date", "global_start_date",
                     "global_end_date", "global_dates_status")
     list_filter = (GlobalDatesFilter,)
@@ -321,7 +328,8 @@ class ChangelogEntryAdmin(ModelAdmin):
 
 
 @admin.register(LeagueOfHeroes)
-class LeagueOfHeroesAdmin(GlobalDatesStatusMixin, ImagePreviewMixin, ModelAdmin):
+class LeagueOfHeroesAdmin(GlobalDatesStatusMixin, ImagePreviewMixin,
+                          SpacesImagePickerMixin, ModelAdmin):
     list_display = ("name", "jp_start_date", "global_start_date",
                     "global_end_date", "global_dates_status")
     list_filter = (GlobalDatesFilter,)
