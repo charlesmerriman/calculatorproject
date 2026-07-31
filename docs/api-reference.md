@@ -16,31 +16,53 @@ Not part of the public API: `/admin/analytics/` is a staff-only aggregate analyt
 
 ## Authentication
 
-### `POST /register`
+Ordinary accounts are created and authenticated **only** through Google or Discord (OAuth2 authorization code flow). There is no registration endpoint, and `POST /login` is restricted to staff. A social account stores nothing but the provider's opaque subject id and a generated `user_xxxxxx` handle — no email, name, or password. See `calculatorapi/oauth.py` and `calculatorapi/views/social_auth.py`.
 
-Public. Creates a new user account and returns an auth token.
+### `GET /auth/<provider>/start`
+
+Public. `<provider>` is `google` or `discord`. Returns the provider consent URL to redirect the browser to, plus the signed `state` the caller must echo back.
+
+**Response `200`**
+```json
+{ "authorize_url": "https://accounts.google.com/o/oauth2/v2/auth?...", "state": "string" }
+```
+
+**Response `404`** — unknown provider.
+**Response `503`** — the provider's client id/secret is not configured on the server.
+
+The `state` is signed with `django.core.signing` (salt `calculatorapi.social-auth-state`) and carries the provider name plus a nonce. It expires after `OAUTH_STATE_MAX_AGE_SECONDS` (default 600). The client should also keep its own copy and compare on return — that browser binding is what defeats login CSRF.
+
+---
+
+### `POST /auth/social`
+
+Public. Redeems the one-time authorization code and returns an API token. The code is exchanged server-to-server; the client secret never leaves the backend.
 
 **Request body**
 ```json
-{
-  "username": "string",
-  "password": "string",
-  "first_name": "string",
-  "last_name": "string",
-  "email": "string"
-}
+{ "provider": "google", "code": "string", "state": "string" }
 ```
 
-**Response `201`**
+**Response `201`** — first sign-in for this provider account (a new user was created).
+**Response `200`** — returning user.
 ```json
 { "token": "string" }
 ```
+
+**Response `400`** — one generic body for every failure (bad/expired/mismatched state, missing code, expired or replayed code, provider error). The specific reason is deliberately not disclosed.
+```json
+{ "error": "Could not complete sign in. Please try again." }
+```
+
+**Response `404`** — unknown provider.
+
+The redirect URI is derived server-side as `<FRONTEND_URL>/auth/callback` and must match the value registered in the provider console exactly.
 
 ---
 
 ### `POST /login`
 
-Public. Authenticates an existing user and returns their auth token.
+Public route, **staff only**. Authenticates a staff user by password and returns their auth token. This exists so admins can reach `/admin` and the analytics dashboard; ordinary accounts have unusable passwords and must use the social endpoints above.
 
 **Request body**
 ```json
@@ -52,7 +74,7 @@ Public. Authenticates an existing user and returns their auth token.
 { "token": "string" }
 ```
 
-**Response `400`**
+**Response `400`** — wrong credentials **or** a correct password on a non-staff account. Both return an identical body, so the endpoint cannot be used to discover which usernames exist.
 ```json
 { "error": "Invalid Credentials" }
 ```

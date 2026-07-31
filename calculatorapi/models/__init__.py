@@ -17,3 +17,4 @@ from .league_of_heroes_rank import LeagueOfHeroesRank
 from .league_of_heroes import LeagueOfHeroes
 from .changelog_entry import ChangelogEntry
 from .changelog_change import ChangelogChange
+from .social_account import SocialAccount

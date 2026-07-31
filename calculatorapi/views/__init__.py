@@ -1,5 +1,5 @@
 from .banner_timeline import BannerTimelineSerializer
-from .user import UserSerializer, UserStatsSerializer
+from .user import UserStatsSerializer
 from .user_planned_banner import UserPlannedBannerSerializer
 from .rank_viewsets import (
     ClubRankSerializer,

@@ -235,6 +235,12 @@ UNFOLD = {
                         "permission": _requires_perm("calculatorapi.view_userplannedbanner"),
                     },
                     {
+                        "title": _("Linked accounts"),
+                        "icon": "link",
+                        "link": reverse_lazy("admin:calculatorapi_socialaccount_changelist"),
+                        "permission": _requires_perm("calculatorapi.view_socialaccount"),
+                    },
+                    {
                         "title": _("Groups"),
                         "icon": "shield_person",
                         "link": reverse_lazy("admin:auth_group_changelist"),
@@ -258,6 +264,31 @@ REST_FRAMEWORK = {
 
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = os.getenv("CORS_ORIGIN_WHITELIST", "http://localhost:5173").split(",")
+
+# --- Social sign-in (Google / Discord) -------------------------------------
+# Ordinary accounts authenticate through a provider instead of a password, so
+# no email/password/name is ever stored for them (see models/social_account.py).
+# Credentials live here rather than being read inside calculatorapi/oauth.py so
+# tests can swap them with @override_settings.
+GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID", "")
+GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET", "")
+DISCORD_OAUTH_CLIENT_ID = os.getenv("DISCORD_OAUTH_CLIENT_ID", "")
+DISCORD_OAUTH_CLIENT_SECRET = os.getenv("DISCORD_OAUTH_CLIENT_SECRET", "")
+
+# Where the SPA lives. In production the ingress serves it from the same host
+# as the API; in dev it is the Vite server on :5173.
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/")
+
+# Both providers require the redirect_uri to match BYTE-FOR-BYTE across the
+# authorize request, the token request, and the value registered in their
+# console -- a stray trailing slash is enough to get rejected. Deriving it once
+# from FRONTEND_URL guarantees the two requests agree; only the console entry
+# has to be kept in sync by hand.
+OAUTH_REDIRECT_URI = f"{FRONTEND_URL}/auth/callback"
+
+# How long a signed OAuth `state` stays valid. Covers a slow trip through the
+# provider's consent screen without leaving replay material lying around.
+OAUTH_STATE_MAX_AGE_SECONDS = 600
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

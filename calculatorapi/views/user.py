@@ -8,14 +8,6 @@ from calculatorapi.models import CustomUser as User
 from calculatorapi.models import ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank
 
 
-class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, min_length=8)
-
-    class Meta:
-        model = User
-        fields = ["id", "username", "password", "first_name", "last_name", "email"]
-
-
 class UserStatsSerializer(serializers.ModelSerializer):
     club_rank = serializers.PrimaryKeyRelatedField(
         required=False, allow_null=True, queryset=ClubRank.objects.all()
@@ -41,30 +33,27 @@ class UserStatsSerializer(serializers.ModelSerializer):
         ]
 
 
-@api_view(["POST"])
-@permission_classes([permissions.AllowAny])
-def register_account(request):
-    serializer = UserSerializer(data=request.data)
-    if serializer.is_valid():
-        user = User.objects.create_user(
-            username=serializer.validated_data["username"],
-            first_name=serializer.validated_data["first_name"],
-            last_name=serializer.validated_data["last_name"],
-            password=serializer.validated_data["password"],
-            email=serializer.validated_data["email"],
-        )
-        token, _created = Token.objects.get_or_create(user=user)
-        return Response({"token": token.key}, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# Public sign-up was removed when ordinary accounts moved to Google/Discord
+# (see views/social_auth.py). There is deliberately no register endpoint: the
+# only way to create an account is through a provider, which is what keeps
+# emails, names and passwords out of this database entirely.
 
 
 @api_view(["POST"])
 @permission_classes([permissions.AllowAny])
 def user_login(request):
+    """Password login — STAFF ONLY.
+
+    Ordinary users authenticate through Google/Discord and have unusable
+    passwords, so this path exists purely so admins can reach /admin and the
+    analytics dashboard. A correct password on a non-staff account is rejected
+    with the SAME response as a wrong one, so this endpoint can't be used to
+    probe whether a given account exists.
+    """
     username = request.data.get("username")
     password = request.data.get("password")
     user = authenticate(username=username, password=password)
-    if user:
+    if user and user.is_staff:
         token, _created = Token.objects.get_or_create(user=user)
         return Response({"token": token.key}, status=status.HTTP_200_OK)
     return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)

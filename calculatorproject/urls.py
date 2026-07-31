@@ -14,7 +14,8 @@ from calculatorapi.views import (
     ChangelogEntryViewSet,
 )
 from calculatorapi.views.analytics import analytics_dashboard
-from calculatorapi.views.user import register_account, user_login, user_logout
+from calculatorapi.views.user import user_login, user_logout
+from calculatorapi.views.social_auth import social_auth_start, social_auth_complete
 
 router = routers.SimpleRouter(trailing_slash=False)
 router.register(r"teamtrialranks", TeamTrialsRankViewSet, basename="teamtrialrank")
@@ -35,9 +36,15 @@ router.register(r"changelog", ChangelogEntryViewSet, basename="changelog")
 
 urlpatterns = [
     path("", include(router.urls)),
+    # Password login is staff-only now; ordinary accounts use /auth/* below.
+    # There is intentionally no "register" route — see views/user.py.
     path("login", user_login, name="login"),
-    path("register", register_account, name="register"),
     path("logout", user_logout, name="logout"),
+    # Social sign-in (Google / Discord). The <provider> segment is validated by
+    # the view against oauth.SUPPORTED_PROVIDERS rather than by a URL regex, so
+    # an unknown provider gets a JSON 404 instead of Django's HTML one.
+    path("auth/<str:provider>/start", social_auth_start, name="social-auth-start"),
+    path("auth/social", social_auth_complete, name="social-auth-complete"),
     # Must come BEFORE admin.site.urls — the admin URLconf ends in a
     # catch-all that would 404 this path. admin_view() makes the page
     # staff-only (redirects everyone else to the admin login).

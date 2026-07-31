@@ -41,6 +41,7 @@ from .models import (
     SupportsOnSupportBanner, UmasOnUmaBanner,
     GameEvent, LeagueOfHeroes,
     ChangelogEntry, ChangelogChange,
+    SocialAccount,
 )
 
 # ── 1. Site branding ─────────────────────────────────────────────────────────
@@ -390,8 +391,18 @@ class CustomUserAdmin(UserAdmin, ModelAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
     change_password_form = AdminPasswordChangeForm
-    list_display = ("username", "email", "is_staff", "date_joined")
-    fieldsets = UserAdmin.fieldsets + (
+    list_display = ("username", "is_staff", "date_joined")
+    # Ordinary accounts sign in through Google/Discord and deliberately hold no
+    # email or name (see models/social_account.py), so those fields are dropped
+    # from the form rather than sitting there inviting someone to fill them in.
+    # Staff still need a password, which is why UserAdmin's auth fieldset stays.
+    fieldsets = (
+        (None, {"fields": ("username", "password")}),
+        ("Permissions", {
+            "fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions"),
+        }),
+        ("Important dates", {"fields": ("last_login", "date_joined")}),
+    ) + (
         ("Calculator stats", {
             "classes": ("collapse",),
             "fields": (
@@ -405,6 +416,32 @@ class CustomUserAdmin(UserAdmin, ModelAdmin):
             ),
         }),
     )
+
+
+@admin.register(SocialAccount)
+class SocialAccountAdmin(ModelAdmin):
+    """Read-only view of which provider each account signs in with.
+
+    Fully read-only on purpose: these rows are created by the sign-in flow, and
+    hand-editing a provider/subject pair would either lock someone out of their
+    plan or hand their plan to somebody else. Deletion is allowed so an account
+    can be unlinked on request.
+    """
+    list_display = ("user", "provider", "created_at", "last_login_at")
+    list_filter = ("provider",)
+    search_fields = ("user__username",)
+    list_select_related = ("user",)
+    # subject_id is searchable by nobody and shown to nobody — it is the one
+    # identifying value we hold, and the admin has no reason to surface it.
+    fields = ("user", "provider", "created_at", "last_login_at")
+    readonly_fields = fields
+    ordering = ("-created_at",)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(UserPlannedBanner)
