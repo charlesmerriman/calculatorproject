@@ -229,9 +229,11 @@ is:
 
 1. **Matching tickets** — uma tickets for an uma banner, support tickets for a support banner.
 2. **Discounted paid pulls** *(if `discounted_paid_pulls` on)* — a once-per-day option to
-   spend **50 paid carats** instead of 150 for a single pull. Capped at one pull per active
-   day of the banner's window and by the paid-carat balance (paid-carats only; the discount
-   stops the moment they run out).
+   spend **50 paid carats** instead of 150 for a single pull. Capped at one pull per day of
+   the banner's window and by the paid-carat balance (paid-carats only; the discount stops
+   the moment they run out). The day cap is the window's **full length**, counted from the
+   banner's start date regardless of how many of its days have already elapsed — so the
+   allowance doesn't shrink under a user while the banner is live.
 3. **Free carats** — 150 per pull.
 4. **Full-price paid carats** *(if `full_price_paid_pulls` on, default)* — 150 per pull. When
    this toggle is off, paid carats are held in reserve and never spent at full price.

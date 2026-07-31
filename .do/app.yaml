@@ -65,6 +65,29 @@ services:
   - key: DJANGO_ALLOWED_HOSTS
     scope: RUN_AND_BUILD_TIME
     value: umamusme-calculator-7zdcg.ondigitalocean.app
+  # Origin of the SPA. The backend derives OAUTH_REDIRECT_URI from this as
+  # "<FRONTEND_URL>/auth/callback", which must match the redirect URI registered
+  # in the Google and Discord consoles EXACTLY — including the scheme and the
+  # absence of a trailing slash.
+  - key: FRONTEND_URL
+    scope: RUN_TIME
+    value: https://umamusme-calculator-7zdcg.ondigitalocean.app
+  # Social sign-in credentials. Client IDs are public; the secrets must be set
+  # in the DigitalOcean dashboard and never committed.
+  - key: GOOGLE_OAUTH_CLIENT_ID
+    scope: RUN_TIME
+    value: ""
+  - key: GOOGLE_OAUTH_CLIENT_SECRET
+    scope: RUN_TIME
+    type: SECRET
+    value: ""
+  - key: DISCORD_OAUTH_CLIENT_ID
+    scope: RUN_TIME
+    value: ""
+  - key: DISCORD_OAUTH_CLIENT_SECRET
+    scope: RUN_TIME
+    type: SECRET
+    value: ""
   github:
     branch: master
     deploy_on_push: true

@@ -24,6 +24,7 @@ from calculatorapi.models import (
     BannerTimeline, BannerUma, BannerSupport, UserPlannedBanner,
     ChampionsMeeting, LeagueOfHeroes, GameEvent,
     ChangelogEntry, ChangelogChange,
+    SocialAccount,
 )
 
 
@@ -38,8 +39,12 @@ def make_ranks():
     return club, tt, cm, loh
 
 
-def make_user(username='testuser', password='testpass123'):
-    """Create a CustomUser with all required FK ranks set."""
+def make_user(username='testuser', password='testpass123', is_staff=False):
+    """Create a CustomUser with all required FK ranks set.
+
+    `is_staff` matters for /login, which is staff-only now that ordinary
+    accounts sign in through Google/Discord.
+    """
     club, tt, cm, loh = make_ranks()
     return CustomUser.objects.create_user(
         username=username,
@@ -47,6 +52,7 @@ def make_user(username='testuser', password='testpass123'):
         email=f'{username}@test.com',
         first_name='Test',
         last_name='User',
+        is_staff=is_staff,
         club_rank=club,
         team_trials_rank=tt,
         champions_meeting_rank=cm,
@@ -147,59 +153,66 @@ class AuthTests(TestCase):
     def setUp(self):
         self.client = APIClient()
 
-    def _register_payload(self, username='newuser'):
-        return {
-            'username': username,
-            'password': 'StrongPass123!',
-            'email': f'{username}@test.com',
-            'first_name': 'New',
-            'last_name': 'User',
-        }
-
     # register ─────────────────────────────────────────────────────────────────
 
-    def test_register_returns_201_and_token(self):
-        res = self.client.post('/register', self._register_payload(), format='json')
-        self.assertEqual(res.status_code, 201)
-        self.assertIn('token', res.data)
+    def test_register_endpoint_no_longer_exists(self):
+        """Public sign-up was removed when accounts moved to Google/Discord."""
+        res = self.client.post('/register', {
+            'username': 'newuser', 'password': 'StrongPass123!',
+            'email': 'new@test.com', 'first_name': 'New', 'last_name': 'User',
+        }, format='json')
+        self.assertEqual(res.status_code, 404)
+        self.assertFalse(CustomUser.objects.filter(username='newuser').exists())
 
-    def test_register_creates_user_in_db(self):
-        self.client.post('/register', self._register_payload(), format='json')
-        self.assertTrue(CustomUser.objects.filter(username='newuser').exists())
+    def test_register_route_is_not_reversible(self):
+        with self.assertRaises(NoReverseMatch):
+            reverse('register')
 
-    def test_register_duplicate_username_returns_400(self):
-        make_user('existing')
-        res = self.client.post('/register', self._register_payload('existing'), format='json')
-        self.assertEqual(res.status_code, 400)
+    # login (staff only) ───────────────────────────────────────────────────────
 
-    def test_register_missing_password_returns_400(self):
-        payload = self._register_payload()
-        del payload['password']
-        res = self.client.post('/register', payload, format='json')
-        self.assertEqual(res.status_code, 400)
-
-    def test_register_missing_username_returns_400(self):
-        payload = self._register_payload()
-        del payload['username']
-        res = self.client.post('/register', payload, format='json')
-        self.assertEqual(res.status_code, 400)
-
-    # login ────────────────────────────────────────────────────────────────────
-
-    def test_login_returns_200_and_token(self):
-        make_user('loginuser', 'correctpass')
-        res = self.client.post('/login', {'username': 'loginuser', 'password': 'correctpass'}, format='json')
+    def test_staff_login_returns_200_and_token(self):
+        make_user('staffuser', 'correctpass', is_staff=True)
+        res = self.client.post('/login', {'username': 'staffuser', 'password': 'correctpass'}, format='json')
         self.assertEqual(res.status_code, 200)
         self.assertIn('token', res.data)
 
-    def test_login_wrong_password_returns_400(self):
+    def test_non_staff_login_rejected_despite_correct_password(self):
+        """Ordinary accounts must go through a provider, even if a password
+        somehow remains set on the row."""
         make_user('loginuser', 'correctpass')
-        res = self.client.post('/login', {'username': 'loginuser', 'password': 'wrongpass'}, format='json')
+        res = self.client.post('/login', {'username': 'loginuser', 'password': 'correctpass'}, format='json')
+        self.assertEqual(res.status_code, 400)
+        self.assertNotIn('token', res.data)
+
+    def test_non_staff_rejection_is_indistinguishable_from_wrong_password(self):
+        """Same status AND same body, so /login can't be used to discover which
+        usernames exist."""
+        make_user('loginuser', 'correctpass')
+        valid_pw = self.client.post('/login', {'username': 'loginuser', 'password': 'correctpass'}, format='json')
+        wrong_pw = self.client.post('/login', {'username': 'loginuser', 'password': 'wrongpass'}, format='json')
+        no_such_user = self.client.post('/login', {'username': 'nobody', 'password': 'whatever'}, format='json')
+        self.assertEqual(valid_pw.status_code, wrong_pw.status_code, no_such_user.status_code)
+        self.assertEqual(valid_pw.data, wrong_pw.data)
+        self.assertEqual(valid_pw.data, no_such_user.data)
+
+    def test_login_wrong_password_returns_400(self):
+        make_user('staffuser', 'correctpass', is_staff=True)
+        res = self.client.post('/login', {'username': 'staffuser', 'password': 'wrongpass'}, format='json')
         self.assertEqual(res.status_code, 400)
 
     def test_login_nonexistent_user_returns_400(self):
         res = self.client.post('/login', {'username': 'nobody', 'password': 'whatever'}, format='json')
         self.assertEqual(res.status_code, 400)
+
+    def test_social_user_with_unusable_password_cannot_login(self):
+        """A social account has no usable password; an empty/blank attempt must
+        not slip through Django's authenticate()."""
+        user = make_user('socialuser')
+        user.set_unusable_password()
+        user.save()
+        for attempt in ('', '!', 'testpass123'):
+            res = self.client.post('/login', {'username': 'socialuser', 'password': attempt}, format='json')
+            self.assertEqual(res.status_code, 400, f'password {attempt!r} was accepted')
 
     # logout ───────────────────────────────────────────────────────────────────
 
@@ -1207,3 +1220,134 @@ class ChangelogEndpointTests(TestCase):
         user_client, _ = auth_client(make_user())
         res = user_client.post('/changelog', {'title': 'x', 'date': '2026-07-17'})
         self.assertIn(res.status_code, (401, 403))
+
+
+# ── PII Purge Command Tests ───────────────────────────────────────────────────
+
+class PurgeUserPiiTests(TestCase):
+    """`purge_user_pii` retires personal data from the old password-based
+    sign-up while leaving staff logins working."""
+
+    def setUp(self):
+        self.user = make_user('olduser', 'oldpassword')
+        self.staff = make_user('adminuser', 'adminpass', is_staff=True)
+
+    def _run(self, **opts):
+        out = StringIO()
+        call_command('purge_user_pii', no_input=True, stdout=out, **opts)
+        return out.getvalue()
+
+    def test_dry_run_changes_nothing(self):
+        output = self._run(dry_run=True)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, 'olduser@test.com')
+        self.assertTrue(self.user.has_usable_password())
+        self.assertIn('Dry run', output)
+
+    def test_purge_blanks_non_staff_pii(self):
+        self._run()
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, '')
+        self.assertEqual(self.user.first_name, '')
+        self.assertEqual(self.user.last_name, '')
+
+    def test_purge_makes_password_unusable(self):
+        self._run()
+        self.user.refresh_from_db()
+        self.assertFalse(self.user.has_usable_password())
+        self.assertFalse(self.user.check_password('oldpassword'))
+
+    def test_purged_user_cannot_login(self):
+        self._run()
+        res = APIClient().post(
+            '/login', {'username': 'olduser', 'password': 'oldpassword'}, format='json')
+        self.assertEqual(res.status_code, 400)
+
+    def test_purge_deletes_non_staff_tokens(self):
+        _client, token = auth_client(self.user)
+        self._run()
+        self.assertFalse(Token.objects.filter(key=token.key).exists())
+
+    def test_staff_account_is_untouched(self):
+        _client, staff_token = auth_client(self.staff)
+        self._run()
+        self.staff.refresh_from_db()
+        self.assertEqual(self.staff.email, 'adminuser@test.com')
+        self.assertTrue(self.staff.has_usable_password())
+        self.assertTrue(Token.objects.filter(key=staff_token.key).exists())
+        res = APIClient().post(
+            '/login', {'username': 'adminuser', 'password': 'adminpass'}, format='json')
+        self.assertEqual(res.status_code, 200)
+
+    def test_purge_preserves_saved_plans(self):
+        """Plans stay in the database — the accounts just become unreachable."""
+        timeline = make_timeline()
+        banner = BannerUma.objects.create(name='B', banner_timeline=timeline)
+        UserPlannedBanner.objects.create(user=self.user, banner_uma=banner, number_of_pulls=10)
+        self._run()
+        self.assertEqual(UserPlannedBanner.objects.filter(user=self.user).count(), 1)
+
+    def test_purge_is_idempotent(self):
+        self._run()
+        self._run()
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, '')
+        self.assertFalse(self.user.has_usable_password())
+
+    def test_social_users_survive_purge(self):
+        """A social account has no PII to begin with; the purge must not break
+        its ability to sign in (its token is deleted, but the link remains)."""
+        social_user = CustomUser.objects.create_user(username='user_abc123')
+        social_user.set_unusable_password()
+        social_user.save()
+        link = SocialAccount.objects.create(
+            user=social_user, provider='google', subject_id='SUB-XYZ')
+        self._run()
+        self.assertTrue(SocialAccount.objects.filter(pk=link.pk).exists())
+        self.assertEqual(SocialAccount.objects.get(pk=link.pk).user_id, social_user.pk)
+
+
+@override_settings(STORAGES=PLAIN_TEST_STORAGES)
+class SocialAccountAdminTests(TestCase):
+    """Linked accounts are visible but not editable, and the one identifying
+    value we hold is never rendered."""
+
+    def setUp(self):
+        self.superuser = CustomUser.objects.create_superuser(
+            username='root', password='x')
+        self.client.force_login(self.superuser)
+        self.link = SocialAccount.objects.create(
+            user=make_user('user_abc123'), provider='google', subject_id='SECRET-SUB-999')
+
+    def test_changelist_renders(self):
+        res = self.client.get(reverse('admin:calculatorapi_socialaccount_changelist'))
+        self.assertEqual(res.status_code, 200)
+
+    def test_subject_id_is_not_exposed_in_changelist(self):
+        res = self.client.get(reverse('admin:calculatorapi_socialaccount_changelist'))
+        self.assertNotContains(res, 'SECRET-SUB-999')
+
+    def test_subject_id_is_not_exposed_on_change_page(self):
+        res = self.client.get(
+            reverse('admin:calculatorapi_socialaccount_change', args=[self.link.pk]))
+        self.assertNotContains(res, 'SECRET-SUB-999')
+
+    def test_add_page_is_forbidden(self):
+        res = self.client.get(reverse('admin:calculatorapi_socialaccount_add'))
+        self.assertEqual(res.status_code, 403)
+
+    def test_link_cannot_be_edited_via_post(self):
+        other = make_user('user_victim')
+        self.client.post(
+            reverse('admin:calculatorapi_socialaccount_change', args=[self.link.pk]),
+            {'user': other.pk, 'provider': 'discord', 'subject_id': 'HIJACK'})
+        self.link.refresh_from_db()
+        self.assertEqual(self.link.subject_id, 'SECRET-SUB-999')
+        self.assertEqual(self.link.provider, 'google')
+
+    def test_user_admin_no_longer_offers_email_or_name_fields(self):
+        res = self.client.get(
+            reverse('admin:calculatorapi_customuser_change', args=[self.superuser.pk]))
+        self.assertEqual(res.status_code, 200)
+        self.assertNotContains(res, 'name="email"')
+        self.assertNotContains(res, 'name="first_name"')
