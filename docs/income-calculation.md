@@ -100,21 +100,31 @@ Constants: `FIFTY_DAY_LOGIN_PER_CYCLE` / `FIFTY_DAY_LOGIN_CYCLE_DAYS` in
 
 ---
 
-## Valentine's Day Gift (annual, always on)
+## Annual Gifts — Valentine's Day and White Day (annual, always on)
 
-**500 carats** granted once a year on **February 14**. Universal income with **no toggle**,
+**500 carats** on **February 14** (Valentine's) and **500 carats** on **March 14** (White
+Day, the reciprocal gift a month later). Both are universal income with **no toggle**,
 credited in full on the day itself.
 
-Unlike the rolling-cycle incomes above, this is a fixed calendar date, so it uses
+Unlike the rolling-cycle incomes above, these are fixed calendar dates, so they use
 `calculateAnnualDateOccurrences` — absolute annual instants, counted the same half-open
-`(start, end]` way as the 1st-of-month incomes so a February 14 landing on a banner
+`(start, end]` way as the 1st-of-month incomes so a gift date landing on a banner
 boundary is paid by exactly one window. Constants: `VALENTINES_CARATS`, `VALENTINES_MONTH`
-(0-indexed, so `1` = February), `VALENTINES_DAY` in
-`frontend/src/constants/gameConstants.ts`.
+(0-indexed, so `1` = February), `VALENTINES_DAY` and `WHITE_DAY_CARATS`, `WHITE_DAY_MONTH`
+(`2` = March), `WHITE_DAY_DAY` in `frontend/src/constants/gameConstants.ts`.
+
+> **Where White Day's 500 comes from.** The source sheet doesn't expose it as a settings
+> cell — it buckets both gifts into its "50 Day Login Bonus" column. That column reads 150
+> over a 62-day window (one 50-day payout, neither gift date in range) and 2,050 over a
+> 366-day window (seven 50-day payouts = 1,050, plus 500 + 500). The sheet's changelog entry
+> 4.44 confirms the two gifts are modelled as a pair. Worth re-checking against a primary
+> source if the figure is ever disputed.
 
 > Note: the Income tab's *average monthly* figure (`useAverageMonthlyIncome`) averages a
-> fixed 5-month forward window, so this only shows up there when that window happens to
-> span February 14. The per-banner projection is unaffected and always counts it correctly.
+> fixed 5-month forward window, so these only show up there when that window happens to span
+> February 14 / March 14. Because the dates are a month apart, a 5-month window usually picks
+> up both or neither. The per-banner projection is unaffected and always counts them
+> correctly.
 
 ---
 
