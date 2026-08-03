@@ -59,6 +59,7 @@ erDiagram
         datetime jp_end_date "nullable"
         datetime global_start_date "nullable; set when confirmed"
         datetime global_end_date "nullable; set when confirmed"
+        int schedule_offset_days "days to push this and every later date forward"
         string image
     }
 
@@ -153,6 +154,7 @@ erDiagram
         datetime jp_end_date "nullable"
         datetime global_start_date "nullable; set when confirmed"
         datetime global_end_date "nullable; set when confirmed"
+        int schedule_offset_days "days to push this and every later date forward"
         string image
         string track
         string surface_type
@@ -229,14 +231,41 @@ The site targets the **global** server, but global dates are only confirmed ~1 m
 
 Prediction (fixed anchor, in `calculatorapi/predictions.py`):
 - **Anchor** = the row with the greatest `jp_start_date` among those having BOTH a confirmed `global_start_date` and a `jp_start_date`.
-- `predicted_global_start = anchor.global_start_date + (target.jp_start_date − anchor.jp_start_date) × 0.7`
+- `predicted_global_start = anchor.global_start_date + (target.jp_start_date − anchor.jp_start_date) × 0.664`
 - `predicted_global_end = predicted_global_start + (target.jp_end_date − target.jp_start_date)`
 
 The calculator view builds one effective-date map per content type (keyed by row id) once per request and injects each via serializer context, so the resolved dates are consistent across every serialization path. **Prediction requires the anchor to have a `jp_start_date`** — historical rows migrate with JP dates null, so the most-recent confirmed rows must have their JP dates backfilled in the admin for prediction to activate.
 
+### Schedule offsets: correcting a prediction that has drifted
+
+The 0.664 factor assumes global keeps a steady pace. When it doesn't — a delayed banner, an inserted break week — *every* prediction after the slip is wrong by the same number of days. `schedule_offset_days` (an `IntegerField(default=0)` on all three models) is the manual correction, applied by `apply_schedule_offsets()` as a **second layer on top of** the anchor math, which it leaves untouched.
+
+- The offset pushes **its own row and every dated row after it** forward by that many days. Both ends move, so the run length is preserved.
+- Offsets **stack**: a row's applied offset is the sum of `schedule_offset_days` from every offset-carrying row whose base start date is at or before its own.
+- The cascade **spans all three content types at once** — one shared calendar. This is the one place rows *are* mixed across models; anchors remain strictly per-model. `build_effective_date_maps()` is the composed entry point (per-model base maps, then one shared offset pass) and is what `/calculator-data` calls; don't call `build_effective_date_map()` per model there or offsets will be resolved against an incomplete calendar.
+- **Only predicted rows take part, as source or target.** A confirmed date is a fact and is never shifted — and because a confirmed row stops *contributing* too, an offset goes inert by itself once its row is confirmed. That second half matters: the newly confirmed row becomes the anchor, so its real date already carries the slip, and a still-live offset would count the same delay twice. Nothing has to be cleaned up by hand.
+- Negative values are allowed (pulling the schedule earlier). Unlike positive offsets, a negative one can reorder rows relative to each other.
+
+Worked example — a confirmed banner on Aug 10, then predicted rows on Aug 24 (offset **+7**), Sep 2 (a Champions Meeting), Sep 7, Sep 12 (a League of Heroes event, offset **+3**) and Sep 21:
+
+| Row | Offsets at or before it | Applied | Final start |
+|---|---|---|---|
+| Banner, Aug 10 (confirmed) | — (skipped) | 0 | Aug 10 |
+| Banner, Aug 24 | its own +7 | +7 | Aug 31 |
+| Champions Meeting, Sep 2 | the banner's +7 | +7 | Sep 9 |
+| Banner, Sep 7 | the banner's +7 | +7 | Sep 14 |
+| League of Heroes, Sep 12 | +7, plus its own +3 | +10 | Sep 22 |
+| Banner, Sep 21 | +7 and +3 | +10 | Oct 1 |
+
+Serializers expose both `schedule_offset_days` (the row's own value) and `applied_offset_days` (the cumulative total already baked into `start_date`/`end_date`). The latter is diagnostic only — the dates are complete without it — but a cascading rule is hard to debug from outside without it.
+
+**Known limitation:** the self-healing is per-model. When a banner confirms, its offset also stops reaching later Champions Meeting / League of Heroes rows, whose own anchors have not moved, so those can snap back. Set an offset on the CM/LoH row itself if that matters in practice.
+
 ### `GameEvent` dates are derived from its linked `BannerTimeline`, not owned
 
 Unlike `BannerTimeline`/`ChampionsMeeting`/`LeagueOfHeroes`, `GameEvent` has no `jp_*`/`global_*` columns of its own — it never runs its own anchor/prediction math. Instead it holds a nullable `banner_timeline` FK, and its `start_date`/`end_date`/`is_predicted` are resolved by looking that FK up in the *existing* `BannerTimeline` effective-date map (`game_event_effective_dates()` in `calculatorapi/predictions.py`, mirroring the same cross-model-lookup pattern `planned_effective_start()` uses for `UserPlannedBanner`): `start_date` is the linked banner's own resolved start, `end_date` is the banner's resolved end **plus 4 days**, and `is_predicted` propagates from the banner's entry.
+
+Because those dates are read *after* the offset pass has run, a `GameEvent` inherits its banner's schedule offset for free — it has no `schedule_offset_days` of its own, only the resulting `applied_offset_days`.
 
 `banner_timeline` is nullable (`on_delete=SET_NULL`) because not every event corresponds to a single banner — some tie to Champions Meeting rewards instead, some are campaign-wide events spanning multiple banners at once, and some are future placeholders — and because an event's own content (image, reward amounts) stays meaningful even if the banner it was tied to is later deleted. An unlinked (or unresolvable) event simply resolves to `null` dates, same as any other "no anchor" case in this system.
 

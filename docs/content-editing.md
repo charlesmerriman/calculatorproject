@@ -57,6 +57,44 @@ This same JP/Global date system applies to **banner timelines, Champions
 Meetings, and League of Heroes events** — all three have split JP/Global date
 sections, the Confirmed/Predicted badge, and the Global dates filter.
 
+### Fixing predicted dates when global falls behind schedule
+
+Predictions assume global keeps working through JP's back-catalogue at a steady
+pace. When it doesn't — a banner gets delayed, a break week gets inserted —
+every predicted date after that point is wrong by the same number of days.
+
+The **Schedule offset (advanced)** box on each row is the fix. Set it on the one
+row where the delay starts, and:
+
+- **that row moves forward by that many days**, and
+- **so does every later banner, Champions Meeting and League of Heroes event.**
+
+⚠️ **This is not a local edit.** One offset moves a large part of the calendar.
+That is the whole point — a one-week delay really does push everything after it
+back a week — but it means you should only reach for it when global's schedule
+has genuinely slipped, not to nudge a single row you think looks wrong.
+
+You can set more than one, and they add up. If you set **+7** on a banner in
+August and later set **+3** on an event in September, everything from September
+onward moves **10** days.
+
+Two things that keep this safe:
+
+- **It only affects predicted rows.** Once a row's global dates are confirmed,
+  its offset stops doing anything — both to itself and to the rows after it.
+  Confirmed dates are facts and are never moved.
+- **You don't have to clean up after yourself.** When a delayed banner is finally
+  confirmed, its offset switches itself off, and the rows after it start
+  predicting from that banner's real date instead. The list shows a leftover
+  value as *"+7d (inactive)"* so you can tell it's no longer doing anything.
+
+The **Offset** column shows which rows are carrying one, and the **Schedule
+offset** filter in the sidebar lists them all — the quickest way to see what is
+currently shifting the calendar. To undo an offset, set it back to `0`.
+
+You can also enter a negative number to pull dates *earlier*, if global gets
+ahead rather than behind.
+
 ### Seeing which banners players care about
 
 The Uma banner and Support card banner lists have a **Planned by** column —

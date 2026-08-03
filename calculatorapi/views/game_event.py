@@ -14,6 +14,9 @@ class GameEventSerializer(GameEventDateMixin, serializers.ModelSerializer):
         model = GameEvent
         fields = (
             "id", "name", "image", "start_date", "end_date", "is_predicted",
+            # GameEvent has no schedule_offset_days of its own — it inherits
+            # whatever offset its linked banner ended up with.
+            "applied_offset_days",
             "banner_timeline",
             "carat_amount", "carats_throughout",
             "support_ticket_amount", "uma_ticket_amount",

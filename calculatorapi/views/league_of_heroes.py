@@ -12,6 +12,7 @@ class LeagueOfHeroesSerializer(EffectiveDateMixin, serializers.ModelSerializer):
             "id", "name",
             "start_date", "end_date", "is_predicted",
             "jp_start_date", "jp_end_date", "global_start_date", "global_end_date",
+            "schedule_offset_days", "applied_offset_days",
             "image",
         )
 
