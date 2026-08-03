@@ -170,12 +170,76 @@ class GlobalDatesStatusMixin:  # pylint: disable=too-few-public-methods
         )
 
 
+class ScheduleOffsetFilter(admin.SimpleListFilter):
+    """
+    Sidebar filter: which rows are currently carrying a schedule offset? An
+    offset shifts every later date across all three content types, so "what is
+    moving the calendar right now" is a question editors need a fast answer to.
+    """
+    title = "schedule offset"
+    parameter_name = "schedule_offset"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("set", "Has an offset"),
+            ("none", "No offset"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "set":
+            return queryset.exclude(schedule_offset_days=0)
+        if self.value() == "none":
+            return queryset.filter(schedule_offset_days=0)
+        return queryset
+
+
+class ScheduleOffsetMixin:  # pylint: disable=too-few-public-methods
+    """
+    Adds an Offset column, shared by every JP-first content admin. Offsets only
+    apply to rows whose global dates are still predicted, so a value sitting on
+    a confirmed row is flagged as inactive rather than silently looking live.
+    """
+
+    @admin.display(description="Offset", ordering="schedule_offset_days")
+    def schedule_offset_display(self, obj):
+        days = obj.schedule_offset_days
+        if not days:
+            return "—"
+        label = f"{days:+d}d"
+        if obj.global_start_date:
+            # Confirmed rows ignore the offset entirely (predictions.py) — the
+            # confirmed date already reflects reality.
+            return format_html('<span style="opacity: 0.5;">{} (inactive)</span>', label)
+        return format_html(
+            '<span style="color: #1e3a8a; background: #dbeafe; padding: 2px 8px; '
+            'border-radius: 9999px; font-weight: 600;">{}</span>',
+            label,
+        )
+
+
+# Shared so the three content admins can't drift apart on the wording of a
+# field whose blast radius is the entire calendar.
+SCHEDULE_OFFSET_FIELDSET = (
+    "Schedule offset (advanced)", {
+        "fields": ("schedule_offset_days",),
+        "description": (
+            "<strong>This is not a local edit.</strong> It pushes this row "
+            "<em>and every later banner, Champions Meeting and League of Heroes "
+            "event</em> forward by this many days, and stacks with any other "
+            "offset. Use it only when global has actually delayed its schedule, "
+            "so that every predicted date after the delay stays right. "
+            "It has no effect once this row's global dates are confirmed."
+        ),
+    },
+)
+
+
 @admin.register(BannerTimeline)
-class BannerTimelineAdmin(GlobalDatesStatusMixin, ImagePreviewMixin,
+class BannerTimelineAdmin(GlobalDatesStatusMixin, ScheduleOffsetMixin, ImagePreviewMixin,
                           SpacesImagePickerMixin, ModelAdmin):
     list_display = ("name", "jp_start_date", "global_start_date",
-                    "global_end_date", "global_dates_status")
-    list_filter = (GlobalDatesFilter,)
+                    "global_end_date", "global_dates_status", "schedule_offset_display")
+    list_filter = (GlobalDatesFilter, ScheduleOffsetFilter)
     date_hierarchy = "global_start_date"
     ordering = ("-global_start_date",)
     search_fields = ("name",)  # also powers the autocomplete on banner admins
@@ -187,6 +251,7 @@ class BannerTimelineAdmin(GlobalDatesStatusMixin, ImagePreviewMixin,
         (None, {"fields": ("name", "image", "image_preview")}),
         ("JP server dates (always known)", {"fields": ("jp_start_date", "jp_end_date")}),
         ("Global server dates (fill when confirmed)", {"fields": ("global_start_date", "global_end_date")}),
+        SCHEDULE_OFFSET_FIELDSET,
     )
 
 
@@ -284,11 +349,11 @@ class GameEventAdmin(ImagePreviewMixin, SpacesImagePickerMixin, ModelAdmin):
 
 
 @admin.register(ChampionsMeeting)
-class ChampionsMeetingAdmin(GlobalDatesStatusMixin, ImagePreviewMixin,
+class ChampionsMeetingAdmin(GlobalDatesStatusMixin, ScheduleOffsetMixin, ImagePreviewMixin,
                             SpacesImagePickerMixin, ModelAdmin):
     list_display = ("name", "cm_number", "jp_start_date", "global_start_date",
-                    "global_end_date", "global_dates_status")
-    list_filter = (GlobalDatesFilter,)
+                    "global_end_date", "global_dates_status", "schedule_offset_display")
+    list_filter = (GlobalDatesFilter, ScheduleOffsetFilter)
     date_hierarchy = "global_start_date"
     ordering = ("-global_start_date",)
     search_fields = ("name",)
@@ -305,6 +370,7 @@ class ChampionsMeetingAdmin(GlobalDatesStatusMixin, ImagePreviewMixin,
         ("Global server dates (fill when confirmed)", {
             "fields": ("global_start_date", "global_end_date"),
         }),
+        SCHEDULE_OFFSET_FIELDSET,
         ("Track details", {
             "fields": ("track", "surface_type", "distance", "length",
                        "track_condition", "season", "weather", "direction"),
@@ -328,11 +394,11 @@ class ChangelogEntryAdmin(ModelAdmin):
 
 
 @admin.register(LeagueOfHeroes)
-class LeagueOfHeroesAdmin(GlobalDatesStatusMixin, ImagePreviewMixin,
+class LeagueOfHeroesAdmin(GlobalDatesStatusMixin, ScheduleOffsetMixin, ImagePreviewMixin,
                           SpacesImagePickerMixin, ModelAdmin):
     list_display = ("name", "jp_start_date", "global_start_date",
-                    "global_end_date", "global_dates_status")
-    list_filter = (GlobalDatesFilter,)
+                    "global_end_date", "global_dates_status", "schedule_offset_display")
+    list_filter = (GlobalDatesFilter, ScheduleOffsetFilter)
     date_hierarchy = "global_start_date"
     ordering = ("-global_start_date",)
     search_fields = ("name",)
