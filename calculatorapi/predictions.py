@@ -21,15 +21,26 @@ Prediction model (fixed anchor):
                                + (target.jp_start_date - anchor.jp_start_date) * FACTOR
       predicted_global_end   = predicted_global_start
                                + (target.jp_end_date - target.jp_start_date)
-  The 0.7 factor reflects global historically running content faster than JP.
+  The 0.664 factor reflects global historically running content faster than JP.
 - Confirmed rows pass through unchanged with is_predicted=False.
 - Rows with no usable dates (or when no anchor exists) resolve to
   (None, None, False).
+
+Schedule offsets (a second, separate layer on top of the above):
+- The 0.664 factor assumes global keeps a steady pace. When it doesn't (a delayed
+  banner, an inserted break week), every prediction after the slip is wrong by
+  the same number of days. `schedule_offset_days` on a row is the manual fix.
+- `apply_schedule_offsets` pushes each offset-carrying row AND every dated row
+  after it forward by that many days; offsets stack. Unlike anchors, this pass
+  spans ALL content types at once — one shared calendar — so an offset set on a
+  banner also moves later Champions Meetings and League of Heroes events.
+- Only predicted rows take part, as source or target. See that function for why
+  that is what stops an offset double-counting once its row is confirmed.
 """
 
 from datetime import datetime, timedelta
 
-from .models import BannerTimeline
+from .models import BannerTimeline, ChampionsMeeting, LeagueOfHeroes
 
 # GameEvent's end date always trails its linked banner's end date by this much.
 GAME_EVENT_END_DATE_BUFFER = timedelta(days=4)
@@ -40,8 +51,8 @@ GAME_EVENT_END_DATE_BUFFER = timedelta(days=4)
 _NO_DATE_SENTINEL = datetime.max
 
 # Global covers JP's back-catalogue faster than real time; each day of JP gap
-# maps to ~0.7 days of global gap. Tune here if the observed cadence shifts.
-PREDICTION_FACTOR = 0.7
+# maps to ~0.664 days of global gap. Tune here if the observed cadence shifts.
+PREDICTION_FACTOR = 0.664
 
 
 def _get(row, key):
@@ -57,9 +68,16 @@ def compute_effective_dates(rows):
     Resolve each timeline's effective global dates.
 
     rows: iterable of dicts or objects exposing `id`, `jp_start_date`,
-          `jp_end_date`, `global_start_date`, `global_end_date`.
+          `jp_end_date`, `global_start_date`, `global_end_date` and
+          (optionally) `schedule_offset_days`.
 
-    Returns: { id: {"start_date": dt|None, "end_date": dt|None, "is_predicted": bool} }
+    Returns: { id: {"start_date": dt|None, "end_date": dt|None,
+                    "is_predicted": bool, "offset_days": int,
+                    "applied_offset_days": int} }
+
+    These are the BASE dates — `offset_days` is carried through untouched and
+    `applied_offset_days` starts at 0. Run `apply_schedule_offsets` over the
+    finished maps to actually shift anything (see the module docstring).
     """
     rows = list(rows)
 
@@ -78,6 +96,9 @@ def compute_effective_dates(rows):
         row_id = _get(row, "id")
         global_start = _get(row, "global_start_date")
         jp_start = _get(row, "jp_start_date")
+        # `or 0` rather than a plain read: DB-free test rows may omit the key,
+        # and the column itself is non-null so this only ever normalises None.
+        offset_days = _get(row, "schedule_offset_days") or 0
 
         if global_start is not None:
             # Confirmed: use the real global dates as-is.
@@ -105,6 +126,11 @@ def compute_effective_dates(rows):
                 "is_predicted": False,
             }
 
+        # Every entry carries the same keys regardless of branch, so callers
+        # never have to guard on shape.
+        result[row_id]["offset_days"] = offset_days
+        result[row_id]["applied_offset_days"] = 0
+
     return result
 
 
@@ -119,8 +145,79 @@ def build_effective_date_map(model=BannerTimeline):
         "jp_end_date",
         "global_start_date",
         "global_end_date",
+        "schedule_offset_days",
     )
     return compute_effective_dates(rows)
+
+
+def apply_schedule_offsets(emaps):
+    """
+    Apply cumulative schedule offsets to already-resolved date maps, in place.
+
+    `emaps` is an iterable of {id: entry} maps (one per content type) that
+    together form ONE shared calendar — unlike anchors, which are strictly
+    per-model. A row's applied offset is the sum of `offset_days` from every
+    offset-carrying row whose base start_date is at or before this row's,
+    wherever that row lives. So an offset set on a banner also pushes every
+    later Champions Meeting and League of Heroes event.
+
+    Only PREDICTED rows take part, as either source or target:
+    - a confirmed date is a fact from the game, so it is never shifted;
+    - and because a confirmed row stops *contributing* too, an offset goes
+      inert by itself once its row is confirmed. That second half is the
+      important one: a newly confirmed row becomes the anchor, so its real
+      date already carries the slip, and a still-live offset would count it
+      twice. Nothing has to be cleaned up by hand.
+
+    Note the per-model catch: when a banner confirms, its offset also stops
+    reaching later Champions Meeting / League of Heroes rows, whose own anchors
+    have not moved — so those can snap back. Set an offset on the CM/LoH row
+    itself if that matters.
+
+    Every entry gains `applied_offset_days`; it stays 0 for confirmed rows,
+    unresolved (null-date) rows, and predicted rows with nothing before them.
+    """
+    emaps = list(emaps)
+
+    offset_points = [
+        (entry["start_date"], entry["offset_days"])
+        for emap in emaps
+        for entry in emap.values()
+        if entry["is_predicted"]
+        and entry["offset_days"]
+        and entry["start_date"] is not None
+    ]
+    if not offset_points:
+        return
+
+    for emap in emaps:
+        for entry in emap.values():
+            start = entry["start_date"]
+            if not entry["is_predicted"] or start is None:
+                continue
+            # <= so a row's own offset applies to itself, not only to the rows
+            # behind it — a slip starting here delays this row too.
+            total = sum(days for point_start, days in offset_points if point_start <= start)
+            if not total:
+                continue
+            shift = timedelta(days=total)
+            entry["applied_offset_days"] = total
+            entry["start_date"] = start + shift
+            if entry["end_date"] is not None:
+                # Same shift on both ends, so the run length is preserved.
+                entry["end_date"] = entry["end_date"] + shift
+
+
+def build_effective_date_maps(models=(BannerTimeline, ChampionsMeeting, LeagueOfHeroes)):
+    """Resolve every content type at once: one base map per model (each with
+    its OWN anchor, exactly as before), then the shared cross-model offset pass
+    over all of them together. Returns {model: emap}.
+
+    Use this rather than calling build_effective_date_map per model — offsets
+    are only correct when the maps are resolved as one calendar."""
+    maps = {model: build_effective_date_map(model) for model in models}
+    apply_schedule_offsets(maps.values())
+    return maps
 
 
 def effective_sort_key(entry):
@@ -151,19 +248,23 @@ def game_event_effective_dates(game_event, banner_timeline_emap):
     of GameEvent's own, mirroring planned_effective_start's cross-model lookup.
 
     end_date trails the banner's resolved end_date by GAME_EVENT_END_DATE_BUFFER;
-    is_predicted propagates from the banner's own entry. Unlinked events (or a
-    linked banner with no resolved start_date) resolve to (None, None, False) —
-    some events (Champions Meeting tie-ins, campaign-wide events spanning
-    multiple banners) never have a banner to derive from, by design.
+    is_predicted and applied_offset_days propagate from the banner's own entry.
+    That is also how a GameEvent picks up a schedule offset for free — the
+    banner's dates are already shifted by the time this reads them. Unlinked
+    events (or a linked banner with no resolved start_date) resolve to
+    (None, None, False) — some events (Champions Meeting tie-ins, campaign-wide
+    events spanning multiple banners) never have a banner to derive from, by design.
     """
     entry = banner_timeline_emap.get(game_event.banner_timeline_id)
     if entry is None or entry["start_date"] is None:
-        return {"start_date": None, "end_date": None, "is_predicted": False}
+        return {"start_date": None, "end_date": None, "is_predicted": False,
+                "applied_offset_days": 0}
     end_date = entry["end_date"] + GAME_EVENT_END_DATE_BUFFER if entry["end_date"] is not None else None
     return {
         "start_date": entry["start_date"],
         "end_date": end_date,
         "is_predicted": entry["is_predicted"],
+        "applied_offset_days": entry["applied_offset_days"],
     }
 
 
@@ -187,13 +288,16 @@ def game_event_confirmed_dates(game_event):
     """
     banner_timeline = game_event.banner_timeline
     if banner_timeline is None or banner_timeline.global_start_date is None:
-        return {"start_date": None, "end_date": None, "is_predicted": False}
+        return {"start_date": None, "end_date": None, "is_predicted": False,
+                "applied_offset_days": 0}
     global_end = banner_timeline.global_end_date
     end_date = global_end + GAME_EVENT_END_DATE_BUFFER if global_end is not None else None
     return {
         "start_date": banner_timeline.global_start_date,
         "end_date": end_date,
         "is_predicted": False,
+        # Confirmed dates are never offset, so this is always 0 here.
+        "applied_offset_days": 0,
     }
 
 

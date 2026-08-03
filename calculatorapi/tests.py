@@ -27,10 +27,12 @@ from calculatorapi.analytics import build_analytics_report
 from calculatorapi.predictions import (
     PREDICTION_FACTOR,
     GAME_EVENT_END_DATE_BUFFER,
+    apply_schedule_offsets,
     compute_effective_dates,
     game_event_effective_dates,
     game_event_confirmed_dates,
     build_effective_date_map,
+    build_effective_date_maps,
 )
 from calculatorapi.models import (
     CustomUser, Uma,
@@ -83,7 +85,8 @@ def make_user(username='testuser', password='testpass123', is_staff=False):
 
 
 def make_timeline(name='Test Timeline', jp_start_date=None, jp_end_date=None,
-                  global_start_date=None, global_end_date=None):
+                  global_start_date=None, global_end_date=None,
+                  schedule_offset_days=0):
     """Create a BannerTimeline. By default it's a CONFIRMED global banner
     (now → now+30d) so existing tests keep resolving real dates; pass jp_*/
     global_* explicitly to build predicted (global-null) timelines."""
@@ -98,6 +101,7 @@ def make_timeline(name='Test Timeline', jp_start_date=None, jp_end_date=None,
         jp_end_date=jp_end_date,
         global_start_date=global_start_date,
         global_end_date=global_end_date,
+        schedule_offset_days=schedule_offset_days,
     )
 
 
@@ -117,7 +121,7 @@ def make_support_banner(timeline=None, name='Test Support Banner'):
 
 def make_champions_meeting(name='Test CM', cm_number=1, jp_start_date=None,
                            jp_end_date=None, global_start_date=None,
-                           global_end_date=None):
+                           global_end_date=None, schedule_offset_days=0):
     """Create a ChampionsMeeting. Defaults to a CONFIRMED global meeting
     (now → now+7d); pass jp_*/global_* explicitly for predicted rows. Track and
     stat fields are filler — they don't affect date resolution."""
@@ -130,6 +134,7 @@ def make_champions_meeting(name='Test CM', cm_number=1, jp_start_date=None,
         name=name, cm_number=cm_number,
         jp_start_date=jp_start_date, jp_end_date=jp_end_date,
         global_start_date=global_start_date, global_end_date=global_end_date,
+        schedule_offset_days=schedule_offset_days,
         track='Tokyo', surface_type='Turf', distance='Long', length='2400m',
         track_condition='Good', season='Spring', weather='Sunny', direction='Right',
         speed_recommendation=0, stamina_recommendation=0, power_recommendation=0,
@@ -138,7 +143,8 @@ def make_champions_meeting(name='Test CM', cm_number=1, jp_start_date=None,
 
 
 def make_league_of_heroes(name='Test LoH', jp_start_date=None, jp_end_date=None,
-                          global_start_date=None, global_end_date=None):
+                          global_start_date=None, global_end_date=None,
+                          schedule_offset_days=0):
     """Create a LeagueOfHeroes event. Defaults to a CONFIRMED global event
     (now → now+7d); pass jp_*/global_* explicitly for predicted rows."""
     now = timezone.now()
@@ -150,6 +156,7 @@ def make_league_of_heroes(name='Test LoH', jp_start_date=None, jp_end_date=None,
         name=name,
         jp_start_date=jp_start_date, jp_end_date=jp_end_date,
         global_start_date=global_start_date, global_end_date=global_end_date,
+        schedule_offset_days=schedule_offset_days,
     )
 
 
@@ -261,6 +268,25 @@ def _dt(y, m, d):
     return datetime.datetime(y, m, d, tzinfo=_UTC)
 
 
+def _predicted(anchor_global_start, jp_gap_days, offset_days=0):
+    """Predicted global start for a row whose JP start is `jp_gap_days` after
+    the anchor's, plus any schedule offset already applied.
+
+    Derived from PREDICTION_FACTOR rather than hardcoded, so retuning the factor
+    doesn't mean rewriting every expectation in this file. The one deliberate
+    exception is test_fixed_anchor_worked_example, which pins concrete numbers
+    on purpose — that's what makes it a worked example."""
+    return (anchor_global_start
+            + datetime.timedelta(days=jp_gap_days) * PREDICTION_FACTOR
+            + datetime.timedelta(days=offset_days))
+
+
+def _iso(value):
+    """Format a datetime exactly as DRF's DateTimeField renders it on the wire."""
+    text = value.isoformat()
+    return text[:-6] + 'Z' if text.endswith('+00:00') else text
+
+
 class PredictionUnitTests(TestCase):
     """Directly exercises compute_effective_dates on plain dicts (no DB)."""
 
@@ -302,9 +328,11 @@ class PredictionUnitTests(TestCase):
              "global_start_date": None, "global_end_date": None},
         ]
         out = compute_effective_dates(rows)[2]
-        # Δjp = 30d × 0.7 = 21d -> 2025-06-22; banner runs 7d -> 2025-06-29.
-        self.assertEqual(out["start_date"], _dt(2025, 6, 22))
-        self.assertEqual(out["end_date"], _dt(2025, 6, 29))
+        # Δjp = 30d × 0.664 = 19.92d -> 2025-06-20 22:04:48; banner runs 7d.
+        # Deliberately hardcoded: this is the one test that pins the arithmetic,
+        # so retuning PREDICTION_FACTOR should fail here and nowhere else.
+        self.assertEqual(out["start_date"], datetime.datetime(2025, 6, 20, 22, 4, 48, tzinfo=_UTC))
+        self.assertEqual(out["end_date"], datetime.datetime(2025, 6, 27, 22, 4, 48, tzinfo=_UTC))
         self.assertTrue(out["is_predicted"])
 
     def test_no_anchor_leaves_jp_only_rows_unresolved(self):
@@ -349,9 +377,190 @@ class PredictionUnitTests(TestCase):
              "global_start_date": None, "global_end_date": None},
         ]
         out = compute_effective_dates(rows)[2]
-        self.assertEqual(out["start_date"], _dt(2025, 6, 22))
+        self.assertEqual(out["start_date"], _predicted(_dt(2025, 6, 1), 30))
         self.assertIsNone(out["end_date"])
         self.assertTrue(out["is_predicted"])
+
+
+# ── Schedule offsets (pure, DB-free) ──────────────────────────────────────────
+
+def _entry(start, end=None, is_predicted=True, offset_days=0):
+    """Build one effective-date map entry by hand, matching the shape
+    compute_effective_dates produces."""
+    return {
+        "start_date": start,
+        "end_date": end,
+        "is_predicted": is_predicted,
+        "offset_days": offset_days,
+        "applied_offset_days": 0,
+    }
+
+
+class ScheduleOffsetUnitTests(TestCase):
+    """Directly exercises apply_schedule_offsets on hand-built maps (no DB).
+
+    An offset pushes its own row AND every dated row after it, across every
+    content type at once, and offsets stack.
+    """
+
+    def test_offset_shifts_the_row_carrying_it(self):
+        emap = {1: _entry(_dt(2025, 8, 24), _dt(2025, 8, 31), offset_days=7)}
+        apply_schedule_offsets([emap])
+        self.assertEqual(emap[1]['start_date'], _dt(2025, 8, 31))
+        self.assertEqual(emap[1]['applied_offset_days'], 7)
+
+    def test_rows_before_the_offset_are_unchanged(self):
+        emap = {
+            1: _entry(_dt(2025, 8, 10)),
+            2: _entry(_dt(2025, 8, 24), offset_days=7),
+        }
+        apply_schedule_offsets([emap])
+        self.assertEqual(emap[1]['start_date'], _dt(2025, 8, 10))
+        self.assertEqual(emap[1]['applied_offset_days'], 0)
+
+    def test_rows_after_the_offset_shift_by_the_same_amount(self):
+        emap = {
+            1: _entry(_dt(2025, 8, 24), offset_days=7),
+            2: _entry(_dt(2025, 9, 7)),
+            3: _entry(_dt(2025, 9, 21)),
+        }
+        apply_schedule_offsets([emap])
+        self.assertEqual(emap[2]['start_date'], _dt(2025, 9, 14))
+        self.assertEqual(emap[3]['start_date'], _dt(2025, 9, 28))
+
+    def test_offsets_stack(self):
+        emap = {
+            1: _entry(_dt(2025, 8, 24), offset_days=7),
+            2: _entry(_dt(2025, 9, 12), offset_days=3),
+            3: _entry(_dt(2025, 9, 21)),
+        }
+        apply_schedule_offsets([emap])
+        self.assertEqual(emap[1]['applied_offset_days'], 7)
+        # Row 2 gets row 1's +7 as well as its own +3.
+        self.assertEqual(emap[2]['applied_offset_days'], 10)
+        self.assertEqual(emap[2]['start_date'], _dt(2025, 9, 22))
+        self.assertEqual(emap[3]['applied_offset_days'], 10)
+        self.assertEqual(emap[3]['start_date'], _dt(2025, 10, 1))
+
+    def test_end_date_shifts_by_the_same_amount(self):
+        emap = {1: _entry(_dt(2025, 8, 24), _dt(2025, 8, 31), offset_days=7)}
+        apply_schedule_offsets([emap])
+        # Both ends move together, so the run length is preserved.
+        self.assertEqual(emap[1]['start_date'], _dt(2025, 8, 31))
+        self.assertEqual(emap[1]['end_date'], _dt(2025, 9, 7))
+
+    def test_null_end_date_stays_null(self):
+        emap = {1: _entry(_dt(2025, 8, 24), None, offset_days=7)}
+        apply_schedule_offsets([emap])
+        self.assertEqual(emap[1]['start_date'], _dt(2025, 8, 31))
+        self.assertIsNone(emap[1]['end_date'])
+
+    def test_confirmed_row_after_an_offset_is_never_shifted(self):
+        emap = {
+            1: _entry(_dt(2025, 8, 24), offset_days=7),
+            2: _entry(_dt(2025, 9, 7), is_predicted=False),
+        }
+        apply_schedule_offsets([emap])
+        self.assertEqual(emap[2]['start_date'], _dt(2025, 9, 7))
+        self.assertEqual(emap[2]['applied_offset_days'], 0)
+
+    def test_confirmed_rows_own_offset_does_not_cascade(self):
+        """The self-healing property. Once a slipped row is confirmed it becomes
+        the anchor, so its real date already carries the slip — a still-live
+        offset would count the same delay twice."""
+        emap = {
+            1: _entry(_dt(2025, 8, 24), is_predicted=False, offset_days=7),
+            2: _entry(_dt(2025, 9, 7)),
+        }
+        apply_schedule_offsets([emap])
+        self.assertEqual(emap[2]['start_date'], _dt(2025, 9, 7))
+        self.assertEqual(emap[2]['applied_offset_days'], 0)
+
+    def test_offset_crosses_content_types(self):
+        """One shared calendar: a banner offset moves later Champions Meetings
+        and League of Heroes events too, unlike anchors which stay per-model."""
+        banners = {1: _entry(_dt(2025, 8, 24), offset_days=7)}
+        meetings = {1: _entry(_dt(2025, 9, 2))}
+        leagues = {1: _entry(_dt(2025, 9, 5))}
+        apply_schedule_offsets([banners, meetings, leagues])
+        self.assertEqual(meetings[1]['start_date'], _dt(2025, 9, 9))
+        self.assertEqual(leagues[1]['start_date'], _dt(2025, 9, 12))
+
+    def test_offset_from_another_content_type_stacks(self):
+        banners = {1: _entry(_dt(2025, 8, 24), offset_days=7), 2: _entry(_dt(2025, 9, 21))}
+        leagues = {1: _entry(_dt(2025, 9, 12), offset_days=3)}
+        apply_schedule_offsets([banners, leagues])
+        # The banner at 2025-09-21 is behind both the banner +7 and the LoH +3.
+        self.assertEqual(banners[2]['applied_offset_days'], 10)
+        self.assertEqual(banners[2]['start_date'], _dt(2025, 10, 1))
+
+    def test_unresolved_rows_are_untouched(self):
+        emap = {
+            1: _entry(_dt(2025, 8, 24), offset_days=7),
+            2: _entry(None, None, is_predicted=False),
+        }
+        apply_schedule_offsets([emap])
+        self.assertIsNone(emap[2]['start_date'])
+        self.assertEqual(emap[2]['applied_offset_days'], 0)
+
+    def test_offset_on_a_row_with_no_resolved_date_is_ignored(self):
+        """Nothing to order it against, so it can't say what comes 'after' it."""
+        emap = {
+            1: _entry(None, None, is_predicted=False, offset_days=7),
+            2: _entry(_dt(2025, 9, 7)),
+        }
+        apply_schedule_offsets([emap])
+        self.assertEqual(emap[2]['start_date'], _dt(2025, 9, 7))
+
+    def test_negative_offset_pulls_dates_earlier(self):
+        emap = {
+            1: _entry(_dt(2025, 8, 24), offset_days=-7),
+            2: _entry(_dt(2025, 9, 7)),
+        }
+        apply_schedule_offsets([emap])
+        self.assertEqual(emap[1]['start_date'], _dt(2025, 8, 17))
+        self.assertEqual(emap[2]['start_date'], _dt(2025, 8, 31))
+
+    def test_no_offsets_leaves_everything_alone(self):
+        emap = {1: _entry(_dt(2025, 8, 24), _dt(2025, 8, 31))}
+        apply_schedule_offsets([emap])
+        self.assertEqual(emap[1]['start_date'], _dt(2025, 8, 24))
+        self.assertEqual(emap[1]['end_date'], _dt(2025, 8, 31))
+        self.assertEqual(emap[1]['applied_offset_days'], 0)
+
+    def test_build_effective_date_maps_applies_offsets_across_models(self):
+        """The ORM wrapper: per-model anchors, one shared offset pass."""
+        make_timeline(
+            name='Anchor',
+            jp_start_date=_dt(2025, 1, 1), jp_end_date=_dt(2025, 1, 8),
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        # Predicted off the banner anchor, then pushed 7 days by its own offset.
+        make_timeline(
+            name='Slipped',
+            jp_start_date=_dt(2025, 1, 31), jp_end_date=_dt(2025, 2, 7),
+            schedule_offset_days=7,
+        )
+        # A Champions Meeting predicted off its OWN anchor to a date after the
+        # banner slip, so it inherits the +7 on top.
+        make_champions_meeting(
+            name='CM Anchor', cm_number=1,
+            jp_start_date=_dt(2025, 2, 1), jp_end_date=_dt(2025, 2, 8),
+            global_start_date=_dt(2025, 6, 10), global_end_date=_dt(2025, 6, 17),
+        )
+        make_champions_meeting(
+            name='CM Later', cm_number=2,
+            jp_start_date=_dt(2025, 3, 3), jp_end_date=_dt(2025, 3, 10),
+        )
+
+        maps = build_effective_date_maps()
+        banner = maps[BannerTimeline][BannerTimeline.objects.get(name='Slipped').id]
+        meeting = maps[ChampionsMeeting][ChampionsMeeting.objects.get(name='CM Later').id]
+
+        self.assertEqual(banner['start_date'], _predicted(_dt(2025, 6, 1), 30, offset_days=7))
+        self.assertEqual(banner['applied_offset_days'], 7)
+        self.assertEqual(meeting['start_date'], _predicted(_dt(2025, 6, 10), 30, offset_days=7))
+        self.assertEqual(meeting['applied_offset_days'], 7)
 
 
 class GameEventPredictionTests(TestCase):
@@ -384,10 +593,12 @@ class GameEventPredictionTests(TestCase):
         event = make_game_event(banner_timeline=predicted_tl)
         emap = build_effective_date_map()
         out = game_event_effective_dates(event, emap)
-        # Δjp = 30d × 0.7 = 21d -> 2025-06-22; banner runs 7d -> 2025-06-29.
+        # Banner runs 7d from its predicted start; the event's end trails by the buffer.
+        predicted_start = _predicted(_dt(2025, 6, 1), 30)
         self.assertTrue(out['is_predicted'])
-        self.assertEqual(out['start_date'], _dt(2025, 6, 22))
-        self.assertEqual(out['end_date'], _dt(2025, 6, 29) + GAME_EVENT_END_DATE_BUFFER)
+        self.assertEqual(out['start_date'], predicted_start)
+        self.assertEqual(out['end_date'],
+                         predicted_start + datetime.timedelta(days=7) + GAME_EVENT_END_DATE_BUFFER)
 
     def test_unlinked_event_resolves_to_null(self):
         event = make_game_event(banner_timeline=None)
@@ -539,8 +750,7 @@ class CalculatorGetTests(TestCase):
 
         res = self.client.get('/calculator-data')
 
-        # Δjp = 30d × 0.7 = 21d -> 2025-06-22.
-        expected_start = '2025-06-22T00:00:00Z'
+        expected_start = _iso(_predicted(_dt(2025, 6, 1), 30))
 
         top = next(t for t in res.data['banner_timeline_data'] if t['id'] == predicted_tl.id)
         self.assertTrue(top['is_predicted'])
@@ -556,6 +766,154 @@ class CalculatorGetTests(TestCase):
         planned_tl = res.data['user_planned_banner_data'][0]['banner_uma']['banner_timeline']
         self.assertEqual(planned_tl['start_date'], expected_start)
         self.assertTrue(planned_tl['is_predicted'])
+
+    def test_schedule_offset_is_consistent_across_all_paths(self):
+        """Same shape as the prediction-consistency test above: an offset banner
+        must report the SAME shifted date at top level, nested in banner_uma_data,
+        and two levels deep inside user_planned_banner_data."""
+        make_timeline(
+            name='Anchor',
+            jp_start_date=_dt(2025, 1, 1), jp_end_date=_dt(2025, 1, 8),
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        offset_tl = make_timeline(
+            name='Slipped',
+            jp_start_date=_dt(2025, 1, 31), jp_end_date=_dt(2025, 2, 7),
+            schedule_offset_days=7,
+        )
+        uma_banner = make_uma_banner(timeline=offset_tl)
+        UserPlannedBanner.objects.create(
+            user=self.user, banner_uma=uma_banner, number_of_pulls=3
+        )
+
+        res = self.client.get('/calculator-data')
+
+        # Predicted off the anchor, then pushed 7 days by the offset; the 7-day
+        # run length is preserved because both ends move together.
+        shifted_start = _predicted(_dt(2025, 6, 1), 30, offset_days=7)
+        expected_start = _iso(shifted_start)
+        expected_end = _iso(shifted_start + datetime.timedelta(days=7))
+
+        top = next(t for t in res.data['banner_timeline_data'] if t['id'] == offset_tl.id)
+        self.assertEqual(top['start_date'], expected_start)
+        self.assertEqual(top['end_date'], expected_end)
+        self.assertTrue(top['is_predicted'])
+        self.assertEqual(top['schedule_offset_days'], 7)
+        self.assertEqual(top['applied_offset_days'], 7)
+
+        nested_uma = next(
+            b for b in res.data['banner_uma_data']
+            if b['banner_timeline']['id'] == offset_tl.id
+        )
+        self.assertEqual(nested_uma['banner_timeline']['start_date'], expected_start)
+
+        planned_tl = res.data['user_planned_banner_data'][0]['banner_uma']['banner_timeline']
+        self.assertEqual(planned_tl['start_date'], expected_start)
+        self.assertEqual(planned_tl['applied_offset_days'], 7)
+
+    def test_schedule_offset_cascades_to_later_rows_of_every_content_type(self):
+        """One shared calendar: a banner offset also pushes later Champions
+        Meetings and League of Heroes events, while earlier rows stay put."""
+        make_timeline(
+            name='Anchor',
+            jp_start_date=_dt(2025, 1, 1), jp_end_date=_dt(2025, 1, 8),
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        # Predicted off the anchor and carrying the +7.
+        make_timeline(
+            name='Slipped',
+            jp_start_date=_dt(2025, 1, 31), jp_end_date=_dt(2025, 2, 7),
+            schedule_offset_days=7,
+        )
+        # A shorter JP gap puts this BEFORE the slip point, so it stays untouched.
+        earlier_tl = make_timeline(
+            name='Earlier',
+            jp_start_date=_dt(2025, 1, 21), jp_end_date=_dt(2025, 1, 28),
+        )
+        # CM/LoH each predict off their OWN anchor, both landing after the slip.
+        make_champions_meeting(
+            name='CM Anchor', cm_number=1,
+            jp_start_date=_dt(2025, 2, 1), jp_end_date=_dt(2025, 2, 8),
+            global_start_date=_dt(2025, 6, 10), global_end_date=_dt(2025, 6, 17),
+        )
+        later_cm = make_champions_meeting(
+            name='CM Later', cm_number=2,
+            jp_start_date=_dt(2025, 3, 3), jp_end_date=_dt(2025, 3, 10),
+        )
+        make_league_of_heroes(
+            name='LoH Anchor',
+            jp_start_date=_dt(2025, 2, 1), jp_end_date=_dt(2025, 2, 8),
+            global_start_date=_dt(2025, 6, 10), global_end_date=_dt(2025, 6, 17),
+        )
+        later_loh = make_league_of_heroes(
+            name='LoH Later',
+            jp_start_date=_dt(2025, 3, 3), jp_end_date=_dt(2025, 3, 10),
+        )
+
+        res = self.client.get('/calculator-data')
+
+        earlier = next(t for t in res.data['banner_timeline_data'] if t['id'] == earlier_tl.id)
+        self.assertEqual(earlier['start_date'], _iso(_predicted(_dt(2025, 6, 1), 20)))
+        self.assertEqual(earlier['applied_offset_days'], 0)
+
+        # Both predict off their own anchors, land after the slip, inherit the +7.
+        inherited = _iso(_predicted(_dt(2025, 6, 10), 30, offset_days=7))
+
+        cm = next(c for c in res.data['champions_meeting_data'] if c['id'] == later_cm.id)
+        self.assertEqual(cm['start_date'], inherited)
+        self.assertEqual(cm['applied_offset_days'], 7)
+
+        loh = next(e for e in res.data['league_of_heroes_event_data'] if e['id'] == later_loh.id)
+        self.assertEqual(loh['start_date'], inherited)
+        self.assertEqual(loh['applied_offset_days'], 7)
+
+    def test_confirmed_row_ignores_its_own_offset(self):
+        """A confirmed date is a fact — the offset must not move it, and must
+        not cascade either (otherwise it double-counts once it anchors)."""
+        confirmed_tl = make_timeline(
+            name='Confirmed but offset',
+            jp_start_date=_dt(2025, 1, 1), jp_end_date=_dt(2025, 1, 8),
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+            schedule_offset_days=7,
+        )
+        later_tl = make_timeline(
+            name='Later',
+            jp_start_date=_dt(2025, 1, 31), jp_end_date=_dt(2025, 2, 7),
+        )
+
+        res = self.client.get('/calculator-data')
+
+        confirmed = next(t for t in res.data['banner_timeline_data'] if t['id'] == confirmed_tl.id)
+        self.assertEqual(confirmed['start_date'], '2025-06-01T00:00:00Z')
+        self.assertEqual(confirmed['applied_offset_days'], 0)
+
+        later = next(t for t in res.data['banner_timeline_data'] if t['id'] == later_tl.id)
+        self.assertEqual(later['start_date'], _iso(_predicted(_dt(2025, 6, 1), 30)))
+        self.assertEqual(later['applied_offset_days'], 0)
+
+    def test_game_event_inherits_its_banners_offset_plus_the_buffer(self):
+        make_timeline(
+            name='Anchor',
+            jp_start_date=_dt(2025, 1, 1), jp_end_date=_dt(2025, 1, 8),
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        offset_tl = make_timeline(
+            name='Slipped',
+            jp_start_date=_dt(2025, 1, 31), jp_end_date=_dt(2025, 2, 7),
+            schedule_offset_days=7,
+        )
+        event = make_game_event(name='Slipped Event', banner_timeline=offset_tl)
+
+        res = self.client.get('/calculator-data')
+        entry = next(e for e in res.data['events_data'] if e['id'] == event.id)
+
+        # The banner's 7-day run shifts whole by the offset; the event's end
+        # still trails it by the usual 4-day buffer.
+        shifted_start = _predicted(_dt(2025, 6, 1), 30, offset_days=7)
+        self.assertEqual(entry['start_date'], _iso(shifted_start))
+        self.assertEqual(entry['end_date'], _iso(
+            shifted_start + datetime.timedelta(days=7) + GAME_EVENT_END_DATE_BUFFER))
+        self.assertEqual(entry['applied_offset_days'], 7)
 
     def test_champions_meeting_exposes_resolved_and_predicted_fields(self):
         make_champions_meeting(name='Confirmed CM')  # default: confirmed global
@@ -579,7 +937,6 @@ class CalculatorGetTests(TestCase):
 
     def test_champions_meeting_predicts_from_jp_when_global_unconfirmed(self):
         # Anchor: confirmed CM with a JP date. Target: JP-only, so predicted.
-        # Δjp = 30d × 0.7 = 21d -> 2025-06-22.
         make_champions_meeting(
             name='Anchor CM', cm_number=1,
             jp_start_date=_dt(2025, 1, 1), jp_end_date=_dt(2025, 1, 8),
@@ -592,7 +949,7 @@ class CalculatorGetTests(TestCase):
         res = self.client.get('/calculator-data')
         entry = next(c for c in res.data['champions_meeting_data'] if c['id'] == predicted.id)
         self.assertTrue(entry['is_predicted'])
-        self.assertEqual(entry['start_date'], '2025-06-22T00:00:00Z')
+        self.assertEqual(entry['start_date'], _iso(_predicted(_dt(2025, 6, 1), 30)))
 
     def test_league_of_heroes_predicts_from_jp_when_global_unconfirmed(self):
         make_league_of_heroes(
@@ -607,7 +964,7 @@ class CalculatorGetTests(TestCase):
         res = self.client.get('/calculator-data')
         entry = next(l for l in res.data['league_of_heroes_event_data'] if l['id'] == predicted.id)
         self.assertTrue(entry['is_predicted'])
-        self.assertEqual(entry['start_date'], '2025-06-22T00:00:00Z')
+        self.assertEqual(entry['start_date'], _iso(_predicted(_dt(2025, 6, 1), 30)))
 
     def test_cm_and_loh_predictions_use_separate_anchors(self):
         # A confirmed CM must NOT act as an anchor for LoH prediction (and vice
@@ -662,10 +1019,12 @@ class CalculatorGetTests(TestCase):
         event = make_game_event(name='Predicted Event', banner_timeline=predicted_tl)
         res = self.client.get('/calculator-data')
         entry = next(e for e in res.data['events_data'] if e['id'] == event.id)
-        # Δjp = 30d × 0.7 = 21d -> 2025-06-22; banner runs 7d -> 2025-06-29; +4d buffer.
+        # Banner runs 7d from its predicted start, then the event's +4d buffer.
+        predicted_start = _predicted(_dt(2025, 6, 1), 30)
         self.assertTrue(entry['is_predicted'])
-        self.assertEqual(entry['start_date'], '2025-06-22T00:00:00Z')
-        self.assertEqual(entry['end_date'], '2025-07-03T00:00:00Z')
+        self.assertEqual(entry['start_date'], _iso(predicted_start))
+        self.assertEqual(entry['end_date'], _iso(
+            predicted_start + datetime.timedelta(days=7) + GAME_EVENT_END_DATE_BUFFER))
 
     def test_game_event_with_no_banner_timeline_resolves_null_dates(self):
         event = make_game_event(name='Unlinked Event', banner_timeline=None)
@@ -715,6 +1074,33 @@ class ReferenceEndpointGuestAccessTests(TestCase):
         self.assertIsNone(entry['start_date'])
         self.assertIsNone(entry['end_date'])
         self.assertFalse(entry['is_predicted'])
+
+    def test_standalone_routes_are_unaffected_by_schedule_offsets(self):
+        """Offsets ride on top of predictions, and the standalone routes serve
+        confirmed dates only — so they must not shift. Same two-tier split as
+        test_events_endpoint_serves_confirmed_only_no_prediction above."""
+        confirmed_tl = make_timeline(
+            name='Confirmed',
+            jp_start_date=_dt(2025, 1, 1), jp_end_date=_dt(2025, 1, 8),
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+            schedule_offset_days=7,
+        )
+        event = make_game_event(name='Confirmed Event', banner_timeline=confirmed_tl)
+        loh = make_league_of_heroes(
+            name='Confirmed LoH',
+            global_start_date=_dt(2025, 6, 10), global_end_date=_dt(2025, 6, 17),
+            schedule_offset_days=7,
+        )
+
+        events_res = APIClient().get('/events')
+        entry = next(e for e in events_res.data if e['id'] == event.id)
+        self.assertEqual(entry['start_date'], '2025-06-01T00:00:00Z')
+        self.assertEqual(entry['applied_offset_days'], 0)
+
+        loh_res = APIClient().get('/leagueofheroes')
+        loh_entry = next(e for e in loh_res.data if e['id'] == loh.id)
+        self.assertEqual(loh_entry['start_date'], '2025-06-10T00:00:00Z')
+        self.assertEqual(loh_entry['applied_offset_days'], 0)
 
 
 # ── Calculator PATCH Tests ────────────────────────────────────────────────────

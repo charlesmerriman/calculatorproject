@@ -14,6 +14,11 @@ class _ResolvedDateMixin(serializers.Serializer):
     queryset position) is what keeps every serialization path consistent for
     a given row.
 
+    `applied_offset_days` reports how many days of accumulated schedule offset
+    are already baked into the dates above (see predictions.apply_schedule_offsets).
+    It's diagnostic only — the dates are complete without it — but a cascading
+    rule is near-impossible to debug from the outside without it.
+
     Subclasses provide `_fallback(obj)` for the no-context-map case — the
     shape differs per model (some models can read their own confirmed date
     fields as a fallback, others can't), so it's not implemented here.
@@ -22,6 +27,7 @@ class _ResolvedDateMixin(serializers.Serializer):
     start_date = serializers.SerializerMethodField()
     end_date = serializers.SerializerMethodField()
     is_predicted = serializers.SerializerMethodField()
+    applied_offset_days = serializers.SerializerMethodField()
 
     def _entry(self, obj):
         emap = self.context.get("effective_dates")
@@ -43,6 +49,9 @@ class _ResolvedDateMixin(serializers.Serializer):
     def get_is_predicted(self, obj):
         return self._entry(obj)["is_predicted"]
 
+    def get_applied_offset_days(self, obj):
+        return self._entry(obj)["applied_offset_days"]
+
 
 class EffectiveDateMixin(_ResolvedDateMixin):
     """
@@ -53,10 +62,12 @@ class EffectiveDateMixin(_ResolvedDateMixin):
     """
 
     def _fallback(self, obj):
+        # No map means no prediction, which also means no offset was applied.
         return {
             "start_date": obj.global_start_date,
             "end_date": obj.global_end_date,
             "is_predicted": False,
+            "applied_offset_days": 0,
         }
 
 
@@ -70,4 +81,5 @@ class GameEventDateMixin(_ResolvedDateMixin):
     """
 
     def _fallback(self, obj):
-        return {"start_date": None, "end_date": None, "is_predicted": False}
+        return {"start_date": None, "end_date": None, "is_predicted": False,
+                "applied_offset_days": 0}

@@ -247,7 +247,7 @@ On GET, `banner_uma` and `banner_support` are expanded to nested objects (not ID
 
 ### `GameEvent`
 
-`start_date`/`end_date`/`is_predicted` are RESOLVED from the linked `banner_timeline`
+`start_date`/`end_date`/`is_predicted`/`applied_offset_days` are RESOLVED from the linked `banner_timeline` (a `GameEvent` has no `schedule_offset_days` of its own — it inherits whatever offset its banner ended up with)
 (not stored columns) — `end_date` trails the banner's own resolved end date by 4 days.
 `banner_timeline` is a nullable id: not every event ties to a single banner (some tie to
 Champions Meeting rewards instead, some are multi-banner campaign events), in which case
@@ -309,6 +309,8 @@ The `banner_timeline_data` key uses an expanded serializer that nests uma and su
 
 **Date fields.** `start_date`/`end_date` are the **resolved** global dates: the confirmed global dates when set, otherwise dates **predicted** from the JP schedule (see `backend/calculatorapi/predictions.py`). `is_predicted` is `true` when they are an estimate. The raw source fields (`jp_start_date`, `jp_end_date`, `global_start_date`, `global_end_date`) are also exposed; `global_*` is null until a banner is officially confirmed. The same resolved values and `is_predicted` appear on every nested `banner_timeline` (inside `banner_uma_data`, `banner_support_data`, and `user_planned_banner_data`), keyed consistently by timeline id.
 
+**Schedule offsets.** `schedule_offset_days` is the row's own manual correction to the prediction (0 for almost every row); `applied_offset_days` is the cumulative total — its own plus every offset earlier in the calendar — **already baked into** `start_date`/`end_date`. Both are 0 on confirmed rows, which offsets never touch. The cascade spans banners, Champions Meetings and League of Heroes together, so a banner's offset can show up as a non-zero `applied_offset_days` on a later Champions Meeting. `applied_offset_days` is diagnostic only — the dates are complete without it. See `backend/docs/data-model.md` for the rule.
+
 ```json
 {
   "id": 1,
@@ -328,7 +330,7 @@ The `banner_timeline_data` key uses an expanded serializer that nests uma and su
 
 ### `ChampionsMeeting` (from `champions_meeting_data`)
 
-Same **resolved-date** contract as `BannerTimeline`: `start_date`/`end_date` are the confirmed global dates when set, otherwise dates **predicted** from the JP schedule; `is_predicted` flags an estimate; the raw `jp_*`/`global_*` fields are exposed (`global_*` null until confirmed). Champions Meetings resolve against their own anchor set, independent of banners and League of Heroes.
+Same **resolved-date** contract as `BannerTimeline`: `start_date`/`end_date` are the confirmed global dates when set, otherwise dates **predicted** from the JP schedule; `is_predicted` flags an estimate; the raw `jp_*`/`global_*` fields are exposed (`global_*` null until confirmed). Champions Meetings resolve against their own anchor set, independent of banners and League of Heroes. Schedule offsets are the one exception — they cascade across all three content types, so `applied_offset_days` here may originate from a banner.
 
 ```json
 {
@@ -351,7 +353,7 @@ Same **resolved-date** contract as `BannerTimeline`: `start_date`/`end_date` are
 
 ### `LeagueOfHeroes` (from `league_of_heroes_event_data`, and `GET /leagueofheroes`)
 
-Same resolved-date contract as above, with its own anchor set. Note the standalone `GET /leagueofheroes` route serves raw confirmed dates only (`is_predicted` is always `false` there); predictions are emitted only via `GET /calculator-data`.
+Same resolved-date contract as above, with its own anchor set (schedule offsets excepted — those cascade across all three content types). Note the standalone `GET /leagueofheroes` route serves raw confirmed dates only (`is_predicted` is always `false` and `applied_offset_days` always 0 there); predictions and offsets are emitted only via `GET /calculator-data`.
 
 ```json
 {

@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import permissions, status
 from django.db import transaction
 from calculatorapi.predictions import (
-    build_effective_date_map,
+    build_effective_date_maps,
     build_game_event_date_map,
     effective_sort_key,
     planned_effective_start,
@@ -50,9 +50,12 @@ class CalculatorViewSet(ViewSet):
         # than a DB column, so we sort in Python (the sets are small). Champions
         # Meetings and League of Heroes events get their own maps — each content
         # type predicts against its own anchor, so rows are never mixed.
-        emap = build_effective_date_map()
-        cm_emap = build_effective_date_map(ChampionsMeeting)
-        loh_emap = build_effective_date_map(LeagueOfHeroes)
+        # Resolved together in one call because schedule offsets DO span content
+        # types (one shared calendar) — see predictions.apply_schedule_offsets.
+        date_maps = build_effective_date_maps()
+        emap = date_maps[BannerTimeline]
+        cm_emap = date_maps[ChampionsMeeting]
+        loh_emap = date_maps[LeagueOfHeroes]
 
         banner_uma_data = sorted(
             BannerUma.objects.select_related("banner_timeline"),
