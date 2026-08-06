@@ -81,7 +81,8 @@ instant before counting days. Constants: `MISC_EARNINGS_PER_DAY` /
 Each month the in-game shop lets you buy **4 uma tickets** and **4 support tickets** with a
 currency the calculator doesn't track, so when enabled these are credited as pure ticket
 income at **no carat cost**. Gated behind `CustomUser.monthly_shop_tickets` (`default=False`).
-Credited on month boundaries, the same mechanism as Club Rank. Constants
+Credited on the **2nd of each month** (`MONTHLY_SHOP_TICKET_DAY`) via
+`calculateDayOfMonthOccurrences` — *not* on the month boundary Club Rank uses. Constants
 `MONTHLY_SHOP_UMA_TICKETS` / `MONTHLY_SHOP_SUPPORT_TICKETS` in
 `frontend/src/constants/gameConstants.ts`.
 

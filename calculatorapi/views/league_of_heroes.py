@@ -2,18 +2,26 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, permissions
 from calculatorapi.models import LeagueOfHeroes
-from .mixins import EffectiveDateMixin
+from .mixins import EffectiveDateMixin, EventTypeMixin
 
 
-class LeagueOfHeroesSerializer(EffectiveDateMixin, serializers.ModelSerializer):
+class LeagueOfHeroesSerializer(EventTypeMixin, EffectiveDateMixin, serializers.ModelSerializer):
+    event_type_value = "league_of_heroes"
+
     class Meta:
         model = LeagueOfHeroes
+        # Field-for-field identical to ChampionsMeetingSerializer apart from the
+        # number's name — the two feed the same timeline card.
         fields = (
-            "id", "name",
+            "id", "name", "event_type", "loh_number",
             "start_date", "end_date", "is_predicted",
             "jp_start_date", "jp_end_date", "global_start_date", "global_end_date",
             "schedule_offset_days", "applied_offset_days",
             "image",
+            "track", "surface_type", "distance", "length",
+            "track_condition", "season", "weather", "direction",
+            "speed_recommendation", "stamina_recommendation",
+            "power_recommendation", "guts_recommendation", "wit_recommendation",
         )
 
 
