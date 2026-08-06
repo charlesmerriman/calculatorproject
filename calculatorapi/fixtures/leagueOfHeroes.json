@@ -1,182 +1,392 @@
 [
-    {
-        "model": "calculatorapi.leagueofheroes",
-        "pk": 1,
-        "fields": {
-            "name": "League of Heroes 1",
-            "jp_start_date": "2023-05-12T00:00:00Z",
-            "jp_end_date": "2023-05-18T00:00:00Z",
-            "global_start_date": "2027-01-20T00:00:00Z",
-            "global_end_date": "2027-01-26T00:00:00Z",
-            "image": null
-        }
-    },
-    {
-        "model": "calculatorapi.leagueofheroes",
-        "pk": 2,
-        "fields": {
-            "name": "League of Heroes 2",
-            "jp_start_date": "2023-07-13T00:00:00Z",
-            "jp_end_date": "2023-07-19T00:00:00Z",
-            "global_start_date": null,
-            "global_end_date": null,
-            "image": null
-        }
-    },
-    {
-        "model": "calculatorapi.leagueofheroes",
-        "pk": 3,
-        "fields": {
-            "name": "League of Heroes 3",
-            "jp_start_date": "2023-09-13T00:00:00Z",
-            "jp_end_date": "2023-09-19T00:00:00Z",
-            "global_start_date": null,
-            "global_end_date": null,
-            "image": null
-        }
-    },
-    {
-        "model": "calculatorapi.leagueofheroes",
-        "pk": 4,
-        "fields": {
-            "name": "League of Heroes 4",
-            "jp_start_date": "2023-11-12T00:00:00Z",
-            "jp_end_date": "2023-11-18T00:00:00Z",
-            "global_start_date": null,
-            "global_end_date": null,
-            "image": null
-        }
-    },
-    {
-        "model": "calculatorapi.leagueofheroes",
-        "pk": 5,
-        "fields": {
-            "name": "League of Heroes 5",
-            "jp_start_date": "2024-01-12T00:00:00Z",
-            "jp_end_date": "2024-01-18T00:00:00Z",
-            "global_start_date": null,
-            "global_end_date": null,
-            "image": null
-        }
-    },
-    {
-        "model": "calculatorapi.leagueofheroes",
-        "pk": 6,
-        "fields": {
-            "name": "League of Heroes 6",
-            "jp_start_date": "2024-05-14T00:00:00Z",
-            "jp_end_date": "2024-05-20T00:00:00Z",
-            "global_start_date": null,
-            "global_end_date": null,
-            "image": null
-        }
-    },
-    {
-        "model": "calculatorapi.leagueofheroes",
-        "pk": 7,
-        "fields": {
-            "name": "League of Heroes 7",
-            "jp_start_date": "2024-07-22T00:00:00Z",
-            "jp_end_date": "2024-07-28T00:00:00Z",
-            "global_start_date": null,
-            "global_end_date": null,
-            "image": null
-        }
-    },
-    {
-        "model": "calculatorapi.leagueofheroes",
-        "pk": 8,
-        "fields": {
-            "name": "League of Heroes 8",
-            "jp_start_date": "2024-09-23T00:00:00Z",
-            "jp_end_date": "2024-09-29T00:00:00Z",
-            "global_start_date": null,
-            "global_end_date": null,
-            "image": null
-        }
-    },
-    {
-        "model": "calculatorapi.leagueofheroes",
-        "pk": 9,
-        "fields": {
-            "name": "League of Heroes 9",
-            "jp_start_date": "2024-11-21T00:00:00Z",
-            "jp_end_date": "2024-11-27T00:00:00Z",
-            "global_start_date": null,
-            "global_end_date": null,
-            "image": null
-        }
-    },
-    {
-        "model": "calculatorapi.leagueofheroes",
-        "pk": 10,
-        "fields": {
-            "name": "League of Heroes 10",
-            "jp_start_date": "2025-02-16T00:00:00Z",
-            "jp_end_date": "2025-02-25T00:00:00Z",
-            "global_start_date": null,
-            "global_end_date": null,
-            "image": null
-        }
-    },
-    {
-        "model": "calculatorapi.leagueofheroes",
-        "pk": 11,
-        "fields": {
-            "name": "League of Heroes 11",
-            "jp_start_date": "2025-05-24T00:00:00Z",
-            "jp_end_date": "2025-06-02T00:00:00Z",
-            "global_start_date": null,
-            "global_end_date": null,
-            "image": null
-        }
-    },
-    {
-        "model": "calculatorapi.leagueofheroes",
-        "pk": 12,
-        "fields": {
-            "name": "League of Heroes 12",
-            "jp_start_date": "2025-08-15T00:00:00Z",
-            "jp_end_date": "2025-08-24T00:00:00Z",
-            "global_start_date": null,
-            "global_end_date": null,
-            "image": null
-        }
-    },
-    {
-        "model": "calculatorapi.leagueofheroes",
-        "pk": 13,
-        "fields": {
-            "name": "League of Heroes 13",
-            "jp_start_date": "2025-11-21T00:00:00Z",
-            "jp_end_date": "2025-11-30T00:00:00Z",
-            "global_start_date": null,
-            "global_end_date": null,
-            "image": null
-        }
-    },
-    {
-        "model": "calculatorapi.leagueofheroes",
-        "pk": 14,
-        "fields": {
-            "name": "League of Heroes 14",
-            "jp_start_date": "2026-02-15T00:00:00Z",
-            "jp_end_date": "2026-02-24T00:00:00Z",
-            "global_start_date": null,
-            "global_end_date": null,
-            "image": null
-        }
-    },
-    {
-        "model": "calculatorapi.leagueofheroes",
-        "pk": 15,
-        "fields": {
-            "name": "League of Heroes 15",
-            "jp_start_date": "2026-05-22T00:00:00Z",
-            "jp_end_date": "2026-05-31T00:00:00Z",
-            "global_start_date": null,
-            "global_end_date": null,
-            "image": null
-        }
+  {
+    "model": "calculatorapi.leagueofheroes",
+    "pk": 1,
+    "fields": {
+      "name": "League of Heroes 1",
+      "loh_number": 1,
+      "jp_start_date": "2023-05-12T00:00:00Z",
+      "jp_end_date": "2023-05-18T00:00:00Z",
+      "global_start_date": "2027-01-20T00:00:00Z",
+      "global_end_date": "2027-01-26T00:00:00Z",
+      "image": null,
+      "track": "TBD",
+      "surface_type": "TBD",
+      "distance": "TBD",
+      "length": "TBD",
+      "track_condition": "TBD",
+      "season": "TBD",
+      "weather": "TBD",
+      "direction": "TBD",
+      "speed_recommendation": 0,
+      "stamina_recommendation": 0,
+      "power_recommendation": 0,
+      "guts_recommendation": 0,
+      "wit_recommendation": 0
     }
+  },
+  {
+    "model": "calculatorapi.leagueofheroes",
+    "pk": 2,
+    "fields": {
+      "name": "League of Heroes 2",
+      "loh_number": 2,
+      "jp_start_date": "2023-07-13T00:00:00Z",
+      "jp_end_date": "2023-07-19T00:00:00Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": null,
+      "track": "TBD",
+      "surface_type": "TBD",
+      "distance": "TBD",
+      "length": "TBD",
+      "track_condition": "TBD",
+      "season": "TBD",
+      "weather": "TBD",
+      "direction": "TBD",
+      "speed_recommendation": 0,
+      "stamina_recommendation": 0,
+      "power_recommendation": 0,
+      "guts_recommendation": 0,
+      "wit_recommendation": 0
+    }
+  },
+  {
+    "model": "calculatorapi.leagueofheroes",
+    "pk": 3,
+    "fields": {
+      "name": "League of Heroes 3",
+      "loh_number": 3,
+      "jp_start_date": "2023-09-13T00:00:00Z",
+      "jp_end_date": "2023-09-19T00:00:00Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": null,
+      "track": "TBD",
+      "surface_type": "TBD",
+      "distance": "TBD",
+      "length": "TBD",
+      "track_condition": "TBD",
+      "season": "TBD",
+      "weather": "TBD",
+      "direction": "TBD",
+      "speed_recommendation": 0,
+      "stamina_recommendation": 0,
+      "power_recommendation": 0,
+      "guts_recommendation": 0,
+      "wit_recommendation": 0
+    }
+  },
+  {
+    "model": "calculatorapi.leagueofheroes",
+    "pk": 4,
+    "fields": {
+      "name": "League of Heroes 4",
+      "loh_number": 4,
+      "jp_start_date": "2023-11-12T00:00:00Z",
+      "jp_end_date": "2023-11-18T00:00:00Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": null,
+      "track": "TBD",
+      "surface_type": "TBD",
+      "distance": "TBD",
+      "length": "TBD",
+      "track_condition": "TBD",
+      "season": "TBD",
+      "weather": "TBD",
+      "direction": "TBD",
+      "speed_recommendation": 0,
+      "stamina_recommendation": 0,
+      "power_recommendation": 0,
+      "guts_recommendation": 0,
+      "wit_recommendation": 0
+    }
+  },
+  {
+    "model": "calculatorapi.leagueofheroes",
+    "pk": 5,
+    "fields": {
+      "name": "League of Heroes 5",
+      "loh_number": 5,
+      "jp_start_date": "2024-01-12T00:00:00Z",
+      "jp_end_date": "2024-01-18T00:00:00Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": null,
+      "track": "TBD",
+      "surface_type": "TBD",
+      "distance": "TBD",
+      "length": "TBD",
+      "track_condition": "TBD",
+      "season": "TBD",
+      "weather": "TBD",
+      "direction": "TBD",
+      "speed_recommendation": 0,
+      "stamina_recommendation": 0,
+      "power_recommendation": 0,
+      "guts_recommendation": 0,
+      "wit_recommendation": 0
+    }
+  },
+  {
+    "model": "calculatorapi.leagueofheroes",
+    "pk": 6,
+    "fields": {
+      "name": "League of Heroes 6",
+      "loh_number": 6,
+      "jp_start_date": "2024-05-14T00:00:00Z",
+      "jp_end_date": "2024-05-20T00:00:00Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": null,
+      "track": "TBD",
+      "surface_type": "TBD",
+      "distance": "TBD",
+      "length": "TBD",
+      "track_condition": "TBD",
+      "season": "TBD",
+      "weather": "TBD",
+      "direction": "TBD",
+      "speed_recommendation": 0,
+      "stamina_recommendation": 0,
+      "power_recommendation": 0,
+      "guts_recommendation": 0,
+      "wit_recommendation": 0
+    }
+  },
+  {
+    "model": "calculatorapi.leagueofheroes",
+    "pk": 7,
+    "fields": {
+      "name": "League of Heroes 7",
+      "loh_number": 7,
+      "jp_start_date": "2024-07-22T00:00:00Z",
+      "jp_end_date": "2024-07-28T00:00:00Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": null,
+      "track": "TBD",
+      "surface_type": "TBD",
+      "distance": "TBD",
+      "length": "TBD",
+      "track_condition": "TBD",
+      "season": "TBD",
+      "weather": "TBD",
+      "direction": "TBD",
+      "speed_recommendation": 0,
+      "stamina_recommendation": 0,
+      "power_recommendation": 0,
+      "guts_recommendation": 0,
+      "wit_recommendation": 0
+    }
+  },
+  {
+    "model": "calculatorapi.leagueofheroes",
+    "pk": 8,
+    "fields": {
+      "name": "League of Heroes 8",
+      "loh_number": 8,
+      "jp_start_date": "2024-09-23T00:00:00Z",
+      "jp_end_date": "2024-09-29T00:00:00Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": null,
+      "track": "TBD",
+      "surface_type": "TBD",
+      "distance": "TBD",
+      "length": "TBD",
+      "track_condition": "TBD",
+      "season": "TBD",
+      "weather": "TBD",
+      "direction": "TBD",
+      "speed_recommendation": 0,
+      "stamina_recommendation": 0,
+      "power_recommendation": 0,
+      "guts_recommendation": 0,
+      "wit_recommendation": 0
+    }
+  },
+  {
+    "model": "calculatorapi.leagueofheroes",
+    "pk": 9,
+    "fields": {
+      "name": "League of Heroes 9",
+      "loh_number": 9,
+      "jp_start_date": "2024-11-21T00:00:00Z",
+      "jp_end_date": "2024-11-27T00:00:00Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": null,
+      "track": "TBD",
+      "surface_type": "TBD",
+      "distance": "TBD",
+      "length": "TBD",
+      "track_condition": "TBD",
+      "season": "TBD",
+      "weather": "TBD",
+      "direction": "TBD",
+      "speed_recommendation": 0,
+      "stamina_recommendation": 0,
+      "power_recommendation": 0,
+      "guts_recommendation": 0,
+      "wit_recommendation": 0
+    }
+  },
+  {
+    "model": "calculatorapi.leagueofheroes",
+    "pk": 10,
+    "fields": {
+      "name": "League of Heroes 10",
+      "loh_number": 10,
+      "jp_start_date": "2025-02-16T00:00:00Z",
+      "jp_end_date": "2025-02-25T00:00:00Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": null,
+      "track": "TBD",
+      "surface_type": "TBD",
+      "distance": "TBD",
+      "length": "TBD",
+      "track_condition": "TBD",
+      "season": "TBD",
+      "weather": "TBD",
+      "direction": "TBD",
+      "speed_recommendation": 0,
+      "stamina_recommendation": 0,
+      "power_recommendation": 0,
+      "guts_recommendation": 0,
+      "wit_recommendation": 0
+    }
+  },
+  {
+    "model": "calculatorapi.leagueofheroes",
+    "pk": 11,
+    "fields": {
+      "name": "League of Heroes 11",
+      "loh_number": 11,
+      "jp_start_date": "2025-05-24T00:00:00Z",
+      "jp_end_date": "2025-06-02T00:00:00Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": null,
+      "track": "TBD",
+      "surface_type": "TBD",
+      "distance": "TBD",
+      "length": "TBD",
+      "track_condition": "TBD",
+      "season": "TBD",
+      "weather": "TBD",
+      "direction": "TBD",
+      "speed_recommendation": 0,
+      "stamina_recommendation": 0,
+      "power_recommendation": 0,
+      "guts_recommendation": 0,
+      "wit_recommendation": 0
+    }
+  },
+  {
+    "model": "calculatorapi.leagueofheroes",
+    "pk": 12,
+    "fields": {
+      "name": "League of Heroes 12",
+      "loh_number": 12,
+      "jp_start_date": "2025-08-15T00:00:00Z",
+      "jp_end_date": "2025-08-24T00:00:00Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": null,
+      "track": "TBD",
+      "surface_type": "TBD",
+      "distance": "TBD",
+      "length": "TBD",
+      "track_condition": "TBD",
+      "season": "TBD",
+      "weather": "TBD",
+      "direction": "TBD",
+      "speed_recommendation": 0,
+      "stamina_recommendation": 0,
+      "power_recommendation": 0,
+      "guts_recommendation": 0,
+      "wit_recommendation": 0
+    }
+  },
+  {
+    "model": "calculatorapi.leagueofheroes",
+    "pk": 13,
+    "fields": {
+      "name": "League of Heroes 13",
+      "loh_number": 13,
+      "jp_start_date": "2025-11-21T00:00:00Z",
+      "jp_end_date": "2025-11-30T00:00:00Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": null,
+      "track": "TBD",
+      "surface_type": "TBD",
+      "distance": "TBD",
+      "length": "TBD",
+      "track_condition": "TBD",
+      "season": "TBD",
+      "weather": "TBD",
+      "direction": "TBD",
+      "speed_recommendation": 0,
+      "stamina_recommendation": 0,
+      "power_recommendation": 0,
+      "guts_recommendation": 0,
+      "wit_recommendation": 0
+    }
+  },
+  {
+    "model": "calculatorapi.leagueofheroes",
+    "pk": 14,
+    "fields": {
+      "name": "League of Heroes 14",
+      "loh_number": 14,
+      "jp_start_date": "2026-02-15T00:00:00Z",
+      "jp_end_date": "2026-02-24T00:00:00Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": null,
+      "track": "TBD",
+      "surface_type": "TBD",
+      "distance": "TBD",
+      "length": "TBD",
+      "track_condition": "TBD",
+      "season": "TBD",
+      "weather": "TBD",
+      "direction": "TBD",
+      "speed_recommendation": 0,
+      "stamina_recommendation": 0,
+      "power_recommendation": 0,
+      "guts_recommendation": 0,
+      "wit_recommendation": 0
+    }
+  },
+  {
+    "model": "calculatorapi.leagueofheroes",
+    "pk": 15,
+    "fields": {
+      "name": "League of Heroes 15",
+      "loh_number": 15,
+      "jp_start_date": "2026-05-22T00:00:00Z",
+      "jp_end_date": "2026-05-31T00:00:00Z",
+      "global_start_date": null,
+      "global_end_date": null,
+      "image": null,
+      "track": "TBD",
+      "surface_type": "TBD",
+      "distance": "TBD",
+      "length": "TBD",
+      "track_condition": "TBD",
+      "season": "TBD",
+      "weather": "TBD",
+      "direction": "TBD",
+      "speed_recommendation": 0,
+      "stamina_recommendation": 0,
+      "power_recommendation": 0,
+      "guts_recommendation": 0,
+      "wit_recommendation": 0
+    }
+  }
 ]

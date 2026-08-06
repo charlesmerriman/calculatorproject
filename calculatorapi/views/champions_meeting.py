@@ -1,13 +1,17 @@
 from rest_framework import serializers
 from calculatorapi.models import ChampionsMeeting
-from .mixins import EffectiveDateMixin
+from .mixins import EffectiveDateMixin, EventTypeMixin
 
 
-class ChampionsMeetingSerializer(EffectiveDateMixin, serializers.ModelSerializer):
+class ChampionsMeetingSerializer(EventTypeMixin, EffectiveDateMixin, serializers.ModelSerializer):
+    event_type_value = "champions_meeting"
+
     class Meta:
         model = ChampionsMeeting
         fields = (
-            "id", "name",
+            # cm_number was declared on the frontend's ChampionsMeeting type but
+            # never actually sent; added here so the two agree.
+            "id", "name", "event_type", "cm_number",
             "start_date", "end_date", "is_predicted",
             "jp_start_date", "jp_end_date", "global_start_date", "global_end_date",
             "schedule_offset_days", "applied_offset_days",

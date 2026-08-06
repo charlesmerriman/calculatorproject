@@ -171,6 +171,31 @@ erDiagram
         int wit_recommendation
     }
 
+    LeagueOfHeroes {
+        int id PK
+        int loh_number
+        string name
+        datetime jp_start_date "nullable"
+        datetime jp_end_date "nullable"
+        datetime global_start_date "nullable; set when confirmed"
+        datetime global_end_date "nullable; set when confirmed"
+        int schedule_offset_days "days to push this and every later date forward"
+        string image
+        string track
+        string surface_type
+        string distance
+        string length
+        string track_condition
+        string season
+        string weather
+        string direction
+        int speed_recommendation
+        int stamina_recommendation
+        int power_recommendation
+        int guts_recommendation
+        int wit_recommendation
+    }
+
     CustomUser }o--|| ClubRank : "club_rank"
     CustomUser }o--|| TeamTrialsRank : "team_trials_rank"
     CustomUser }o--|| ChampionsMeetingRank : "champions_meeting_rank"
@@ -208,6 +233,24 @@ This is the discriminated union that the frontend mirrors with the `SavedPlanned
 `ClubRank`, `TeamTrialsRank`, `ChampionsMeetingRank`, and `LeagueOfHeroesRank` are static reference tables seeded from fixtures. They are never written to by user-facing endpoints. `CustomUser` holds a nullable FK to the user's current tier in each.
 
 `LeagueOfHeroesRank` data is returned by the API and used by the resource projection — each `LeagueOfHeroes` event whose `end_date` falls within a banner window contributes the user's rank `income_amount` to the carat total.
+
+### `ChampionsMeeting` and `LeagueOfHeroes` are the same shape
+
+The two hold identical data — course details (`track` … `direction`) and five stat
+recommendations — differing only in their number field (`cm_number` / `loh_number`) and in
+`ChampionsMeeting` owning the `ChampionsMeetingUmaRecommendation` join table. They render
+through one shared frontend card (`components/timeline/RaceEventCard.tsx`), so a field
+added to one almost always belongs on the other; the same goes for their serializers and
+`ModelAdmin` fieldsets.
+
+They are deliberately **two concrete models, not one table with a type column**: they
+predict their global dates against *separate* anchor sets (see below), and merging them
+would mix those anchors. The fields are duplicated rather than pulled into an abstract base
+— a conscious trade of a little repetition for keeping each model readable on its own.
+
+The course/stat columns are non-null, so "not announced yet" is encoded as a **sentinel**:
+`"TBD"` for text and `0` for the recommendations. Both models default to those, and the
+frontend translates them into a pending state rather than rendering them raw.
 
 ### Through tables carry recommendation text
 

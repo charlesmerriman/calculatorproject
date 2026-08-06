@@ -396,19 +396,41 @@ class ChangelogEntryAdmin(ModelAdmin):
 @admin.register(LeagueOfHeroes)
 class LeagueOfHeroesAdmin(GlobalDatesStatusMixin, ScheduleOffsetMixin, ImagePreviewMixin,
                           SpacesImagePickerMixin, ModelAdmin):
-    list_display = ("name", "jp_start_date", "global_start_date",
+    list_display = ("name", "loh_number", "jp_start_date", "global_start_date",
                     "global_end_date", "global_dates_status", "schedule_offset_display")
     list_filter = (GlobalDatesFilter, ScheduleOffsetFilter)
     date_hierarchy = "global_start_date"
     ordering = ("-global_start_date",)
     search_fields = ("name",)
     readonly_fields = ("image_preview",)
+    # Mirrors ChampionsMeetingAdmin above section for section — the two content
+    # types now hold the same data and render through the same timeline card, so
+    # they should be the same page to edit. (This previously omitted the schedule
+    # offset fieldset even though the model and ScheduleOffsetMixin both had the
+    # field, which left it uneditable.)
+    #
     # Editors always fill the JP dates; global dates only once the event is
     # confirmed (they're left blank until then, and the app predicts them).
     fieldsets = (
-        (None, {"fields": ("name", "image", "image_preview")}),
-        ("JP server dates (always known)", {"fields": ("jp_start_date", "jp_end_date")}),
-        ("Global server dates (fill when confirmed)", {"fields": ("global_start_date", "global_end_date")}),
+        (None, {
+            "fields": ("name", "loh_number", "image", "image_preview"),
+        }),
+        ("JP server dates (always known)", {
+            "fields": ("jp_start_date", "jp_end_date"),
+        }),
+        ("Global server dates (fill when confirmed)", {
+            "fields": ("global_start_date", "global_end_date"),
+        }),
+        SCHEDULE_OFFSET_FIELDSET,
+        ("Track details", {
+            "fields": ("track", "surface_type", "distance", "length",
+                       "track_condition", "season", "weather", "direction"),
+        }),
+        ("Stat recommendations", {
+            "fields": ("speed_recommendation", "stamina_recommendation",
+                       "power_recommendation", "guts_recommendation",
+                       "wit_recommendation"),
+        }),
     )
 
 

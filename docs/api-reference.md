@@ -311,10 +311,13 @@ The `banner_timeline_data` key uses an expanded serializer that nests uma and su
 
 **Schedule offsets.** `schedule_offset_days` is the row's own manual correction to the prediction (0 for almost every row); `applied_offset_days` is the cumulative total — its own plus every offset earlier in the calendar — **already baked into** `start_date`/`end_date`. Both are 0 on confirmed rows, which offsets never touch. The cascade spans banners, Champions Meetings and League of Heroes together, so a banner's offset can show up as a non-zero `applied_offset_days` on a later Champions Meeting. `applied_offset_days` is diagnostic only — the dates are complete without it. See `backend/docs/data-model.md` for the rule.
 
+**`event_type`.** A constant tag identifying which model a row came from. The frontend merges `banner_timeline_data`, `champions_meeting_data` and `league_of_heroes_event_data` into one sorted timeline array and narrows on this. It exists because the three shapes are **not** reliably distinguishable structurally: `ChampionsMeeting` and `LeagueOfHeroes` are field-identical apart from their number, and a `BannerTimeline` shares every base field with both. Emitted by `EventTypeMixin` (`calculatorapi/views/mixins.py`) on the three serializers that feed those keys — *not* on the flat `BannerTimelineSerializer` used for nested banners and `GET /bannertimelines`.
+
 ```json
 {
   "id": 1,
   "name": "string",
+  "event_type": "banner_timeline",
   "start_date": "ISO8601 (resolved: confirmed or predicted)",
   "end_date": "ISO8601 (resolved: confirmed or predicted)",
   "is_predicted": false,
@@ -322,6 +325,8 @@ The `banner_timeline_data` key uses an expanded serializer that nests uma and su
   "jp_end_date": "ISO8601 | null",
   "global_start_date": "ISO8601 | null",
   "global_end_date": "ISO8601 | null",
+  "schedule_offset_days": 0,
+  "applied_offset_days": 0,
   "image": "url | null",
   "banner_umas": [ { "id": 1, "name": "string", "free_pulls": 0, "admin_comments": "string | null", "umas": [ { ...uma + "recommendation": "string | null" } ] } ],
   "banner_supports": [ { ... } ]
@@ -332,10 +337,14 @@ The `banner_timeline_data` key uses an expanded serializer that nests uma and su
 
 Same **resolved-date** contract as `BannerTimeline`: `start_date`/`end_date` are the confirmed global dates when set, otherwise dates **predicted** from the JP schedule; `is_predicted` flags an estimate; the raw `jp_*`/`global_*` fields are exposed (`global_*` null until confirmed). Champions Meetings resolve against their own anchor set, independent of banners and League of Heroes. Schedule offsets are the one exception — they cascade across all three content types, so `applied_offset_days` here may originate from a banner.
 
+**Course details.** `track` through `direction` and the five `*_recommendation` values are hand-entered in the admin and unknown until a meeting is announced. The columns are non-null, so "unknown" is a **sentinel, not a null**: `"TBD"` for the text fields and `0` for the recommendations. Clients should treat those two values as "not announced" rather than displaying them raw.
+
 ```json
 {
   "id": 1,
   "name": "string",
+  "event_type": "champions_meeting",
+  "cm_number": 1,
   "start_date": "ISO8601 (resolved: confirmed or predicted)",
   "end_date": "ISO8601 (resolved: confirmed or predicted)",
   "is_predicted": false,
@@ -343,6 +352,8 @@ Same **resolved-date** contract as `BannerTimeline`: `start_date`/`end_date` are
   "jp_end_date": "ISO8601 | null",
   "global_start_date": "ISO8601 | null",
   "global_end_date": "ISO8601 | null",
+  "schedule_offset_days": 0,
+  "applied_offset_days": 0,
   "image": "url | null",
   "track": "string", "surface_type": "string", "distance": "string", "length": "string",
   "track_condition": "string", "season": "string", "weather": "string", "direction": "string",
@@ -355,10 +366,14 @@ Same **resolved-date** contract as `BannerTimeline`: `start_date`/`end_date` are
 
 Same resolved-date contract as above, with its own anchor set (schedule offsets excepted — those cascade across all three content types). Note the standalone `GET /leagueofheroes` route serves raw confirmed dates only (`is_predicted` is always `false` and `applied_offset_days` always 0 there); predictions and offsets are emitted only via `GET /calculator-data`.
 
+**Identical to `ChampionsMeeting` apart from `event_type` and `loh_number`** — same course details, same stat recommendations, same `"TBD"`/`0` sentinels — because the two render through one shared timeline card. Treat them as one shape with two tags: a field added to one belongs on the other.
+
 ```json
 {
   "id": 1,
   "name": "string",
+  "event_type": "league_of_heroes",
+  "loh_number": 1,
   "start_date": "ISO8601 (resolved: confirmed or predicted)",
   "end_date": "ISO8601 (resolved: confirmed or predicted)",
   "is_predicted": false,
@@ -366,6 +381,12 @@ Same resolved-date contract as above, with its own anchor set (schedule offsets 
   "jp_end_date": "ISO8601 | null",
   "global_start_date": "ISO8601 | null",
   "global_end_date": "ISO8601 | null",
-  "image": "url | null"
+  "schedule_offset_days": 0,
+  "applied_offset_days": 0,
+  "image": "url | null",
+  "track": "string", "surface_type": "string", "distance": "string", "length": "string",
+  "track_condition": "string", "season": "string", "weather": "string", "direction": "string",
+  "speed_recommendation": 0, "stamina_recommendation": 0, "power_recommendation": 0,
+  "guts_recommendation": 0, "wit_recommendation": 0
 }
 ```

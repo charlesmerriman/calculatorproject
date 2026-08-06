@@ -5,7 +5,7 @@ from rest_framework import status
 from calculatorapi.models import BannerTimeline, BannerSupport, BannerUma
 from .uma import UmaSerializer
 from .support_card import SupportCardSerializer
-from .mixins import EffectiveDateMixin
+from .mixins import EffectiveDateMixin, EventTypeMixin
 
 
 class BannerTimelineSerializer(EffectiveDateMixin, serializers.ModelSerializer):
@@ -52,14 +52,20 @@ class BannerUmaNestedSerializer(serializers.ModelSerializer):
         return result
 
 
-class BannerTimelineForViewingSerializer(EffectiveDateMixin, serializers.ModelSerializer):
+class BannerTimelineForViewingSerializer(EventTypeMixin, EffectiveDateMixin,
+                                         serializers.ModelSerializer):
+    # Only this serializer is tagged, not BannerTimelineSerializer above — the
+    # tag exists for the merged timeline array, which is fed exclusively by
+    # /calculator-data's banner_timeline_data.
+    event_type_value = "banner_timeline"
+
     banner_umas = BannerUmaNestedSerializer(source="uma_banners", many=True, read_only=True)
     banner_supports = BannerSupportNestedSerializer(source="support_banners", many=True, read_only=True)
 
     class Meta:
         model = BannerTimeline
         fields = (
-            "id", "name",
+            "id", "name", "event_type",
             "start_date", "end_date", "is_predicted",
             "jp_start_date", "jp_end_date", "global_start_date", "global_end_date",
             "schedule_offset_days", "applied_offset_days",

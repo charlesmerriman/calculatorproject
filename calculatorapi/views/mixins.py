@@ -71,6 +71,32 @@ class EffectiveDateMixin(_ResolvedDateMixin):
         }
 
 
+class EventTypeMixin(serializers.Serializer):
+    """
+    Emits a constant `event_type` tag so the timeline's three content types form
+    a real discriminated union on the wire.
+
+    The frontend merges BannerTimeline, ChampionsMeeting and LeagueOfHeroes into
+    one sorted array and has to narrow each element back to its own type. It used
+    to do that structurally ("track" in event), which silently breaks the moment
+    two models' field sets converge — exactly what happened when LeagueOfHeroes
+    gained ChampionsMeeting's course details. A tag the backend owns can't drift.
+
+    Subclasses set `event_type_value`; it must stay in sync with the string
+    literals on the matching TypeScript interfaces in frontend/src/types/.
+    """
+
+    event_type = serializers.SerializerMethodField()
+
+    #: Overridden per serializer. None here would be a bug, not a valid tag.
+    event_type_value = None
+
+    # The instance is deliberately ignored: the tag identifies the *serializer*,
+    # not anything about the row.
+    def get_event_type(self, _obj):
+        return self.event_type_value
+
+
 class GameEventDateMixin(_ResolvedDateMixin):
     """
     GameEvent has no global_start_date/global_end_date of its own — its dates
