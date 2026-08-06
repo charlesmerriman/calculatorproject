@@ -18,6 +18,7 @@ class UserPlannedBannerSerializer(serializers.ModelSerializer):
             "id",
             "user",
             "number_of_pulls",
+            "reserved_copies",
             "banner_uma",
             "banner_support",
         )

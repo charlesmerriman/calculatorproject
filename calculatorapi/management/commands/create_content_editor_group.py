@@ -31,6 +31,7 @@ from calculatorapi.models import (
     LeagueOfHeroes,
     ChangelogEntry, ChangelogChange,
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
+    AnniversaryEvent, AnniversaryEventBanner, AnniversaryEventProduct,
 )
 
 GROUP_NAME = "Content editors"
@@ -46,6 +47,9 @@ CONTENT_MODELS = [
     LeagueOfHeroes,
     ChangelogEntry, ChangelogChange,
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
+    # Campaigns are content: an editor sets up an anniversary's packs and
+    # selectors. UserPlannedPurchase is deliberately absent — it's user data.
+    AnniversaryEvent, AnniversaryEventBanner, AnniversaryEventProduct,
 ]
 
 

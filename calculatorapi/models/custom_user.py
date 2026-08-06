@@ -41,10 +41,28 @@ class CustomUser(AbstractUser):
     # pull) on banners. On by default so paid carats keep counting toward pulls,
     # matching the historical behavior of a single merged carat pool.
     full_price_paid_pulls = models.BooleanField(default=True)
+    # Include campaign purchases in the projection: when off (the default), a
+    # user's planned pack/selector purchases are budgeting-only and change no
+    # estimate anywhere. Off by default so enabling the feature never silently
+    # moves anyone's existing numbers.
+    include_purchases_in_projection = models.BooleanField(default=False)
+    # Webstore bonus: the webstore sells the same packs with extra carats. The
+    # rate is per-pack (see AnniversaryEventProduct.webstore_multiplier); this
+    # only says whether to apply it. The whole multiplied amount is paid carats.
+    webstore_bonus = models.BooleanField(default=False)
     current_carat = models.IntegerField(default=0)
     current_paid_carat = models.IntegerField(default=0)
     uma_ticket = models.IntegerField(default=0)
     support_ticket = models.IntegerField(default=0)
+    # Selector tickets are NOT gacha tickets. uma_ticket/support_ticket above are
+    # each worth one pull and are spent by the pull strategy; a selector instead
+    # takes a specific card outright and never funds a pull. Keeping them in
+    # separate fields is what stops the projection inflating max pulls.
+    #
+    # These two are the user's CURRENT holdings, treated as unrestricted (no JP
+    # cutoff). Tickets projected from campaigns carry their campaign's cutoff.
+    uma_selector_ticket = models.IntegerField(default=0)
+    support_selector_ticket = models.IntegerField(default=0)
 
     # No Meta needed: AbstractUser already sets verbose_name "user" / "users".
 

@@ -33,14 +33,19 @@ from calculatorapi.predictions import (
     game_event_confirmed_dates,
     build_effective_date_map,
     build_effective_date_maps,
+    build_anniversary_event_date_map,
 )
+from calculatorapi.eligibility import build_first_jp_date_maps, is_eligible
+from calculatorapi.management.commands.create_content_editor_group import CONTENT_MODELS
 from calculatorapi.models import (
-    CustomUser, Uma,
+    CustomUser, Uma, SupportCard,
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
     BannerTimeline, BannerUma, BannerSupport, UserPlannedBanner,
     ChampionsMeeting, LeagueOfHeroes, GameEvent,
     ChangelogEntry, ChangelogChange,
     SocialAccount,
+    AnniversaryEvent, AnniversaryEventBanner, AnniversaryEventProduct,
+    UserPlannedPurchase, UmasOnUmaBanner, SupportsOnSupportBanner,
 )
 
 # Smallest valid PNG (1x1, transparent). ImageField runs Pillow over uploads,
@@ -166,6 +171,26 @@ def make_game_event(name='Test Event', banner_timeline=None, **reward_fields):
     has no date fields of its own. Reward amounts (carat_amount,
     carats_throughout, etc.) can be passed as kwargs; they default to 0."""
     return GameEvent.objects.create(name=name, banner_timeline=banner_timeline, **reward_fields)
+
+
+def make_anniversary_event(name='Test Anniversary', event_type='anniversary',
+                           jp_cutoff_date=None, parts=(), products=()):
+    """Create an AnniversaryEvent, its banner-part links and its products.
+
+    `parts` is an iterable of BannerTimeline (linked as Part 1, 2, ... in order).
+    `products` is an iterable of kwargs dicts for AnniversaryEventProduct.
+    Dates come entirely from the linked parts -- the event has none of its own.
+    """
+    event = AnniversaryEvent.objects.create(
+        name=name, event_type=event_type, jp_cutoff_date=jp_cutoff_date,
+    )
+    for index, timeline in enumerate(parts, start=1):
+        AnniversaryEventBanner.objects.create(
+            anniversary_event=event, banner_timeline=timeline, part_number=index,
+        )
+    for product_kwargs in products:
+        AnniversaryEventProduct.objects.create(anniversary_event=event, **product_kwargs)
+    return event
 
 
 def auth_client(user):
@@ -678,6 +703,7 @@ _EXPECTED_GET_KEYS = {
     'league_of_heroes_rank_data', 'banner_uma_data', 'banner_support_data',
     'user_planned_banner_data', 'champions_meeting_data', 'league_of_heroes_event_data',
     'events_data', 'user_stats_data', 'banner_timeline_data',
+    'anniversary_event_data', 'user_planned_purchase_data',
 }
 
 
@@ -693,6 +719,7 @@ class CalculatorGetTests(TestCase):
         self.assertEqual(set(res.data.keys()), _EXPECTED_GET_KEYS)
         self.assertIsNone(res.data['user_stats_data'])
         self.assertEqual(res.data['user_planned_banner_data'], [])
+        self.assertEqual(res.data['user_planned_purchase_data'], [])
 
     def test_get_with_invalid_token_returns_401(self):
         # TokenAuthentication rejects a present-but-invalid token before
@@ -1122,6 +1149,27 @@ class CalculatorPatchTests(TestCase):
         self.user.refresh_from_db()
         self.assertEqual(self.user.current_carat, 9999)
 
+    def test_invalid_banner_rolls_back_stats_saved_earlier_in_the_same_patch(self):
+        """A partly-invalid PATCH must persist nothing.
+
+        Regression: `return`ing a Response from inside `transaction.atomic()`
+        exits the block normally, so Django committed. Stats are written before
+        banners, so a rejected banner used to leave the stats change behind —
+        the exact split state the transaction is there to prevent.
+        """
+        res = self.client.patch(
+            '/calculator-data',
+            {
+                'user_stats_data': {'current_carat': 4242},
+                # Neither banner_uma nor banner_support — fails validation.
+                'user_planned_banner_data': [{'number_of_pulls': 10}],
+            },
+            format='json',
+        )
+        self.assertEqual(res.status_code, 400)
+        self.user.refresh_from_db()
+        self.assertNotEqual(self.user.current_carat, 4242)
+
     def test_patch_stats_updates_misc_earnings_toggle(self):
         # misc_earnings defaults to True; confirm the serializer accepts and
         # persists a toggle-off through the same PATCH path as the other stats.
@@ -1276,6 +1324,384 @@ class CalculatorPatchTests(TestCase):
     # an unhandled *exception*, not on an early `return Response(...)`. If stats
     # save succeeds but a banner update then returns a 4xx, the stats change is
     # already committed. This is a known limitation in the current implementation.
+
+
+# ── Selector Planner Tests ────────────────────────────────────────────────────
+
+class SelectorEligibilityTests(TestCase):
+    """A card's JP release date is derived from its earliest banner appearance."""
+
+    def setUp(self):
+        self.old_timeline = make_timeline(
+            name='Old', jp_start_date=timezone.make_aware(datetime.datetime(2024, 1, 31)),
+            global_start_date=None, global_end_date=None,
+        )
+        self.new_timeline = make_timeline(
+            name='New', jp_start_date=timezone.make_aware(datetime.datetime(2026, 2, 14)),
+            global_start_date=None, global_end_date=None,
+        )
+
+    def _uma_on(self, timeline, name):
+        uma = Uma.objects.create(name=name)
+        UmasOnUmaBanner.objects.create(
+            uma=uma, banner_uma=make_uma_banner(timeline, name=f'{name} banner')
+        )
+        return uma
+
+    def test_first_jp_date_is_the_earliest_banner_appearance(self):
+        uma = self._uma_on(self.new_timeline, 'Rerun Uma')
+        # Same uma also appeared on the older banner — the earliest wins.
+        UmasOnUmaBanner.objects.create(
+            uma=uma, banner_uma=make_uma_banner(self.old_timeline, name='Rerun original')
+        )
+        uma_dates, _ = build_first_jp_date_maps()
+        self.assertEqual(uma_dates[uma.id].date(), datetime.date(2024, 1, 31))
+
+    def test_cards_with_no_banner_are_absent_not_null(self):
+        orphan = Uma.objects.create(name='Never Featured')
+        uma_dates, _ = build_first_jp_date_maps()
+        self.assertNotIn(orphan.id, uma_dates)
+
+    def test_support_cards_get_their_own_map(self):
+        card = SupportCard.objects.create(name='Test SSR', game_id=30184)
+        SupportsOnSupportBanner.objects.create(
+            support_card=card,
+            banner_support=make_support_banner(self.old_timeline, name='SSR banner'),
+        )
+        _, support_dates = build_first_jp_date_maps()
+        self.assertEqual(support_dates[card.id].date(), datetime.date(2024, 1, 31))
+
+    def test_cutoff_is_inclusive(self):
+        # Sakura Bakushin O debuted exactly on the 3rd Anniversary's cutoff and
+        # the source sheet lists her as selectable — the boundary is IN.
+        on_cutoff = timezone.make_aware(datetime.datetime(2024, 1, 31))
+        self.assertTrue(is_eligible(on_cutoff, datetime.date(2024, 1, 31)))
+
+    def test_card_released_after_cutoff_is_ineligible(self):
+        after = timezone.make_aware(datetime.datetime(2024, 2, 1))
+        self.assertFalse(is_eligible(after, datetime.date(2024, 1, 31)))
+
+    def test_null_cutoff_means_unrestricted(self):
+        self.assertTrue(is_eligible(timezone.now(), None))
+
+    def test_unknown_release_date_is_ineligible_under_a_real_cutoff(self):
+        # Conservative: claiming a selector covers a card it can't is worse than
+        # hiding one it could.
+        self.assertFalse(is_eligible(None, datetime.date(2024, 1, 31)))
+
+
+class AnniversaryEventDateTests(TestCase):
+    """A campaign spans its banner parts rather than owning dates."""
+
+    def test_dates_span_earliest_start_to_latest_end(self):
+        now = timezone.now()
+        part1 = make_timeline(
+            name='Part 1', global_start_date=now,
+            global_end_date=now + datetime.timedelta(days=10),
+        )
+        part2 = make_timeline(
+            name='Part 2', global_start_date=now + datetime.timedelta(days=5),
+            global_end_date=now + datetime.timedelta(days=30),
+        )
+        event = make_anniversary_event(parts=[part1, part2])
+
+        emap = build_effective_date_maps()[BannerTimeline]
+        resolved = build_anniversary_event_date_map([event], emap)[event.id]
+
+        self.assertEqual(resolved['start_date'], part1.global_start_date)
+        self.assertEqual(resolved['end_date'], part2.global_end_date)
+        self.assertFalse(resolved['is_predicted'])
+
+    def test_one_predicted_part_makes_the_whole_campaign_predicted(self):
+        now = timezone.now()
+        # Anchor: a confirmed JP+global pair the predictor can measure from.
+        make_timeline(
+            name='Anchor',
+            jp_start_date=timezone.make_aware(datetime.datetime(2022, 1, 1)),
+            jp_end_date=timezone.make_aware(datetime.datetime(2022, 1, 14)),
+            global_start_date=now, global_end_date=now + datetime.timedelta(days=14),
+        )
+        confirmed = make_timeline(
+            name='Confirmed part', global_start_date=now,
+            global_end_date=now + datetime.timedelta(days=10),
+        )
+        predicted = make_timeline(
+            name='Predicted part',
+            jp_start_date=timezone.make_aware(datetime.datetime(2022, 6, 1)),
+            jp_end_date=timezone.make_aware(datetime.datetime(2022, 6, 14)),
+            global_start_date=None, global_end_date=None,
+        )
+        event = make_anniversary_event(parts=[confirmed, predicted])
+
+        emap = build_effective_date_maps()[BannerTimeline]
+        resolved = build_anniversary_event_date_map([event], emap)[event.id]
+
+        self.assertTrue(resolved['is_predicted'])
+
+    def test_campaign_with_no_parts_resolves_to_null_dates(self):
+        event = make_anniversary_event(parts=[])
+        emap = build_effective_date_maps()[BannerTimeline]
+        resolved = build_anniversary_event_date_map([event], emap)[event.id]
+
+        self.assertIsNone(resolved['start_date'])
+        self.assertIsNone(resolved['end_date'])
+        self.assertFalse(resolved['is_predicted'])
+
+
+class AnniversaryEventApiTests(TestCase):
+    """The campaign payload and the banner strip it attaches to."""
+
+    def setUp(self):
+        self.user = make_user()
+        self.client, _ = auth_client(self.user)
+        self.timeline = make_timeline(name='3rd Anniv Part 1')
+        self.event = make_anniversary_event(
+            name='3rd Anniversary',
+            jp_cutoff_date=datetime.date(2024, 1, 31),
+            parts=[self.timeline],
+            products=[
+                {'product_type': 'carat_pack', 'name': '7500 Carat Pack',
+                 'usd_cost': 70, 'paid_carat_amount': 7500,
+                 'webstore_multiplier': '1.10', 'max_quantity': 3, 'order': 1},
+                {'product_type': 'uma_selector', 'name': '$21 Uma Selector',
+                 'usd_cost': 21, 'paid_carat_amount': 1500, 'order': 2},
+            ],
+        )
+
+    def test_products_are_serialized_with_numeric_money(self):
+        # Asserted against the RENDERED payload, not res.data: res.data still
+        # holds Decimals and dates, and the point here is the wire format the
+        # browser actually parses.
+        event = self.client.get('/calculator-data').json()['anniversary_event_data'][0]
+        pack = next(p for p in event['products'] if p['product_type'] == 'carat_pack')
+
+        # JSON numbers, not DRF's default Decimal-as-string — the client does
+        # arithmetic on these directly.
+        self.assertEqual(pack['usd_cost'], 70.0)
+        self.assertEqual(pack['webstore_multiplier'], 1.10)
+        self.assertIsInstance(pack['usd_cost'], float)
+        self.assertEqual(pack['paid_carat_amount'], 7500)
+        self.assertEqual(pack['max_quantity'], 3)
+
+    def test_product_inherits_the_campaign_cutoff(self):
+        event = self.client.get('/calculator-data').json()['anniversary_event_data'][0]
+        selector = next(p for p in event['products'] if p['product_type'] == 'uma_selector')
+
+        self.assertEqual(selector['jp_cutoff_date'], '2024-01-31')
+        # The raw override stays null — this cutoff came from the campaign.
+        self.assertIsNone(selector['jp_cutoff_date_override'])
+
+    def test_product_override_beats_the_campaign_cutoff(self):
+        AnniversaryEventProduct.objects.create(
+            anniversary_event=self.event, product_type='support_selector',
+            name='$70 SSR Selector', usd_cost=70, paid_carat_amount=7500,
+            jp_cutoff_date=datetime.date(2023, 1, 1),
+        )
+        event = self.client.get('/calculator-data').json()['anniversary_event_data'][0]
+        selector = next(p for p in event['products'] if p['name'] == '$70 SSR Selector')
+
+        self.assertEqual(selector['jp_cutoff_date'], '2023-01-01')
+
+    def test_banner_carries_its_campaign_and_part_number(self):
+        res = self.client.get('/calculator-data')
+        timeline = next(
+            t for t in res.data['banner_timeline_data'] if t['id'] == self.timeline.id
+        )
+        self.assertEqual(timeline['anniversary_event']['name'], '3rd Anniversary')
+        self.assertEqual(timeline['anniversary_event']['part_number'], 1)
+
+    def test_unattached_banner_reports_no_campaign(self):
+        loose = make_timeline(name='Ordinary banner')
+        res = self.client.get('/calculator-data')
+        timeline = next(
+            t for t in res.data['banner_timeline_data'] if t['id'] == loose.id
+        )
+        self.assertIsNone(timeline['anniversary_event'])
+
+    def test_campaigns_are_public(self):
+        res = APIClient().get('/calculator-data')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(len(res.data['anniversary_event_data']), 1)
+
+
+class UserPlannedPurchaseTests(TestCase):
+    """The PATCH upsert and the selector-target validation behind it."""
+
+    def setUp(self):
+        self.user = make_user()
+        self.client, _ = auth_client(self.user)
+        self.timeline = make_timeline(
+            name='Anniv', jp_start_date=timezone.make_aware(datetime.datetime(2024, 2, 14)),
+        )
+        self.event = make_anniversary_event(
+            name='3rd Anniversary',
+            jp_cutoff_date=datetime.date(2024, 1, 31),
+            parts=[self.timeline],
+        )
+        self.pack = AnniversaryEventProduct.objects.create(
+            anniversary_event=self.event, product_type='carat_pack',
+            name='7500 Carat Pack', usd_cost=70, paid_carat_amount=7500,
+            max_quantity=3,
+        )
+        self.uma_selector = AnniversaryEventProduct.objects.create(
+            anniversary_event=self.event, product_type='uma_selector',
+            name='$21 Uma Selector', usd_cost=21, paid_carat_amount=1500,
+        )
+        # An uma old enough for the cutoff, and one too new for it.
+        self.eligible_uma = self._uma_first_seen('Eligible', datetime.datetime(2023, 6, 1))
+        self.late_uma = self._uma_first_seen('Too New', datetime.datetime(2024, 6, 1))
+
+    def _uma_first_seen(self, name, when):
+        timeline = make_timeline(
+            name=f'{name} debut', jp_start_date=timezone.make_aware(when),
+        )
+        uma = Uma.objects.create(name=name)
+        UmasOnUmaBanner.objects.create(
+            uma=uma, banner_uma=make_uma_banner(timeline, name=f'{name} banner')
+        )
+        return uma
+
+    def _patch(self, purchases):
+        return self.client.patch(
+            '/calculator-data',
+            {'user_planned_purchase_data': purchases},
+            format='json',
+        )
+
+    def test_creates_a_pack_purchase(self):
+        res = self._patch([{'product': self.pack.id, 'quantity': 2}])
+        self.assertEqual(res.status_code, 200)
+
+        purchase = UserPlannedPurchase.objects.get(user=self.user)
+        self.assertEqual(purchase.product_id, self.pack.id)
+        self.assertEqual(purchase.quantity, 2)
+
+    def test_updates_an_existing_purchase_by_id(self):
+        self._patch([{'product': self.pack.id, 'quantity': 1}])
+        existing = UserPlannedPurchase.objects.get(user=self.user)
+
+        res = self._patch([{'id': existing.id, 'product': self.pack.id, 'quantity': 3}])
+        self.assertEqual(res.status_code, 200)
+
+        existing.refresh_from_db()
+        self.assertEqual(existing.quantity, 3)
+        self.assertEqual(UserPlannedPurchase.objects.filter(user=self.user).count(), 1)
+
+    def test_empty_list_clears_the_plan(self):
+        self._patch([{'product': self.pack.id, 'quantity': 1}])
+        res = self._patch([])
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(UserPlannedPurchase.objects.filter(user=self.user).count(), 0)
+
+    def test_absent_key_leaves_the_plan_alone(self):
+        self._patch([{'product': self.pack.id, 'quantity': 1}])
+        res = self.client.patch(
+            '/calculator-data', {'user_stats_data': {'current_carat': 500}}, format='json'
+        )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(UserPlannedPurchase.objects.filter(user=self.user).count(), 1)
+
+    def test_cannot_update_another_users_purchase(self):
+        other = make_user(username='someone-else')
+        theirs = UserPlannedPurchase.objects.create(
+            user=other, product=self.pack, quantity=1
+        )
+        res = self._patch([{'id': theirs.id, 'product': self.pack.id, 'quantity': 9}])
+
+        self.assertEqual(res.status_code, 404)
+        theirs.refresh_from_db()
+        self.assertEqual(theirs.quantity, 1)
+
+    def test_accepts_an_eligible_selector_target(self):
+        res = self._patch([
+            {'product': self.uma_selector.id, 'quantity': 1,
+             'target_uma': self.eligible_uma.id}
+        ])
+        self.assertEqual(res.status_code, 200)
+
+    def test_rejects_a_target_released_after_the_cutoff(self):
+        res = self._patch([
+            {'product': self.uma_selector.id, 'quantity': 1,
+             'target_uma': self.late_uma.id}
+        ])
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(UserPlannedPurchase.objects.filter(user=self.user).count(), 0)
+
+    def test_rejects_a_target_on_a_carat_pack(self):
+        res = self._patch([
+            {'product': self.pack.id, 'quantity': 1, 'target_uma': self.eligible_uma.id}
+        ])
+        self.assertEqual(res.status_code, 400)
+
+    def test_rejects_a_support_target_on_an_uma_selector(self):
+        card = SupportCard.objects.create(name='An SSR', game_id=30001)
+        res = self._patch([
+            {'product': self.uma_selector.id, 'quantity': 1, 'target_support': card.id}
+        ])
+        self.assertEqual(res.status_code, 400)
+
+    def test_a_failed_row_rolls_back_the_whole_patch(self):
+        # Stats are written before purchases; an invalid purchase must undo them.
+        res = self.client.patch(
+            '/calculator-data',
+            {
+                'user_stats_data': {'current_carat': 12345},
+                'user_planned_purchase_data': [
+                    {'product': self.uma_selector.id, 'target_uma': self.late_uma.id}
+                ],
+            },
+            format='json',
+        )
+        self.assertEqual(res.status_code, 400)
+        self.user.refresh_from_db()
+        self.assertNotEqual(self.user.current_carat, 12345)
+
+    def test_purchases_are_scoped_to_the_requesting_user(self):
+        other = make_user(username='not-me')
+        UserPlannedPurchase.objects.create(user=other, product=self.pack, quantity=5)
+        self._patch([{'product': self.pack.id, 'quantity': 1}])
+
+        res = self.client.get('/calculator-data')
+        self.assertEqual(len(res.data['user_planned_purchase_data']), 1)
+        self.assertEqual(res.data['user_planned_purchase_data'][0]['quantity'], 1)
+
+
+class ReservedCopiesTests(TestCase):
+    """reserved_copies rides along on the existing planned-banner payload."""
+
+    def setUp(self):
+        self.user = make_user()
+        self.client, _ = auth_client(self.user)
+        self.banner = make_uma_banner()
+
+    def test_defaults_to_zero_and_round_trips(self):
+        res = self.client.patch(
+            '/calculator-data',
+            {'user_planned_banner_data': [
+                {'banner_uma': self.banner.id, 'number_of_pulls': 100}
+            ]},
+            format='json',
+        )
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(UserPlannedBanner.objects.get(user=self.user).reserved_copies, 0)
+
+        planned = UserPlannedBanner.objects.get(user=self.user)
+        res = self.client.patch(
+            '/calculator-data',
+            {'user_planned_banner_data': [
+                {'id': planned.id, 'banner_uma': self.banner.id,
+                 'number_of_pulls': 100, 'reserved_copies': 2}
+            ]},
+            format='json',
+        )
+        self.assertEqual(res.status_code, 200)
+        planned.refresh_from_db()
+        self.assertEqual(planned.reserved_copies, 2)
+
+        res = self.client.get('/calculator-data')
+        self.assertEqual(res.data['user_planned_banner_data'][0]['reserved_copies'], 2)
 
 
 # ── Analytics Tests ───────────────────────────────────────────────────────────
@@ -1473,6 +1899,7 @@ class AdminSmokeTests(TestCase):
         'admin:calculatorapi_championsmeeting',
         'admin:calculatorapi_leagueofheroes',
         'admin:calculatorapi_clubrank',
+        'admin:calculatorapi_anniversaryevent',
     ]
 
     @classmethod
@@ -1557,8 +1984,12 @@ class ContentEditorGroupCommandTests(TestCase):
         call_command('create_content_editor_group', stdout=StringIO())
         self.assertEqual(Group.objects.filter(name='Content editors').count(), 1)
         group = Group.objects.get(name='Content editors')
-        # 17 content models x 4 permissions (add/change/delete/view)
-        self.assertEqual(group.permissions.count(), 68)
+        # Derived from CONTENT_MODELS rather than hardcoded: the point of this
+        # test is idempotency (running twice doesn't double up), not the size of
+        # the list, and a literal here has to be hand-bumped for every new
+        # content model.
+        expected = len(CONTENT_MODELS) * 4  # add / change / delete / view
+        self.assertEqual(group.permissions.count(), expected)
 
     def test_command_grants_no_user_data_permissions(self):
         call_command('create_content_editor_group', stdout=StringIO())
@@ -1777,6 +2208,7 @@ class ImageLibraryTests(TestCase):
             frozenset({
                 'umas/', 'support_cards/', 'banner_timelines/',
                 'game_events/', 'champions_meetings/', 'league_of_heroes/',
+                'anniversary_events/',
             }),
         )
 

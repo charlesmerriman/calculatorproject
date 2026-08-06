@@ -3,7 +3,9 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import permissions, status
 from django.db import transaction
+from calculatorapi.eligibility import build_first_jp_date_maps
 from calculatorapi.predictions import (
+    build_anniversary_event_date_map,
     build_effective_date_maps,
     build_game_event_date_map,
     effective_sort_key,
@@ -11,8 +13,9 @@ from calculatorapi.predictions import (
 )
 from calculatorapi.models import (
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
-    UserPlannedBanner, BannerUma, BannerSupport,
-    ChampionsMeeting, LeagueOfHeroes, GameEvent, BannerTimeline
+    UserPlannedBanner, UserPlannedPurchase, BannerUma, BannerSupport,
+    ChampionsMeeting, LeagueOfHeroes, GameEvent, BannerTimeline,
+    AnniversaryEvent
 )
 from calculatorapi.views.rank_viewsets import (
     ClubRankSerializer,
@@ -28,6 +31,49 @@ from calculatorapi.views.champions_meeting import ChampionsMeetingSerializer
 from calculatorapi.views.league_of_heroes import LeagueOfHeroesSerializer
 from calculatorapi.views.game_event import GameEventSerializer
 from calculatorapi.views.banner_timeline import BannerTimelineForViewingSerializer
+from calculatorapi.views.anniversary_event import AnniversaryEventSerializer
+from calculatorapi.views.user_planned_purchase import UserPlannedPurchaseSerializer
+
+
+def _replace_user_rows(rows, *, model, serializer_class, user, missing_message):
+    """Reconcile one of the PATCH body's user-owned collections against the DB.
+
+    The contract every such collection shares:
+
+      * key absent from the body (rows is None) -> leave the collection alone
+      * []                                      -> delete every row
+      * row carrying an id                      -> partial update, 404 if the
+                                                   id isn't this user's
+      * row without an id                       -> create, owned by this user
+
+    Returns an error Response to bail out with, or None on success. The caller
+    runs inside transaction.atomic(), so returning early rolls back whatever
+    earlier collections had already written -- a half-saved plan is worse than
+    a rejected one.
+    """
+    if rows is None:
+        return None
+
+    incoming_ids = [row["id"] for row in rows if "id" in row]
+    model.objects.filter(user=user).exclude(id__in=incoming_ids).delete()
+
+    for row in rows:
+        row_id = row.get("id")
+        if row_id:
+            try:
+                instance = model.objects.get(id=row_id, user=user)
+            except model.DoesNotExist:
+                return Response({"error": missing_message},
+                                status=status.HTTP_404_NOT_FOUND)
+            serializer = serializer_class(instance, data=row, partial=True)
+        else:
+            serializer = serializer_class(data=row)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save(user=user)
+
+    return None
 
 
 class CalculatorViewSet(ViewSet):
@@ -65,6 +111,28 @@ class CalculatorViewSet(ViewSet):
             BannerSupport.objects.select_related("banner_timeline"),
             key=lambda b: effective_sort_key(emap.get(b.banner_timeline_id)),
         )
+        # Campaigns own no dates — resolved by spanning the BannerTimeline parts
+        # they link to, reusing the emap above rather than predicting afresh.
+        anniversary_event_data = AnniversaryEvent.objects.prefetch_related(
+            "banner_links", "products"
+        )
+        anniversary_emap = build_anniversary_event_date_map(
+            anniversary_event_data, emap
+        )
+        anniversary_event_data = sorted(
+            anniversary_event_data,
+            key=lambda ev: effective_sort_key(anniversary_emap.get(ev.id)),
+        )
+
+        # Selector eligibility keys off each card's earliest JP banner. Built
+        # once here and handed to every serializer that nests a card, because
+        # resolving it per card would be an N+1 across the whole catalogue.
+        uma_first_jp_dates, support_first_jp_dates = build_first_jp_date_maps()
+        card_context = {
+            "uma_first_jp_dates": uma_first_jp_dates,
+            "support_first_jp_dates": support_first_jp_dates,
+        }
+
         # Guests get the full reference payload but no user-scoped data:
         # an empty plan and null stats (the frontend seeds local defaults).
         if request.user.is_authenticated:
@@ -74,9 +142,20 @@ class CalculatorViewSet(ViewSet):
                 ),
                 key=lambda pb: effective_sort_key(planned_effective_start(pb, emap)),
             )
+            # Ordered by their campaign's resolved start so the planner renders
+            # chronologically without re-deriving dates client-side.
+            user_planned_purchase_data = sorted(
+                UserPlannedPurchase.objects.filter(user=request.user).select_related(
+                    "product__anniversary_event"
+                ),
+                key=lambda pp: effective_sort_key(
+                    anniversary_emap.get(pp.product.anniversary_event_id)
+                ),
+            )
             user_stats_data = UserStatsSerializer(request.user).data
         else:
             user_planned_banner_data = UserPlannedBanner.objects.none()
+            user_planned_purchase_data = UserPlannedPurchase.objects.none()
             user_stats_data = None
         events_data = GameEvent.objects.select_related("banner_timeline").all()
         # GameEvent has no dates of its own — resolved via the BannerTimeline
@@ -95,7 +174,13 @@ class CalculatorViewSet(ViewSet):
             key=lambda loh: effective_sort_key(loh_emap.get(loh.id)),
         )
         banner_timeline_data = sorted(
-            BannerTimeline.objects.prefetch_related("uma_banners", "support_banners"),
+            BannerTimeline.objects.prefetch_related(
+                "uma_banners",
+                "support_banners",
+                # Prefetched so the attached-campaign strip costs no extra query
+                # per banner (195 rows would otherwise be 195 lookups).
+                "anniversary_links__anniversary_event",
+            ),
             key=lambda t: effective_sort_key(emap.get(t.id)),
         )
 
@@ -105,10 +190,12 @@ class CalculatorViewSet(ViewSet):
             "champions_meeting_rank_data": ChampionsMeetingRankSerializer(champions_meeting_rank_data, many=True).data,
             "league_of_heroes_rank_data": LeagueOfHeroesRankSerializer(league_of_heroes_rank_data, many=True).data,
             "banner_uma_data": BannerUmaSerializer(
-                banner_uma_data, many=True, context={"effective_dates": emap}
+                banner_uma_data, many=True,
+                context={"effective_dates": emap, **card_context}
             ).data,
             "banner_support_data": BannerSupportSerializer(
-                banner_support_data, many=True, context={"effective_dates": emap}
+                banner_support_data, many=True,
+                context={"effective_dates": emap, **card_context}
             ).data,
             "user_planned_banner_data": UserPlannedBannerSerializer(
                 user_planned_banner_data, many=True,
@@ -118,7 +205,14 @@ class CalculatorViewSet(ViewSet):
                 # host and break the nested banner images. Every other serializer
                 # here omits request and emits relative /media/... URLs that the
                 # frontend/ingress resolves correctly — keep this one consistent.
-                context={"effective_dates": emap},
+                context={"effective_dates": emap, **card_context},
+            ).data,
+            "user_planned_purchase_data": UserPlannedPurchaseSerializer(
+                user_planned_purchase_data, many=True
+            ).data,
+            "anniversary_event_data": AnniversaryEventSerializer(
+                anniversary_event_data, many=True,
+                context={"effective_dates": anniversary_emap}
             ).data,
             "champions_meeting_data": ChampionsMeetingSerializer(
                 champions_meeting_data, many=True, context={"effective_dates": cm_emap}
@@ -131,7 +225,8 @@ class CalculatorViewSet(ViewSet):
             ).data,
             "user_stats_data": user_stats_data,
             "banner_timeline_data": BannerTimelineForViewingSerializer(
-                banner_timeline_data, many=True, context={"effective_dates": emap}
+                banner_timeline_data, many=True,
+                context={"effective_dates": emap, **card_context}
             ).data,
         }
 
@@ -139,41 +234,53 @@ class CalculatorViewSet(ViewSet):
 
     @action(detail=False, methods=["patch"], url_path="calculator-data")
     def update_calculator_data(self, request):
-        user = request.user
-
-        # Wrap everything in a transaction so a mid-update failure doesn't
-        # leave stats saved but banners half-updated (or vice versa).
+        # Wrap everything in a transaction so a mid-update failure doesn't leave
+        # stats saved but banners half-updated (or vice versa).
+        #
+        # set_rollback is load-bearing: `return`ing a Response from inside an
+        # atomic block exits the context manager NORMALLY, so Django commits.
+        # Without this the rejected half of a partly-invalid PATCH would be
+        # rolled back but the accepted half would persist -- which is exactly
+        # the state this transaction exists to prevent.
         with transaction.atomic():
-            user_stats_data = request.data.get("user_stats_data")
-            if user_stats_data:
-                user_stats_serializer = UserStatsSerializer(user, data=user_stats_data, partial=True)
-                if user_stats_serializer.is_valid():
-                    user_stats_serializer.save()
-                else:
-                    return Response(user_stats_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-            user_planned_banner_data = request.data.get("user_planned_banner_data")
-            if user_planned_banner_data is not None:
-                incoming_ids = [b["id"] for b in user_planned_banner_data if "id" in b]
-                UserPlannedBanner.objects.filter(user=user).exclude(id__in=incoming_ids).delete()
-
-                for banner_data in user_planned_banner_data:
-                    banner_id = banner_data.get("id")
-                    if banner_id:
-                        try:
-                            banner = UserPlannedBanner.objects.get(id=banner_id, user=user)
-                            serializer = UserPlannedBannerSerializer(banner, data=banner_data, partial=True)
-                            if serializer.is_valid():
-                                serializer.save()
-                            else:
-                                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                        except UserPlannedBanner.DoesNotExist:
-                            return Response({"error": "Banner not found"}, status=status.HTTP_404_NOT_FOUND)
-                    else:
-                        serializer = UserPlannedBannerSerializer(data=banner_data)
-                        if serializer.is_valid():
-                            serializer.save(user=user)
-                        else:
-                            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            error = self._apply_updates(request)
+            if error is not None:
+                transaction.set_rollback(True)
+                return error
 
         return Response({"message": "Data updated successfully"}, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def _apply_updates(request):
+        """Apply every section of the PATCH body. Returns an error Response or None.
+
+        Order matters only in that stats are cheapest to validate; all three
+        sections stand or fall together via the caller's transaction.
+        """
+        user = request.user
+
+        user_stats_data = request.data.get("user_stats_data")
+        if user_stats_data:
+            serializer = UserStatsSerializer(user, data=user_stats_data, partial=True)
+            if not serializer.is_valid():
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer.save()
+
+        collections = (
+            ("user_planned_banner_data", UserPlannedBanner,
+             UserPlannedBannerSerializer, "Banner not found"),
+            ("user_planned_purchase_data", UserPlannedPurchase,
+             UserPlannedPurchaseSerializer, "Purchase not found"),
+        )
+        for key, model, serializer_class, missing_message in collections:
+            error = _replace_user_rows(
+                request.data.get(key),
+                model=model,
+                serializer_class=serializer_class,
+                user=user,
+                missing_message=missing_message,
+            )
+            if error is not None:
+                return error
+
+        return None
