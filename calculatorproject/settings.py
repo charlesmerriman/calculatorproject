@@ -159,6 +159,11 @@ UNFOLD = {
                         "icon": "military_tech",
                         "link": reverse_lazy("admin:calculatorapi_leagueofheroes_changelist"),
                     },
+                    {
+                        "title": _("Anniversary campaigns"),
+                        "icon": "redeem",
+                        "link": reverse_lazy("admin:calculatorapi_anniversaryevent_changelist"),
+                    },
                 ],
             },
             {
@@ -233,6 +238,12 @@ UNFOLD = {
                         "icon": "checklist",
                         "link": reverse_lazy("admin:calculatorapi_userplannedbanner_changelist"),
                         "permission": _requires_perm("calculatorapi.view_userplannedbanner"),
+                    },
+                    {
+                        "title": _("Planned purchases"),
+                        "icon": "shopping_cart",
+                        "link": reverse_lazy("admin:calculatorapi_userplannedpurchase_changelist"),
+                        "permission": _requires_perm("calculatorapi.view_userplannedpurchase"),
                     },
                     {
                         "title": _("Linked accounts"),

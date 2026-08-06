@@ -98,7 +98,7 @@ Protected. Deletes the user's current auth token.
 
 Public. Returns a single aggregated payload containing all reference data and user-specific state. The frontend calls this once on mount.
 
-For anonymous requests, all reference keys are populated as usual but the two user-scoped keys are empty: `user_stats_data` is `null` and `user_planned_banner_data` is `[]`. The frontend uses the `null` stats to detect guest mode and seed local defaults.
+For anonymous requests, all reference keys are populated as usual but the user-scoped keys are empty: `user_stats_data` is `null`, and `user_planned_banner_data` / `user_planned_purchase_data` are `[]`. The frontend uses the `null` stats to detect guest mode and seed local defaults.
 
 **Response `200`**
 ```json
@@ -114,24 +114,33 @@ For anonymous requests, all reference keys are populated as usual but the two us
   "league_of_heroes_event_data": [ LeagueOfHeroes ],
   "events_data":                 [ GameEvent ],
   "user_stats_data":             UserStats,
-  "banner_timeline_data":        [ BannerTimeline ]
+  "banner_timeline_data":        [ BannerTimeline ],
+  "anniversary_event_data":      [ AnniversaryEvent ],
+  "user_planned_purchase_data":  [ UserPlannedPurchase ]
 }
 ```
 
-`user_planned_banner_data`, `banner_uma_data`, `banner_support_data`, `champions_meeting_data`, `league_of_heroes_event_data`, and `events_data` are all ordered by each row's **resolved** (confirmed-or-predicted) global start date, sorted server-side in Python since predicted dates aren't a DB column.
+`user_planned_banner_data`, `banner_uma_data`, `banner_support_data`, `champions_meeting_data`, `league_of_heroes_event_data`, `events_data`, `anniversary_event_data` and `user_planned_purchase_data` are all ordered by each row's **resolved** (confirmed-or-predicted) global start date, sorted server-side in Python since predicted dates aren't a DB column.
 
 ---
 
 ### `PATCH /calculator-data`
 
-Protected. Upserts the user's planned banners and updates their stats in one request.
+Protected. Upserts the user's planned banners and planned purchases, and updates their stats, in one request.
 
-**Upsert semantics for `user_planned_banner_data`**:
-- Row with `id` → update that row
+**Upsert semantics** — identical for `user_planned_banner_data` and `user_planned_purchase_data`:
+- Key absent from the body → that collection is left completely alone
+- Key present as `[]` → every row in that collection is deleted
+- Row with `id` → update that row (`404` if the id isn't this user's)
 - Row without `id` → create new row
 - Any row in the database not present in the payload → deleted
 
-**Request body** (both keys are optional)
+The whole request is one transaction: if any section fails validation, **nothing** is
+written, including sections already applied earlier in the same request. This relies on
+`transaction.set_rollback(True)` — returning a `Response` from inside an atomic block
+exits it normally, so Django would otherwise commit the accepted half.
+
+**Request body** (all keys are optional)
 ```json
 {
   "user_stats_data": {
@@ -139,8 +148,16 @@ Protected. Upserts the user's planned banners and updates their stats in one req
     "current_paid_carat":     0,
     "uma_ticket":             0,
     "support_ticket":         0,
+    "uma_selector_ticket":    0,
+    "support_selector_ticket": 0,
     "daily_carat":            false,
     "training_pass":          false,
+    "misc_earnings":          true,
+    "monthly_shop_tickets":   false,
+    "discounted_paid_pulls":  false,
+    "full_price_paid_pulls":  true,
+    "include_purchases_in_projection": false,
+    "webstore_bonus":         false,
     "sr_shards":              0,
     "sr_crystals":            0,
     "ssr_shards":             0,
@@ -151,13 +168,26 @@ Protected. Upserts the user's planned banners and updates their stats in one req
     "league_of_heroes_rank":  1
   },
   "user_planned_banner_data": [
-    { "id": 5, "number_of_pulls": 20, "banner_uma": 3, "banner_support": null },
-    { "number_of_pulls": 10, "banner_uma": null, "banner_support": 7 }
+    { "id": 5, "number_of_pulls": 20, "reserved_copies": 0, "banner_uma": 3, "banner_support": null },
+    { "number_of_pulls": 10, "reserved_copies": 2, "banner_uma": null, "banner_support": 7 }
+  ],
+  "user_planned_purchase_data": [
+    { "id": 2, "product": 14, "quantity": 3, "target_uma": null, "target_support": null },
+    { "product": 17, "quantity": 1, "target_uma": 88, "target_support": null }
   ]
 }
 ```
 
 Rank fields accept the integer primary key of the corresponding rank row. Exactly one of `banner_uma` / `banner_support` must be non-null per planned banner row (enforced by both the serializer and a DB check constraint).
+
+`reserved_copies` is how many copies the user plans to take with a selector ticket or an
+SSR crystal rather than by pulling. Only the count is stored — which resource pays is
+derived client-side per render from the projected balances and JP eligibility.
+
+For a planned purchase, **at most one** of `target_uma` / `target_support` may be set, it
+must match the product's type, and a carat pack may have neither. A selector target is
+additionally rejected (`400`) when the card was released on JP after the product's
+effective cutoff — see `calculatorapi/eligibility.py`.
 
 **Response `200`**
 ```json
@@ -192,8 +222,16 @@ All list responses return an array of the resource object. Retrieve by appending
   "current_paid_carat":     0,
   "uma_ticket":             0,
   "support_ticket":         0,
+  "uma_selector_ticket":    0,
+  "support_selector_ticket": 0,
   "daily_carat":            false,
   "training_pass":          false,
+  "misc_earnings":          true,
+  "monthly_shop_tickets":   false,
+  "discounted_paid_pulls":  false,
+  "full_price_paid_pulls":  true,
+  "include_purchases_in_projection": false,
+  "webstore_bonus":         false,
   "sr_shards":              0,
   "sr_crystals":            0,
   "ssr_shards":             0,
@@ -207,6 +245,12 @@ All list responses return an array of the resource object. Retrieve by appending
 
 Rank fields are returned as integer IDs (primary keys).
 
+`uma_selector_ticket` / `support_selector_ticket` are **not** gacha tickets. A gacha
+ticket is worth one pull and is spent by the pull strategy; a selector takes a specific
+card outright and never funds a pull. They are the user's current holdings and are
+treated as unrestricted (no JP cutoff); tickets projected from campaigns carry their
+campaign's cutoff instead.
+
 ### `UserPlannedBanner` (response)
 
 On GET, `banner_uma` and `banner_support` are expanded to nested objects (not IDs). On PATCH request bodies they must be integer IDs.
@@ -216,8 +260,84 @@ On GET, `banner_uma` and `banner_support` are expanded to nested objects (not ID
   "id": 1,
   "user": 1,
   "number_of_pulls": 20,
+  "reserved_copies": 0,
   "banner_uma": { ... BannerUma object ... },
   "banner_support": null
+}
+```
+
+### `AnniversaryEvent` (from `anniversary_event_data`)
+
+A dated campaign that sells discounted carat packs and grants selector tickets. Public.
+
+It owns **no dates**: `start_date` / `end_date` are resolved by spanning the
+`BannerTimeline` "Parts" it links to (earliest start, latest end), so it follows exactly
+the same confirmed-or-predicted rules as everything else on the calendar. Both are
+`null` when the campaign has no linked parts with resolved dates, and `is_predicted` is
+true if **any** contributing part is predicted.
+
+```json
+{
+  "id": 8,
+  "name": "3rd Anniversary",
+  "event_type": "anniversary",
+  "jp_cutoff_date": "2024-01-31",
+  "image": null,
+  "accent_label": "",
+  "start_date": "2027-07-17T22:00:00Z",
+  "end_date": "2027-08-19T21:59:59Z",
+  "is_predicted": true,
+  "applied_offset_days": 0,
+  "products": [ AnniversaryEventProduct ],
+  "banner_parts": [ { "banner_timeline": 142, "part_number": 1 } ]
+}
+```
+
+`event_type` is one of `anniversary` / `new_year` / `campaign` — the source sheet plans
+New Years campaigns and one-off promotions alongside anniversaries, and this keeps them
+in one table without the name lying about what a row holds.
+
+### `AnniversaryEventProduct`
+
+One purchasable line on a campaign. Packs and selectors share one shape, tagged by
+`product_type` (`carat_pack` / `uma_selector` / `support_selector`) — narrow on the tag,
+never on which fields happen to be set.
+
+```json
+{
+  "id": 14,
+  "product_type": "carat_pack",
+  "name": "7500 Carat Pack",
+  "usd_cost": 70.0,
+  "paid_carat_amount": 7500,
+  "webstore_multiplier": 1.1,
+  "max_quantity": 10,
+  "jp_cutoff_date": "2024-01-31",
+  "jp_cutoff_date_override": null,
+  "order": 1
+}
+```
+
+`usd_cost` and `webstore_multiplier` are JSON **numbers**, not DRF's default
+Decimal-as-string, so the client can do arithmetic on them directly.
+
+`jp_cutoff_date` is already resolved against the campaign's — the client never has to
+reimplement the fallback. `jp_cutoff_date_override` exposes the product's own value and
+is `null` when the cutoff came from the campaign.
+
+### `UserPlannedPurchase` (from `user_planned_purchase_data`)
+
+`product` stays an integer id on both read and write — unlike planned banners, nothing is
+nested, because the client already holds the whole campaign catalogue and joins on it.
+
+```json
+{
+  "id": 2,
+  "user": 1,
+  "product": 14,
+  "quantity": 3,
+  "target_uma": null,
+  "target_support": null
 }
 ```
 
@@ -229,9 +349,16 @@ On GET, `banner_uma` and `banner_support` are expanded to nested objects (not ID
   "free_pulls": 0,
   "admin_comments": "string | null",
   "banner_timeline": { "id": 1, "name": "string", "start_date": "ISO8601", "end_date": "ISO8601", "is_predicted": false, "jp_start_date": "ISO8601 | null", "jp_end_date": "ISO8601 | null", "global_start_date": "ISO8601 | null", "global_end_date": "ISO8601 | null", "image": "url | null" },
-  "umas": [ { "id": 1, "name": "string", "image": "url | null", "admin_comments": "string | null" } ]
+  "umas": [ { "id": 1, "name": "string", "image": "url | null", "admin_comments": "string | null", "first_jp_date": "ISO8601 | null" } ]
 }
 ```
+
+`first_jp_date` on a nested uma or support card is the earliest JP banner it appeared
+on, derived server-side (never stored) and the key **selector eligibility** is judged
+on: a selector may only take cards released on JP on or before its cutoff, inclusive.
+`null` means the card has never been featured on a banner in our data — treat that as
+*unknown*, not *ancient*; eligibility refuses `null` under a real cutoff. See
+`calculatorapi/eligibility.py`.
 
 ### `BannerSupport`
 ```json
@@ -241,7 +368,7 @@ On GET, `banner_uma` and `banner_support` are expanded to nested objects (not ID
   "free_pulls": 0,
   "admin_comments": "string | null",
   "banner_timeline": { ... },
-  "support_cards": [ { "id": 1, "name": "string", "image": "url | null", "admin_comments": "string | null" } ]
+  "support_cards": [ { "id": 1, "name": "string", "image": "url | null", "admin_comments": "string | null", "first_jp_date": "ISO8601 | null" } ]
 }
 ```
 
@@ -329,9 +456,17 @@ The `banner_timeline_data` key uses an expanded serializer that nests uma and su
   "applied_offset_days": 0,
   "image": "url | null",
   "banner_umas": [ { "id": 1, "name": "string", "free_pulls": 0, "admin_comments": "string | null", "umas": [ { ...uma + "recommendation": "string | null" } ] } ],
-  "banner_supports": [ { ... } ]
+  "banner_supports": [ { ... } ],
+  "anniversary_event": { "id": 8, "name": "3rd Anniversary", "event_type": "anniversary", "accent_label": "", "image": "url | null", "part_number": 2 }
 }
 ```
+
+**`anniversary_event`.** The campaign this banner is a Part of, or `null`. A flat summary
+rather than the full `AnniversaryEvent`: the timeline only needs enough to draw the
+attached strip, and the same campaign is already sent in full — with its products — under
+`anniversary_event_data`. Nesting it here would repeat the whole catalogue once per Part.
+Note the link is owned entirely by `AnniversaryEventBanner`; `BannerTimeline` itself has
+no campaign column.
 
 ### `ChampionsMeeting` (from `champions_meeting_data`)
 

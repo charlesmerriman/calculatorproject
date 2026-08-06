@@ -1,8 +1,11 @@
 from rest_framework import serializers
 from calculatorapi.models import Uma
+from .mixins import FirstJpDateMixin
 
 
-class UmaSerializer(serializers.ModelSerializer):
+class UmaSerializer(FirstJpDateMixin, serializers.ModelSerializer):
+    context_key = "uma_first_jp_dates"
+
     class Meta:
         model = Uma
         fields = (
@@ -10,4 +13,5 @@ class UmaSerializer(serializers.ModelSerializer):
             "name",
             "image",
             "admin_comments",
+            "first_jp_date",
         )
