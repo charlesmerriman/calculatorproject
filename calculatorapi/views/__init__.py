@@ -20,3 +20,8 @@ from .champions_meeting import ChampionsMeetingSerializer
 from .league_of_heroes import LeagueOfHeroesSerializer, LeagueOfHeroesViewSet
 from .game_event import GameEventSerializer, GameEventViewSet
 from .changelog import ChangelogEntrySerializer, ChangelogEntryViewSet
+from .anniversary_event import (
+    AnniversaryEventSerializer,
+    AnniversaryEventProductSerializer,
+)
+from .user_planned_purchase import UserPlannedPurchaseSerializer

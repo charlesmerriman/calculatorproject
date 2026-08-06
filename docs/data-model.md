@@ -216,6 +216,14 @@ erDiagram
 
     GameEvent }o--o| BannerTimeline : "banner_timeline"
     ChangelogChange }o--|| ChangelogEntry : "entry"
+
+    AnniversaryEventBanner }o--|| AnniversaryEvent : "anniversary_event"
+    AnniversaryEventBanner }o--|| BannerTimeline : "banner_timeline"
+    AnniversaryEventProduct }o--|| AnniversaryEvent : "anniversary_event"
+    UserPlannedPurchase }o--|| CustomUser : "user"
+    UserPlannedPurchase }o--|| AnniversaryEventProduct : "product"
+    UserPlannedPurchase }o--o| Uma : "target_uma"
+    UserPlannedPurchase }o--o| SupportCard : "target_support"
 ```
 
 ---
@@ -227,6 +235,49 @@ erDiagram
 A DB-level `CheckConstraint` named `only_one_support_or_uma` enforces that every row has exactly one of `banner_uma` or `banner_support` set and the other null. The serializer also validates this at the application layer before the row reaches the database.
 
 This is the discriminated union that the frontend mirrors with the `SavedPlannedBanner` / `LocalPlannedBanner` types.
+
+### `AnniversaryEvent` owns the link to `BannerTimeline`, not the other way round
+
+A campaign spans several banner "Parts" (the 3rd Anniversary is four separate
+`BannerTimeline` rows), recorded by the `AnniversaryEventBanner` through table with a
+`part_number`. The link deliberately lives on the campaign side: `BannerTimeline` is
+shared, heavily-used content and gains no campaign column, exactly as `GameEvent`
+already owns its own FK to it.
+
+**The campaign owns no dates.** `start_date` / `end_date` are resolved by spanning the
+linked parts — earliest resolved start, latest resolved end — via
+`predictions.anniversary_event_effective_dates`. That keeps campaigns on the one shared
+prediction calendar, inheriting `is_predicted` and the cascading schedule offsets for
+free. A standalone set of jp/global date fields would need its own prediction anchor,
+and with only ~3 campaigns holding confirmed global dates that anchor would be far
+weaker than `BannerTimeline`'s. `is_predicted` is true if **any** contributing part is
+predicted: a range is only as certain as its least certain edge.
+
+### `AnniversaryEventProduct` — one tagged model for packs and selectors
+
+Carat packs and selector tickets are the same shape: a priced item attached to a
+campaign, bought in some quantity, crediting paid carats. The only difference is that a
+selector additionally grants a ticket, which `product_type` records
+(`carat_pack` / `uma_selector` / `support_selector`). Two near-identical tables would
+have duplicated every field and forced every reader to union them; this repo already
+narrows on tag fields elsewhere (see `event_type` on the timeline union).
+
+Real-money prices live in the database, never in code, so they can be corrected without
+a deploy when the store changes.
+
+### Selector eligibility is derived, not stored
+
+A selector may only take cards released on JP on or before its cutoff (inclusive). There
+is no stored "JP release date": it is derived as `MIN(BannerTimeline.jp_start_date)` over
+the banners a card has appeared on (`calculatorapi/eligibility.py`). Validated against
+the source sheet's own cutoffs — `30184 Sakura Bakushin O` derives 2024-01-31, exactly
+the 3rd Anniversary cutoff it is listed as selectable under; `30287 Neo Universe` derives
+2026-01-30, exactly the 5th's. Deriving keeps this correct for free as banner data grows;
+a stored column would drift.
+
+Note the constraint is usually **binding**, and that is correct: a campaign's cutoff
+falls before its own banners, so a selector granted at an anniversary essentially never
+covers that anniversary's featured unit.
 
 ### Rank tables — static reference data
 

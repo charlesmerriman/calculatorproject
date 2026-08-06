@@ -35,9 +35,11 @@ The daily 50 is a separate daily login reward distinct from the base 75, and beh
 every other income source — it lands in the free/earned balance.
 
 The **500-carat purchase bonus** is the money part of the pack, so it lands in the **paid**
-balance (`current_paid_carat`) — making it the *only* income source in the whole projection
-that credits paid carats, and therefore the only thing that keeps discounted paid pulls
-funded over a long horizon.
+balance (`current_paid_carat`) — one of only three things in the projection that credit
+paid carats, and therefore a main way discounted paid pulls stay funded over a long
+horizon. (The others are the paid Training Pass's 350/month, below, and campaign
+purchases from the Selectors page — see "Campaign purchases" at the end of this
+document.)
 
 Its schedule is a rolling 30-day cycle **anchored to the day the user opens the calculator**,
 identical to the 50-Day Login Bonus machinery below (`calculateIntervalOccurrences`). The first
@@ -266,3 +268,48 @@ banner's "Max Pulls" figure from the same strategy.
 Constants: `PULL_COST_CARATS` (150) and `DISCOUNTED_PULL_COST_CARATS` (50) in
 `frontend/src/constants/gameConstants.ts`. Toggles live on `CustomUser`
 (`discounted_paid_pulls` `default=False`, `full_price_paid_pulls` `default=True`).
+
+
+---
+
+## Campaign purchases (Selectors page)
+
+The third and only non-recurring source of paid carats. A user plans, per anniversary or
+other paid campaign, how many discounted carat packs to buy and which selector tickets to
+claim; each planned line credits **paid carats** and accumulates a USD total.
+
+**Off by default.** Nothing reaches the projection until `include_purchases_in_projection`
+is switched on. Until then the Selectors page is pure budgeting and every banner estimate
+is byte-identical to what it was before the feature existed.
+
+**Amounts** come from the database, not from constants — see
+`AnniversaryEventProduct` in `backend/docs/data-model.md`. Transcribed from the sheet:
+
+| Pack | USD | Carats | Webstore multiplier |
+|---|---|---|---|
+| 11000 Carat Pack | $140 | 11,000 | 1.2x |
+| 7500 Carat Pack | $70 | 7,500 | 1.1x |
+| 1500 Carat Pack | $14 | 1,500 | 1.1x |
+| Spark Enhancement | $21 | 1,500 | 1.1x |
+
+Selector tiers are Free ($0, 0 carats), $21 (1,500 paid carats) and $70 (7,500 paid
+carats), each granting one selector ticket. Confirmed against the sheet's own totals: the
+1st Anniversary's two $21 selectors sum to "3,000 Carats / $42".
+
+**Webstore bonus.** When `webstore_bonus` is on, each pack's carats are multiplied by its
+own rate. The whole multiplied amount is **paid** carats — the bonus is not free currency.
+
+**When it lands.** At the campaign's resolved **start** — packs go on sale when the
+campaign opens. That instant is absolute, which is what keeps the banner windows tiling;
+counting purchases per-window instead would inflate totals as soon as a user split their
+plan across more banners. A campaign with no resolved date (no linked banner parts) is
+skipped rather than credited at a made-up fallback.
+
+**Selector tickets are not gacha tickets** and never enter `applyPullStrategy`. They are
+tracked as a *bucketed* pool keyed by JP cutoff, because two tickets with different
+cutoffs are different resources — see
+`frontend/docs/resource-projection-logic.md` and `frontend/src/utils/selectorTickets.ts`.
+
+**Deliberately excluded from `useAverageMonthlyIncome`.** Purchases are one-off events,
+not recurring income; averaging them would corrupt the monthly strip. This is the one
+place the "mirror every new income source in both hooks" rule is broken on purpose.

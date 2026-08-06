@@ -20,6 +20,11 @@ class UserPlannedBanner(models.Model):
         null=True,
     )
     number_of_pulls = models.IntegerField()
+    # Copies the user intends to obtain WITHOUT pulling, using a selector ticket
+    # or an SSR crystal. Only the count is stored — which resource pays for each
+    # copy is derived on every render from the projected balances and the
+    # banner's JP eligibility, so it can never go stale against them.
+    reserved_copies = models.IntegerField(default=0)
 
     class Meta:
         constraints = [

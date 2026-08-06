@@ -30,7 +30,12 @@ class BannerSupportNestedSerializer(serializers.ModelSerializer):
     def get_support_cards(self, obj):
         result = []
         for junction in obj.supportsonsupportbanner_set.select_related('support_card').all():
-            card_data = SupportCardSerializer(junction.support_card).data
+            # Context is forwarded so the nested card can resolve first_jp_date
+            # from the request-wide map; a SerializerMethodField doesn't inherit
+            # it the way a declared nested field would.
+            card_data = SupportCardSerializer(
+                junction.support_card, context=self.context
+            ).data
             card_data['recommendation'] = junction.recommendation
             result.append(card_data)
         return result
@@ -46,7 +51,8 @@ class BannerUmaNestedSerializer(serializers.ModelSerializer):
     def get_umas(self, obj):
         result = []
         for junction in obj.umasonumabanner_set.select_related('uma').all():
-            uma_data = UmaSerializer(junction.uma).data
+            # See get_support_cards above on why context is forwarded here.
+            uma_data = UmaSerializer(junction.uma, context=self.context).data
             uma_data['recommendation'] = junction.recommendation
             result.append(uma_data)
         return result
@@ -61,6 +67,7 @@ class BannerTimelineForViewingSerializer(EventTypeMixin, EffectiveDateMixin,
 
     banner_umas = BannerUmaNestedSerializer(source="uma_banners", many=True, read_only=True)
     banner_supports = BannerSupportNestedSerializer(source="support_banners", many=True, read_only=True)
+    anniversary_event = serializers.SerializerMethodField()
 
     class Meta:
         model = BannerTimeline
@@ -69,8 +76,33 @@ class BannerTimelineForViewingSerializer(EventTypeMixin, EffectiveDateMixin,
             "start_date", "end_date", "is_predicted",
             "jp_start_date", "jp_end_date", "global_start_date", "global_end_date",
             "schedule_offset_days", "applied_offset_days",
-            "image", "banner_umas", "banner_supports",
+            "image", "banner_umas", "banner_supports", "anniversary_event",
         )
+
+    def get_anniversary_event(self, obj):
+        """The campaign this banner is a part of, if any, plus which part it is.
+
+        Deliberately a flat summary rather than the full AnniversaryEventSerializer:
+        the timeline only needs enough to draw the attached strip, and the same
+        campaign is already sent in full (with its products) under
+        anniversary_event_data. Nesting it here would repeat the whole catalogue
+        once per part.
+
+        A banner in more than one campaign is not meaningful, so the first link
+        wins rather than the field becoming a list for a case that never occurs.
+        """
+        link = next(iter(obj.anniversary_links.all()), None)
+        if link is None:
+            return None
+        event = link.anniversary_event
+        return {
+            "id": event.id,
+            "name": event.name,
+            "event_type": event.event_type,
+            "accent_label": event.accent_label,
+            "image": event.image.url if event.image else None,
+            "part_number": link.part_number,
+        }
 
 
 class BannerTimelineViewSet(ViewSet):

@@ -47,6 +47,8 @@ from .models import (
     GameEvent, LeagueOfHeroes,
     ChangelogEntry, ChangelogChange,
     SocialAccount,
+    AnniversaryEvent, AnniversaryEventBanner, AnniversaryEventProduct,
+    UserPlannedPurchase,
 )
 
 # ── 1. Site branding ─────────────────────────────────────────────────────────
@@ -119,6 +121,31 @@ class ChangelogChangeInline(TabularInline):
     """The individual change lines of a changelog entry, edited on its page."""
     model = ChangelogChange
     fields = ("order", "category", "text")
+    extra = 1
+
+
+class AnniversaryEventBannerInline(TabularInline):
+    """The banner "Parts" a campaign spans, edited on the campaign's page.
+
+    Editing the link here rather than on BannerTimeline keeps that shared model
+    free of campaign fields, and puts every part of a campaign on one screen —
+    which is also where its date range comes from.
+    """
+    model = AnniversaryEventBanner
+    fields = ("part_number", "banner_timeline")
+    autocomplete_fields = ("banner_timeline",)
+    ordering = ("part_number",)
+    extra = 1
+
+
+class AnniversaryEventProductInline(TabularInline):
+    """The carat packs and selectors a campaign sells."""
+    model = AnniversaryEventProduct
+    fields = (
+        "order", "product_type", "name", "usd_cost", "paid_carat_amount",
+        "webstore_multiplier", "max_quantity", "jp_cutoff_date",
+    )
+    ordering = ("order",)
     extra = 1
 
 
@@ -348,6 +375,59 @@ class GameEventAdmin(ImagePreviewMixin, SpacesImagePickerMixin, ModelAdmin):
         return obj.banner_timeline.global_end_date + GAME_EVENT_END_DATE_BUFFER
 
 
+@admin.register(AnniversaryEvent)
+class AnniversaryEventAdmin(ImagePreviewMixin, SpacesImagePickerMixin, ModelAdmin):
+    """A campaign that sells carat packs and grants selector tickets.
+
+    No date fields to edit: a campaign's dates come from the banner parts on the
+    inline below. The list columns show the confirmed span of those parts, with
+    no prediction math — same rule GameEventAdmin uses.
+    """
+    list_display = (
+        "name", "event_type", "part_count", "confirmed_start_date",
+        "jp_cutoff_date", "product_count",
+    )
+    list_filter = ("event_type",)
+    search_fields = ("name",)
+    readonly_fields = ("image_preview",)
+    inlines = (AnniversaryEventBannerInline, AnniversaryEventProductInline)
+    fieldsets = (
+        (None, {"fields": ("name", "event_type", "image", "image_preview")}),
+        ("Selectors", {
+            "fields": ("jp_cutoff_date", "accent_label"),
+            "description": (
+                "The cutoff applies to every selector on this campaign unless a "
+                "product overrides it. Leave blank for no restriction."
+            ),
+        }),
+    )
+
+    def get_queryset(self, request):
+        # Counts as SQL aggregates so the changelist doesn't fire two queries
+        # per row for the columns below.
+        return super().get_queryset(request).annotate(
+            _part_count=Count("banner_links", distinct=True),
+            _product_count=Count("products", distinct=True),
+        )
+
+    @admin.display(description="Parts", ordering="_part_count")
+    def part_count(self, obj):
+        return obj._part_count  # pylint: disable=protected-access
+
+    @admin.display(description="Products", ordering="_product_count")
+    def product_count(self, obj):
+        return obj._product_count  # pylint: disable=protected-access
+
+    @admin.display(description="Starts")
+    def confirmed_start_date(self, obj):
+        starts = [
+            link.banner_timeline.global_start_date
+            for link in obj.banner_links.select_related("banner_timeline")
+            if link.banner_timeline.global_start_date is not None
+        ]
+        return min(starts) if starts else "—"
+
+
 @admin.register(ChampionsMeeting)
 class ChampionsMeetingAdmin(GlobalDatesStatusMixin, ScheduleOffsetMixin, ImagePreviewMixin,
                             SpacesImagePickerMixin, ModelAdmin):
@@ -506,8 +586,10 @@ class CustomUserAdmin(UserAdmin, ModelAdmin):
                 "champions_meeting_rank", "league_of_heroes_rank",
                 "daily_carat", "training_pass", "misc_earnings",
                 "monthly_shop_tickets", "discounted_paid_pulls", "full_price_paid_pulls",
+                "include_purchases_in_projection", "webstore_bonus",
                 "current_carat", "current_paid_carat",
                 "uma_ticket", "support_ticket",
+                "uma_selector_ticket", "support_selector_ticket",
                 "ssr_crystals", "sr_crystals", "ssr_shards", "sr_shards",
             ),
         }),
@@ -542,9 +624,25 @@ class SocialAccountAdmin(ModelAdmin):
 
 @admin.register(UserPlannedBanner)
 class UserPlannedBannerAdmin(ModelAdmin):
-    list_display = ("user", "banner_uma", "banner_support", "number_of_pulls")
+    list_display = (
+        "user", "banner_uma", "banner_support", "number_of_pulls", "reserved_copies",
+    )
     list_select_related = ("user", "banner_uma", "banner_support")
     search_fields = ("user__username",)
+
+
+@admin.register(UserPlannedPurchase)
+class UserPlannedPurchaseAdmin(ModelAdmin):
+    list_display = ("user", "product", "quantity", "selector_target")
+    list_filter = ("product__product_type", "product__anniversary_event")
+    list_select_related = (
+        "user", "product__anniversary_event", "target_uma", "target_support",
+    )
+    search_fields = ("user__username",)
+
+    @admin.display(description="Selector target")
+    def selector_target(self, obj):
+        return obj.target_uma or obj.target_support or "—"
 
 
 # Group is registered by django.contrib.auth with a plain ModelAdmin;

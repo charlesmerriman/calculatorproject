@@ -97,6 +97,36 @@ class EventTypeMixin(serializers.Serializer):
         return self.event_type_value
 
 
+class FirstJpDateMixin(serializers.Serializer):
+    """
+    Emits `first_jp_date` — the earliest JP banner this card appeared on, which
+    is the key selector eligibility is judged on (see calculatorapi/eligibility.py).
+
+    It reads a prebuilt {id: date} map from serializer context rather than
+    annotating the queryset, because these serializers are nested several levels
+    deep inside banners and planned banners; an annotation would have to be
+    threaded through every one of those querysets, and a per-object lookup would
+    be an N+1 across every card on every banner. One map, built once per request
+    by build_first_jp_date_maps(), covers all of them.
+
+    Emits null when no map is in context (standalone use, e.g. the admin) or when
+    the card has never appeared on a banner. Consumers must treat null as
+    "unknown", not "ancient" — eligibility.is_eligible() refuses it under a real
+    cutoff for exactly that reason.
+
+    Subclasses set `context_key`, since umas and support cards get separate maps.
+    """
+
+    first_jp_date = serializers.SerializerMethodField()
+
+    #: Overridden per serializer.
+    context_key = None
+
+    def get_first_jp_date(self, obj):
+        value = (self.context.get(self.context_key) or {}).get(obj.id)
+        return _DT.to_representation(value) if value is not None else None
+
+
 class GameEventDateMixin(_ResolvedDateMixin):
     """
     GameEvent has no global_start_date/global_end_date of its own — its dates

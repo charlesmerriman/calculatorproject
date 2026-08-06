@@ -308,3 +308,54 @@ def build_game_event_confirmed_date_map(game_events):
         game_event.id: game_event_confirmed_dates(game_event)
         for game_event in game_events
     }
+
+
+def anniversary_event_effective_dates(anniversary_event, banner_timeline_emap):
+    """
+    Resolve an AnniversaryEvent's date range by spanning every BannerTimeline
+    "Part" it is linked to — start = the earliest resolved part start, end = the
+    latest resolved part end. Like game_event_effective_dates this does no
+    prediction of its own; it reads an already-built BannerTimeline map, which is
+    what keeps campaigns on the one shared calendar and gives them schedule
+    offsets for free.
+
+    is_predicted is True if ANY contributing part is predicted: the range is only
+    as certain as its least certain edge, so a campaign whose Part 1 is confirmed
+    but whose Part 4 is still predicted must show as predicted.
+
+    A campaign with no links (or whose links have no resolved dates) resolves to
+    (None, None, False) and sorts last, exactly as an unlinked GameEvent does.
+    Callers must not assume a campaign is dated.
+    """
+    starts, ends, predicted, offsets = [], [], False, []
+    for link in anniversary_event.banner_links.all():
+        entry = banner_timeline_emap.get(link.banner_timeline_id)
+        if entry is None or entry["start_date"] is None:
+            continue
+        starts.append(entry["start_date"])
+        if entry["end_date"] is not None:
+            ends.append(entry["end_date"])
+        predicted = predicted or entry["is_predicted"]
+        offsets.append(entry["applied_offset_days"])
+
+    if not starts:
+        return {"start_date": None, "end_date": None, "is_predicted": False,
+                "applied_offset_days": 0}
+    return {
+        "start_date": min(starts),
+        "end_date": max(ends) if ends else None,
+        "is_predicted": predicted,
+        # The offset that moved the campaign's opening date, which is the instant
+        # purchases are credited at. Reporting max() here would describe a later
+        # part's shift, not the one the projection actually uses.
+        "applied_offset_days": offsets[starts.index(min(starts))],
+    }
+
+
+def build_anniversary_event_date_map(anniversary_events, banner_timeline_emap):
+    """Wraps anniversary_event_effective_dates over a queryset/iterable of
+    AnniversaryEvent rows, resolving each via the shared BannerTimeline map."""
+    return {
+        event.id: anniversary_event_effective_dates(event, banner_timeline_emap)
+        for event in anniversary_events
+    }
