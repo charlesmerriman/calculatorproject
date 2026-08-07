@@ -1629,6 +1629,96 @@ class UserPlannedPurchaseTests(TestCase):
         self.assertEqual(res.status_code, 400)
         self.assertEqual(UserPlannedPurchase.objects.filter(user=self.user).count(), 0)
 
+    def _save_target(self, uma):
+        """Save a selector pick and hand back the stored row."""
+        res = self._patch([
+            {'product': self.uma_selector.id, 'quantity': 1, 'target_uma': uma.id}
+        ])
+        self.assertEqual(res.status_code, 200)
+        return UserPlannedPurchase.objects.get(user=self.user)
+
+    def _tighten_cutoff_past(self, uma_first_seen):
+        """Move the campaign cutoff back so an already-saved pick is now too new."""
+        self.event.jp_cutoff_date = uma_first_seen
+        self.event.save(update_fields=['jp_cutoff_date'])
+
+    def test_grandfathers_a_saved_target_when_the_cutoff_moves(self):
+        # The production regression: a pick legal when it was made (the campaign
+        # had a later cutoff, or none at all) must not start rejecting the whole
+        # PATCH once an editor or a backfill tightens that cutoff.
+        saved = self._save_target(self.eligible_uma)
+        self._tighten_cutoff_past(datetime.date(2023, 1, 1))
+
+        res = self._patch([
+            {'id': saved.id, 'product': self.uma_selector.id, 'quantity': 1,
+             'target_uma': self.eligible_uma.id}
+        ])
+
+        self.assertEqual(res.status_code, 200)
+        saved.refresh_from_db()
+        self.assertEqual(saved.target_uma_id, self.eligible_uma.id)
+
+    def test_a_grandfathered_row_does_not_block_the_rest_of_the_plan(self):
+        # The reason the regression was severe: one stale pick took stats and
+        # banners down with it, because the whole PATCH shares one transaction.
+        saved = self._save_target(self.eligible_uma)
+        self._tighten_cutoff_past(datetime.date(2023, 1, 1))
+
+        res = self.client.patch(
+            '/calculator-data',
+            {
+                'user_stats_data': {'current_carat': 4321},
+                'user_planned_purchase_data': [
+                    {'id': saved.id, 'product': self.uma_selector.id,
+                     'quantity': 1, 'target_uma': self.eligible_uma.id}
+                ],
+            },
+            format='json',
+        )
+
+        self.assertEqual(res.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.current_carat, 4321)
+
+    def test_still_rejects_a_changed_target_under_a_tightened_cutoff(self):
+        # Grandfathering covers the stored pairing only — editing the row is the
+        # user acting now, and gets checked against the cutoff as it stands.
+        saved = self._save_target(self.eligible_uma)
+        self._tighten_cutoff_past(datetime.date(2023, 1, 1))
+
+        res = self._patch([
+            {'id': saved.id, 'product': self.uma_selector.id, 'quantity': 1,
+             'target_uma': self.late_uma.id}
+        ])
+
+        self.assertEqual(res.status_code, 400)
+        saved.refresh_from_db()
+        self.assertEqual(saved.target_uma_id, self.eligible_uma.id)
+
+    def test_grandfathering_does_not_survive_moving_to_another_campaign(self):
+        # Same target, different campaign — a new pairing, so the destination
+        # campaign's cutoff applies rather than the one it was saved under.
+        saved = self._save_target(self.eligible_uma)
+        stricter = make_anniversary_event(
+            name='1st Anniversary',
+            jp_cutoff_date=datetime.date(2022, 1, 31),
+            parts=[make_timeline(
+                name='1st Anniv',
+                jp_start_date=timezone.make_aware(datetime.datetime(2022, 2, 14)),
+            )],
+        )
+        other_selector = AnniversaryEventProduct.objects.create(
+            anniversary_event=stricter, product_type='uma_selector',
+            name='$21 Uma Selector', usd_cost=21, paid_carat_amount=1500,
+        )
+
+        res = self._patch([
+            {'id': saved.id, 'product': other_selector.id, 'quantity': 1,
+             'target_uma': self.eligible_uma.id}
+        ])
+
+        self.assertEqual(res.status_code, 400)
+
     def test_rejects_a_target_on_a_carat_pack(self):
         res = self._patch([
             {'product': self.pack.id, 'quantity': 1, 'target_uma': self.eligible_uma.id}

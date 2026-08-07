@@ -78,8 +78,44 @@ class UserPlannedPurchaseSerializer(serializers.ModelSerializer):
                 "A support selector cannot target an uma."
             )
 
-        self._validate_target_eligibility(product, target_uma, target_support)
+        # Only what the user is actually doing gets checked against the cutoff;
+        # a pairing already sitting on this row is left alone. See
+        # _pairing_is_unchanged for why that distinction has to exist.
+        if not self._pairing_is_unchanged(product, target_uma, target_support):
+            self._validate_target_eligibility(product, target_uma, target_support)
         return attrs
+
+    def _pairing_is_unchanged(self, product, target_uma, target_support):
+        """Is this row's (product, target) exactly what is already stored?
+
+        Cutoffs are reference data that legitimately moves. Most campaigns
+        carried no cutoff at all until 0034 backfilled one, and null reads as
+        UNRESTRICTED -- so their pickers offered every card ever released, and
+        users saved picks that were perfectly legal at the time. Editors are
+        expected to keep correcting these in the admin as real dates surface.
+
+        Re-checking an untouched row would therefore reject a plan the user
+        never changed. And because the client saves the whole plan in one atomic
+        PATCH, that rejection is not confined to the offending pick: it 400s the
+        entire request, so a single stale selector target locks the account out
+        of saving its stats and banners too, with no way back except deleting
+        the pick.
+
+        Grandfathering the stored pairing keeps the backstop pointed at what it
+        was written for -- a stale client persisting a NEW ineligible pick --
+        while never letting a shared-data correction brick an individual's
+        plan. Product is part of the identity on purpose: moving the same target
+        onto a different campaign is a different pairing, and gets re-checked
+        against that campaign's cutoff.
+        """
+        instance = self.instance
+        if instance is None:
+            return False
+        return (
+            product == instance.product
+            and target_uma == instance.target_uma
+            and target_support == instance.target_support
+        )
 
     def _validate_target_eligibility(self, product, target_uma, target_support):
         """Reject a target the selector's JP cutoff does not actually cover.
