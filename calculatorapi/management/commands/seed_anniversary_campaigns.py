@@ -17,6 +17,27 @@ unlabelled helper columns whose meaning could not be pinned down, so packs are
 seeded with a permissive placeholder (PACK_QUANTITY_LIMIT) and should be
 corrected in the admin once the real limits are known. Selectors are 1 by
 definition.
+
+ASSUMED CUTOFFS -- the sheet carries an explicit "Cutoff Date" row for the 3rd,
+3.5th, 4th, 4.5th and 5th anniversaries only. Those five are transcribed
+verbatim. Every earlier campaign is marked `# assumed` below and derived as
+**Part 1's JP start date minus 14 days**, because a null cutoff means
+"unrestricted" to both eligibility checks -- a selector that can take any card
+ever released is a worse error than one whose cutoff is a few days off.
+
+The rule reproduces four of the five transcribed cutoffs exactly and the fifth
+(5th Anniversary, 2026-01-30) to within a day, and it is corroborated by the
+sheet's own saved selector picks on the early campaigns, all of which fall
+inside the derived cutoff:
+
+    0.5th  30045 Sweep Tosho        JP 2021-07-29 <= 2021-08-02
+    1st    30077 Admire Vega        JP 2021-12-31 <= 2022-01-31
+    1st    TM Opera O (New Year)    JP 2021-12-31 <= 2022-01-31
+    1.5th  30107 Maruzensky         JP 2022-07-29 <= 2022-08-02
+
+These are best-effort values, not sourced facts. Correct any of them in the
+admin (AnniversaryEvent.jp_cutoff_date, or a per-product override) if the real
+date turns up -- nothing derives from them at runtime beyond eligibility.
 """
 
 from django.core.management.base import BaseCommand
@@ -51,26 +72,28 @@ SELECTOR_TIERS = {
 }
 
 # name, event_type, cutoff, part JP start dates, packs, uma tiers, ssr tiers
+# `# assumed` marks a cutoff derived as Part 1's JP date - 14 days rather than
+# transcribed from the sheet -- see ASSUMED CUTOFFS above.
 CAMPAIGNS = [
-    ("0.5th Anniversary", "anniversary", None,
+    ("0.5th Anniversary", "anniversary", "2021-08-02",  # assumed
      ["2021-08-16", "2021-08-24", "2021-08-30"],
      ["7500", "1500"], ["21", "70"], ["free", "21", "70"]),
-    ("1st Anniversary", "anniversary", None,
+    ("1st Anniversary", "anniversary", "2022-01-31",  # assumed
      ["2022-02-14", "2022-02-24", "2022-03-07", "2022-03-18"],
      ["7500", "1500"], ["21"], ["free", "21"]),
-    ("1.5th Anniversary", "anniversary", None,
+    ("1.5th Anniversary", "anniversary", "2022-08-02",  # assumed
      ["2022-08-16", "2022-08-24", "2022-09-02"],
      ["7500", "1500"], [], ["free"]),
-    ("2nd Anniversary", "anniversary", None,
+    ("2nd Anniversary", "anniversary", "2023-01-31",  # assumed
      ["2023-02-14", "2023-02-24", "2023-03-10", "2023-03-20"],
      ["7500", "1500"], ["21", "70"], ["free", "21", "70"]),
-    ("2.5th Anniversary", "anniversary", None,
+    ("2.5th Anniversary", "anniversary", "2023-07-31",  # assumed
      ["2023-08-14", "2023-08-24", "2023-09-04"],
      ["7500", "1500"], ["21", "70"], ["free", "21", "70"]),
-    ("Trainer Support Pack", "campaign", None,
+    ("Trainer Support Pack", "campaign", "2023-09-21",  # assumed
      ["2023-10-05"],
      [], ["21"], ["21"]),
-    ("New Years 2024", "new_year", None,
+    ("New Years 2024", "new_year", "2023-12-14",  # assumed
      ["2023-12-28", "2024-01-09"],
      ["7500", "1500"], ["21"], []),
     ("3rd Anniversary", "anniversary", "2024-01-31",
@@ -79,7 +102,9 @@ CAMPAIGNS = [
     ("3.5th Anniversary", "anniversary", "2024-07-31",
      ["2024-08-14", "2024-08-24", "2024-09-10"],
      ["7500", "1500"], ["21", "70"], ["free", "21", "70"]),
-    ("New Years 2025", "new_year", None,
+    # No selectors, so the cutoff is inert today; set anyway so a selector added
+    # in the admin later inherits a sane campaign default instead of "any card".
+    ("New Years 2025", "new_year", "2024-12-13",  # assumed
      ["2024-12-27", "2025-01-10"],
      ["7500", "1500"], [], []),
     ("4th Anniversary", "anniversary", "2025-01-31",
@@ -88,7 +113,7 @@ CAMPAIGNS = [
     ("4.5th Anniversary", "anniversary", "2025-07-31",
      ["2025-08-14", "2025-08-24", "2025-09-09"],
      ["7500", "1500", "spark"], ["21", "70"], ["free", "21", "70"]),
-    ("New Years 2026", "new_year", None,
+    ("New Years 2026", "new_year", "2025-12-12",  # assumed
      ["2025-12-26", "2026-01-08"],
      ["7500", "1500", "spark"], [], []),
     # Part 4's JP date precedes Part 3's and the two share global dates — that is
