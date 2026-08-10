@@ -116,7 +116,8 @@ For anonymous requests, all reference keys are populated as usual but the user-s
   "user_stats_data":             UserStats,
   "banner_timeline_data":        [ BannerTimeline ],
   "anniversary_event_data":      [ AnniversaryEvent ],
-  "user_planned_purchase_data":  [ UserPlannedPurchase ]
+  "user_planned_purchase_data":  [ UserPlannedPurchase ],
+  "income_ledger":               [ IncomeLedgerRow ]
 }
 ```
 
@@ -406,6 +407,36 @@ Reward amounts are fields on the event itself (no separate reward model/list).
   "ssr_crystal_amount": 0
 }
 ```
+
+### `IncomeLedgerRow` (from `income_ledger`)
+
+The flat, date-sorted timeline the projection queries for cumulative income totals, instead of accruing income window by window as it walks. Assembled by `calculatorapi/ledger.py` from the `GameEvent`, `ChampionsMeeting` and `LeagueOfHeroes` rows and date maps already built for this request — no extra queries, no prediction of its own.
+
+```json
+{
+  "date": "ISO8601",
+  "kind": "event | champions_meeting | league_of_heroes",
+  "source_id": 1,
+  "name": "Narita Brian",
+  "is_predicted": false,
+  "throughout_end": "ISO8601 | null",
+  "carats": 80,
+  "carats_throughout": 1050,
+  "uma_tickets": 0,
+  "support_tickets": 0,
+  "ssr_shards": 0,
+  "ssr_crystals": 0,
+  "sr_shards": 0,
+  "sr_crystals": 0
+}
+```
+
+Four things to know:
+
+- **`date` is the instant the reward lands** — an event's resolved start, a race event's resolved **end**.
+- **Race rows carry no amounts.** `champions_meeting` / `league_of_heroes` rows are indicators; what a placement pays depends on the user's rank row, which only the client knows. Every amount field is still present (as `0`), so the client never guards on shape.
+- **`throughout_end` is the linked banner's end, with `GAME_EVENT_END_DATE_BUFFER` already removed.** The `carats_throughout` pool decays over the banner, not over the event, whose own `end_date` trails it by 4 days. Emitting it pre-stripped is what stops the client keeping its own copy of that constant.
+- **No rows are filtered by "today".** The ledger is a set of dated facts, past ones included; the projection applies `today < date <= end` client-side so the whole calculation shares one anchor. Rows with no *resolvable* date are dropped, since a ledger row's only purpose is its position on the calendar.
 
 ### `ChangelogEntry` (from `GET /changelog`)
 

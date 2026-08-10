@@ -4,6 +4,11 @@ from rest_framework.response import Response
 from rest_framework import permissions, status
 from django.db import transaction
 from calculatorapi.eligibility import build_first_jp_date_maps
+from calculatorapi.ledger import (
+    KIND_CHAMPIONS_MEETING,
+    KIND_LEAGUE_OF_HEROES,
+    build_income_ledger,
+)
 from calculatorapi.predictions import (
     build_anniversary_event_date_map,
     build_effective_date_maps,
@@ -32,6 +37,7 @@ from calculatorapi.views.league_of_heroes import LeagueOfHeroesSerializer
 from calculatorapi.views.game_event import GameEventSerializer
 from calculatorapi.views.banner_timeline import BannerTimelineForViewingSerializer
 from calculatorapi.views.anniversary_event import AnniversaryEventSerializer
+from calculatorapi.views.ledger import IncomeLedgerRowSerializer
 from calculatorapi.views.user_planned_purchase import UserPlannedPurchaseSerializer
 
 
@@ -184,6 +190,19 @@ class CalculatorViewSet(ViewSet):
             key=lambda t: effective_sort_key(emap.get(t.id)),
         )
 
+        # The income ledger: every reward instant on one flat, date-sorted
+        # timeline, which the projection queries for cumulative totals instead of
+        # accruing income window by window. Built from the querysets and date maps
+        # already in hand above — no extra queries, and no prediction of its own.
+        income_ledger = build_income_ledger(
+            game_events=events_data,
+            game_event_emap=game_event_emap,
+            race_sources=(
+                (KIND_CHAMPIONS_MEETING, champions_meeting_data, cm_emap),
+                (KIND_LEAGUE_OF_HEROES, league_of_heroes_event_data, loh_emap),
+            ),
+        )
+
         response = {
             "club_rank_data": ClubRankSerializer(club_rank_data, many=True).data,
             "team_trials_rank_data": TeamTrialsRankSerializer(team_trials_rank_data, many=True).data,
@@ -223,6 +242,7 @@ class CalculatorViewSet(ViewSet):
             "events_data": GameEventSerializer(
                 events_data, many=True, context={"effective_dates": game_event_emap}
             ).data,
+            "income_ledger": IncomeLedgerRowSerializer(income_ledger, many=True).data,
             "user_stats_data": user_stats_data,
             "banner_timeline_data": BannerTimelineForViewingSerializer(
                 banner_timeline_data, many=True,

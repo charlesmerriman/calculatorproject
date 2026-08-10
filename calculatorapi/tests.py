@@ -24,9 +24,12 @@ from calculatorapi.image_library import (
     normalize_prefix,
 )
 from calculatorapi.analytics import build_analytics_report
+from calculatorapi.ledger import AMOUNT_FIELDS, build_income_ledger
+from calculatorapi.views.ledger import IncomeLedgerRowSerializer
 from calculatorapi.predictions import (
     PREDICTION_FACTOR,
     GAME_EVENT_END_DATE_BUFFER,
+    build_game_event_date_map,
     apply_schedule_offsets,
     compute_effective_dates,
     game_event_effective_dates,
@@ -698,12 +701,170 @@ class GameEventBannerTimelineDeletionTests(TestCase):
         self.assertEqual(event.carat_amount, 100)
 
 
+class LedgerTests(TestCase):
+    """build_income_ledger: the flat dated timeline the projection queries.
+
+    It computes no income — it places rows on the calendar. So these pin dates,
+    ordering, and which rows exist at all; the amounts only need to survive the
+    trip intact."""
+
+    def _ledger(self):
+        """Build the ledger the same way /calculator-data does."""
+        date_maps = build_effective_date_maps()
+        emap = date_maps[BannerTimeline]
+        events = GameEvent.objects.select_related('banner_timeline').all()
+        return build_income_ledger(
+            game_events=events,
+            game_event_emap=build_game_event_date_map(events, emap),
+            race_sources=(
+                ('champions_meeting', ChampionsMeeting.objects.all(),
+                 date_maps[ChampionsMeeting]),
+                ('league_of_heroes', LeagueOfHeroes.objects.all(),
+                 date_maps[LeagueOfHeroes]),
+            ),
+        )
+
+    def test_event_row_is_dated_at_its_banner_start_and_carries_amounts(self):
+        timeline = make_timeline(
+            name='Confirmed',
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        make_game_event(banner_timeline=timeline, carat_amount=1200,
+                        uma_ticket_amount=3, ssr_shard_amount=5)
+        row, = self._ledger()
+        self.assertEqual(row['kind'], 'event')
+        self.assertEqual(row['date'], _dt(2025, 6, 1))
+        self.assertEqual(row['carats'], 1200)
+        self.assertEqual(row['uma_tickets'], 3)
+        self.assertEqual(row['ssr_shards'], 5)
+        # Untouched amounts are present as zeros, never absent.
+        self.assertEqual(row['sr_crystals'], 0)
+
+    def test_throughout_end_is_the_banner_end_not_the_event_end(self):
+        # The event's own resolved end trails its banner by the buffer, but the
+        # decay curve runs over the BANNER. Emitting it pre-stripped is what
+        # stops the client re-deriving it from its own copy of the constant.
+        timeline = make_timeline(
+            name='Confirmed',
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        make_game_event(banner_timeline=timeline, carats_throughout=900)
+        row, = self._ledger()
+        self.assertEqual(row['carats_throughout'], 900)
+        self.assertEqual(row['throughout_end'], _dt(2025, 6, 8))
+
+    def test_all_zero_event_is_omitted(self):
+        timeline = make_timeline(
+            name='Confirmed',
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        make_game_event(banner_timeline=timeline)
+        self.assertEqual(self._ledger(), [])
+
+    def test_undated_rows_are_omitted(self):
+        # An unlinked event and a race event with no resolvable dates have no
+        # position on the calendar, so they are dropped rather than emitted null.
+        make_game_event(banner_timeline=None, carat_amount=500)
+        make_champions_meeting(name='No dates', global_start_date=None,
+                               global_end_date=None,
+                               jp_start_date=_dt(2025, 1, 1),
+                               jp_end_date=_dt(2025, 1, 8))
+        self.assertEqual(self._ledger(), [])
+
+    def test_race_rows_are_dated_at_end_and_carry_no_amounts(self):
+        make_champions_meeting(
+            name='CM', global_start_date=_dt(2025, 6, 1),
+            global_end_date=_dt(2025, 6, 8),
+        )
+        make_league_of_heroes(
+            name='LoH', global_start_date=_dt(2025, 7, 1),
+            global_end_date=_dt(2025, 7, 8),
+        )
+        cm, loh = self._ledger()
+        self.assertEqual((cm['kind'], cm['date']),
+                         ('champions_meeting', _dt(2025, 6, 8)))
+        self.assertEqual((loh['kind'], loh['date']),
+                         ('league_of_heroes', _dt(2025, 7, 8)))
+        # Amounts stay zero: what a placement pays depends on the user's rank.
+        for row in (cm, loh):
+            self.assertEqual(row['carats'], 0)
+            self.assertEqual(row['uma_tickets'], 0)
+
+    def test_past_events_are_included(self):
+        # Deliberate: the ledger is a set of dated facts with no "as of today"
+        # gate. The sheet bakes one into its CM/LoH columns; we apply it
+        # client-side instead so the whole calculation shares one anchor.
+        make_champions_meeting(
+            name='Long gone', global_start_date=_dt(2020, 1, 1),
+            global_end_date=_dt(2020, 1, 8),
+        )
+        row, = self._ledger()
+        self.assertEqual(row['date'], _dt(2020, 1, 8))
+
+    def test_rows_are_sorted_by_date(self):
+        late = make_timeline(name='Late', global_start_date=_dt(2025, 9, 1),
+                             global_end_date=_dt(2025, 9, 8))
+        early = make_timeline(name='Early', global_start_date=_dt(2025, 3, 1),
+                              global_end_date=_dt(2025, 3, 8))
+        make_game_event(name='Late event', banner_timeline=late, carat_amount=1)
+        make_game_event(name='Early event', banner_timeline=early, carat_amount=1)
+        make_champions_meeting(name='Mid', global_start_date=_dt(2025, 6, 1),
+                               global_end_date=_dt(2025, 6, 8))
+        self.assertEqual(
+            [row['name'] for row in self._ledger()],
+            ['Early event', 'Mid', 'Late event'],
+        )
+
+    def test_schedule_offset_moves_ledger_dates(self):
+        # The offset is applied while the date maps are built, so the ledger
+        # inherits it without knowing it exists.
+        make_timeline(
+            name='Anchor',
+            jp_start_date=_dt(2025, 1, 1), jp_end_date=_dt(2025, 1, 8),
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        delayed = make_timeline(
+            name='Delayed',
+            jp_start_date=_dt(2025, 1, 31), jp_end_date=_dt(2025, 2, 7),
+            schedule_offset_days=5,
+        )
+        make_game_event(banner_timeline=delayed, carat_amount=100)
+        row, = self._ledger()
+        self.assertEqual(row['date'], _predicted(_dt(2025, 6, 1), 30, offset_days=5))
+        self.assertTrue(row['is_predicted'])
+
+
+class LedgerSerializerTests(TestCase):
+    def test_serializer_emits_every_amount_field(self):
+        # ledger.AMOUNT_FIELDS is what fills the zeros on every row; the
+        # serializer is what puts them on the wire. If one grows a field the
+        # other doesn't, the client silently reads undefined.
+        declared = set(IncomeLedgerRowSerializer().get_fields())
+        self.assertTrue(set(AMOUNT_FIELDS).issubset(declared))
+
+    def test_endpoint_serializes_ledger_rows(self):
+        timeline = make_timeline(
+            name='Confirmed',
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        make_game_event(banner_timeline=timeline, carat_amount=1200,
+                        carats_throughout=900)
+        res = APIClient().get('/calculator-data')
+        self.assertEqual(res.status_code, 200)
+        row, = res.data['income_ledger']
+        self.assertEqual(row['date'], _iso(_dt(2025, 6, 1)))
+        self.assertEqual(row['throughout_end'], _iso(_dt(2025, 6, 8)))
+        self.assertEqual(row['carats'], 1200)
+        self.assertEqual(row['kind'], 'event')
+
+
 _EXPECTED_GET_KEYS = {
     'club_rank_data', 'team_trials_rank_data', 'champions_meeting_rank_data',
     'league_of_heroes_rank_data', 'banner_uma_data', 'banner_support_data',
     'user_planned_banner_data', 'champions_meeting_data', 'league_of_heroes_event_data',
     'events_data', 'user_stats_data', 'banner_timeline_data',
     'anniversary_event_data', 'user_planned_purchase_data',
+    'income_ledger',
 }
 
 
