@@ -12,6 +12,7 @@ Layout of this file:
   4. Game content admins (what the "Content editors" group manages)
   5. Rank / income tables
   6. User data admins (owner-only; hidden from content editors by permissions)
+  7. Calculation constants (the projection's tunable numbers, one singleton row)
 
 The three join models (UmasOnUmaBanner, SupportsOnSupportBanner,
 ChampionsMeetingUmaRecommendation) are deliberately NOT registered top-level —
@@ -29,6 +30,8 @@ from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
 from django.db.models import Count
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.utils.html import format_html
 # django-unfold themes the admin, but only for admins that inherit its base
 # classes — a plain admin.ModelAdmin would render unstyled under unfold's
@@ -49,6 +52,7 @@ from .models import (
     SocialAccount,
     AnniversaryEvent, AnniversaryEventBanner, AnniversaryEventProduct,
     UserPlannedPurchase,
+    CalculationConstants,
 )
 
 # ── 1. Site branding ─────────────────────────────────────────────────────────
@@ -653,3 +657,100 @@ admin.site.unregister(Group)
 @admin.register(Group)
 class GroupAdmin(BaseGroupAdmin, ModelAdmin):
     pass
+
+
+# ── 7. Calculation constants ─────────────────────────────────────────────────
+
+@admin.register(CalculationConstants)
+class CalculationConstantsAdmin(ModelAdmin):
+    """
+    The one page holding every tunable number the carat projection uses.
+
+    SINGLETON BEHAVIOUR. There is exactly one row, so the usual list → add →
+    edit flow is wrong here: adding is refused once the row exists, deleting is
+    refused outright, and the changelist redirects straight to the row's edit
+    page so "Calculation constants" in the sidebar opens the form directly.
+
+    BLAST RADIUS. Every field on this page changes the numbers shown to every
+    user on their next page load, with no deploy and no review. A bad value is
+    indistinguishable from a bug in the projection. The model's validators catch
+    the obviously-wrong (negatives, an out-of-range prediction factor); nothing
+    catches a plausible-but-wrong figure, so treat this page as production data.
+    """
+
+    fieldsets = (
+        ("Daily income", {
+            "fields": ("daily_base_carats", "weekly_bonus_carats"),
+        }),
+        ("Packs & passes", {
+            "fields": (
+                "daily_carat_pack_per_day",
+                "daily_carat_pack_paid_carats",
+                "daily_carat_pack_cycle_days",
+                "training_pass_start_date",
+                "training_pass_monthly_free_carats",
+                "training_pass_monthly_paid_carats",
+                "monthly_base_reward",
+                "training_pass_free_uma_tickets",
+                "training_pass_free_support_tickets",
+                "training_pass_paid_bonus_uma_tickets",
+                "training_pass_paid_bonus_support_tickets",
+            ),
+        }),
+        ("Login campaigns & gifts", {
+            "fields": (
+                "misc_earnings_monthly",
+                "misc_earnings_delay_days",
+                "fifty_day_login_carats",
+                "fifty_day_login_cycle_days",
+                "valentines_carats", "valentines_month", "valentines_day",
+                "white_day_carats", "white_day_month", "white_day_day",
+                "monthly_shop_uma_tickets",
+                "monthly_shop_support_tickets",
+                "monthly_shop_restock_day",
+            ),
+        }),
+        ("Pull costs & uncap", {
+            "fields": (
+                "pull_cost_carats",
+                "discounted_pull_cost_carats",
+                "shards_per_crystal",
+            ),
+        }),
+        ("Event carat decay curve", {
+            "description": (
+                "Governs how an event's 'carats throughout' pool is front-loaded "
+                "across its run. Changing these moves every event's contribution "
+                "at once — retune against the parity harness, not by eye."
+            ),
+            "fields": (
+                "throughout_end_offset_days",
+                "throughout_filter_grace_days",
+                "throughout_decay_k",
+                "throughout_decay_linear_slope",
+            ),
+        }),
+        ("Global date prediction", {
+            "description": (
+                "How unconfirmed Global dates are predicted from the JP schedule. "
+                "These move BANNER DATES, not just income."
+            ),
+            "fields": ("prediction_factor", "game_event_end_buffer_days"),
+        }),
+    )
+
+    def has_add_permission(self, request):
+        # The row is created on first read by CalculationConstants.load(), so
+        # "add" is only ever reachable before that has happened.
+        return not CalculationConstants.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def changelist_view(self, request, extra_context=None):
+        """Skip the one-row list and open the form."""
+        constants = CalculationConstants.load()
+        return redirect(
+            reverse("admin:calculatorapi_calculationconstants_change",
+                    args=(constants.pk,))
+        )

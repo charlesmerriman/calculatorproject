@@ -211,6 +211,28 @@ UNFOLD = {
                 ],
             },
             {
+                "title": _("Configuration"),
+                "separator": True,
+                "collapsible": True,
+                "items": [
+                    {
+                        "title": _("Calculation constants"),
+                        "icon": "tune",
+                        "link": reverse_lazy(
+                            "admin:calculatorapi_calculationconstants_changelist"
+                        ),
+                        # Deliberately NOT a content-editor page: these numbers
+                        # move every user's projection, and some of them move
+                        # banner dates. CalculationConstants is left out of
+                        # CONTENT_MODELS, so the group has no permission and
+                        # unfold hides the whole section for them.
+                        "permission": _requires_perm(
+                            "calculatorapi.change_calculationconstants"
+                        ),
+                    },
+                ],
+            },
+            {
                 "title": _("Site content"),
                 "separator": True,
                 "collapsible": True,

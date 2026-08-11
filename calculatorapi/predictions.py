@@ -40,10 +40,24 @@ Schedule offsets (a second, separate layer on top of the above):
 
 from datetime import datetime, timedelta
 
-from .models import BannerTimeline, ChampionsMeeting, LeagueOfHeroes
+from .models import (
+    BannerTimeline,
+    CalculationConstants,
+    ChampionsMeeting,
+    LeagueOfHeroes,
+)
 
 # GameEvent's end date always trails its linked banner's end date by this much.
+# This is the DEFAULT only — the live value is admin-editable (see
+# CalculationConstants.game_event_end_buffer_days). It survives as the fallback
+# for the pure, DB-free functions below, which take it as a parameter so they
+# stay unit-testable without fixtures.
 GAME_EVENT_END_DATE_BUFFER = timedelta(days=4)
+
+
+def game_event_end_buffer():
+    """The configured game-event end buffer, as a timedelta."""
+    return timedelta(days=CalculationConstants.load().game_event_end_buffer_days)
 
 # Sentinel used only to order rows that have no resolved start date; it never
 # gets compared against a real datetime (the leading bool flag separates the
@@ -51,7 +65,12 @@ GAME_EVENT_END_DATE_BUFFER = timedelta(days=4)
 _NO_DATE_SENTINEL = datetime.max
 
 # Global covers JP's back-catalogue faster than real time; each day of JP gap
-# maps to ~0.664 days of global gap. Tune here if the observed cadence shifts.
+# maps to ~0.664 days of global gap.
+#
+# DEFAULT only, same as the buffer above: the live value is admin-editable via
+# CalculationConstants.prediction_factor, so retuning the cadence no longer needs
+# a deploy. This constant is what the pure functions fall back to when called
+# without one.
 PREDICTION_FACTOR = 0.664
 
 
@@ -63,13 +82,17 @@ def _get(row, key):
     return getattr(row, key)
 
 
-def compute_effective_dates(rows):
+def compute_effective_dates(rows, *, prediction_factor=PREDICTION_FACTOR):
     """
     Resolve each timeline's effective global dates.
 
     rows: iterable of dicts or objects exposing `id`, `jp_start_date`,
           `jp_end_date`, `global_start_date`, `global_end_date` and
           (optionally) `schedule_offset_days`.
+
+    `prediction_factor` defaults to the module constant so this stays pure and
+    DB-free for direct unit tests; the ORM wrappers below pass the admin-editable
+    value from CalculationConstants instead.
 
     Returns: { id: {"start_date": dt|None, "end_date": dt|None,
                     "is_predicted": bool, "offset_days": int,
@@ -110,7 +133,7 @@ def compute_effective_dates(rows):
         elif jp_start is not None and anchor is not None:
             # Predicted from the JP schedule, anchored to the last confirmed banner.
             jp_gap = jp_start - _get(anchor, "jp_start_date")
-            pred_start = _get(anchor, "global_start_date") + jp_gap * PREDICTION_FACTOR
+            pred_start = _get(anchor, "global_start_date") + jp_gap * float(prediction_factor)
             jp_end = _get(row, "jp_end_date")
             pred_end = pred_start + (jp_end - jp_start) if jp_end is not None else None
             result[row_id] = {
@@ -134,11 +157,17 @@ def compute_effective_dates(rows):
     return result
 
 
-def build_effective_date_map(model=BannerTimeline):
+def build_effective_date_map(model=BannerTimeline, *, prediction_factor=None):
     """Fetch every row's raw dates for `model` in one query and resolve them.
     Covers all ids so any serialization path can look up any row. `model` must
     expose the jp_*/global_* date fields; each model gets its own anchor set, so
-    pass one model at a time (never merge rows across content types)."""
+    pass one model at a time (never merge rows across content types).
+
+    `prediction_factor` is loaded from CalculationConstants when not given.
+    Callers resolving several models should read it once and pass it down rather
+    than paying a query per model."""
+    if prediction_factor is None:
+        prediction_factor = CalculationConstants.load().prediction_factor
     rows = model.objects.values(
         "id",
         "jp_start_date",
@@ -147,7 +176,7 @@ def build_effective_date_map(model=BannerTimeline):
         "global_end_date",
         "schedule_offset_days",
     )
-    return compute_effective_dates(rows)
+    return compute_effective_dates(rows, prediction_factor=prediction_factor)
 
 
 def apply_schedule_offsets(emaps):
@@ -215,7 +244,13 @@ def build_effective_date_maps(models=(BannerTimeline, ChampionsMeeting, LeagueOf
 
     Use this rather than calling build_effective_date_map per model — offsets
     are only correct when the maps are resolved as one calendar."""
-    maps = {model: build_effective_date_map(model) for model in models}
+    # Read once and pass down: otherwise each model costs its own query for a
+    # value that cannot change mid-request.
+    prediction_factor = CalculationConstants.load().prediction_factor
+    maps = {
+        model: build_effective_date_map(model, prediction_factor=prediction_factor)
+        for model in models
+    }
     apply_schedule_offsets(maps.values())
     return maps
 
@@ -240,7 +275,8 @@ def planned_effective_start(planned_banner, emap):
     return emap.get(timeline_id)
 
 
-def game_event_effective_dates(game_event, banner_timeline_emap):
+def game_event_effective_dates(game_event, banner_timeline_emap, *,
+                               end_buffer=GAME_EVENT_END_DATE_BUFFER):
     """
     Resolve a GameEvent's dates by following its banner_timeline FK into an
     already-built BannerTimeline effective-date map (from
@@ -259,7 +295,9 @@ def game_event_effective_dates(game_event, banner_timeline_emap):
     if entry is None or entry["start_date"] is None:
         return {"start_date": None, "end_date": None, "is_predicted": False,
                 "applied_offset_days": 0}
-    end_date = entry["end_date"] + GAME_EVENT_END_DATE_BUFFER if entry["end_date"] is not None else None
+    end_date = (
+        entry["end_date"] + end_buffer if entry["end_date"] is not None else None
+    )
     return {
         "start_date": entry["start_date"],
         "end_date": end_date,
@@ -272,13 +310,16 @@ def build_game_event_date_map(game_events, banner_timeline_emap):
     """Wraps game_event_effective_dates over a queryset/iterable of GameEvent
     rows, resolving each via the shared BannerTimeline map. Used by
     /calculator-data, which needs prediction for unconfirmed banners."""
+    end_buffer = game_event_end_buffer()
     return {
-        game_event.id: game_event_effective_dates(game_event, banner_timeline_emap)
+        game_event.id: game_event_effective_dates(
+            game_event, banner_timeline_emap, end_buffer=end_buffer
+        )
         for game_event in game_events
     }
 
 
-def game_event_confirmed_dates(game_event):
+def game_event_confirmed_dates(game_event, *, end_buffer=GAME_EVENT_END_DATE_BUFFER):
     """
     Non-predicting variant: reads the linked banner's raw (confirmed-only)
     global_start_date/global_end_date directly — never predicts, always
@@ -291,7 +332,7 @@ def game_event_confirmed_dates(game_event):
         return {"start_date": None, "end_date": None, "is_predicted": False,
                 "applied_offset_days": 0}
     global_end = banner_timeline.global_end_date
-    end_date = global_end + GAME_EVENT_END_DATE_BUFFER if global_end is not None else None
+    end_date = global_end + end_buffer if global_end is not None else None
     return {
         "start_date": banner_timeline.global_start_date,
         "end_date": end_date,
@@ -304,8 +345,9 @@ def game_event_confirmed_dates(game_event):
 def build_game_event_confirmed_date_map(game_events):
     """Wraps game_event_confirmed_dates over a queryset/iterable of GameEvent
     rows. Used by the standalone /events route."""
+    end_buffer = game_event_end_buffer()
     return {
-        game_event.id: game_event_confirmed_dates(game_event)
+        game_event.id: game_event_confirmed_dates(game_event, end_buffer=end_buffer)
         for game_event in game_events
     }
 

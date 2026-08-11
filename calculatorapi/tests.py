@@ -47,6 +47,7 @@ from calculatorapi.models import (
     ChampionsMeeting, LeagueOfHeroes, GameEvent,
     ChangelogEntry, ChangelogChange,
     SocialAccount,
+    CalculationConstants,
     AnniversaryEvent, AnniversaryEventBanner, AnniversaryEventProduct,
     UserPlannedPurchase, UmasOnUmaBanner, SupportsOnSupportBanner,
 )
@@ -290,6 +291,16 @@ class AuthTests(TestCase):
 # ── Prediction logic (pure, DB-free) ──────────────────────────────────────────
 
 _UTC = datetime.timezone.utc
+
+
+# Swaps out whitenoise's manifest static storage, which raises on any admin
+# template that references a static file unless collectstatic has been run.
+# Defined here rather than beside its first user so every test class below can
+# reach it.
+PLAIN_TEST_STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'},
+}
 
 
 def _dt(y, m, d):
@@ -701,12 +712,178 @@ class GameEventBannerTimelineDeletionTests(TestCase):
         self.assertEqual(event.carat_amount, 100)
 
 
+class CalculationConstantsTests(TestCase):
+    """The singleton holding every tunable number the projection uses."""
+
+    def test_load_creates_one_row_and_returns_it_thereafter(self):
+        first = CalculationConstants.load()
+        second = CalculationConstants.load()
+        self.assertEqual(first.pk, second.pk)
+        self.assertEqual(CalculationConstants.objects.count(), 1)
+
+    def test_saving_a_second_instance_overwrites_the_first(self):
+        # save() pins the pk, so a second row cannot exist even from the shell.
+        CalculationConstants.load()
+        CalculationConstants(pull_cost_carats=999).save()
+        self.assertEqual(CalculationConstants.objects.count(), 1)
+        self.assertEqual(CalculationConstants.load().pull_cost_carats, 999)
+
+    def test_delete_is_refused(self):
+        constants = CalculationConstants.load()
+        constants.delete()
+        self.assertEqual(CalculationConstants.objects.count(), 1)
+
+    def test_defaults_match_the_current_calibration(self):
+        # A fresh database must start correct rather than zeroed.
+        constants = CalculationConstants.load()
+        self.assertEqual(constants.daily_base_carats, 75)
+        self.assertEqual(constants.weekly_bonus_carats, 150)
+        self.assertEqual(constants.pull_cost_carats, 150)
+        self.assertEqual(float(constants.prediction_factor), PREDICTION_FACTOR)
+        self.assertEqual(
+            constants.game_event_end_buffer_days, GAME_EVENT_END_DATE_BUFFER.days
+        )
+
+    def test_endpoint_serves_the_constants_as_numbers(self):
+        res = APIClient().get('/calculator-data')
+        self.assertEqual(res.status_code, 200)
+        payload = res.data['calculation_constants']
+        self.assertEqual(payload['daily_base_carats'], 75)
+        # Decimals must arrive as numbers, not DRF's default strings: the client
+        # multiplies by them, and "0.664" * 2 is a silent NaN in JavaScript.
+        self.assertIsInstance(payload['prediction_factor'], float)
+        self.assertIsInstance(payload['throughout_decay_k'], float)
+        self.assertNotIn('id', payload)
+
+    def test_edited_value_reaches_the_endpoint(self):
+        constants = CalculationConstants.load()
+        constants.misc_earnings_monthly = 4200
+        constants.save()
+        res = APIClient().get('/calculator-data')
+        self.assertEqual(res.data['calculation_constants']['misc_earnings_monthly'], 4200)
+
+    def test_prediction_factor_drives_predicted_dates(self):
+        # The whole point of making it editable: changing it must move the dates
+        # /calculator-data serves, with no deploy.
+        make_timeline(
+            name='Anchor',
+            jp_start_date=_dt(2025, 1, 1), jp_end_date=_dt(2025, 1, 8),
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        make_timeline(
+            name='Predicted',
+            jp_start_date=_dt(2025, 1, 31), jp_end_date=_dt(2025, 2, 7),
+        )
+        constants = CalculationConstants.load()
+        constants.prediction_factor = '1.000'
+        constants.save()
+
+        emap = build_effective_date_map()
+        predicted = next(e for e in emap.values() if e['is_predicted'])
+        # At a factor of 1.0 the 30-day JP gap maps to a 30-day global gap.
+        self.assertEqual(predicted['start_date'], _dt(2025, 6, 1) + datetime.timedelta(days=30))
+
+    def test_game_event_buffer_is_configurable(self):
+        timeline = make_timeline(
+            name='Confirmed',
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        make_game_event(banner_timeline=timeline, carat_amount=100)
+        constants = CalculationConstants.load()
+        constants.game_event_end_buffer_days = 9
+        constants.save()
+
+        events = GameEvent.objects.select_related('banner_timeline').all()
+        emap = build_game_event_date_map(events, build_effective_date_map())
+        entry = next(iter(emap.values()))
+        self.assertEqual(entry['end_date'], _dt(2025, 6, 8) + datetime.timedelta(days=9))
+
+    def test_pure_functions_still_run_without_the_database_value(self):
+        # compute_effective_dates keeps a module-constant default so it stays
+        # DB-free for direct unit tests.
+        rows = [{
+            'id': 1,
+            'jp_start_date': _dt(2025, 1, 1), 'jp_end_date': _dt(2025, 1, 8),
+            'global_start_date': _dt(2025, 6, 1), 'global_end_date': _dt(2025, 6, 8),
+            'schedule_offset_days': 0,
+        }]
+        out = compute_effective_dates(rows)
+        self.assertEqual(out[1]['start_date'], _dt(2025, 6, 1))
+
+
+@override_settings(STORAGES=PLAIN_TEST_STORAGES)
+class CalculationConstantsAdminTests(TestCase):
+    """The singleton admin page. Its list → add → edit flow is deliberately
+    non-standard, and a broken fieldset only surfaces on render."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.superuser = CustomUser.objects.create_superuser(username='boss', password='x')
+
+    def setUp(self):
+        self.client.force_login(self.superuser)
+
+    def test_changelist_redirects_straight_to_the_form(self):
+        res = self.client.get(reverse('admin:calculatorapi_calculationconstants_changelist'))
+        self.assertEqual(res.status_code, 302)
+        constants = CalculationConstants.load()
+        self.assertEqual(
+            res.url,
+            reverse('admin:calculatorapi_calculationconstants_change',
+                    args=(constants.pk,)),
+        )
+
+    def test_change_form_renders_every_fieldset(self):
+        # A field named in `fieldsets` that doesn't exist on the model raises
+        # here rather than at import time.
+        constants = CalculationConstants.load()
+        res = self.client.get(
+            reverse('admin:calculatorapi_calculationconstants_change',
+                    args=(constants.pk,))
+        )
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, 'Daily income')
+        self.assertContains(res, 'Global date prediction')
+
+    def test_add_is_refused_once_the_row_exists(self):
+        CalculationConstants.load()
+        res = self.client.get(reverse('admin:calculatorapi_calculationconstants_add'))
+        self.assertEqual(res.status_code, 403)
+
+    def test_delete_is_refused(self):
+        constants = CalculationConstants.load()
+        res = self.client.get(
+            reverse('admin:calculatorapi_calculationconstants_delete',
+                    args=(constants.pk,))
+        )
+        self.assertEqual(res.status_code, 403)
+
+    def test_content_editors_get_no_permission_on_it(self):
+        # It is left out of CONTENT_MODELS on purpose: these numbers move every
+        # user's projection, and some of them move banner dates.
+        call_command('create_content_editor_group', stdout=StringIO())
+        editor = make_user(username='editor', is_staff=True)
+        editor.groups.add(Group.objects.get(name='Content editors'))
+        self.assertFalse(editor.has_perm('calculatorapi.change_calculationconstants'))
+
+
 class LedgerTests(TestCase):
     """build_income_ledger: the flat dated timeline the projection queries.
 
     It computes no income — it places rows on the calendar. So these pin dates,
     ordering, and which rows exist at all; the amounts only need to survive the
     trip intact."""
+
+    def _one_row(self):
+        """The ledger's single row, asserting there is exactly one.
+
+        Preferred over `row, = self._ledger()`: a wrong count fails as a
+        readable assertion rather than a ValueError, and the expected count
+        becomes part of what each test states.
+        """
+        rows = self._ledger()
+        self.assertEqual(len(rows), 1)
+        return rows[0]
 
     def _ledger(self):
         """Build the ledger the same way /calculator-data does."""
@@ -731,7 +908,7 @@ class LedgerTests(TestCase):
         )
         make_game_event(banner_timeline=timeline, carat_amount=1200,
                         uma_ticket_amount=3, ssr_shard_amount=5)
-        row, = self._ledger()
+        row = self._one_row()
         self.assertEqual(row['kind'], 'event')
         self.assertEqual(row['date'], _dt(2025, 6, 1))
         self.assertEqual(row['carats'], 1200)
@@ -749,7 +926,7 @@ class LedgerTests(TestCase):
             global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
         )
         make_game_event(banner_timeline=timeline, carats_throughout=900)
-        row, = self._ledger()
+        row = self._one_row()
         self.assertEqual(row['carats_throughout'], 900)
         self.assertEqual(row['throughout_end'], _dt(2025, 6, 8))
 
@@ -780,7 +957,9 @@ class LedgerTests(TestCase):
             name='LoH', global_start_date=_dt(2025, 7, 1),
             global_end_date=_dt(2025, 7, 8),
         )
-        cm, loh = self._ledger()
+        rows = self._ledger()
+        self.assertEqual(len(rows), 2)
+        cm, loh = rows[0], rows[1]
         self.assertEqual((cm['kind'], cm['date']),
                          ('champions_meeting', _dt(2025, 6, 8)))
         self.assertEqual((loh['kind'], loh['date']),
@@ -798,7 +977,7 @@ class LedgerTests(TestCase):
             name='Long gone', global_start_date=_dt(2020, 1, 1),
             global_end_date=_dt(2020, 1, 8),
         )
-        row, = self._ledger()
+        row = self._one_row()
         self.assertEqual(row['date'], _dt(2020, 1, 8))
 
     def test_rows_are_sorted_by_date(self):
@@ -829,7 +1008,7 @@ class LedgerTests(TestCase):
             schedule_offset_days=5,
         )
         make_game_event(banner_timeline=delayed, carat_amount=100)
-        row, = self._ledger()
+        row = self._one_row()
         self.assertEqual(row['date'], _predicted(_dt(2025, 6, 1), 30, offset_days=5))
         self.assertTrue(row['is_predicted'])
 
@@ -864,7 +1043,7 @@ _EXPECTED_GET_KEYS = {
     'user_planned_banner_data', 'champions_meeting_data', 'league_of_heroes_event_data',
     'events_data', 'user_stats_data', 'banner_timeline_data',
     'anniversary_event_data', 'user_planned_purchase_data',
-    'income_ledger',
+    'income_ledger', 'calculation_constants',
 }
 
 
@@ -2083,12 +2262,6 @@ class AnalyticsReportScenarioTests(TestCase):
 # Rendering admin templates resolves {% static %} tags; the production
 # whitenoise manifest storage requires collectstatic, which never runs in
 # tests. Any test class that renders admin pages swaps in plain storage.
-PLAIN_TEST_STORAGES = {
-    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
-    'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'},
-}
-
-
 @override_settings(STORAGES=PLAIN_TEST_STORAGES)
 class AnalyticsDashboardViewTests(TestCase):
     """Access control and response formats for /admin/analytics/."""

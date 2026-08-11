@@ -17,6 +17,7 @@ from calculatorapi.predictions import (
     planned_effective_start,
 )
 from calculatorapi.models import (
+    CalculationConstants,
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
     UserPlannedBanner, UserPlannedPurchase, BannerUma, BannerSupport,
     ChampionsMeeting, LeagueOfHeroes, GameEvent, BannerTimeline,
@@ -38,6 +39,7 @@ from calculatorapi.views.game_event import GameEventSerializer
 from calculatorapi.views.banner_timeline import BannerTimelineForViewingSerializer
 from calculatorapi.views.anniversary_event import AnniversaryEventSerializer
 from calculatorapi.views.ledger import IncomeLedgerRowSerializer
+from calculatorapi.views.calculation_constants import CalculationConstantsSerializer
 from calculatorapi.views.user_planned_purchase import UserPlannedPurchaseSerializer
 
 
@@ -243,6 +245,11 @@ class CalculatorViewSet(ViewSet):
                 events_data, many=True, context={"effective_dates": game_event_emap}
             ).data,
             "income_ledger": IncomeLedgerRowSerializer(income_ledger, many=True).data,
+            # Every tunable number the projection uses. Served on each request so
+            # an admin edit takes effect on the next page load without a deploy.
+            "calculation_constants": CalculationConstantsSerializer(
+                CalculationConstants.load()
+            ).data,
             "user_stats_data": user_stats_data,
             "banner_timeline_data": BannerTimelineForViewingSerializer(
                 banner_timeline_data, many=True,
