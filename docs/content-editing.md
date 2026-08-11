@@ -3,6 +3,7 @@
 How to manage the game data behind the Uma Musume Carat Calculator through the
 admin site. Written for content editors — no technical background needed.
 
+
 ## Logging in
 
 Go to `https://<your-domain>/admin/` and sign in with the staff account you
@@ -198,3 +199,18 @@ The group grants add/change/delete/view on all game content and rank tables,
 and nothing else. Rerunning the command is safe — it resets the group's
 permissions to exactly the intended set (see
 `calculatorapi/management/commands/create_content_editor_group.py`).
+
+## One page to leave alone
+
+There is a **Configuration → Calculation constants** page in the sidebar. You
+almost certainly do not need it, and you will not normally be able to open it —
+the content-editor account has no permission for it, so the section is hidden.
+
+It holds the raw numbers behind every carat estimate on the site: how many carats
+a day players earn, what a pull costs, how far ahead banner dates are predicted.
+Changing one number there changes the estimate every single visitor sees, the
+moment they next load the page. A wrong value there doesn't look like a mistake —
+it looks like the calculator is broken.
+
+Adding events, banners and campaigns (everything else in this guide) is safe and
+reversible. That page is not. Leave it to whoever maintains the code.

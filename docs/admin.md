@@ -109,6 +109,34 @@ Full metric definitions: [analytics.md](analytics.md).
 
 ---
 
+## Calculation constants (Configuration)
+
+One singleton row holding every tunable number the carat projection uses, at
+**Configuration → Calculation constants** in the sidebar. Grouped into fieldsets
+(daily income, packs & passes, login campaigns & gifts, pull costs & uncap, the
+event carat decay curve, global date prediction); each field's help text names
+the source spreadsheet cell it corresponds to.
+
+Its admin is deliberately non-standard, because the usual list → add → edit flow
+makes no sense for a single row:
+
+- the changelist **redirects** straight to the row's edit form,
+- **add** is refused once the row exists,
+- **delete** is refused outright — the projection reads this row on every
+  request, and deleting it would have `load()` silently recreate it with
+  defaults, throwing away a calibration.
+
+**This is not a content-editor page.** `CalculationConstants` is left out of
+`CONTENT_MODELS` (see `management/commands/create_content_editor_group.py`), so
+the group gets no permission on it and unfold hides the whole Configuration
+section for them. That is intentional: these numbers change every user's
+projection, and `prediction_factor` / `game_event_end_buffer_days` change banner
+*dates* too.
+
+Model validators catch the obviously wrong (negatives, an out-of-range
+prediction factor). Nothing catches a plausible-but-wrong figure, so treat the
+page as production data.
+
 ## Local gotcha
 
 The local Django server runs with `DEBUG=False` and `collectstatic` has never been run
