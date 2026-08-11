@@ -739,6 +739,9 @@ class CalculationConstantsTests(TestCase):
         self.assertEqual(constants.daily_base_carats, 75)
         self.assertEqual(constants.weekly_bonus_carats, 150)
         self.assertEqual(constants.pull_cost_carats, 150)
+        # 1800/month = the 60/day the projection currently uses. The sheet says
+        # 3000; closing that gap is a deliberate parity change, not a default.
+        self.assertEqual(constants.misc_earnings_monthly, 1800)
         self.assertEqual(float(constants.prediction_factor), PREDICTION_FACTOR)
         self.assertEqual(
             constants.game_event_end_buffer_days, GAME_EVENT_END_DATE_BUFFER.days

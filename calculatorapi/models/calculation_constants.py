@@ -118,11 +118,15 @@ class CalculationConstants(models.Model):
 
     # ── Login campaigns & annual gifts ───────────────────────────────────────
     misc_earnings_monthly = models.IntegerField(
-        default=3000,
+        default=1800,
         validators=[MinValueValidator(0)],
         help_text=(
             "Monthly approximation of gifts, career and Team Trials extras, "
-            "dripped daily as monthly/30. Toggled per user. Sheet: Timeline!AW1."
+            "dripped daily as monthly/30. Toggled per user. "
+            "KNOWN GAP: the sheet's own figure (Timeline!AW1) is 3000, i.e. 100 "
+            "a day against our 60. This default preserves current behaviour; "
+            "raising it is a deliberate parity change to make once the harness "
+            "can measure the effect."
         ),
     )
     misc_earnings_delay_days = models.IntegerField(
