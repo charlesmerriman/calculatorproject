@@ -342,6 +342,29 @@ frontend translates them into a pending state rather than rendering them raw.
 
 Reward amounts used to live on a separate `EventReward` model, one-to-many with `GameEvent`. In practice every event had at most one immediate reward and one throughout-the-event reward, so the two were folded directly onto `GameEvent` as fields instead: `carat_amount` (+ the ticket/shard/crystal fields) is earned once the event's own resolved `start_date` passes, and `carats_throughout` is prorated by elapsed time across `start_date`..`end_date` (computed client-side — see `getThroughoutCaratsInWindow` in `frontend/src/utils/incomeCalculationUtils.ts`), independent of `start_date`. Only carats are ever distributed this way; tickets/shards/crystals are always a lump on `start_date`.
 
+### `BannerTimeline.banner_category` — presentation only, and it mirrors the sheet
+
+A `TextChoices` field recording what *kind* of banner window a row is. Nothing in the projection math reads it; it exists to drive the timeline card's layout and the category filter, and to give sheet-parity audits a diffable key.
+
+It maps 1:1 onto the "Banner Type" column (`BC`) of the source sheet's Timeline tab:
+
+| Sheet code | `banner_category` | Rows in sheet | Shape |
+|---|---|---|---|
+| `1` | `standard` | 105 | 1–2 umas + 1–2 supports |
+| `2` | `race_prep_support` | 32 | 1 uma + **10** supports |
+| `-2` | `golden_week_revival` | 4 | 3–11 umas, **zero** supports |
+| `0` | `rerun` | 2 | 1 uma |
+| `-1` | *(no member)* | 46 | Champions Meeting / League of Heroes |
+
+**Sheet code `-1` deliberately has no member.** Those rows are `ChampionsMeeting` and `LeagueOfHeroes`, which are their own models and never become `BannerTimeline` rows. A parity harness that doesn't know this will report 46 phantom missing banners.
+
+Two rules that keep the field from rotting:
+
+- **Category drives the chrome; count drives the grid.** Accent, label and column arrangement key off `banner_category`, but how many tiles fit per row stays derived from the actual `umas` / `support_cards` length. A miscategorised row then still renders every card it has instead of clipping them.
+- **It is `banner_category`, not `banner_type`.** "Banner type" already means Uma-vs-Support across the frontend (`initialBannerType`, `bannerKey(bannerType, id)`, the `banner-type-tab--uma` class). These are different axes and must not share a name.
+
+`golden_week_revival` is the only category derivable from the data — more than 2 umas *and* zero supports. That emptiness is structural: the sheet's `-2` block overwrites its support columns with umas, and the supports for that window live on a separate, concurrently-running standard banner. `manage.py classify_banner_categories --dry-run` applies exactly that rule; `race_prep_support` cannot be detected until its support cards are ingested, and `rerun` is reported for confirmation rather than auto-applied.
+
 ### `BannerTimeline` has two serializers
 
 `BannerTimelineSerializer` — the flat version, embedded inside `BannerUma` and `BannerSupport` objects.

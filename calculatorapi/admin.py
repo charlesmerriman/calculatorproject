@@ -268,9 +268,9 @@ SCHEDULE_OFFSET_FIELDSET = (
 @admin.register(BannerTimeline)
 class BannerTimelineAdmin(GlobalDatesStatusMixin, ScheduleOffsetMixin, ImagePreviewMixin,
                           SpacesImagePickerMixin, ModelAdmin):
-    list_display = ("name", "jp_start_date", "global_start_date",
+    list_display = ("name", "banner_category", "jp_start_date", "global_start_date",
                     "global_end_date", "global_dates_status", "schedule_offset_display")
-    list_filter = (GlobalDatesFilter, ScheduleOffsetFilter)
+    list_filter = ("banner_category", GlobalDatesFilter, ScheduleOffsetFilter)
     date_hierarchy = "global_start_date"
     ordering = ("-global_start_date",)
     search_fields = ("name",)  # also powers the autocomplete on banner admins
@@ -279,7 +279,7 @@ class BannerTimelineAdmin(GlobalDatesStatusMixin, ScheduleOffsetMixin, ImagePrev
     # Editors always fill the JP dates; global dates only once the banner is
     # confirmed (they're left blank until then, and the app predicts them).
     fieldsets = (
-        (None, {"fields": ("name", "image", "image_preview")}),
+        (None, {"fields": ("name", "banner_category", "image", "image_preview")}),
         ("JP server dates (always known)", {"fields": ("jp_start_date", "jp_end_date")}),
         ("Global server dates (fill when confirmed)", {"fields": ("global_start_date", "global_end_date")}),
         SCHEDULE_OFFSET_FIELDSET,
