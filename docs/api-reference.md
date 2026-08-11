@@ -117,7 +117,8 @@ For anonymous requests, all reference keys are populated as usual but the user-s
   "banner_timeline_data":        [ BannerTimeline ],
   "anniversary_event_data":      [ AnniversaryEvent ],
   "user_planned_purchase_data":  [ UserPlannedPurchase ],
-  "income_ledger":               [ IncomeLedgerRow ]
+  "income_ledger":               [ IncomeLedgerRow ],
+  "calculation_constants":       CalculationConstants
 }
 ```
 
@@ -437,6 +438,30 @@ Four things to know:
 - **Race rows carry no amounts.** `champions_meeting` / `league_of_heroes` rows are indicators; what a placement pays depends on the user's rank row, which only the client knows. Every amount field is still present (as `0`), so the client never guards on shape.
 - **`throughout_end` is the linked banner's end, with `GAME_EVENT_END_DATE_BUFFER` already removed.** The `carats_throughout` pool decays over the banner, not over the event, whose own `end_date` trails it by 4 days. Emitting it pre-stripped is what stops the client keeping its own copy of that constant.
 - **No rows are filtered by "today".** The ledger is a set of dated facts, past ones included; the projection applies `today < date <= end` client-side so the whole calculation shares one anchor. Rows with no *resolvable* date are dropped, since a ledger row's only purpose is its position on the calendar.
+
+### `CalculationConstants` (from `calculation_constants`)
+
+Every tunable number the carat projection uses, from a singleton row edited in
+Django admin under **Configuration → Calculation constants**. Served on every
+request so an edit takes effect on the next page load without a deploy.
+
+Field names and meanings come straight from
+`calculatorapi/models/calculation_constants.py`, where each carries a `help_text`
+naming the spreadsheet cell it corresponds to. The frontend mirrors the shape in
+`src/types/constants.ts` and falls back to `DEFAULT_CONSTANTS` when the key is
+absent.
+
+Two things to know:
+
+- **The decimal fields arrive as numbers, not strings.** DRF serialises
+  `DecimalField` as a string by default; these are coerced to floats because the
+  client feeds them straight into arithmetic, and `"0.664" * 2` is a silent `NaN`
+  in JavaScript rather than an error. Affects `prediction_factor`,
+  `throughout_decay_k`, `throughout_decay_linear_slope`.
+- **`training_pass_start_date` is a plain `YYYY-MM-DD` calendar day**, not a
+  datetime.
+
+`id` is deliberately excluded — there is only ever one row.
 
 ### `ChangelogEntry` (from `GET /changelog`)
 

@@ -1,5 +1,18 @@
 # Income Calculation Reference
 
+> **Where these numbers live now.** Every flat rate and schedule on this page is
+> a field on the `CalculationConstants` singleton, editable in Django admin under
+> **Configuration → Calculation constants** and served to the frontend on every
+> `/calculator-data` request — changing one no longer needs a deploy. The model's
+> field defaults are the current calibration and each carries a `help_text`
+> naming the source spreadsheet cell. The per-rank and per-event amounts (rank
+> tables, `GameEvent` rewards, campaign products) remain ordinary rows as
+> described below.
+>
+> Two of those constants are known to differ from the sheet and are deliberately
+> left at our current values until the parity harness can measure the change —
+> see the `/sheet-parity` skill.
+
 This document records the game mechanics behind every carat and ticket income source encoded in the backend fixtures and reflected in the frontend projection engine. Update this file whenever real game values change.
 
 ---

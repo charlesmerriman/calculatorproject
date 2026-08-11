@@ -230,6 +230,37 @@ erDiagram
 
 ## Key Constraints and Design Notes
 
+### `CalculationConstants` — the projection's tunables
+
+A singleton (always `pk=1`, `save()` pins it, `delete()` is refused) holding every
+flat rate and schedule the carat projection uses. Read it with `.load()`, which
+creates it with defaults on first access so a fresh database starts correctly
+calibrated. Deliberately **not cached**: production runs several worker
+processes, so an edit saved by one would not invalidate a local cache held by the
+others and the site would serve two different sets of constants depending on
+which worker answered.
+
+It also owns `prediction_factor` and `game_event_end_buffer_days`, which used to
+be module constants in `predictions.py` *and* duplicated in the frontend's
+`gameConstants.ts` with a comment on each warning they be kept in sync by hand.
+`predictions.py` keeps its DB-free purity: the pure functions take both as
+parameters defaulting to the module constants, and only the ORM wrappers read the
+model.
+
+### The income ledger
+
+`calculatorapi/ledger.py` assembles a flat, date-sorted row per reward instant
+from `GameEvent`, `ChampionsMeeting` and `LeagueOfHeroes`, served as
+`income_ledger`. It is built from the querysets and effective-date maps
+`/calculator-data` already has in hand — no extra queries, no model of its own.
+
+It computes **no income**: it places rows on a calendar and nothing more, which
+is the one narrow exception to this project's "backend carries no projection
+math" rule. Race rows carry no amounts (the payout depends on the user's rank,
+which only the client knows), and no row is gated on "today" — the ledger is a
+set of dated facts, past ones included, so that the client's single `today`
+anchor governs every income source uniformly.
+
 ### `UserPlannedBanner` — exactly-one check constraint
 
 A DB-level `CheckConstraint` named `only_one_support_or_uma` enforces that every row has exactly one of `banner_uma` or `banner_support` set and the other null. The serializer also validates this at the application layer before the row reaches the database.
