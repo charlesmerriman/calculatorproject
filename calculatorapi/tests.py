@@ -1,4 +1,6 @@
+import csv
 import datetime
+import os
 import shutil
 import tempfile
 from io import StringIO
@@ -14,7 +16,7 @@ from django.utils import timezone
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 
-from calculatorapi import image_library
+from calculatorapi import image_library, support_backfill
 from calculatorapi.image_library import (
     image_prefixes,
     invalidate,
@@ -2997,3 +2999,201 @@ class BannerCategoryTests(TestCase):
         row = next(t for t in res.json()['banner_timeline_data']
                    if t['id'] == timeline.pk)
         self.assertEqual(row['banner_category'], 'golden_week_revival')
+
+
+class SupportBackfillTests(TestCase):
+    """
+    The race-prep support backfill and the launch banner's support half.
+
+    Both read timeline_master.csv, so these tests point the module at a
+    temporary CSV of their own rather than depending on the real file's
+    contents — which change whenever a banner is added.
+    """
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.csv_path = os.path.join(self.tmp, 'timeline_master.csv')
+        patcher = patch.object(support_backfill, 'TIMELINE_MASTER', self.csv_path)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+
+    def _write_csv(self, rows):
+        """rows: (jp_start, banner_type, uma, supports-joined)."""
+        with open(self.csv_path, 'w', newline='', encoding='utf-8') as handle:
+            writer = csv.writer(handle)
+            writer.writerow(['JP Start Date', 'Banner Type', 'Banner Uma', 'Banner Support'])
+            writer.writerows(rows)
+
+    def _timeline(self, name, jp_start, **kwargs):
+        return BannerTimeline.objects.create(
+            name=name,
+            jp_start_date=timezone.make_aware(datetime.datetime(*jp_start)),
+            jp_end_date=timezone.make_aware(datetime.datetime(*jp_start) +
+                                            datetime.timedelta(days=10)),
+            **kwargs)
+
+    def _cards(self, *names):
+        for name in names:
+            SupportCard.objects.get_or_create(name=name)
+
+    # ── resolve_support_cards ────────────────────────────────────────────────
+
+    def test_resolves_names_case_insensitively(self):
+        self._cards('Super Creek')
+        found, missing = support_backfill.resolve_support_cards(['super creek'])
+        self.assertEqual([c.name for c in found], ['Super Creek'])
+        self.assertEqual(missing, [])
+
+    def test_resolves_the_known_spelling_aliases(self):
+        # The CSV and the database disagree on these three; every other name
+        # must match exactly.
+        self._cards('K.S.Miracle', 'Tamamo Cross', 'Tazuna Hayakawa')
+        found, missing = support_backfill.resolve_support_cards(
+            ['K.S. Miracle', 'Tamano Cross', 'Tazuna'])
+        self.assertEqual(missing, [])
+        self.assertEqual(
+            sorted(c.name for c in found),
+            ['K.S.Miracle', 'Tamamo Cross', 'Tazuna Hayakawa'])
+
+    def test_reports_an_unknown_name_rather_than_guessing(self):
+        # The guard against fuzzy matching: a similarity check offered
+        # "Hishi Miracle" as the runner-up for "K.S. Miracle".
+        self._cards('Hishi Miracle')
+        found, missing = support_backfill.resolve_support_cards(['K.S. Miracle'])
+        self.assertEqual(found, [])
+        self.assertEqual(missing, ['K.S. Miracle'])
+
+    def test_resolves_a_card_that_is_on_no_banner(self):
+        # Such a card is invisible to the public API, so the command must look
+        # at SupportCard directly or it would wrongly report it missing.
+        self._cards('Orphan Card')
+        found, _ = support_backfill.resolve_support_cards(['Orphan Card'])
+        self.assertEqual([c.name for c in found], ['Orphan Card'])
+
+    # ── backfill_race_prep_supports ──────────────────────────────────────────
+
+    def test_attaches_the_support_cards_and_sets_the_category(self):
+        timeline = self._timeline('Satono Crown', (2023, 12, 11))
+        self._cards('Super Creek', 'Tokai Teio')
+        self._write_csv([('2023-12-11', '2', 'Satono Crown', 'Super Creek + Tokai Teio')])
+
+        call_command('backfill_race_prep_supports', '--no-input')
+
+        timeline.refresh_from_db()
+        banner = timeline.support_banners.get()
+        self.assertEqual(banner.name, 'Race Prep Support')
+        self.assertEqual(
+            sorted(banner.support_cards.values_list('name', flat=True)),
+            ['Super Creek', 'Tokai Teio'])
+        self.assertEqual(timeline.banner_category, BannerCategory.RACE_PREP_SUPPORT)
+
+    def test_ignores_rows_that_are_not_race_prep(self):
+        timeline = self._timeline('Ordinary', (2023, 12, 11))
+        self._cards('Super Creek')
+        self._write_csv([('2023-12-11', '1', 'Ordinary', 'Super Creek')])
+
+        call_command('backfill_race_prep_supports', '--no-input')
+
+        timeline.refresh_from_db()
+        self.assertFalse(timeline.support_banners.exists())
+        self.assertEqual(timeline.banner_category, BannerCategory.STANDARD)
+
+    def test_dry_run_writes_nothing(self):
+        timeline = self._timeline('Satono Crown', (2023, 12, 11))
+        self._cards('Super Creek')
+        self._write_csv([('2023-12-11', '2', 'Satono Crown', 'Super Creek')])
+
+        call_command('backfill_race_prep_supports', '--dry-run')
+
+        timeline.refresh_from_db()
+        self.assertFalse(timeline.support_banners.exists())
+        self.assertEqual(timeline.banner_category, BannerCategory.STANDARD)
+
+    def test_is_idempotent(self):
+        self._timeline('Satono Crown', (2023, 12, 11))
+        self._cards('Super Creek')
+        self._write_csv([('2023-12-11', '2', 'Satono Crown', 'Super Creek')])
+
+        call_command('backfill_race_prep_supports', '--no-input')
+        call_command('backfill_race_prep_supports', '--no-input')
+
+        self.assertEqual(BannerSupport.objects.count(), 1)
+        self.assertEqual(SupportsOnSupportBanner.objects.count(), 1)
+
+    def test_skips_a_whole_banner_when_one_card_is_unknown(self):
+        # Half a batch is worse than none: it would look complete in the UI
+        # while quietly under-representing the banner.
+        timeline = self._timeline('Satono Crown', (2023, 12, 11))
+        self._cards('Super Creek')
+        self._write_csv([('2023-12-11', '2', 'Satono Crown', 'Super Creek + Nonesuch')])
+
+        call_command('backfill_race_prep_supports', '--no-input')
+
+        timeline.refresh_from_db()
+        self.assertFalse(timeline.support_banners.exists())
+        self.assertEqual(timeline.banner_category, BannerCategory.STANDARD)
+
+    def test_never_creates_support_cards(self):
+        self._timeline('Satono Crown', (2023, 12, 11))
+        self._write_csv([('2023-12-11', '2', 'Satono Crown', 'Nonesuch')])
+
+        call_command('backfill_race_prep_supports', '--no-input')
+
+        self.assertEqual(SupportCard.objects.count(), 0)
+
+    def test_survives_a_csv_row_with_no_matching_timeline(self):
+        self._cards('Super Creek')
+        self._write_csv([('2023-12-11', '2', 'Ghost', 'Super Creek')])
+
+        call_command('backfill_race_prep_supports', '--no-input')
+
+        self.assertEqual(BannerSupport.objects.count(), 0)
+
+    # ── repair_launch_banner, support half ───────────────────────────────────
+
+    def test_launch_repair_links_supports_alongside_umas(self):
+        self._timeline('Special Week + Tokai Teio', (2021, 2, 24))
+        Uma.objects.create(name='Special Week')
+        Uma.objects.create(name='Tokai Teio')
+        self._cards('Super Creek', 'Tazuna Hayakawa')
+        self._write_csv([('2021-02-24', '-2', '', 'Super Creek + Tazuna')])
+
+        call_command('repair_launch_banner', '--no-input')
+
+        timeline = BannerTimeline.objects.get()
+        self.assertEqual(timeline.uma_banners.get().umas.count(), 2)
+        support = timeline.support_banners.get()
+        self.assertEqual(support.name, 'Launch Support')
+        self.assertEqual(
+            sorted(support.support_cards.values_list('name', flat=True)),
+            ['Super Creek', 'Tazuna Hayakawa'])
+
+    def test_launch_repair_completes_a_row_that_already_has_its_umas(self):
+        # Production is in exactly this state: the uma half was applied before
+        # the support half existed, so an early return would strand it.
+        timeline = self._timeline('Special Week', (2021, 2, 24))
+        uma = Uma.objects.create(name='Special Week')
+        banner = BannerUma.objects.create(banner_timeline=timeline, name='Special Week')
+        UmasOnUmaBanner.objects.create(banner_uma=banner, uma=uma)
+        self._cards('Super Creek')
+        self._write_csv([('2021-02-24', '-2', '', 'Super Creek')])
+
+        call_command('repair_launch_banner', '--no-input')
+
+        self.assertEqual(timeline.uma_banners.count(), 1)
+        self.assertEqual(timeline.support_banners.get().support_cards.count(), 1)
+
+    def test_launch_repair_links_what_it_can_when_a_card_is_missing(self):
+        # Unlike a race-prep batch, the launch banner is a one-off: 19 of 20
+        # cards is materially better than nothing, and the gap is reported.
+        self._timeline('Special Week', (2021, 2, 24))
+        Uma.objects.create(name='Special Week')
+        self._cards('Super Creek')
+        self._write_csv([('2021-02-24', '-2', '', 'Super Creek + Grass Wonder')])
+
+        call_command('repair_launch_banner', '--no-input')
+
+        support = BannerTimeline.objects.get().support_banners.get()
+        self.assertEqual(
+            list(support.support_cards.values_list('name', flat=True)), ['Super Creek'])
