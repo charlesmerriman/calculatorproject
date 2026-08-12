@@ -94,6 +94,14 @@ class CalculatorViewSet(ViewSet):
 
     @action(detail=False, methods=["get"], url_path="calculator-data")
     def get_calculator_data(self, request):
+        # pylint: disable=too-many-locals
+        #
+        # This endpoint's job IS to assemble the whole payload: every local is a
+        # named section of the response, and most carry a comment explaining
+        # which anchor resolved its dates. Splitting it to satisfy a locals
+        # count would scatter that reasoning across helpers that each run once,
+        # in order, and would touch the app's most-used public route for no
+        # behavioural gain.
         club_rank_data = ClubRank.objects.all()
         team_trials_rank_data = TeamTrialsRank.objects.all()
         champions_meeting_rank_data = ChampionsMeetingRank.objects.all()

@@ -132,16 +132,10 @@ class Command(BaseCommand):
 
         with transaction.atomic():
             for row in CAMPAIGNS:
-                name, event_type, cutoff, part_dates, packs, uma_tiers, ssr_tiers = row
-                event, was_created = AnniversaryEvent.objects.update_or_create(
-                    name=name,
-                    defaults={"event_type": event_type, "jp_cutoff_date": cutoff},
-                )
+                was_created, missing = self._seed_campaign(row)
                 created += was_created
                 updated += not was_created
-
-                missing_parts += self._link_parts(event, part_dates)
-                self._build_products(event, packs, uma_tiers, ssr_tiers)
+                missing_parts += missing
 
         self.stdout.write(self.style.SUCCESS(
             f"Campaigns: {created} created, {updated} updated."
@@ -154,6 +148,23 @@ class Command(BaseCommand):
                 f"{len(missing_parts)} banner part(s) had no matching timeline "
                 f"and were skipped: {', '.join(missing_parts)}"
             ))
+
+    def _seed_campaign(self, row):
+        """
+        Upsert one campaign and rebuild everything hanging off it.
+
+        Split out of handle() so the seven-way row unpack lives beside the two
+        calls that consume it rather than inflating the loop that drives them.
+        Returns (was_created, missing_part_labels).
+        """
+        name, event_type, cutoff, part_dates, packs, uma_tiers, ssr_tiers = row
+        event, was_created = AnniversaryEvent.objects.update_or_create(
+            name=name,
+            defaults={"event_type": event_type, "jp_cutoff_date": cutoff},
+        )
+        missing = self._link_parts(event, part_dates)
+        self._build_products(event, packs, uma_tiers, ssr_tiers)
+        return was_created, missing
 
     def _link_parts(self, event, part_dates):
         """Attach the campaign to its banner parts, matched on JP start date."""
