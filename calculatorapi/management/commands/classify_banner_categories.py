@@ -14,10 +14,13 @@ category shares the shape.
 
 The other two are deliberately NOT auto-applied:
 
-  race_prep_support — should be ~32 rows, each 1 uma + 10 supports. Those
-    support cards were never ingested, so on current data the rows are
-    indistinguishable from a standard banner. They stay `standard` until the
-    support backfill lands, which renders correctly in the meantime.
+  race_prep_support — 29 rows, each 1 uma + 10 supports. Set by
+    `backfill_race_prep_supports`, not here: the category comes from the master
+    CSV's "Banner Type" column, which is authoritative, and that command writes
+    it in the same transaction as the cards so the two cannot disagree. Before
+    that backfill these rows have no support cards at all, which makes them
+    indistinguishable from an ordinary one-uma banner — so there is nothing for
+    this command to detect either way.
 
   rerun — the sheet codes only 2, but our data holds more banners whose name
     carries "(Rerun)" because we track reruns the sheet skipped. Name matching
@@ -103,13 +106,14 @@ class Command(BaseCommand):
             for t in rerun_matches:
                 self.stdout.write(f"    id={t.pk}  {t.name[:70]}")
 
-        # Surfaces the race-prep gap rather than silently leaving it. These are
-        # the rows the support backfill needs to reach.
+        # Surfaces the rows still carrying no support cards. Once
+        # backfill_race_prep_supports has run this should be down to the
+        # revivals (structurally support-free) plus genuinely unfilled rows.
         empty = timelines.filter(support_count=0, uma_count__lte=2).count()
         self.stdout.write(
             f"\nFYI {empty} timeline(s) have no support cards at all — the "
-            "race-prep reruns are somewhere in there and cannot be classified "
-            "until their cards are ingested."
+            "revivals are legitimately among them; the rest are unfilled rows "
+            "(see backfill_race_prep_supports)."
         )
 
         if not changes:

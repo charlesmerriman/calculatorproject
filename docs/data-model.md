@@ -351,7 +351,7 @@ It maps 1:1 onto the "Banner Type" column (`BC`) of the source sheet's Timeline 
 | Sheet code | `banner_category` | Rows in sheet | Shape |
 |---|---|---|---|
 | `1` | `standard` | 105 | 1–2 umas + 1–2 supports |
-| `2` | `race_prep_support` | 32 | 1 uma + **10** supports |
+| `2` | `race_prep_support` | 29 | 1 uma + **10** supports |
 | `-2` | `golden_week_revival` | 4 | 3–11 umas, **zero** supports |
 | `0` | `rerun` | 2 | 1 uma |
 | `-1` | *(no member)* | 46 | Champions Meeting / League of Heroes |
@@ -363,7 +363,9 @@ Two rules that keep the field from rotting:
 - **Category drives the chrome; count drives the grid.** Accent, label and column arrangement key off `banner_category`, but how many tiles fit per row stays derived from the actual `umas` / `support_cards` length. A miscategorised row then still renders every card it has instead of clipping them.
 - **It is `banner_category`, not `banner_type`.** "Banner type" already means Uma-vs-Support across the frontend (`initialBannerType`, `bannerKey(bannerType, id)`, the `banner-type-tab--uma` class). These are different axes and must not share a name.
 
-`golden_week_revival` is the only category derivable from the data — more than 2 umas *and* zero supports. That emptiness is structural: the sheet's `-2` block overwrites its support columns with umas, and the supports for that window live on a separate, concurrently-running standard banner. `manage.py classify_banner_categories --dry-run` applies exactly that rule; `race_prep_support` cannot be detected until its support cards are ingested, and `rerun` is reported for confirmation rather than auto-applied.
+`golden_week_revival` is the only category derivable from the data — more than 2 umas *and* zero supports. That emptiness is structural: the sheet's `-2` block overwrites its support columns with umas, and the supports for that window live on a separate, concurrently-running standard banner. `manage.py classify_banner_categories --dry-run` applies exactly that rule, and `rerun` is reported for confirmation rather than auto-applied.
+
+`race_prep_support` is **not** derived at all. Those 29 rows shipped with their uma side only and no support cards, which makes them indistinguishable from an ordinary one-uma banner, so `manage.py backfill_race_prep_supports` reads the category straight from the master CSV's `Banner Type` column and writes it in the same transaction as the 290 support-card links. Note that backfill moves ~24 support cards' derived `first_jp_date` earlier, which widens selector eligibility — see the command's docstring.
 
 ### `BannerTimeline` has two serializers
 

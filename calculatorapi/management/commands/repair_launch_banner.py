@@ -22,12 +22,18 @@ Two deliberate choices:
     " + "-joined concatenation. Hardcoding nine names here would let this drift
     from the row it repairs.
 
-Support cards are left alone: the source sheet's Timeline tab does not reach
-back to 2021-02-24, so whether the launch banner carried any is unknown, and
-inventing them would be worse than omitting them.
+Support cards were originally skipped here, on the grounds that the source
+Google Sheet's Timeline tab does not reach back to 2021-02-24 so the launch
+banner's support side was unknowable. That was the wrong place to look:
+timeline_master.csv — the file the backfill pipeline already reads, tracked in
+git and deployed alongside the app — carries all twenty of them for this row.
+They are linked here now.
 
-Idempotent: if the timeline already has a uma banner, the command reports and
-exits without writing.
+Idempotent, and the two halves are independent: whichever of the uma and
+support banners is missing gets created, the other is reported and left alone.
+That matters because the uma half was applied to production before the support
+half existed, so the second run must complete the row rather than see a uma
+banner and exit.
 
 Usage:
     python manage.py repair_launch_banner --dry-run   # report only
@@ -43,11 +49,27 @@ from datetime import date
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from calculatorapi.models import BannerTimeline, BannerUma, Uma, UmasOnUmaBanner
+from calculatorapi.models import (
+    BannerSupport,
+    BannerTimeline,
+    BannerUma,
+    SupportsOnSupportBanner,
+    Uma,
+    UmasOnUmaBanner,
+)
+from calculatorapi.support_backfill import (
+    read_timeline_master,
+    resolve_support_cards,
+    split_names,
+)
 
 CONFIRM_PHRASE = "repair"
 
 LAUNCH_JP_DATE = date(2021, 2, 24)
+
+# Same reasoning as the race-prep batches: twenty " + "-joined names is not a
+# usable label in the planner's banner dropdown.
+LAUNCH_SUPPORT_NAME = "Launch Support"
 
 
 class Command(BaseCommand):
@@ -81,15 +103,44 @@ class Command(BaseCommand):
 
         self.stdout.write(f"Found timeline id={timeline.pk}: {timeline.name}\n")
 
-        if timeline.uma_banners.exists():
+        if timeline.uma_banners.exists() and timeline.support_banners.exists():
             self.stdout.write(
                 self.style.SUCCESS(
-                    "It already has a uma banner attached — nothing to do."
+                    "It already has both a uma and a support banner — nothing to do."
                 )
             )
             return
 
-        # The name is the sheet's " + "-joined list of featured units.
+        umas = self._collect_umas(timeline)
+        supports = self._collect_supports(timeline)
+
+        if not umas and not supports:
+            self.stdout.write(self.style.ERROR("\nNothing to link."))
+            return
+
+        self.stdout.write(
+            f"\nWould link {len(umas)} uma(s) and {len(supports)} support card(s) "
+            f"on timeline {timeline.pk}."
+        )
+
+        if options["dry_run"]:
+            self.stdout.write(self.style.WARNING("\nDry run — nothing written."))
+            return
+
+        if not options["no_input"]:
+            typed = input(f'\nType "{CONFIRM_PHRASE}" to apply: ')
+            if typed.strip() != CONFIRM_PHRASE:
+                self.stdout.write(self.style.ERROR("Aborted."))
+                return
+
+        self._write(timeline, umas, supports)
+
+    def _collect_umas(self, timeline):
+        """The featured umas, parsed from the timeline's own " + "-joined name."""
+        if timeline.uma_banners.exists():
+            self.stdout.write("Uma banner already attached — leaving it alone.")
+            return []
+
         wanted = [part.strip() for part in timeline.name.split(" + ") if part.strip()]
         self.stdout.write(f"Parsed {len(wanted)} unit name(s) from the row name.")
 
@@ -114,38 +165,81 @@ class Command(BaseCommand):
             self.stdout.write(
                 "Fix these in admin first — the command will not create Uma rows."
             )
+        return found
 
-        if not found:
-            self.stdout.write(self.style.ERROR("\nNothing to link."))
-            return
+    def _collect_supports(self, timeline):
+        """
+        The featured support cards, from the pipeline's master CSV.
 
-        self.stdout.write(
-            f"\nWould create 1 uma banner on timeline {timeline.pk} "
-            f"and link {len(found)} uma(s)."
-        )
+        Unlike a race-prep batch this links whatever resolves rather than
+        skipping the row wholesale: the launch banner is a one-off, and
+        nineteen of twenty cards is materially better than none.
+        """
+        if timeline.support_banners.exists():
+            self.stdout.write("\nSupport banner already attached — leaving it alone.")
+            return []
 
-        if options["dry_run"]:
-            self.stdout.write(self.style.WARNING("\nDry run — nothing written."))
-            return
+        rows = [
+            row
+            for row in read_timeline_master()
+            if row["JP Start Date"] == LAUNCH_JP_DATE.isoformat()
+        ]
+        if not rows:
+            self.stdout.write(
+                self.style.WARNING(
+                    f"\nNo {LAUNCH_JP_DATE} row in the master CSV — skipping supports."
+                )
+            )
+            return []
 
-        if not options["no_input"]:
-            typed = input(f'\nType "{CONFIRM_PHRASE}" to apply: ')
-            if typed.strip() != CONFIRM_PHRASE:
-                self.stdout.write(self.style.ERROR("Aborted."))
-                return
+        names = split_names(rows[0]["Banner Support"])
+        found, missing = resolve_support_cards(names)
+        self.stdout.write(f"\nMatched {len(found)} of {len(names)} support card(s).")
 
+        if missing:
+            self.stdout.write(
+                self.style.WARNING(f"No SupportCard for: {', '.join(missing)}")
+            )
+            self.stdout.write(
+                "The rest are still linked; add these in admin and re-run."
+            )
+        return found
+
+    def _write(self, timeline, umas, supports):
+        """Both halves in one transaction, so the row never lands half-built."""
         with transaction.atomic():
-            banner = BannerUma.objects.create(
-                banner_timeline=timeline,
-                name=timeline.name,
-                free_pulls=0,
-            )
-            UmasOnUmaBanner.objects.bulk_create(
-                [UmasOnUmaBanner(banner_uma=banner, uma=uma) for uma in found]
-            )
+            if umas:
+                banner = BannerUma.objects.create(
+                    banner_timeline=timeline,
+                    name=timeline.name,
+                    free_pulls=0,
+                )
+                UmasOnUmaBanner.objects.bulk_create(
+                    [UmasOnUmaBanner(banner_uma=banner, uma=uma) for uma in umas]
+                )
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        f"\nCreated uma banner id={banner.pk} with {len(umas)} uma(s)."
+                    )
+                )
 
-        self.stdout.write(
-            self.style.SUCCESS(
-                f"\nCreated uma banner id={banner.pk} with {len(found)} uma(s)."
-            )
-        )
+            if supports:
+                support_banner = BannerSupport.objects.create(
+                    banner_timeline=timeline,
+                    name=LAUNCH_SUPPORT_NAME,
+                    free_pulls=0,
+                )
+                SupportsOnSupportBanner.objects.bulk_create(
+                    [
+                        SupportsOnSupportBanner(
+                            banner_support=support_banner, support_card=card
+                        )
+                        for card in supports
+                    ]
+                )
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        f"Created support banner id={support_banner.pk} with "
+                        f"{len(supports)} card(s)."
+                    )
+                )
