@@ -50,6 +50,7 @@ from calculatorapi.models import (
     CalculationConstants,
     AnniversaryEvent, AnniversaryEventBanner, AnniversaryEventProduct,
     UserPlannedPurchase, UmasOnUmaBanner, SupportsOnSupportBanner,
+    BannerCategory,
 )
 
 # Smallest valid PNG (1x1, transparent). ImageField runs Pillow over uploads,
@@ -2858,3 +2859,141 @@ class SpacesImagePickerFormTests(TestCase):
                 self.assertContains(res, 'spaces-picker')
                 self.assertContains(res, 'name="image-library-key"')
                 self.assertContains(res, 'spaces-image-picker.js')
+
+
+class BannerCategoryTests(TestCase):
+    """The stored category, and the two commands that populate it."""
+
+    def _timeline(self, name, jp_start, **kwargs):
+        return BannerTimeline.objects.create(
+            name=name,
+            jp_start_date=timezone.make_aware(datetime.datetime(*jp_start)),
+            jp_end_date=timezone.make_aware(datetime.datetime(*jp_start) +
+                                            datetime.timedelta(days=10)),
+            **kwargs)
+
+    def _with_umas(self, timeline, *names):
+        banner = BannerUma.objects.create(banner_timeline=timeline, name=' + '.join(names))
+        for name in names:
+            uma, _ = Uma.objects.get_or_create(name=name)
+            UmasOnUmaBanner.objects.create(banner_uma=banner, uma=uma)
+        return banner
+
+    def _with_supports(self, timeline, *names):
+        banner = BannerSupport.objects.create(banner_timeline=timeline,
+                                              name=' + '.join(names))
+        for name in names:
+            card, _ = SupportCard.objects.get_or_create(name=name)
+            SupportsOnSupportBanner.objects.create(banner_support=banner,
+                                                   support_card=card)
+        return banner
+
+    def test_defaults_to_standard(self):
+        timeline = self._timeline('Plain', (2024, 1, 1))
+        self.assertEqual(timeline.banner_category, BannerCategory.STANDARD)
+
+    def test_classify_sets_revival_on_many_umas_and_no_supports(self):
+        revival = self._timeline('A + B + C', (2025, 4, 30))
+        self._with_umas(revival, 'A', 'B', 'C')
+
+        call_command('classify_banner_categories', '--no-input', stdout=StringIO())
+
+        revival.refresh_from_db()
+        self.assertEqual(revival.banner_category, BannerCategory.GOLDEN_WEEK_REVIVAL)
+
+    def test_classify_leaves_a_two_uma_banner_alone(self):
+        """The concurrent standard banner shares the window and must not be swept up."""
+        standard = self._timeline('D + E', (2025, 4, 30))
+        self._with_umas(standard, 'D', 'E')
+        self._with_supports(standard, 'S1', 'S2')
+
+        call_command('classify_banner_categories', '--no-input', stdout=StringIO())
+
+        standard.refresh_from_db()
+        self.assertEqual(standard.banner_category, BannerCategory.STANDARD)
+
+    def test_classify_ignores_many_umas_that_also_have_supports(self):
+        """Zero supports is half the rule — three umas alone must not qualify."""
+        timeline = self._timeline('F + G + H', (2025, 6, 1))
+        self._with_umas(timeline, 'F', 'G', 'H')
+        self._with_supports(timeline, 'S3')
+
+        call_command('classify_banner_categories', '--no-input', stdout=StringIO())
+
+        timeline.refresh_from_db()
+        self.assertEqual(timeline.banner_category, BannerCategory.STANDARD)
+
+    def test_classify_is_idempotent(self):
+        revival = self._timeline('A + B + C', (2025, 4, 30))
+        self._with_umas(revival, 'A', 'B', 'C')
+
+        call_command('classify_banner_categories', '--no-input', stdout=StringIO())
+        second = StringIO()
+        call_command('classify_banner_categories', '--no-input', stdout=second)
+
+        self.assertIn('Nothing to change', second.getvalue())
+        revival.refresh_from_db()
+        self.assertEqual(revival.banner_category, BannerCategory.GOLDEN_WEEK_REVIVAL)
+
+    def test_classify_dry_run_writes_nothing(self):
+        revival = self._timeline('A + B + C', (2025, 4, 30))
+        self._with_umas(revival, 'A', 'B', 'C')
+
+        call_command('classify_banner_categories', '--dry-run', stdout=StringIO())
+
+        revival.refresh_from_db()
+        self.assertEqual(revival.banner_category, BannerCategory.STANDARD)
+
+    def test_classify_reports_reruns_without_applying_them(self):
+        rerun = self._timeline('Gentildonna (Rerun)', (2026, 1, 1))
+
+        out = StringIO()
+        call_command('classify_banner_categories', '--no-input', stdout=out)
+
+        self.assertIn('Rerun candidates', out.getvalue())
+        rerun.refresh_from_db()
+        self.assertEqual(rerun.banner_category, BannerCategory.STANDARD)
+
+    def test_repair_launch_banner_links_umas_parsed_from_the_name(self):
+        launch = self._timeline('Special Week + Tokai Teio + Oguri Cap', (2021, 2, 24))
+        for name in ['Special Week', 'Tokai Teio', 'Oguri Cap']:
+            Uma.objects.create(name=name)
+
+        call_command('repair_launch_banner', '--no-input', stdout=StringIO())
+
+        banner = launch.uma_banners.get()
+        self.assertCountEqual(
+            [u.name for u in banner.umas.all()],
+            ['Special Week', 'Tokai Teio', 'Oguri Cap'])
+
+    def test_repair_launch_banner_is_idempotent(self):
+        launch = self._timeline('Special Week', (2021, 2, 24))
+        Uma.objects.create(name='Special Week')
+
+        call_command('repair_launch_banner', '--no-input', stdout=StringIO())
+        call_command('repair_launch_banner', '--no-input', stdout=StringIO())
+
+        self.assertEqual(launch.uma_banners.count(), 1)
+
+    def test_repair_launch_banner_will_not_create_missing_uma_records(self):
+        launch = self._timeline('Special Week + Nonexistent Unit', (2021, 2, 24))
+        Uma.objects.create(name='Special Week')
+
+        out = StringIO()
+        call_command('repair_launch_banner', '--no-input', stdout=out)
+
+        self.assertIn('Nonexistent Unit', out.getvalue())
+        self.assertFalse(Uma.objects.filter(name='Nonexistent Unit').exists())
+        self.assertEqual(launch.uma_banners.get().umas.count(), 1)
+
+    def test_category_is_serialized_to_the_timeline_payload(self):
+        timeline = self._timeline('A + B + C', (2025, 4, 30),
+                                  banner_category=BannerCategory.GOLDEN_WEEK_REVIVAL)
+        self._with_umas(timeline, 'A', 'B', 'C')
+
+        res = self.client.get('/calculator-data')
+
+        self.assertEqual(res.status_code, 200)
+        row = next(t for t in res.json()['banner_timeline_data']
+                   if t['id'] == timeline.pk)
+        self.assertEqual(row['banner_category'], 'golden_week_revival')

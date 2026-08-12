@@ -1,4 +1,4 @@
-from .banner_timeline import BannerTimeline
+from .banner_timeline import BannerTimeline, BannerCategory
 from .calculation_constants import CalculationConstants
 from .champions_meeting_rank import ChampionsMeetingRank
 from .club_rank import ClubRank
