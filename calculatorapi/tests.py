@@ -3045,9 +3045,10 @@ class SupportBackfillTests(TestCase):
         self.assertEqual([c.name for c in found], ['Super Creek'])
         self.assertEqual(missing, [])
 
-    def test_resolves_the_known_spelling_aliases(self):
-        # The CSV and the database disagree on these three; every other name
-        # must match exactly.
+    def test_resolves_the_known_spelling_differences(self):
+        # "K.S. Miracle" needs no alias — normalize() drops the periods so it
+        # and the card's own "K.S.Miracle" collapse together. The other two are
+        # genuine aliases, shared with the fixture pipeline.
         self._cards('K.S.Miracle', 'Tamamo Cross', 'Tazuna Hayakawa')
         found, missing = support_backfill.resolve_support_cards(
             ['K.S. Miracle', 'Tamano Cross', 'Tazuna'])
@@ -3055,6 +3056,36 @@ class SupportBackfillTests(TestCase):
         self.assertEqual(
             sorted(c.name for c in found),
             ['K.S.Miracle', 'Tamamo Cross', 'Tazuna Hayakawa'])
+
+    def test_resolves_a_rerun_token_to_the_base_card(self):
+        self._cards('Super Creek')
+        found, missing = support_backfill.resolve_support_cards(['Super Creek (Rerun)'])
+        self.assertEqual([c.name for c in found], ['Super Creek'])
+        self.assertEqual(missing, [])
+
+    def test_duplicate_names_resolve_to_the_lowest_game_id(self):
+        # SupportCard.name is deliberately not unique — production holds four
+        # rows named "Grass Wonder" (different rarities/reprints). game_id is
+        # the real identity, the CSV carries only names, so the collision is
+        # resolved by the same rule the fixture pipeline uses. Without this the
+        # backfill would link an arbitrary rarity.
+        SupportCard.objects.create(name='Grass Wonder', game_id=30200)
+        wanted = SupportCard.objects.create(name='Grass Wonder', game_id=30100)
+        SupportCard.objects.create(name='Grass Wonder', game_id=30300)
+
+        found, missing = support_backfill.resolve_support_cards(['Grass Wonder'])
+
+        self.assertEqual(missing, [])
+        self.assertEqual([c.pk for c in found], [wanted.pk])
+
+    def test_a_null_game_id_sorts_ahead_of_a_real_one(self):
+        # Mirrors the pipeline's `gid = ... or 0`.
+        wanted = SupportCard.objects.create(name='Nameless', game_id=None)
+        SupportCard.objects.create(name='Nameless', game_id=30001)
+
+        found, _ = support_backfill.resolve_support_cards(['Nameless'])
+
+        self.assertEqual([c.pk for c in found], [wanted.pk])
 
     def test_reports_an_unknown_name_rather_than_guessing(self):
         # The guard against fuzzy matching: a similarity check offered
