@@ -1,3 +1,25 @@
+"""
+Test suite for calculatorapi.
+
+Four of pylint's size heuristics are switched off for this module, and only
+this module. They measure things that are virtues in a test file and defects
+in a production one:
+
+  too-many-lines                 one suite per app, kept together so a reader
+                                 greps one file; splitting it into a package to
+                                 satisfy a 1000-line default would scatter
+                                 related cases without making any of them clearer
+  too-many-arguments             fixture factories take a parameter per field
+  too-many-positional-arguments  they are called positionally, by design
+  too-many-instance-attributes   a setUp that builds a scenario assigns one
+                                 attribute per object under test
+
+Everything else pylint checks still applies here.
+"""
+
+# pylint: disable=too-many-lines,too-many-arguments,too-many-positional-arguments
+# pylint: disable=too-many-instance-attributes
+
 import csv
 import datetime
 import os
