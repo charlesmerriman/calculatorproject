@@ -1,8 +1,13 @@
 #!/bin/bash
 set -e
 
-# Inverse of seed_database.sh: dumps the current database back into the fixture
-# JSON files so admin-panel edits become the new committed seed data.
+# Snapshots the current database's content tables into the fixture JSON files.
+#
+# This is a ONE-WAY tool. There is deliberately no loading counterpart: the
+# seeding script was deleted because `loaddata` upserts by primary key, and
+# production content lives in admin-panel edits that a stale snapshot would
+# silently overwrite. Treat these files as a diffable backup and as input for
+# the generators in scripts/ — never load them into a database you care about.
 #
 # Usage: bash dump_fixtures.sh   (run from the backend/ directory)
 #

@@ -381,10 +381,12 @@ def main() -> None:
     update_banner_timelines(banner_index)
 
     print("\nDone. Review any unmatched entries above.")
-    print("To load the updated fixtures:")
-    print("  python manage.py loaddata calculatorapi/fixtures/umas.json")
-    print("  python manage.py loaddata calculatorapi/fixtures/supportCards.json")
-    print("  python manage.py loaddata calculatorapi/fixtures/bannerTimelines.json")
+    # Deliberately no `loaddata` instructions here. Fixtures are a snapshot, not
+    # a seeding source: loading them upserts by primary key and would clobber the
+    # admin-panel edits that production content depends on. Image changes reach
+    # production through the admin instead.
+    print("Fixtures updated on disk — review `git diff` before committing.")
+    print("Apply the corresponding image changes through the Django admin.")
 
 
 if __name__ == "__main__":

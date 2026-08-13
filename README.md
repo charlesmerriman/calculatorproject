@@ -90,22 +90,32 @@ pip install -r requirements.txt
 # Run migrations
 python3 manage.py migrate
 
-# Load reference and game data
-python3 manage.py loaddata calculatorapi/fixtures/clubRanks.json
-python3 manage.py loaddata calculatorapi/fixtures/teamTrialsRanks.json
-python3 manage.py loaddata calculatorapi/fixtures/championsMeetingRanks.json
-python3 manage.py loaddata calculatorapi/fixtures/leagueOfHeroesRanks.json
-python3 manage.py loaddata calculatorapi/fixtures/umas.json
-python3 manage.py loaddata calculatorapi/fixtures/supportCards.json
-python3 manage.py loaddata calculatorapi/fixtures/bannerTimelines.json
-python3 manage.py loaddata calculatorapi/fixtures/bannerUmas.json
-python3 manage.py loaddata calculatorapi/fixtures/bannerSupports.json
-python3 manage.py loaddata calculatorapi/fixtures/umasOnUmaBanner.json
-python3 manage.py loaddata calculatorapi/fixtures/supportsOnSupportBanner.json
+# Create a staff account for /admin
+python3 manage.py createsuperuser
 
 # Start the dev server
 python3 manage.py runserver
 ```
+
+### There is no seeding step — a fresh local database starts empty
+
+This is deliberate. Production content is authored and maintained through the
+Django admin panel, and `loaddata` **upserts by primary key** — so any seeding
+script is one stray invocation (or one wrong `DATABASE_URL`) away from silently
+overwriting live admin edits with a stale snapshot. The seeding script was
+removed rather than documented-around.
+
+To develop against real content, point the frontend at the **live API** instead
+of your local backend:
+
+```bash
+cd ../frontend && npm run dev:live
+```
+
+That reads production through the public API and never touches the database —
+see [../frontend/README.md](../frontend/README.md#choosing-a-backend). Use your
+local `/admin` to add rows when you specifically need *local* data, such as
+exercising a migration.
 
 Other useful commands:
 
