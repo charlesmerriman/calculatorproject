@@ -448,15 +448,21 @@ class PredictionUnitTests(TestCase):
 
 # ── Schedule offsets (pure, DB-free) ──────────────────────────────────────────
 
-def _entry(start, end=None, is_predicted=True, offset_days=0):
+def _entry(start, end=None, is_predicted=True, offset_days=0, anchor_start=None):
     """Build one effective-date map entry by hand, matching the shape
-    compute_effective_dates produces."""
+    compute_effective_dates produces.
+
+    `anchor_start` defaults to None — i.e. "this map records no anchor", which
+    is how a hand-built map behaves, so the tests below that don't care about
+    anchors read exactly as they did before it existed.
+    """
     return {
         "start_date": start,
         "end_date": end,
         "is_predicted": is_predicted,
         "offset_days": offset_days,
         "applied_offset_days": 0,
+        "anchor_start": anchor_start,
     }
 
 
@@ -591,6 +597,73 @@ class ScheduleOffsetUnitTests(TestCase):
         self.assertEqual(emap[1]['start_date'], _dt(2025, 8, 24))
         self.assertEqual(emap[1]['end_date'], _dt(2025, 8, 31))
         self.assertEqual(emap[1]['applied_offset_days'], 0)
+
+    def test_offset_at_or_before_the_targets_anchor_is_not_applied(self):
+        """The anchor's global date is a fact, and the prediction was measured
+        forward from it — so a slip that happened before it is already inside
+        the number being shifted here. Applying it again double-counts."""
+        banners = {1: _entry(_dt(2025, 8, 24), offset_days=7)}
+        # Predicted from an anchor that sits AFTER the banner slip.
+        leagues = {1: _entry(_dt(2025, 10, 1), anchor_start=_dt(2025, 9, 1))}
+        apply_schedule_offsets([banners, leagues])
+        self.assertEqual(leagues[1]['start_date'], _dt(2025, 10, 1))
+        self.assertEqual(leagues[1]['applied_offset_days'], 0)
+
+    def test_offset_after_the_targets_anchor_still_applies(self):
+        """The other half of the rule: a slip the anchor could not have known
+        about is genuinely new, so it must still cascade."""
+        banners = {1: _entry(_dt(2025, 9, 15), offset_days=7)}
+        leagues = {1: _entry(_dt(2025, 10, 1), anchor_start=_dt(2025, 9, 1))}
+        apply_schedule_offsets([banners, leagues])
+        self.assertEqual(leagues[1]['start_date'], _dt(2025, 10, 8))
+        self.assertEqual(leagues[1]['applied_offset_days'], 7)
+
+    def test_anchor_filter_is_per_map_not_global(self):
+        """Each map is filtered by its OWN anchor. A banner predicted off an
+        early anchor still takes the slip that a later-anchored LoH ignores."""
+        banners = {
+            1: _entry(_dt(2025, 8, 24), offset_days=7, anchor_start=_dt(2025, 6, 1)),
+            2: _entry(_dt(2025, 10, 1), anchor_start=_dt(2025, 6, 1)),
+        }
+        leagues = {1: _entry(_dt(2025, 10, 1), anchor_start=_dt(2025, 9, 1))}
+        apply_schedule_offsets([banners, leagues])
+        self.assertEqual(banners[2]['applied_offset_days'], 7)
+        self.assertEqual(leagues[1]['applied_offset_days'], 0)
+
+    def test_build_effective_date_maps_does_not_double_count_a_late_anchor(self):
+        """End-to-end regression for the League of Heroes shape: a model whose
+        only globally-dated row sits AFTER a banner slip, with that row's date
+        taken from the already-slip-corrected calendar. Every later row of that
+        model used to inherit the slip through the anchor and then be shifted by
+        it again — a constant ~7-day lateness against the source spreadsheet."""
+        make_timeline(
+            name='Anchor',
+            jp_start_date=_dt(2025, 1, 1), jp_end_date=_dt(2025, 1, 8),
+            global_start_date=_dt(2025, 6, 1), global_end_date=_dt(2025, 6, 8),
+        )
+        make_timeline(
+            name='Slipped',
+            jp_start_date=_dt(2025, 1, 31), jp_end_date=_dt(2025, 2, 7),
+            schedule_offset_days=7,
+        )
+        # The LoH anchor's global date is late enough to already contain the
+        # banner's +7 (the banner resolves to ~2025-06-28 once shifted).
+        make_league_of_heroes(
+            name='LoH Anchor',
+            jp_start_date=_dt(2025, 2, 1), jp_end_date=_dt(2025, 2, 8),
+            global_start_date=_dt(2025, 8, 1), global_end_date=_dt(2025, 8, 8),
+        )
+        make_league_of_heroes(
+            name='LoH Later',
+            jp_start_date=_dt(2025, 3, 3), jp_end_date=_dt(2025, 3, 10),
+        )
+
+        maps = build_effective_date_maps()
+        later = maps[LeagueOfHeroes][LeagueOfHeroes.objects.get(name='LoH Later').id]
+
+        # Pure anchor math, with NO offset on top.
+        self.assertEqual(later['start_date'], _predicted(_dt(2025, 8, 1), 30))
+        self.assertEqual(later['applied_offset_days'], 0)
 
     def test_build_effective_date_maps_applies_offsets_across_models(self):
         """The ORM wrapper: per-model anchors, one shared offset pass."""

@@ -36,6 +36,9 @@ Schedule offsets (a second, separate layer on top of the above):
   banner also moves later Champions Meetings and League of Heroes events.
 - Only predicted rows take part, as source or target. See that function for why
   that is what stops an offset double-counting once its row is confirmed.
+- Offsets at or before a model's OWN anchor are skipped: the prediction was
+  measured from that anchor's confirmed date, which already embodies every slip
+  up to itself. Again, see that function.
 """
 
 from datetime import datetime, timedelta
@@ -96,11 +99,16 @@ def compute_effective_dates(rows, *, prediction_factor=PREDICTION_FACTOR):
 
     Returns: { id: {"start_date": dt|None, "end_date": dt|None,
                     "is_predicted": bool, "offset_days": int,
-                    "applied_offset_days": int} }
+                    "applied_offset_days": int, "anchor_start": dt|None} }
 
     These are the BASE dates — `offset_days` is carried through untouched and
     `applied_offset_days` starts at 0. Run `apply_schedule_offsets` over the
     finished maps to actually shift anything (see the module docstring).
+
+    `anchor_start` is this model's anchor's confirmed global start, stamped on
+    every entry so the (model-blind) offset pass can tell where each row's
+    prediction was measured from. Diagnostic to callers; load-bearing to
+    `apply_schedule_offsets`.
     """
     rows = list(rows)
 
@@ -113,6 +121,12 @@ def compute_effective_dates(rows, *, prediction_factor=PREDICTION_FACTOR):
             continue
         if anchor is None or jp_start > _get(anchor, "jp_start_date"):
             anchor = row
+
+    # The anchor's global date is a fact, so it already reflects every schedule
+    # slip that had happened by then — and every prediction below is measured
+    # from it. Recorded on each entry so apply_schedule_offsets can skip those
+    # slips instead of applying them a second time.
+    anchor_start = _get(anchor, "global_start_date") if anchor is not None else None
 
     result = {}
     for row in rows:
@@ -153,6 +167,7 @@ def compute_effective_dates(rows, *, prediction_factor=PREDICTION_FACTOR):
         # never have to guard on shape.
         result[row_id]["offset_days"] = offset_days
         result[row_id]["applied_offset_days"] = 0
+        result[row_id]["anchor_start"] = anchor_start
 
     return result
 
@@ -198,6 +213,19 @@ def apply_schedule_offsets(emaps):
       date already carries the slip, and a still-live offset would count it
       twice. Nothing has to be cleaned up by hand.
 
+    An offset is also skipped when it lands at or before the TARGET's own
+    anchor (`entry["anchor_start"]`, stamped by compute_effective_dates). A
+    prediction is measured forward from that anchor's confirmed global date, so
+    every slip up to that date is already inside the number this pass is
+    shifting; adding it again double-counts. The "goes inert once confirmed"
+    rule above only covers the case where the slip and the row that absorbed it
+    are the same row — it cannot see a *different* model's anchor sitting after
+    the offset. That is exactly the League of Heroes shape: its anchor is the
+    single row carrying a global date, and because that date was filled in from
+    the already-slip-corrected calendar rather than confirmed by the game, every
+    later LoH row inherited the accumulated offset and then had it applied a
+    second time (~7 days late across the board, against the source spreadsheet).
+
     Note the per-model catch: when a banner confirms, its offset also stops
     reaching later Champions Meeting / League of Heroes rows, whose own anchors
     have not moved — so those can snap back. Set an offset on the CM/LoH row
@@ -224,9 +252,20 @@ def apply_schedule_offsets(emaps):
             start = entry["start_date"]
             if not entry["is_predicted"] or start is None:
                 continue
+            # `.get`, not `[...]`: hand-built maps (tests, and any caller not
+            # going through compute_effective_dates) simply get no anchor
+            # filtering, which is the behaviour they had before.
+            anchor_start = entry.get("anchor_start")
             # <= so a row's own offset applies to itself, not only to the rows
-            # behind it — a slip starting here delays this row too.
-            total = sum(days for point_start, days in offset_points if point_start <= start)
+            # behind it — a slip starting here delays this row too. The second
+            # clause drops anything already baked into the anchor this row was
+            # predicted from; see the docstring.
+            total = sum(
+                days
+                for point_start, days in offset_points
+                if point_start <= start
+                and (anchor_start is None or point_start > anchor_start)
+            )
             if not total:
                 continue
             shift = timedelta(days=total)
