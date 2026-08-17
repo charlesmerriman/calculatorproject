@@ -41,8 +41,9 @@ light/dark theme unfold renders in.
 <div class="analytics-report">
 <h1>Site analytics</h1>
 <p>
-  Snapshot of current user data, generated {{ report.generated_at }}.
-  Staff accounts are excluded from every metric. “Engaged users” are accounts
+  Generated {{ report.generated_at }}. Site traffic is accumulated over time;
+  every other section is a snapshot of the database as it stands right now.
+  Staff accounts are excluded from every user metric. “Engaged users” are accounts
   that changed at least one calculator setting or planned at least one banner —
   percentages are shown against both denominators because brand-new accounts
   start with everything off.
@@ -57,6 +58,61 @@ light/dark theme unfold renders in.
       <tr><th scope="row">Engaged users</th><td>{{ report.engaged_users }} ({{ report.engaged_pct }}%)</td></tr>
     </tbody>
   </table>
+</div>
+
+<div class="module">
+  <h2>Site traffic — last {{ report.daily_window_days }} days</h2>
+  <p>
+    Counts every visitor, signed in or not — the only section here that can see
+    guests. One page view is one browser session, not one click. Days with no
+    traffic are omitted rather than shown as zero.
+  </p>
+  {% if report.daily_visits %}
+  <table>
+    <thead>
+      <tr><th>Date</th><th>Page views</th><th>Unique visitors</th></tr>
+    </thead>
+    <tbody>
+      {% for day in report.daily_visits %}
+      <tr>
+        <td>{{ day.date|date:"Y-m-d" }}</td>
+        <td>{{ day.page_views }}</td>
+        <td>{{ day.unique_visitors }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No visits recorded yet.</p>
+  {% endif %}
+</div>
+
+<div class="module">
+  <h2>Site traffic — by month</h2>
+  <p>
+    Monthly unique visitors are a true monthly-active count: someone who visits
+    on fifteen days in a month counts <strong>once</strong>. It is therefore
+    smaller than the sum of that month’s daily unique visitors, and the two are
+    not meant to reconcile.
+  </p>
+  {% if report.monthly_visits %}
+  <table>
+    <thead>
+      <tr><th>Month</th><th>Page views</th><th>Unique visitors</th></tr>
+    </thead>
+    <tbody>
+      {% for month in report.monthly_visits %}
+      <tr>
+        <td>{{ month.month|date:"Y-m" }}</td>
+        <td>{{ month.page_views }}</td>
+        <td>{{ month.unique_visitors }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No visits recorded yet.</p>
+  {% endif %}
 </div>
 
 <div class="module">
