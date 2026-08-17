@@ -78,13 +78,14 @@ def _csv_response(report):
     writer.writerow([])
 
     writer.writerow(["Site Traffic — by month"])
-    # "Visit-days", not unique visitors: the per-visitor hash is re-salted daily
-    # so the same person cannot be recognised across a month. Spelled out in the
-    # header because a bare "Visitors" column here would be read as MAU.
-    writer.writerow(["Month", "Page views", "Visit-days (sum of daily uniques)"])
+    # A true monthly-active count, so it is deliberately SMALLER than the sum of
+    # the daily uniques above. Spelled out in the header because a reader who
+    # tries to reconcile the two columns will otherwise assume one is wrong.
+    writer.writerow(["Month", "Page views",
+                     "Unique visitors (counted once per month)"])
     for month in report["monthly_visits"]:
         writer.writerow([_date(month["month"], "%Y-%m"),
-                         month["page_views"], month["visit_days"]])
+                         month["page_views"], month["unique_visitors"]])
     writer.writerow([])
 
     writer.writerow(["Paid Products"])

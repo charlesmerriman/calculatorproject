@@ -236,8 +236,9 @@ Throttled at 60/hour per address (`visit_beacon` scope) — far above one beacon
 per session, with headroom for several people behind one NAT. Over the limit
 returns `429`.
 
-No IP address is stored. See `backend/docs/analytics.md` for what is recorded
-and for why monthly figures report visit-days rather than unique visitors.
+No IP address is stored. See `backend/docs/analytics.md` for what is recorded,
+and for why the monthly unique-visitor count is deliberately smaller than the
+sum of the daily ones.
 
 ---
 

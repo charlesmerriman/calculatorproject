@@ -1,20 +1,25 @@
 """
 Drops old per-visitor deduplication hashes.
 
-DailyVisitorHash rows exist for one reason: to answer "have we already counted
-this visitor today?" while a day is still being counted (see
-calculatorapi/visits.py). Once that day's uniques have been rolled up into the
-DailyVisit counter, the hashes carry no information anyone can use — they are
-salted per-day, so they cannot be joined across days or matched back to an IP.
+VisitorHash rows exist for one reason: to answer "have we already counted this
+visitor?" while a day and its month are still being counted (see
+calculatorapi/visits.py). Once those uniques are rolled up into the DailyVisit
+and MonthlyVisit counters, the hashes carry no information anyone can use — they
+are salted per-month, so they cannot be joined across months or matched back to
+an IP.
 
-Pruning them is therefore pure housekeeping, not data loss: DailyVisit rows are
+Pruning them is therefore pure housekeeping, not data loss: the counter rows are
 the permanent record and this command never touches them. It exists so the
 scratch table does not grow without bound.
+
+DO NOT set --days below ~45. The monthly-unique check asks "any row for this
+hash since the 1st?", so pruning a visitor's earlier rows mid-month would let
+them be counted as new a second time and inflate that month's figure.
 
 Usage:
     python manage.py prune_visitor_hashes --dry-run   # report only
     python manage.py prune_visitor_hashes             # keeps the last 90 days
-    python manage.py prune_visitor_hashes --days 30
+    python manage.py prune_visitor_hashes --days 120
 
 Safe to run on any schedule, including as a POST_DEPLOY job: it is idempotent
 and exits 0 when there is nothing to delete.
@@ -25,7 +30,7 @@ from datetime import timedelta
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from calculatorapi.models import DailyVisitorHash
+from calculatorapi.models import VisitorHash
 from calculatorapi.visits import VISITOR_HASH_RETENTION_DAYS
 
 
@@ -53,7 +58,7 @@ class Command(BaseCommand):
         dry_run = options["dry_run"]
 
         cutoff = timezone.localdate() - timedelta(days=days)
-        stale = DailyVisitorHash.objects.filter(date__lt=cutoff)
+        stale = VisitorHash.objects.filter(date__lt=cutoff)
         count = stale.count()
 
         if not count:

@@ -1,5 +1,5 @@
 """
-Site traffic counting: how many page views and distinct visitors per day.
+Site traffic counting: page views and distinct visitors, per day and per month.
 
 Same split as calculatorapi/analytics.py -- this module is pure logic with no
 HTTP concerns beyond reading headers off a request object, so the hashing and
@@ -8,8 +8,8 @@ analytics.py folds build_visit_report() into the dashboard.
 
 PRIVACY CONTRACT. No function here may persist an IP address, a user agent, or
 anything else that identifies a request. The only per-visitor artifact written
-is a digest salted with the calendar date, which makes it useless tomorrow --
-see _visitor_hash below for why that matters and what it costs us.
+is a digest salted with the calendar month, which makes it useless once that
+month is over -- see _visitor_hash below for the reasoning and its limits.
 """
 
 import hashlib
@@ -19,10 +19,9 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.db import DatabaseError, models
-from django.db.models.functions import TruncMonth
 from django.utils import timezone
 
-from .models import DailyVisit, DailyVisitorHash
+from .models import DailyVisit, MonthlyVisit, VisitorHash
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +36,11 @@ _BOT_UA = re.compile(
 )
 
 # How many days of hashes to keep before they are prunable. Only affects the
-# scratch table -- DailyVisit rows are never pruned.
+# scratch table -- DailyVisit and MonthlyVisit rows are never pruned.
+#
+# Must stay comfortably longer than one month: the monthly-unique check asks
+# "any row for this hash since the 1st?", so pruning a visitor's earlier rows
+# mid-month would let them be counted twice. 90 days leaves two months of slack.
 VISITOR_HASH_RETENTION_DAYS = 90
 
 
@@ -62,21 +65,26 @@ def _client_ip(request):
 
 
 def _visitor_hash(ip, user_agent, day):
-    """A per-day, non-reversible bucket for one visitor.
+    """A per-MONTH, non-reversible bucket for one visitor.
 
-    The date is part of the salt, which is the whole privacy property: the same
-    person hashes to an unrelated value tomorrow, so these rows cannot be joined
-    across days to rebuild anyone's visit history. Nothing is stored that could
-    be matched back to an IP either -- reversing it would mean brute-forcing the
-    address space against an unknown SECRET_KEY.
+    The salt carries the calendar month, so the same person hashes identically
+    all month and to something unrelated in the next one. That span is a
+    deliberate choice and the only reason a true monthly-unique count is
+    possible: counting someone once per month *means* recognising them across
+    that month, and no amount of cleverness avoids it. A daily salt (the
+    obvious privacy-maximising choice) can only ever produce visit-days.
 
-    The cost of that rotation is real and deliberate: true monthly unique
-    visitors become impossible to compute, so build_visit_report() reports
-    visit-days for a month instead of pretending to a MAU. Getting a real MAU
-    would mean holding a stable per-person identifier for a month, which is
-    exactly what this avoids.
+    What the month scope does not give up:
+      - Nothing identifying is stored. Recovering an IP would mean brute-forcing
+        the address space against an unknown SECRET_KEY.
+      - Nobody can be followed across months; the link breaks at every boundary.
+      - No cookie or client-side identifier is involved, so this cannot be
+        correlated with anything outside our own database.
+
+    Disclosed in the Privacy Policy's "Traffic Measurement" section, which
+    states the month-long span explicitly.
     """
-    raw = f"{settings.SECRET_KEY}:{day.isoformat()}:{ip}:{user_agent}"
+    raw = f"{settings.SECRET_KEY}:{day:%Y-%m}:{ip}:{user_agent}"
     # Half a SHA-256. Collision odds are negligible at any traffic level this
     # site will see, and a narrower unique index is cheaper.
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:32]
@@ -94,27 +102,48 @@ def record_visit(request):
         return False
 
     today = timezone.localdate()
+    month_start = today.replace(day=1)
     try:
-        visit, _ = DailyVisit.objects.get_or_create(date=today)
+        day_row, _ = DailyVisit.objects.get_or_create(date=today)
+        month_row, _ = MonthlyVisit.objects.get_or_create(month=month_start)
+        visitor = _visitor_hash(_client_ip(request), user_agent, today)
 
         # F() rather than read-modify-write: two simultaneous beacons would
         # otherwise read the same value and one increment would vanish. This
         # pushes the arithmetic into the database, so no transaction or lock is
-        # needed for the count to stay correct.
-        DailyVisit.objects.filter(pk=visit.pk).update(
+        # needed for the counts to stay correct.
+        DailyVisit.objects.filter(pk=day_row.pk).update(
+            page_views=models.F("page_views") + 1
+        )
+        MonthlyVisit.objects.filter(pk=month_row.pk).update(
             page_views=models.F("page_views") + 1
         )
 
+        # Asked BEFORE today's row is written, or it would always find itself.
+        # The hash is month-scoped, so any hit here means this visitor has
+        # already been counted for the month.
+        seen_this_month = VisitorHash.objects.filter(
+            visitor_hash=visitor, date__gte=month_start
+        ).exists()
+
         # The unique constraint on (date, visitor_hash) does the deduplication;
         # created=False means we have already counted this visitor today.
-        _, created = DailyVisitorHash.objects.get_or_create(
-            date=today,
-            visitor_hash=_visitor_hash(_client_ip(request), user_agent, today),
+        _, first_today = VisitorHash.objects.get_or_create(
+            date=today, visitor_hash=visitor
         )
-        if created:
-            DailyVisit.objects.filter(pk=visit.pk).update(
+
+        if first_today:
+            DailyVisit.objects.filter(pk=day_row.pk).update(
                 unique_visitors=models.F("unique_visitors") + 1
             )
+            # Gated on first_today as well as the month check, which is what
+            # makes this exact under concurrency: two simultaneous first-ever
+            # visits both read seen_this_month=False, but the unique constraint
+            # lets only one of them win first_today, so the month is bumped once.
+            if not seen_this_month:
+                MonthlyVisit.objects.filter(pk=month_row.pk).update(
+                    unique_visitors=models.F("unique_visitors") + 1
+                )
         return True
     except DatabaseError:
         logger.warning("Failed to record site visit", exc_info=True)
@@ -136,22 +165,12 @@ def build_visit_report(days=30, months=12):
         ).values("date", "page_views", "unique_visitors")
     )
 
-    # Monthly totals come from the daily rows, so no second write path exists
-    # to drift out of step with the first.
-    monthly_start = (today - timedelta(days=months * 31)).replace(day=1)
+    # Read straight off the monthly counters rather than aggregating the daily
+    # rows. Summing daily uniques would count a person once per day they
+    # appeared; MonthlyVisit.unique_visitors is accumulated against the
+    # month-scoped hash as visits arrive, so it is a true monthly-active figure.
     monthly = list(
-        DailyVisit.objects.filter(date__gte=monthly_start)
-        .annotate(month=TruncMonth("date"))
-        .values("month")
-        .annotate(
-            page_views=models.Sum("page_views"),
-            # NOT monthly unique visitors -- summing daily uniques counts a
-            # person once per day they appeared. See _visitor_hash for why a
-            # real MAU is off the table. Labelled "visit-days" everywhere it
-            # surfaces so the number is never read as something it isn't.
-            visit_days=models.Sum("unique_visitors"),
-        )
-        .order_by("-month")[:months]
+        MonthlyVisit.objects.values("month", "page_views", "unique_visitors")[:months]
     )
 
     return {

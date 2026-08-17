@@ -90,23 +90,22 @@ light/dark theme unfold renders in.
 <div class="module">
   <h2>Site traffic — by month</h2>
   <p>
-    “Visit-days” is the sum of each day’s unique visitors, so someone who came
-    on five days counts five times. It is <strong>not</strong> monthly unique
-    visitors: visitors are identified by a hash that is re-salted every day, on
-    purpose, so nobody can be tracked from one day to the next — which also
-    means they cannot be counted once across a month.
+    Monthly unique visitors are a true monthly-active count: someone who visits
+    on fifteen days in a month counts <strong>once</strong>. It is therefore
+    smaller than the sum of that month’s daily unique visitors, and the two are
+    not meant to reconcile.
   </p>
   {% if report.monthly_visits %}
   <table>
     <thead>
-      <tr><th>Month</th><th>Page views</th><th>Visit-days</th></tr>
+      <tr><th>Month</th><th>Page views</th><th>Unique visitors</th></tr>
     </thead>
     <tbody>
       {% for month in report.monthly_visits %}
       <tr>
         <td>{{ month.month|date:"Y-m" }}</td>
         <td>{{ month.page_views }}</td>
-        <td>{{ month.visit_days }}</td>
+        <td>{{ month.unique_visitors }}</td>
       </tr>
       {% endfor %}
     </tbody>
