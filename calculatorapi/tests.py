@@ -2406,6 +2406,28 @@ class AnalyticsDashboardViewTests(TestCase):
         self.assertIn('Paid Products', body)
         self.assertIn('Popular Uma Banners', body)
 
+    def test_csv_survives_a_planned_banner_with_no_confirmed_dates(self):
+        """Regression: Download CSV used to 500 on any predicted banner.
+
+        _banner_popularity() reports the CONFIRMED global dates, which are null
+        until a banner is announced, so this fired as soon as one person planned
+        anything in the future — the normal case, not an edge case.
+        """
+        timeline = make_timeline()
+        timeline.global_start_date = None
+        timeline.global_end_date = None
+        timeline.save()
+        UserPlannedBanner.objects.create(
+            user=make_user('planner'),
+            banner_uma=make_uma_banner(timeline, name='Unannounced'),
+            number_of_pulls=10,
+        )
+
+        self._staff_client()
+        res = self.client.get(self.url, {'format': 'csv'})
+        self.assertEqual(res.status_code, 200)
+        self.assertIn('Unannounced', res.content.decode())
+
     def test_dashboard_includes_traffic_sections(self):
         DailyVisit.objects.create(
             date=timezone.localdate(), page_views=7, unique_visitors=3)
