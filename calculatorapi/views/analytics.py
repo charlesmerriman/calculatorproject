@@ -34,6 +34,17 @@ def analytics_dashboard(request):
     return render(request, "admin/analytics.html", context)
 
 
+def _date(value, fmt="%Y-%m-%d"):
+    """Format a date for the CSV, tolerating a missing one.
+
+    Banner rows carry the CONFIRMED global dates, which are null for a banner
+    that is still only predicted (see analytics._banner_popularity). Calling
+    strftime on those unconditionally used to 500 the whole download as soon as
+    one person planned a future banner — i.e. in normal use.
+    """
+    return value.strftime(fmt) if value else ""
+
+
 def _csv_response(report):
     """
     Serialize the report into a single sectioned CSV.
@@ -57,6 +68,24 @@ def _csv_response(report):
     writer.writerow(["Total users (non-staff)", report["total_users"]])
     writer.writerow(["Engaged users", report["engaged_users"]])
     writer.writerow(["Engaged %", report["engaged_pct"]])
+    writer.writerow([])
+
+    writer.writerow([f"Site Traffic — last {report['daily_window_days']} days"])
+    writer.writerow(["Date", "Page views", "Unique visitors"])
+    for day in report["daily_visits"]:
+        writer.writerow([_date(day["date"]),
+                         day["page_views"], day["unique_visitors"]])
+    writer.writerow([])
+
+    writer.writerow(["Site Traffic — by month"])
+    # A true monthly-active count, so it is deliberately SMALLER than the sum of
+    # the daily uniques above. Spelled out in the header because a reader who
+    # tries to reconcile the two columns will otherwise assume one is wrong.
+    writer.writerow(["Month", "Page views",
+                     "Unique visitors (counted once per month)"])
+    for month in report["monthly_visits"]:
+        writer.writerow([_date(month["month"], "%Y-%m"),
+                         month["page_views"], month["unique_visitors"]])
     writer.writerow([])
 
     writer.writerow(["Paid Products"])
@@ -87,8 +116,8 @@ def _csv_response(report):
         for banner in report[key]:
             writer.writerow([
                 banner["name"], banner["timeline"],
-                banner["start_date"].strftime("%Y-%m-%d"),
-                banner["end_date"].strftime("%Y-%m-%d"),
+                _date(banner["start_date"]),
+                _date(banner["end_date"]),
                 banner["planners"], banner["total_pulls"], banner["avg_pulls"],
             ])
         writer.writerow([])

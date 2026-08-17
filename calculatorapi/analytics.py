@@ -14,6 +14,7 @@ from django.db.models import Avg, Count, Q, Sum
 from django.utils import timezone
 
 from .models import CustomUser, UserPlannedBanner
+from .visits import build_visit_report
 
 # Resource fields averaged for the "Current Resources" section.
 # (model field name, human label) — order controls display order.
@@ -119,10 +120,15 @@ def build_analytics_report():
 
     Sections:
       - overview: total vs engaged user counts
+      - traffic: daily and monthly site visits (the one section with history)
       - paid_products: daily carat pack / training pass adoption
       - rank_distributions: users per rank, per rank type
       - resource_averages: average current resources among engaged users
       - popular_uma_banners / popular_support_banners: ranked pull plans
+
+    Everything but `traffic` is a snapshot of the database as it stands right
+    now. Traffic is accumulated over time by calculatorapi/visits.py, so it is
+    the only part of this report that reads as a trend.
     """
     # Staff accounts (the site owner, devs) are excluded from every metric so
     # admin test data never skews the numbers.
@@ -187,8 +193,17 @@ def build_analytics_report():
         for field, label in RESOURCE_FIELDS
     ]
 
+    # ── Traffic ──────────────────────────────────────────────────────────
+    # Counts everyone who loaded the site, signed in or not — unlike every
+    # other section here, which can only see accounts. Guests are most of the
+    # traffic, so this is the only number on the page that reflects them.
+    visits = build_visit_report()
+
     return {
         "generated_at": timezone.now(),
+        "daily_visits": visits["daily"],
+        "monthly_visits": visits["monthly"],
+        "daily_window_days": visits["daily_window_days"],
         "total_users": total_users,
         "engaged_users": engaged_users,
         "engaged_pct": _pct(engaged_users, total_users),
