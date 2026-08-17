@@ -155,13 +155,30 @@ def main() -> None:
             return None
         return umapk_by_cardid.get(card_id)
 
-    # Support resolution: normalized name (lowest game_id wins on collisions).
-    sup_by_norm: dict[str, tuple[int, int]] = {}
+    # Support resolution: normalized name, LOWEST SSR wins on collisions.
+    #
+    # It used to be lowest game_id outright, which was wrong: game_id encodes
+    # rarity (1xxxx R, 2xxxx SR, 3xxxx SSR), so any character with an R card of
+    # the same name always won, and banners never feature R cards. The app-side
+    # copy of this rule put 20 R cards on the production launch banner before it
+    # was caught — see calculatorapi/support_backfill.py.
+    #
+    # THE TWO RULES NOW DIVERGE DELIBERATELY, so read that module before
+    # touching this: it resolves the remaining SSR-vs-SSR ambiguity by release
+    # date against the banner's JP start, which is strictly better and is what
+    # scripts/fix_banner_support_links.py exists to apply to this file's output.
+    # The date tiers are not duplicated here because this script's output is a
+    # fixture snapshot that loads nowhere, so a wrong link costs nothing until
+    # that script runs anyway.
+    SSR_MIN_GAME_ID = 30000
+    sup_by_norm: dict[str, tuple[tuple[int, int], int]] = {}
     for r in sc:
         k = norm(r["fields"]["name"])
         gid = r["fields"].get("game_id") or 0
-        if k not in sup_by_norm or gid < sup_by_norm[k][0]:
-            sup_by_norm[k] = (gid, r["pk"])
+        # An SSR always beats a non-SSR; among equals, the lower id wins.
+        rank = (0 if gid >= SSR_MIN_GAME_ID else 1, gid)
+        if k not in sup_by_norm or rank < sup_by_norm[k][0]:
+            sup_by_norm[k] = (rank, r["pk"])
 
     def resolve_sup(token: str):
         for cand in (token, strip_rerun(token)):

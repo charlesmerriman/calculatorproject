@@ -33,6 +33,47 @@ envs:
   value: umacalculatorimages.nyc3.cdn.digitaloceanspaces.com
 features:
 - buildpack-stack=ubuntu-22
+# One-off data repairs, run after the new code is live. A job here is the only
+# way to reach the production database without a shell: the app's database is an
+# App Platform *dev* database, which has no external endpoint and no trusted-
+# sources list to add an IP to.
+#
+# POST_DEPLOY runs once per deployment, after the service is healthy. Every
+# command listed here MUST be idempotent and MUST exit 0 when it has nothing to
+# do — a failing POST_DEPLOY job fails the deployment.
+#
+# Applying this spec: DO NOT `doctl apps update --spec .do/app.yaml`. The SECRET
+# values below are committed as "" and would overwrite the real ones. Take the
+# live spec first, which carries the secrets as encrypted EV[1:...] blobs:
+#     doctl apps spec get <app-id> > /tmp/live-spec.yaml
+#     # paste this jobs: block into it
+#     doctl apps update <app-id> --spec /tmp/live-spec.yaml
+jobs:
+- name: fix-support-card-variants
+  kind: POST_DEPLOY
+  environment_slug: python
+  source_dir: /
+  github:
+    branch: master
+    deploy_on_push: true
+    repo: charlesmerriman/calculatorproject
+  build_command: pip install -r requirements.txt
+  # Swap --dry-run for --no-input once the logged plan looks right:
+  #     doctl apps logs <app-id> fix-support-card-variants --type run
+  run_command: python manage.py fix_support_card_variants --dry-run
+  instance_count: 1
+  instance_size_slug: apps-s-1vcpu-0.5gb
+  envs:
+  - key: DATABASE_URL
+    scope: RUN_TIME
+    value: ${dev-db-462490.DATABASE_URL}
+  - key: DJANGO_SECRET_KEY
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+    value: ""  # Set this in the DigitalOcean dashboard — never commit the real value
+  - key: DJANGO_ALLOWED_HOSTS
+    scope: RUN_AND_BUILD_TIME
+    value: umamusme-calculator-7zdcg.ondigitalocean.app
 ingress:
   rules:
   - component:

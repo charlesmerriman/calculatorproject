@@ -73,6 +73,15 @@ CONFIRM_PHRASE = "backfill"
 BANNER_SUPPORT_NAME = "Race Prep Support"
 
 
+def parse_jp_date(value):
+    """The CSV's "YYYY-MM-DD" as a date, or None when the cell is malformed."""
+    try:
+        year, month, day = (int(part) for part in value.split("-"))
+        return date(year, month, day)
+    except ValueError:
+        return None
+
+
 class Command(BaseCommand):
     help = "Link the ten support cards to each race-prep support rerun."
 
@@ -138,8 +147,12 @@ class Command(BaseCommand):
                 skipped.append(timeline)
                 continue
 
+            # Pass the CSV's date, not the timeline's: it is the authority the
+            # resolver's date tiers are written against, and a race-prep batch
+            # re-features older cards whose same-named SSR reprints can only be
+            # told apart by it.
             names = split_names(row["Banner Support"])
-            found, missing = resolve_support_cards(names)
+            found, missing = resolve_support_cards(names, parse_jp_date(jp_start))
 
             if missing:
                 problems.append(
@@ -181,13 +194,10 @@ class Command(BaseCommand):
 
     def _find_timeline(self, jp_start):
         """Match on the JP start DATE, ignoring the stored time of day."""
-        try:
-            year, month, day = (int(part) for part in jp_start.split("-"))
-        except ValueError:
+        parsed = parse_jp_date(jp_start)
+        if parsed is None:
             return None
-        return BannerTimeline.objects.filter(
-            jp_start_date__date=date(year, month, day)
-        ).first()
+        return BannerTimeline.objects.filter(jp_start_date__date=parsed).first()
 
     def _report(self, planned, skipped, problems, dry_run):
         verb = "Would attach" if dry_run else "Attaching"

@@ -192,8 +192,13 @@ class Command(BaseCommand):
             )
             return []
 
+        # The JP date matters as much as the names: twenty of these characters
+        # have both an R and an SSR card of the same name, and the resolver
+        # needs the banner's date to tell which SSR debuted here. The first run
+        # of this command predated that rule and linked all twenty R variants
+        # into production — `fix_support_card_variants` repairs those rows.
         names = split_names(rows[0]["Banner Support"])
-        found, missing = resolve_support_cards(names)
+        found, missing = resolve_support_cards(names, LAUNCH_JP_DATE)
         self.stdout.write(f"\nMatched {len(found)} of {len(names)} support card(s).")
 
         if missing:
