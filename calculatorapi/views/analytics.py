@@ -59,6 +59,23 @@ def _csv_response(report):
     writer.writerow(["Engaged %", report["engaged_pct"]])
     writer.writerow([])
 
+    writer.writerow([f"Site Traffic — last {report['daily_window_days']} days"])
+    writer.writerow(["Date", "Page views", "Unique visitors"])
+    for day in report["daily_visits"]:
+        writer.writerow([day["date"].strftime("%Y-%m-%d"),
+                         day["page_views"], day["unique_visitors"]])
+    writer.writerow([])
+
+    writer.writerow(["Site Traffic — by month"])
+    # "Visit-days", not unique visitors: the per-visitor hash is re-salted daily
+    # so the same person cannot be recognised across a month. Spelled out in the
+    # header because a bare "Visitors" column here would be read as MAU.
+    writer.writerow(["Month", "Page views", "Visit-days (sum of daily uniques)"])
+    for month in report["monthly_visits"]:
+        writer.writerow([month["month"].strftime("%Y-%m"),
+                         month["page_views"], month["visit_days"]])
+    writer.writerow([])
+
     writer.writerow(["Paid Products"])
     writer.writerow(["Product", "Users", "% of total", "% of engaged"])
     for product in report["paid_products"]:

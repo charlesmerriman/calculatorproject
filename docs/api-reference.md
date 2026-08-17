@@ -215,6 +215,32 @@ All list responses return an array of the resource object. Retrieve by appending
 
 ---
 
+## Telemetry
+
+### `POST /visit`
+
+Public. Records one site visit for the admin analytics dashboard. Takes no
+request body — anything sent is ignored — and returns `204 No Content` with an
+empty body.
+
+The frontend is a separate static site on the CDN, so Django never sees a page
+load; this beacon is the only way it learns of one. `frontend/src/services/visitBeacon.ts`
+fires it **once per browser session**, not per route change, and suppresses it
+entirely when a dev server is pointed at a remote API (`npm run dev:live`).
+
+The response is deliberately uninformative. A request filtered as a bot and a
+request that was counted both return `204`, so the filter cannot be probed by
+trial and error.
+
+Throttled at 60/hour per address (`visit_beacon` scope) — far above one beacon
+per session, with headroom for several people behind one NAT. Over the limit
+returns `429`.
+
+No IP address is stored. See `backend/docs/analytics.md` for what is recorded
+and for why monthly figures report visit-days rather than unique visitors.
+
+---
+
 ## Shape Reference
 
 ### `UserStats`

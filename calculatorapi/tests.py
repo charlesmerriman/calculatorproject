@@ -33,7 +33,7 @@ from django.contrib.auth.models import Group
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
-from django.test import TestCase, override_settings
+from django.test import RequestFactory, TestCase, override_settings
 from django.urls import NoReverseMatch, reverse
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
@@ -49,6 +49,7 @@ from calculatorapi.image_library import (
     normalize_prefix,
 )
 from calculatorapi.analytics import build_analytics_report
+from calculatorapi.visits import build_visit_report, record_visit
 from calculatorapi.ledger import AMOUNT_FIELDS, build_income_ledger
 from calculatorapi.views.ledger import IncomeLedgerRowSerializer
 from calculatorapi.predictions import (
@@ -76,6 +77,7 @@ from calculatorapi.models import (
     AnniversaryEvent, AnniversaryEventBanner, AnniversaryEventProduct,
     UserPlannedPurchase, UmasOnUmaBanner, SupportsOnSupportBanner,
     BannerCategory,
+    DailyVisit, DailyVisitorHash,
 )
 
 # Smallest valid PNG (1x1, transparent). ImageField runs Pillow over uploads,
@@ -2403,6 +2405,216 @@ class AnalyticsDashboardViewTests(TestCase):
         body = res.content.decode()
         self.assertIn('Paid Products', body)
         self.assertIn('Popular Uma Banners', body)
+
+    def test_dashboard_includes_traffic_sections(self):
+        DailyVisit.objects.create(
+            date=timezone.localdate(), page_views=7, unique_visitors=3)
+        self._staff_client()
+        res = self.client.get(self.url)
+        self.assertContains(res, 'Site traffic')
+        self.assertContains(res, 'Visit-days')
+
+    def test_csv_includes_traffic_sections(self):
+        DailyVisit.objects.create(
+            date=timezone.localdate(), page_views=7, unique_visitors=3)
+        self._staff_client()
+        body = self.client.get(self.url, {'format': 'csv'}).content.decode()
+        self.assertIn('Site Traffic', body)
+        # The monthly column must never be labelled as unique visitors — the
+        # daily salt rotation makes a real MAU impossible, so the header is the
+        # only thing stopping the number being misread.
+        self.assertIn('Visit-days (sum of daily uniques)', body)
+
+
+# ── Visit Tracking Tests ──────────────────────────────────────────────────────
+
+class VisitRecordingTests(TestCase):
+    """record_visit()'s counting, deduplication and bot filtering."""
+
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.today = timezone.localdate()
+
+    def _hit(self, ip='203.0.113.5', agent='Mozilla/5.0', forwarded=None):
+        """One beacon request. `forwarded` sets X-Forwarded-For."""
+        headers = {'REMOTE_ADDR': ip, 'HTTP_USER_AGENT': agent}
+        if forwarded is not None:
+            headers['HTTP_X_FORWARDED_FOR'] = forwarded
+        return record_visit(self.factory.post('/visit', **headers))
+
+    def _counts(self):
+        visit = DailyVisit.objects.get(date=self.today)
+        return visit.page_views, visit.unique_visitors
+
+    def test_first_visit_creates_the_day_row(self):
+        self.assertTrue(self._hit())
+        self.assertEqual(self._counts(), (1, 1))
+
+    def test_repeat_visitor_adds_a_view_but_not_a_visitor(self):
+        self._hit()
+        self._hit()
+        self._hit()
+        self.assertEqual(self._counts(), (3, 1))
+        # One day, one hash: the unique constraint is doing the deduplication.
+        self.assertEqual(DailyVisitorHash.objects.count(), 1)
+
+    def test_different_ip_counts_as_a_new_visitor(self):
+        self._hit(ip='203.0.113.5')
+        self._hit(ip='198.51.100.9')
+        self.assertEqual(self._counts(), (2, 2))
+
+    def test_different_user_agent_counts_as_a_new_visitor(self):
+        self._hit(agent='Mozilla/5.0')
+        self._hit(agent='Mozilla/5.0 (different device)')
+        self.assertEqual(self._counts(), (2, 2))
+
+    def test_forwarded_for_wins_over_remote_addr(self):
+        """Without this the load balancer's IP is all we ever see in production.
+
+        Both hits arrive from the same REMOTE_ADDR — as they would behind App
+        Platform's proxy — but carry different client addresses. If X-Forwarded-For
+        were ignored they would collapse into one visitor.
+        """
+        self._hit(ip='10.0.0.1', forwarded='203.0.113.5')
+        self._hit(ip='10.0.0.1', forwarded='198.51.100.9')
+        self.assertEqual(self._counts(), (2, 2))
+
+    def test_forwarded_for_uses_the_first_entry(self):
+        """"client, proxy1, proxy2" — the client is the leftmost entry."""
+        self._hit(ip='10.0.0.1', forwarded='203.0.113.5, 10.0.0.2, 10.0.0.3')
+        self._hit(ip='10.0.0.1', forwarded='203.0.113.5, 10.9.9.9')
+        self.assertEqual(self._counts(), (2, 1))
+
+    def test_bots_are_not_counted_at_all(self):
+        for agent in ['Googlebot/2.1', 'python-urllib/3.11', 'curl/8.0',
+                      'HeadlessChrome/120', 'Some Crawler']:
+            self.assertFalse(self._hit(agent=agent), agent)
+        self.assertFalse(DailyVisit.objects.exists())
+
+    def test_no_identifying_data_is_stored(self):
+        """The privacy contract, asserted rather than assumed."""
+        self._hit(ip='203.0.113.5', agent='Mozilla/5.0 (SecretDevice)')
+        stored = DailyVisitorHash.objects.get()
+        self.assertNotIn('203.0.113.5', stored.visitor_hash)
+        self.assertNotIn('SecretDevice', stored.visitor_hash)
+        self.assertEqual(len(stored.visitor_hash), 32)
+
+    def test_hash_changes_from_one_day_to_the_next(self):
+        """Salt rotation: the same visitor must not be linkable across days.
+
+        This is also exactly why monthly uniques are reported as visit-days.
+        """
+        self._hit()
+        today_hash = DailyVisitorHash.objects.get().visitor_hash
+
+        tomorrow = self.today + datetime.timedelta(days=1)
+        with patch('calculatorapi.visits.timezone.localdate', return_value=tomorrow):
+            self._hit()
+
+        hashes = set(DailyVisitorHash.objects.values_list('visitor_hash', flat=True))
+        self.assertEqual(len(hashes), 2)
+        self.assertIn(today_hash, hashes)
+
+
+class VisitReportTests(TestCase):
+    """build_visit_report()'s windowing and monthly rollup."""
+
+    def test_empty_db_reports_no_traffic(self):
+        report = build_visit_report()
+        self.assertEqual(report['daily'], [])
+        self.assertEqual(report['monthly'], [])
+
+    def test_daily_window_excludes_older_rows(self):
+        today = timezone.localdate()
+        DailyVisit.objects.create(date=today, page_views=5, unique_visitors=2)
+        DailyVisit.objects.create(
+            date=today - datetime.timedelta(days=40), page_views=99, unique_visitors=50)
+
+        daily = build_visit_report(days=30)['daily']
+        self.assertEqual([row['date'] for row in daily], [today])
+
+    def test_monthly_rollup_groups_by_month(self):
+        """Two days in one month collapse into a single row; a third month stays separate."""
+        DailyVisit.objects.create(
+            date=datetime.date(2026, 3, 2), page_views=10, unique_visitors=4)
+        DailyVisit.objects.create(
+            date=datetime.date(2026, 3, 20), page_views=6, unique_visitors=3)
+        DailyVisit.objects.create(
+            date=datetime.date(2026, 4, 1), page_views=1, unique_visitors=1)
+
+        # A window wide enough to reach 2026-03 from whenever the suite runs.
+        by_month = {
+            row['month'].strftime('%Y-%m'): row
+            for row in build_visit_report(months=600)['monthly']
+        }
+        self.assertEqual(by_month['2026-03']['page_views'], 16)
+        # Sum of daily uniques, NOT distinct people in March.
+        self.assertEqual(by_month['2026-03']['visit_days'], 7)
+        self.assertEqual(by_month['2026-04']['page_views'], 1)
+
+
+class VisitBeaconEndpointTests(TestCase):
+    """POST /visit — the public write-only beacon."""
+
+    def setUp(self):
+        self.url = reverse('site-visit')
+        # DRF throttles through the cache, which is shared across tests in a
+        # run; without this a neighbouring test's hits could throttle ours.
+        cache.clear()
+
+    def test_anonymous_post_is_accepted_and_counted(self):
+        res = self.client.post(self.url, HTTP_USER_AGENT='Mozilla/5.0')
+        self.assertEqual(res.status_code, 204)
+        self.assertEqual(res.content, b'')
+        self.assertEqual(DailyVisit.objects.get().page_views, 1)
+
+    def test_get_is_not_allowed(self):
+        self.assertEqual(self.client.get(self.url).status_code, 405)
+
+    def test_bot_gets_the_same_204_but_is_not_counted(self):
+        """The response must not reveal that the bot filter fired."""
+        res = self.client.post(self.url, HTTP_USER_AGENT='Googlebot/2.1')
+        self.assertEqual(res.status_code, 204)
+        self.assertFalse(DailyVisit.objects.exists())
+
+    def test_repeated_hits_are_eventually_throttled(self):
+        # 60/hour, so the 61st is refused. Guards the one thing standing
+        # between an open counter and anyone who wants to run it up.
+        for _ in range(60):
+            self.client.post(self.url, HTTP_USER_AGENT='Mozilla/5.0')
+        res = self.client.post(self.url, HTTP_USER_AGENT='Mozilla/5.0')
+        self.assertEqual(res.status_code, 429)
+
+
+class PruneVisitorHashesCommandTests(TestCase):
+    """The housekeeping command must never touch the permanent counters."""
+
+    def setUp(self):
+        self.today = timezone.localdate()
+        self.old_date = self.today - datetime.timedelta(days=120)
+        DailyVisit.objects.create(
+            date=self.old_date, page_views=50, unique_visitors=20)
+        DailyVisitorHash.objects.create(date=self.old_date, visitor_hash='a' * 32)
+        DailyVisitorHash.objects.create(date=self.today, visitor_hash='b' * 32)
+
+    def test_prunes_old_hashes_but_keeps_daily_counts(self):
+        call_command('prune_visitor_hashes', stdout=StringIO())
+        self.assertEqual(
+            list(DailyVisitorHash.objects.values_list('date', flat=True)),
+            [self.today],
+        )
+        # The whole point: the historical numbers survive their scratch data.
+        self.assertEqual(DailyVisit.objects.get(date=self.old_date).page_views, 50)
+
+    def test_dry_run_changes_nothing(self):
+        call_command('prune_visitor_hashes', '--dry-run', stdout=StringIO())
+        self.assertEqual(DailyVisitorHash.objects.count(), 2)
+
+    def test_exits_cleanly_when_there_is_nothing_to_prune(self):
+        out = StringIO()
+        call_command('prune_visitor_hashes', '--days', '3650', stdout=out)
+        self.assertIn('Nothing to prune', out.getvalue())
+        self.assertEqual(DailyVisitorHash.objects.count(), 2)
 
 
 # ── Admin UX Tests ────────────────────────────────────────────────────────────

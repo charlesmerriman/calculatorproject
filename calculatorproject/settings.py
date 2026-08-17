@@ -293,6 +293,14 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    # Only the public traffic beacon is throttled (views/visits.py). It is
+    # unauthenticated and write-only, so this is what stops one client running
+    # the page-view counter up on its own. 60/hour is far above what the SPA
+    # does -- one beacon per browser session -- with headroom for a group of
+    # people sharing an office or campus NAT.
+    "DEFAULT_THROTTLE_RATES": {
+        "visit_beacon": "60/hour",
+    },
 }
 
 CORS_ALLOW_ALL_ORIGINS = False
