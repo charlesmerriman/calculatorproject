@@ -2,7 +2,9 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
-from calculatorapi.models import BannerTimeline, BannerSupport, BannerUma
+from calculatorapi.models import (
+    BannerTimeline, BannerSupport, BannerUma, BannerStepUp,
+)
 from .uma import UmaSerializer
 from .support_card import SupportCardSerializer
 from .mixins import EffectiveDateMixin, EventTypeMixin
@@ -58,6 +60,21 @@ class BannerUmaNestedSerializer(serializers.ModelSerializer):
         return result
 
 
+class BannerStepUpSummarySerializer(serializers.ModelSerializer):
+    """Just enough of a step-up to draw a chip on the Timeline.
+
+    Deliberately not BannerStepUpSerializer: that one nests the whole
+    banner_timeline, which is the very row this is attached to, so using it here
+    would send each timeline back inside itself. The Timeline only needs to say
+    "this campaign runs 2 star-3 and 3 SSR step-ups"; the full records are
+    already sent under banner_step_up_data for the calculator.
+    """
+
+    class Meta:
+        model = BannerStepUp
+        fields = ("id", "name", "card_type", "banner_count")
+
+
 class BannerTimelineForViewingSerializer(EventTypeMixin, EffectiveDateMixin,
                                          serializers.ModelSerializer):
     # Only this serializer is tagged, not BannerTimelineSerializer above — the
@@ -68,6 +85,12 @@ class BannerTimelineForViewingSerializer(EventTypeMixin, EffectiveDateMixin,
     banner_umas = BannerUmaNestedSerializer(source="uma_banners", many=True, read_only=True)
     banner_supports = BannerSupportNestedSerializer(source="support_banners", many=True, read_only=True)
     anniversary_event = serializers.SerializerMethodField()
+    # Step-ups attach to the campaign PART they run in, so this lands on exactly
+    # one timeline row per campaign with no extra filtering -- see the FK's
+    # related_name on BannerStepUp.
+    banner_step_ups = BannerStepUpSummarySerializer(
+        source="step_up_banners", many=True, read_only=True
+    )
 
     class Meta:
         model = BannerTimeline
@@ -77,6 +100,7 @@ class BannerTimelineForViewingSerializer(EventTypeMixin, EffectiveDateMixin,
             "jp_start_date", "jp_end_date", "global_start_date", "global_end_date",
             "schedule_offset_days", "applied_offset_days",
             "image", "banner_umas", "banner_supports", "anniversary_event",
+            "banner_step_ups",
         )
 
     def get_anniversary_event(self, obj):

@@ -210,6 +210,9 @@ class CalculatorViewSet(ViewSet):
                 # Prefetched so the attached-campaign strip costs no extra query
                 # per banner (195 rows would otherwise be 195 lookups).
                 "anniversary_links__anniversary_event",
+                # Same reason: the step-up chip would otherwise be one lookup
+                # per timeline row.
+                "step_up_banners",
             ),
             key=lambda t: effective_sort_key(emap.get(t.id)),
         )

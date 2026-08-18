@@ -2202,6 +2202,37 @@ class AnniversaryEventApiTests(TestCase):
         )
         self.assertIsNone(timeline['anniversary_event'])
 
+    def test_banner_carries_its_step_ups_for_the_timeline_chip(self):
+        BannerStepUp.objects.create(
+            banner_timeline=self.timeline, anniversary_event=self.event,
+            name='3rd Anniversary Star-3 Select Step-Up',
+            card_type='uma', banner_count=1,
+        )
+        BannerStepUp.objects.create(
+            banner_timeline=self.timeline, anniversary_event=self.event,
+            name='3rd Anniversary SSR Select Step-Up',
+            card_type='support', banner_count=2,
+        )
+        res = self.client.get('/calculator-data')
+        timeline = next(
+            t for t in res.data['banner_timeline_data'] if t['id'] == self.timeline.id
+        )
+
+        by_type = {s['card_type']: s for s in timeline['banner_step_ups']}
+        self.assertEqual(by_type['uma']['banner_count'], 1)
+        self.assertEqual(by_type['support']['banner_count'], 2)
+        # A summary, not the full record: nesting banner_timeline here would send
+        # each timeline back inside itself.
+        self.assertNotIn('banner_timeline', by_type['uma'])
+
+    def test_banner_with_no_step_ups_reports_an_empty_list(self):
+        loose = make_timeline(name='Ordinary banner')
+        res = self.client.get('/calculator-data')
+        timeline = next(
+            t for t in res.data['banner_timeline_data'] if t['id'] == loose.id
+        )
+        self.assertEqual(timeline['banner_step_ups'], [])
+
     def test_campaigns_are_public(self):
         res = APIClient().get('/calculator-data')
         self.assertEqual(res.status_code, 200)
