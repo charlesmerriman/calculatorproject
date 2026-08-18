@@ -31,7 +31,7 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
-from django.db import IntegrityError, transaction
+from django.db import IntegrityError, models, transaction
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
@@ -58,6 +58,7 @@ from calculatorapi.visits import (
 )
 from calculatorapi.ledger import AMOUNT_FIELDS, build_income_ledger
 from calculatorapi.views.ledger import IncomeLedgerRowSerializer
+from calculatorapi.views.calculation_constants import CalculationConstantsSerializer
 from calculatorapi.views.user_planned_banner import UserPlannedBannerSerializer
 from calculatorapi.predictions import (
     PREDICTION_FACTOR,
@@ -938,6 +939,31 @@ class CalculationConstantsTests(TestCase):
         }]
         out = compute_effective_dates(rows)
         self.assertEqual(out[1]['start_date'], _dt(2025, 6, 1))
+
+
+class CalculationConstantsSerializerTests(TestCase):
+    def test_every_decimal_constant_serializes_as_a_number(self):
+        """No constant may reach the client as a decimal STRING.
+
+        DRF serializes DecimalField as a string by default, and the client feeds
+        these straight into arithmetic where `"0.003" * 500` is a silent NaN
+        rather than an error. Each such field therefore needs an explicit
+        FloatField on the serializer — easy to forget when adding one, and
+        invisible until a number goes wrong somewhere unrelated. This walks the
+        model instead of naming fields, so it covers constants added later.
+        """
+        data = CalculationConstantsSerializer(CalculationConstants.load()).data
+        decimal_fields = [
+            field.name for field in CalculationConstants._meta.get_fields()
+            if isinstance(field, models.DecimalField)
+        ]
+        self.assertTrue(decimal_fields, "expected some DecimalField constants")
+
+        stringly = [name for name in decimal_fields if isinstance(data[name], str)]
+        self.assertEqual(
+            stringly, [],
+            f"these reach the client as strings; add serializers.FloatField(): {stringly}",
+        )
 
 
 @override_settings(STORAGES=PLAIN_TEST_STORAGES)

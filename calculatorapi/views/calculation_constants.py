@@ -13,6 +13,10 @@ class CalculationConstantsSerializer(serializers.ModelSerializer):
     is a silent NaN in JavaScript rather than an error — so the coercion belongs
     here, once, not at every call site.
 
+    Every DecimalField on the model needs a line below; there is a test that
+    fails if one is added without one, because the omission is otherwise
+    invisible until a NaN turns up somewhere far away.
+
     `id` is excluded: there is only ever one row, and exposing its pk invites a
     client to think otherwise.
     """
@@ -20,6 +24,7 @@ class CalculationConstantsSerializer(serializers.ModelSerializer):
     throughout_decay_k = serializers.FloatField()
     throughout_decay_linear_slope = serializers.FloatField()
     prediction_factor = serializers.FloatField()
+    step_up_target_rate = serializers.FloatField()
 
     class Meta:
         model = CalculationConstants
