@@ -16,6 +16,7 @@ from .uma import UmaSerializer
 from .support_card import SupportCardSerializer
 from .banner_uma import BannerUmaSerializer
 from .banner_support import BannerSupportSerializer
+from .banner_step_up import BannerStepUpSerializer
 from .champions_meeting import ChampionsMeetingSerializer
 from .league_of_heroes import LeagueOfHeroesSerializer, LeagueOfHeroesViewSet
 from .game_event import GameEventSerializer, GameEventViewSet

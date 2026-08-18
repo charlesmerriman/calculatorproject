@@ -137,6 +137,11 @@ UNFOLD = {
                         "icon": "style",
                         "link": reverse_lazy("admin:calculatorapi_bannersupport_changelist"),
                     },
+                    {
+                        "title": _("Step-up banners"),
+                        "icon": "stairs",
+                        "link": reverse_lazy("admin:calculatorapi_bannerstepup_changelist"),
+                    },
                 ],
             },
             {

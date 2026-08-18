@@ -19,7 +19,7 @@ from calculatorapi.predictions import (
 from calculatorapi.models import (
     CalculationConstants,
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
-    UserPlannedBanner, UserPlannedPurchase, BannerUma, BannerSupport,
+    UserPlannedBanner, UserPlannedPurchase, BannerUma, BannerSupport, BannerStepUp,
     ChampionsMeeting, LeagueOfHeroes, GameEvent, BannerTimeline,
     AnniversaryEvent
 )
@@ -33,6 +33,7 @@ from calculatorapi.views.user_planned_banner import UserPlannedBannerSerializer
 from calculatorapi.views.user import UserStatsSerializer
 from calculatorapi.views.banner_uma import BannerUmaSerializer
 from calculatorapi.views.banner_support import BannerSupportSerializer
+from calculatorapi.views.banner_step_up import BannerStepUpSerializer
 from calculatorapi.views.champions_meeting import ChampionsMeetingSerializer
 from calculatorapi.views.league_of_heroes import LeagueOfHeroesSerializer
 from calculatorapi.views.game_event import GameEventSerializer
@@ -127,6 +128,16 @@ class CalculatorViewSet(ViewSet):
             BannerSupport.objects.select_related("banner_timeline"),
             key=lambda b: effective_sort_key(emap.get(b.banner_timeline_id)),
         )
+        # Sorted through the same emap as its two peers — a step-up dates itself
+        # off an ordinary BannerTimeline (its campaign's Part 2), so it needs no
+        # prediction of its own. anniversary_event is joined for the cutoff the
+        # serializer folds in.
+        banner_step_up_data = sorted(
+            BannerStepUp.objects.select_related(
+                "banner_timeline", "anniversary_event"
+            ),
+            key=lambda b: effective_sort_key(emap.get(b.banner_timeline_id)),
+        )
         # Campaigns own no dates — resolved by spanning the BannerTimeline parts
         # they link to, reusing the emap above rather than predicting afresh.
         anniversary_event_data = AnniversaryEvent.objects.prefetch_related(
@@ -154,7 +165,10 @@ class CalculatorViewSet(ViewSet):
         if request.user.is_authenticated:
             user_planned_banner_data = sorted(
                 UserPlannedBanner.objects.filter(user=request.user).select_related(
-                    "banner_uma__banner_timeline", "banner_support__banner_timeline"
+                    "banner_uma__banner_timeline",
+                    "banner_support__banner_timeline",
+                    "banner_step_up__banner_timeline",
+                    "banner_step_up__anniversary_event",
                 ),
                 key=lambda pb: effective_sort_key(planned_effective_start(pb, emap)),
             )
@@ -225,6 +239,10 @@ class CalculatorViewSet(ViewSet):
             "banner_support_data": BannerSupportSerializer(
                 banner_support_data, many=True,
                 context={"effective_dates": emap, **card_context}
+            ).data,
+            "banner_step_up_data": BannerStepUpSerializer(
+                banner_step_up_data, many=True,
+                context={"effective_dates": emap}
             ).data,
             "user_planned_banner_data": UserPlannedBannerSerializer(
                 user_planned_banner_data, many=True,

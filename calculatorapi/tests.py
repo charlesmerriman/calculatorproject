@@ -30,6 +30,8 @@ from io import StringIO
 from unittest.mock import patch
 
 from django.contrib.auth.models import Group
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError, transaction
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
@@ -56,6 +58,7 @@ from calculatorapi.visits import (
 )
 from calculatorapi.ledger import AMOUNT_FIELDS, build_income_ledger
 from calculatorapi.views.ledger import IncomeLedgerRowSerializer
+from calculatorapi.views.user_planned_banner import UserPlannedBannerSerializer
 from calculatorapi.predictions import (
     PREDICTION_FACTOR,
     GAME_EVENT_END_DATE_BUFFER,
@@ -73,7 +76,7 @@ from calculatorapi.management.commands.create_content_editor_group import CONTEN
 from calculatorapi.models import (
     CustomUser, Uma, SupportCard,
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
-    BannerTimeline, BannerUma, BannerSupport, UserPlannedBanner,
+    BannerTimeline, BannerUma, BannerSupport, BannerStepUp, UserPlannedBanner,
     ChampionsMeeting, LeagueOfHeroes, GameEvent,
     ChangelogEntry, ChangelogChange,
     SocialAccount,
@@ -157,6 +160,24 @@ def make_support_banner(timeline=None, name='Test Support Banner'):
     return BannerSupport.objects.create(
         banner_timeline=timeline or make_timeline(),
         name=name,
+    )
+
+
+def make_step_up_banner(event=None, timeline=None, name='Test Step-Up',
+                        card_type='support', banner_count=3, order=0):
+    """Create a BannerStepUp, wiring a campaign and a Part if none is given.
+
+    The two FKs must agree (the timeline has to be one of the campaign's parts),
+    so building one implies building the other -- which is exactly the coupling
+    BannerStepUp.clean() enforces.
+    """
+    if timeline is None:
+        timeline = make_timeline(name=f'{name} Window')
+    if event is None:
+        event = make_anniversary_event(name=f'{name} Campaign', parts=(timeline,))
+    return BannerStepUp.objects.create(
+        anniversary_event=event, banner_timeline=timeline, name=name,
+        card_type=card_type, banner_count=banner_count, order=order,
     )
 
 
@@ -1148,6 +1169,7 @@ class LedgerSerializerTests(TestCase):
 _EXPECTED_GET_KEYS = {
     'club_rank_data', 'team_trials_rank_data', 'champions_meeting_rank_data',
     'league_of_heroes_rank_data', 'banner_uma_data', 'banner_support_data',
+    'banner_step_up_data',
     'user_planned_banner_data', 'champions_meeting_data', 'league_of_heroes_event_data',
     'events_data', 'user_stats_data', 'banner_timeline_data',
     'anniversary_event_data', 'user_planned_purchase_data',
@@ -1775,6 +1797,194 @@ class CalculatorPatchTests(TestCase):
 
 
 # ── Selector Planner Tests ────────────────────────────────────────────────────
+
+class BannerStepUpTests(TestCase):
+    """The step-up model, its constraint, and how it reaches the API."""
+
+    def setUp(self):
+        self.user = make_user()
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_max_steps_is_five_per_banner_sold(self):
+        # The real ceiling on a plan. The sheet's own 35-step cap is an artifact
+        # of its lookup table's extent, and with at most 3 banners never binds.
+        self.assertEqual(make_step_up_banner(banner_count=1).max_steps, 5)
+        self.assertEqual(make_step_up_banner(banner_count=3).max_steps, 15)
+
+    def test_clean_rejects_a_timeline_from_another_campaign(self):
+        # The two FKs are both load-bearing: the timeline dates the row, the
+        # campaign supplies the cutoff. A mismatch would date a step-up off an
+        # unrelated window and silently project the wrong income.
+        part = make_timeline(name='Campaign Part')
+        event = make_anniversary_event(name='Campaign', parts=(part,))
+        stranger = make_timeline(name='Unrelated Banner')
+
+        step_up = BannerStepUp(
+            anniversary_event=event, banner_timeline=stranger, name='Bad',
+        )
+        with self.assertRaises(ValidationError) as ctx:
+            step_up.full_clean()
+        self.assertIn('banner_timeline', ctx.exception.error_dict)
+
+    def test_clean_accepts_a_timeline_that_is_one_of_the_campaign_parts(self):
+        part_one = make_timeline(name='Part 1')
+        part_two = make_timeline(name='Part 2')
+        event = make_anniversary_event(name='Campaign', parts=(part_one, part_two))
+
+        step_up = BannerStepUp(
+            anniversary_event=event, banner_timeline=part_two, name='Good',
+            card_type='support', banner_count=3,
+        )
+        step_up.full_clean()  # must not raise
+
+    def test_planned_row_accepts_a_step_up_as_its_only_target(self):
+        step_up = make_step_up_banner()
+        row = UserPlannedBanner.objects.create(
+            user=self.user, banner_step_up=step_up, number_of_pulls=10,
+        )
+        self.assertEqual(row.banner_target, step_up)
+
+    def test_constraint_rejects_two_targets_including_the_new_one(self):
+        step_up = make_step_up_banner()
+        uma_banner = make_uma_banner()
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                UserPlannedBanner.objects.create(
+                    user=self.user, banner_uma=uma_banner,
+                    banner_step_up=step_up, number_of_pulls=1,
+                )
+
+    def test_constraint_still_rejects_a_row_with_no_target(self):
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                UserPlannedBanner.objects.create(user=self.user, number_of_pulls=1)
+
+    def test_str_counts_steps_not_pulls_on_a_step_up_row(self):
+        # number_of_pulls is deliberately overloaded; the noun has to follow.
+        step_up = make_step_up_banner(name='5th Anniversary SSR Select Step-Up')
+        row = UserPlannedBanner.objects.create(
+            user=self.user, banner_step_up=step_up, number_of_pulls=10,
+        )
+        self.assertIn('10 steps', str(row))
+
+    def test_calculator_data_serves_step_up_banners(self):
+        make_step_up_banner(name='5th Anniversary SSR Select Step-Up',
+                            card_type='support', banner_count=3)
+
+        res = self.client.get('/calculator-data')
+
+        self.assertEqual(res.status_code, 200)
+        rows = res.data['banner_step_up_data']
+        self.assertEqual(len(rows), 1)
+        row = rows[0]
+        self.assertEqual(row['name'], '5th Anniversary SSR Select Step-Up')
+        self.assertEqual(row['card_type'], 'support')
+        # Derived server-side so the count and the rule stay together.
+        self.assertEqual(row['max_steps'], 15)
+        # Nested exactly like its uma/support peers -- that shared shape is what
+        # lets the client resolve all three kinds through one code path.
+        self.assertIn('banner_timeline', row)
+        self.assertIn('start_date', row['banner_timeline'])
+
+    def test_step_up_row_folds_in_its_campaign_cutoff(self):
+        # A step-up's candidates are back-catalogue cards bounded by the
+        # campaign's cutoff. Folded in the same way campaign products fold it,
+        # so a row can show the bound without joining the campaign itself.
+        part = make_timeline(name='Part 2')
+        event = make_anniversary_event(
+            name='5th Anniversary', jp_cutoff_date=datetime.date(2026, 1, 30),
+            parts=(part,),
+        )
+        make_step_up_banner(event=event, timeline=part)
+
+        res = self.client.get('/calculator-data')
+
+        # Serialized as an ISO string, the same shape the campaign products
+        # emit theirs in.
+        self.assertEqual(
+            res.data['banner_step_up_data'][0]['jp_cutoff_date'], '2026-01-30',
+        )
+
+    def test_planned_step_up_round_trips_through_patch(self):
+        step_up = make_step_up_banner()
+        payload = {
+            'user_planned_banner_data': [
+                {'number_of_pulls': 10, 'reserved_copies': 0,
+                 'banner_uma': None, 'banner_support': None,
+                 'banner_step_up': step_up.id},
+            ],
+            # Sent alongside because a PATCH body missing a collection leaves it
+            # alone -- an omitted one would make this pass without saving.
+            'user_planned_purchase_data': [],
+        }
+        res = self.client.patch('/calculator-data', payload, format='json')
+        self.assertEqual(res.status_code, 200)
+
+        saved = UserPlannedBanner.objects.get(user=self.user)
+        self.assertEqual(saved.banner_step_up_id, step_up.id)
+        self.assertIsNone(saved.banner_uma_id)
+
+        # And it comes back nested, not as a bare id.
+        got = self.client.get('/calculator-data')
+        row = got.data['user_planned_banner_data'][0]
+        self.assertEqual(row['banner_step_up']['id'], step_up.id)
+
+    def test_patch_rejects_a_row_with_two_targets(self):
+        step_up = make_step_up_banner()
+        uma_banner = make_uma_banner()
+        res = self.client.patch('/calculator-data', {
+            'user_planned_banner_data': [
+                {'number_of_pulls': 1, 'reserved_copies': 0,
+                 'banner_uma': uma_banner.id, 'banner_support': None,
+                 'banner_step_up': step_up.id},
+            ],
+            'user_planned_purchase_data': [],
+        }, format='json')
+        # A readable 400 rather than a 500 from the database constraint.
+        self.assertEqual(res.status_code, 400)
+
+    def test_partial_update_keeps_the_existing_target(self):
+        # _replace_user_rows patches with partial=True. A body that names only
+        # number_of_pulls must not read as "no target provided".
+        step_up = make_step_up_banner()
+        row = UserPlannedBanner.objects.create(
+            user=self.user, banner_step_up=step_up, number_of_pulls=5,
+        )
+        serializer = UserPlannedBannerSerializer(
+            row, data={'number_of_pulls': 10}, partial=True,
+        )
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+
+    def test_planned_step_up_sorts_by_its_own_timeline(self):
+        # planned_effective_start has to follow the third FK too; without that
+        # branch a step-up row resolves to None and sorts to the front.
+        early = make_timeline(
+            name='Early',
+            global_start_date=_dt(2030, 1, 1), global_end_date=_dt(2030, 1, 20),
+        )
+        late = make_timeline(
+            name='Late',
+            global_start_date=_dt(2030, 6, 1), global_end_date=_dt(2030, 6, 20),
+        )
+        event = make_anniversary_event(name='Campaign', parts=(early, late))
+        late_step_up = make_step_up_banner(event=event, timeline=late)
+
+        UserPlannedBanner.objects.create(
+            user=self.user, banner_uma=make_uma_banner(timeline=early),
+            number_of_pulls=1,
+        )
+        UserPlannedBanner.objects.create(
+            user=self.user, banner_step_up=late_step_up, number_of_pulls=1,
+        )
+
+        res = self.client.get('/calculator-data')
+        rows = res.data['user_planned_banner_data']
+        self.assertEqual(len(rows), 2)
+        # The step-up dates off June, so it sorts second -- not first, which is
+        # where an unresolved (None) key would put it.
+        self.assertIsNotNone(rows[1]['banner_step_up'])
+
 
 class SelectorEligibilityTests(TestCase):
     """A card's JP release date is derived from its earliest banner appearance."""
@@ -2726,6 +2936,7 @@ class AdminSmokeTests(TestCase):
         'admin:calculatorapi_bannertimeline',
         'admin:calculatorapi_banneruma',
         'admin:calculatorapi_bannersupport',
+        'admin:calculatorapi_bannerstepup',
         'admin:calculatorapi_uma',
         'admin:calculatorapi_supportcard',
         'admin:calculatorapi_gameevent',
@@ -3041,7 +3252,7 @@ class ImageLibraryTests(TestCase):
             frozenset({
                 'umas/', 'support_cards/', 'banner_timelines/',
                 'game_events/', 'champions_meetings/', 'league_of_heroes/',
-                'anniversary_events/',
+                'anniversary_events/', 'step_up_banners/',
             }),
         )
 

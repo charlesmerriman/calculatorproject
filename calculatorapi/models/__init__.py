@@ -10,6 +10,7 @@ from .uma import Uma
 from .champions_meeting import ChampionsMeeting
 from .banner_uma import BannerUma
 from .banner_support import BannerSupport
+from .banner_step_up import BannerStepUp
 from .champions_meeting_uma_recommendation import ChampionsMeetingUmaRecommendation
 from .umas_on_uma_banner import UmasOnUmaBanner
 from .supports_on_support_banner import SupportsOnSupportBanner
