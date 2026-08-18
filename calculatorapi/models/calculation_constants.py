@@ -200,6 +200,57 @@ class CalculationConstants(models.Model):
         help_text="Shards that combine into one uncap crystal.",
     )
 
+    # ── Step-up banners ──────────────────────────────────────────────────────
+    # Five scalars cover the WHOLE ladder because the cycle repeats every five
+    # steps: cost(n) = floor(n/5) * 5000 + the partial sum of the first n%5.
+    # A list column or a second model would only be re-encoding that repetition.
+    step_up_cost_step_1 = models.IntegerField(
+        default=500, validators=[MinValueValidator(0)],
+        help_text="Paid carats for step 1 of a Select Step-Up ladder. Sheet: AL360.",
+    )
+    step_up_cost_step_2 = models.IntegerField(
+        default=700, validators=[MinValueValidator(0)],
+        help_text="Paid carats for step 2.",
+    )
+    step_up_cost_step_3 = models.IntegerField(
+        default=1000, validators=[MinValueValidator(0)],
+        help_text="Paid carats for step 3 (first guaranteed card).",
+    )
+    step_up_cost_step_4 = models.IntegerField(
+        default=1300, validators=[MinValueValidator(0)],
+        help_text="Paid carats for step 4 (second guaranteed card).",
+    )
+    step_up_cost_step_5 = models.IntegerField(
+        default=1500, validators=[MinValueValidator(0)],
+        help_text=(
+            "Paid carats for step 5, where the player CHOOSES the guaranteed "
+            "card. The five together total 5,000 for one completed banner."
+        ),
+    )
+    step_up_pulls_per_step = models.IntegerField(
+        default=10, validators=[MinValueValidator(1)],
+        help_text="Pulls per step. Each step is a 10-pull.",
+    )
+    step_up_target_rate = models.DecimalField(
+        max_digits=6, decimal_places=4, default="0.0030",
+        validators=[MinValueValidator(0), MaxValueValidator(1)],
+        help_text=(
+            "Per-pull chance of the ONE card the player is chasing. Derived: the "
+            "game's ~3% total ★3/SSR rate spread across the 10 cards they "
+            "selected. Change it only if the pool size or the headline rate "
+            "changes — it is not an independent dial."
+        ),
+    )
+    step_up_max_rounds = models.IntegerField(
+        default=7, validators=[MinValueValidator(1)],
+        help_text=(
+            "Safety bound on completed ladders, NOT the live constraint. Real "
+            "cost and odds clamp at a banner's own banner_count x 5, which is "
+            "always lower. The source sheet's 35-step cap is an artifact of its "
+            "lookup table's extent rather than a game rule."
+        ),
+    )
+
     # ── Throughout-carat decay curve ─────────────────────────────────────────
     throughout_end_offset_days = models.IntegerField(
         default=4, validators=[MinValueValidator(0)],

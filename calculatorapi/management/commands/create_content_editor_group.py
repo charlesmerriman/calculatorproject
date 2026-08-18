@@ -24,7 +24,7 @@ from django.core.management.base import BaseCommand
 
 from calculatorapi.models import (
     Uma, SupportCard,
-    BannerTimeline, BannerUma, BannerSupport,
+    BannerTimeline, BannerUma, BannerSupport, BannerStepUp,
     UmasOnUmaBanner, SupportsOnSupportBanner,
     GameEvent,
     ChampionsMeeting, ChampionsMeetingUmaRecommendation,
@@ -40,7 +40,7 @@ GROUP_NAME = "Content editors"
 # inlines, but inline saves still require permissions on the join model itself.
 CONTENT_MODELS = [
     Uma, SupportCard,
-    BannerTimeline, BannerUma, BannerSupport,
+    BannerTimeline, BannerUma, BannerSupport, BannerStepUp,
     UmasOnUmaBanner, SupportsOnSupportBanner,
     GameEvent,
     ChampionsMeeting, ChampionsMeetingUmaRecommendation,
