@@ -98,7 +98,7 @@ Protected. Deletes the user's current auth token.
 
 Public. Returns a single aggregated payload containing all reference data and user-specific state. The frontend calls this once on mount.
 
-For anonymous requests, all reference keys are populated as usual but the user-scoped keys are empty: `user_stats_data` is `null`, and `user_planned_banner_data` / `user_planned_purchase_data` are `[]`. The frontend uses the `null` stats to detect guest mode and seed local defaults.
+For anonymous requests, all reference keys are populated as usual but the user-scoped keys are empty: `user_stats_data` is `null`, and `user_planned_banner_data` / `user_planned_purchase_data` / `user_step_up_selection_data` are `[]`. The frontend uses the `null` stats to detect guest mode and seed local defaults.
 
 **Response `200`**
 ```json
@@ -118,6 +118,7 @@ For anonymous requests, all reference keys are populated as usual but the user-s
   "banner_timeline_data":        [ BannerTimeline ],
   "anniversary_event_data":      [ AnniversaryEvent ],
   "user_planned_purchase_data":  [ UserPlannedPurchase ],
+  "user_step_up_selection_data": [ UserStepUpSelection ],
   "income_ledger":               [ IncomeLedgerRow ],
   "calculation_constants":       CalculationConstants
 }
@@ -129,14 +130,23 @@ For anonymous requests, all reference keys are populated as usual but the user-s
 
 ### `PATCH /calculator-data`
 
-Protected. Upserts the user's planned banners and planned purchases, and updates their stats, in one request.
+Protected. Upserts the user's planned banners, planned purchases and step-up card
+selections, and updates their stats, in one request.
 
-**Upsert semantics** — identical for `user_planned_banner_data` and `user_planned_purchase_data`:
+**Upsert semantics** — identical for `user_planned_banner_data`, `user_planned_purchase_data`
+and `user_step_up_selection_data`:
 - Key absent from the body → that collection is left completely alone
 - Key present as `[]` → every row in that collection is deleted
 - Row with `id` → update that row (`404` if the id isn't this user's)
 - Row without `id` → create new row
 - Any row in the database not present in the payload → deleted
+
+> **`user_step_up_selection_data` must be sent WITHOUT row ids.** It is the only
+> collection carrying a UNIQUE constraint, and the id-carrying form updates rows one at
+> a time — so moving a card from slot 3 to slot 4 transiently duplicates slot 4 and trips
+> `unique_step_up_selection_slot`. Id-less rows make the reconcile a
+> delete-all-then-create, which cannot collide. A selection's content is its identity, so
+> there is nothing to preserve across the replace.
 
 The whole request is one transaction: if any section fails validation, **nothing** is
 written, including sections already applied earlier in the same request. This relies on
@@ -370,6 +380,39 @@ nested, because the client already holds the whole campaign catalogue and joins 
   "target_support": null
 }
 ```
+
+### `UserStepUpSelection` (from `user_step_up_selection_data`)
+
+One of the ten cards the user intends to select at a Select Step-Up banner. Keyed to the
+**banner**, not to a planned row — "which ten would I pick here" is a fact about the banner,
+so it needs no plan to exist and survives one being deleted.
+
+`is_target` marks the step 5 pick, the copy the player chooses outright rather than being
+handed at random. At most one per (user, banner).
+
+Exactly one of `uma` / `support` is set, and it must match the step-up's `card_type`. An
+empty slot is an **absent row**, never a row with no card.
+
+**Nothing in the projection reads this.** The step-up target rate is 3% ÷ 10 and holds
+whichever ten are chosen, so a partial or empty selection changes no number — matching the
+source sheet, whose Selection 1–10 columns feed no formula either.
+
+```json
+{
+  "id": 7,
+  "user": 1,
+  "banner_step_up": 3,
+  "uma": 41,
+  "support": null,
+  "slot": 5,
+  "is_target": true
+}
+```
+
+Validation returns `400` for: a card whose type does not match the pool, a `slot` outside
+1–10, a row naming neither card or both, and a card released on JP after the campaign's
+`jp_cutoff_date`. That last check **grandfathers pairs the user already had stored**, so an
+editor narrowing a cutoff cannot 400 a plan its owner never touched.
 
 ### `BannerUma`
 ```json

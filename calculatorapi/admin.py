@@ -52,6 +52,7 @@ from .models import (
     SocialAccount,
     AnniversaryEvent, AnniversaryEventBanner, AnniversaryEventProduct,
     UserPlannedPurchase,
+    UserStepUpSelection,
     CalculationConstants,
 )
 
@@ -703,6 +704,21 @@ class UserPlannedPurchaseAdmin(ModelAdmin):
     @admin.display(description="Selector target")
     def selector_target(self, obj):
         return obj.target_uma or obj.target_support or "—"
+
+
+@admin.register(UserStepUpSelection)
+class UserStepUpSelectionAdmin(ModelAdmin):
+    """Read-mostly: users own these, and the app writes them through
+    /calculator-data. Here so support can see what someone actually picked."""
+
+    list_display = ("user", "banner_step_up", "slot", "selected_card", "is_target")
+    list_filter = ("is_target", "banner_step_up__card_type", "banner_step_up")
+    list_select_related = ("user", "banner_step_up", "uma", "support")
+    search_fields = ("user__username", "uma__name", "support__name")
+
+    @admin.display(description="Card")
+    def selected_card(self, obj):
+        return obj.card or "—"
 
 
 # Group is registered by django.contrib.auth with a plain ModelAdmin;
