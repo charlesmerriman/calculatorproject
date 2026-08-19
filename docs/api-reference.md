@@ -109,6 +109,7 @@ For anonymous requests, all reference keys are populated as usual but the user-s
   "league_of_heroes_rank_data":  [ LeagueOfHeroesRank ],
   "banner_uma_data":             [ BannerUma ],
   "banner_support_data":         [ BannerSupport ],
+  "banner_step_up_data":         [ BannerStepUp ],
   "user_planned_banner_data":    [ UserPlannedBanner ],
   "champions_meeting_data":      [ ChampionsMeeting ],
   "league_of_heroes_event_data": [ LeagueOfHeroes ],
@@ -401,6 +402,43 @@ on: a selector may only take cards released on JP on or before its cutoff, inclu
 }
 ```
 
+### `BannerStepUp` (from `banner_step_up_data`)
+```json
+{
+  "id": 1,
+  "banner_timeline": { ... },
+  "anniversary_event": 12,
+  "name": "5th Anniversary ★3 Select Step-Up",
+  "card_type": "uma | support",
+  "banner_count": 2,
+  "max_steps": 10,
+  "jp_cutoff_date": "ISO8601 date | null",
+  "image": "url | null",
+  "admin_comments": "string | null",
+  "order": 0
+}
+```
+
+`banner_timeline` is nested exactly as it is on `BannerUma` / `BannerSupport`, which is
+what lets the client resolve all three kinds of planner row through one code path.
+
+Two fields are derived server-side rather than left to the client:
+
+* `max_steps` — `banner_count * 5`. A step-up runs five steps per banner, and sending the
+  product keeps the count and the rule that interprets it together.
+* `jp_cutoff_date` — the **campaign's** cutoff, folded in the same way
+  `AnniversaryEventProduct` folds it. A step-up's candidates are back-catalogue cards
+  released on JP on or before this date. `null` means unrestricted. Read it from here
+  rather than joining `anniversary_event_data`.
+
+`anniversary_event` is the campaign's **FK id only** — the campaign itself arrives in
+full under `anniversary_event_data`, and nesting it here would repeat the whole product
+catalogue once per step-up.
+
+There is **no step-up equivalent of `free_pulls` or featured cards.** A step-up grants no
+free pulls, and the player picks their own cards from the back catalogue, so there is no
+`umas` / `support_cards` array to send.
+
 ### `GameEvent`
 
 `start_date`/`end_date`/`is_predicted`/`applied_offset_days` are RESOLVED from the linked `banner_timeline` (a `GameEvent` has no `schedule_offset_days` of its own — it inherits whatever offset its banner ended up with)
@@ -484,7 +522,10 @@ Two things to know:
   `DecimalField` as a string by default; these are coerced to floats because the
   client feeds them straight into arithmetic, and `"0.664" * 2` is a silent `NaN`
   in JavaScript rather than an error. Affects `prediction_factor`,
-  `throughout_decay_k`, `throughout_decay_linear_slope`.
+  `throughout_decay_k`, `throughout_decay_linear_slope` and `step_up_target_rate`.
+  **Every `DecimalField` added here needs the same coercion**, and a test walks the
+  model to enforce that — a missed one is not a type error anywhere, just a `NaN`
+  deep in the odds.
 - **`training_pass_start_date` is a plain `YYYY-MM-DD` calendar day**, not a
   datetime.
 
@@ -540,9 +581,19 @@ The `banner_timeline_data` key uses an expanded serializer that nests uma and su
   "image": "url | null",
   "banner_umas": [ { "id": 1, "name": "string", "free_pulls": 0, "admin_comments": "string | null", "umas": [ { ...uma + "recommendation": "string | null" } ] } ],
   "banner_supports": [ { ... } ],
-  "anniversary_event": { "id": 8, "name": "3rd Anniversary", "event_type": "anniversary", "accent_label": "", "image": "url | null", "part_number": 2 }
+  "anniversary_event": { "id": 8, "name": "3rd Anniversary", "event_type": "anniversary", "accent_label": "", "image": "url | null", "part_number": 2 },
+  "banner_step_ups": [ { "id": 1, "name": "string", "card_type": "uma | support", "banner_count": 2 } ]
 }
 ```
+
+**`banner_step_ups`.** Select Step-Ups running in this window, as a summary — the full
+records are sent under `banner_step_up_data`. Reusing `BannerStepUpSerializer` here would
+nest `banner_timeline`, which is the very row this hangs off, sending each timeline back
+inside itself.
+
+Because a step-up's FK points at the campaign **Part** it runs in, this list is non-empty
+on exactly one timeline row per campaign, with no extra filtering. The frontend sums it
+per pool into a chip such as "2 ★3 + 3 SSR Step-Up".
 
 **`anniversary_event`.** The campaign this banner is a Part of, or `null`. A flat summary
 rather than the full `AnniversaryEvent`: the timeline only needs enough to draw the

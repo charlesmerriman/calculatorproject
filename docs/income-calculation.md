@@ -282,6 +282,47 @@ Constants: `PULL_COST_CARATS` (150) and `DISCOUNTED_PULL_COST_CARATS` (50) in
 `frontend/src/constants/gameConstants.ts`. Toggles live on `CustomUser`
 (`discounted_paid_pulls` `default=False`, `full_price_paid_pulls` `default=True`).
 
+---
+
+## Step-Up Ladder Costs
+
+A **Select Step-Up** row does not spend through the strategy above at all. It buys steps on
+a five-step ladder, with **paid carats only** — no tickets, no free pulls, no free carats,
+no daily discount:
+
+| Step in round | 1 | 2 | 3 | 4 | 5 | Round |
+|---|---|---|---|---|---|---|
+| Cost | 500 | 700 | 1,000 | 1,300 | 1,500 | **5,000** |
+| Cumulative | 500 | 1,200 | 2,200 | 3,500 | 5,000 | |
+
+Each step is a 10-pull, so a full round is 50 pulls for 5,000 paid carats against 7,500 at
+the standard 150-per-pull rate.
+
+The five costs **repeat**, which is why they are five constants rather than a table:
+
+```
+cost(n) = floor(n / 5) * 5000 + cumulative[n % 5]
+```
+
+Constants live on `CalculationConstants` (editable in admin, served on every request):
+
+| Constant | Default | Meaning |
+|---|---|---|
+| `step_up_cost_step_1` … `_5` | 500 / 700 / 1000 / 1300 / 1500 | One round of the ladder |
+| `step_up_pulls_per_step` | 10 | Each step is a 10-pull |
+| `step_up_target_rate` | 0.003 | The ~3% pool rate split across the player's 10 picks |
+| `step_up_max_rounds` | 7 | Sanity bound on absurd data, **not** the live constraint |
+
+The live ceiling is a step-up's own `banner_count * 5`, which is always lower —
+`step_up_max_rounds` exists only to stop a mis-entered `banner_count` producing an absurd
+projection.
+
+**Contention worth knowing:** step-ups and discounted pulls draw from the same paid-carat
+pool, and walk order (banner start date) decides which drains it first. A step-up planned
+earlier in the timeline can leave a later banner unable to fund its discounted pulls.
+
+See `frontend/src/utils/stepUpLadder.ts` and `applyStepUpStrategy` in
+`frontend/src/utils/bannerHelpers.ts`.
 
 ---
 

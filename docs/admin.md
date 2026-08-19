@@ -46,8 +46,14 @@ Champions Meeting → recommended umas), autocomplete pickers, image previews, a
   fieldset), **not** an inline — a `GameEvent` carries at most one reward package.
 - The three M2M join models are edited only via inlines; they are not registered
   top-level.
+- `BannerStepUp` is registered top-level, not as an inline. It hangs off **two** parents
+  (a `BannerTimeline` and an `AnniversaryEvent`) that have to agree, so an inline under
+  either one would hide half of what the editor has to get right. `clean()` rejects a
+  timeline that is not one of the campaign's own Parts.
 - `create_content_editor_group` builds a "Content editors" group with permissions for
-  game content and rank tables only. Editor accounts see nothing else.
+  game content and rank tables only. Editor accounts see nothing else. **A newly
+  registered content model must be added to its list**, or editors get a sidebar entry
+  they cannot open.
 
 ```bash
 python manage.py create_content_editor_group   # create or refresh the group
