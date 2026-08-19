@@ -273,6 +273,12 @@ UNFOLD = {
                         "permission": _requires_perm("calculatorapi.view_userplannedpurchase"),
                     },
                     {
+                        "title": _("Step-up selections"),
+                        "icon": "star",
+                        "link": reverse_lazy("admin:calculatorapi_userstepupselection_changelist"),
+                        "permission": _requires_perm("calculatorapi.view_userstepupselection"),
+                    },
+                    {
                         "title": _("Linked accounts"),
                         "icon": "link",
                         "link": reverse_lazy("admin:calculatorapi_socialaccount_changelist"),

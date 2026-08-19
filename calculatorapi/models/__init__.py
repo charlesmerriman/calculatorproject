@@ -24,4 +24,5 @@ from .anniversary_event import AnniversaryEvent
 from .anniversary_event_banner import AnniversaryEventBanner
 from .anniversary_event_product import AnniversaryEventProduct
 from .user_planned_purchase import UserPlannedPurchase
+from .user_step_up_selection import UserStepUpSelection, SELECTION_SLOTS
 from .site_visit import DailyVisit, MonthlyVisit, VisitorHash
