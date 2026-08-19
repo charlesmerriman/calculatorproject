@@ -305,12 +305,20 @@ def effective_sort_key(entry):
 
 def planned_effective_start(planned_banner, emap):
     """Resolve the effective-date entry for a UserPlannedBanner via whichever of
-    banner_uma / banner_support it points at."""
+    its three banner FKs is set.
+
+    All three kinds carry the same banner_timeline FK, which is what lets one
+    lookup serve them all. Miss a branch here and rows of that kind resolve to
+    None and sort to the front of the user's sheet — silently, since None is a
+    legal "no dates yet" answer for a genuinely undated row.
+    """
     timeline_id = None
     if planned_banner.banner_uma_id is not None:
         timeline_id = planned_banner.banner_uma.banner_timeline_id
     elif planned_banner.banner_support_id is not None:
         timeline_id = planned_banner.banner_support.banner_timeline_id
+    elif planned_banner.banner_step_up_id is not None:
+        timeline_id = planned_banner.banner_step_up.banner_timeline_id
     return emap.get(timeline_id)
 
 

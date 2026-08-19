@@ -1,7 +1,10 @@
 from rest_framework import serializers
-from calculatorapi.models import UserPlannedBanner, BannerUma, BannerSupport
+from calculatorapi.models import (
+    UserPlannedBanner, BannerUma, BannerSupport, BannerStepUp,
+)
 from .banner_uma import BannerUmaSerializer
 from .banner_support import BannerSupportSerializer
+from .banner_step_up import BannerStepUpSerializer
 
 
 class UserPlannedBannerSerializer(serializers.ModelSerializer):
@@ -10,6 +13,9 @@ class UserPlannedBannerSerializer(serializers.ModelSerializer):
     )
     banner_support = serializers.PrimaryKeyRelatedField(
         queryset=BannerSupport.objects.all(), required=False, allow_null=True
+    )
+    banner_step_up = serializers.PrimaryKeyRelatedField(
+        queryset=BannerStepUp.objects.all(), required=False, allow_null=True
     )
 
     class Meta:
@@ -21,6 +27,7 @@ class UserPlannedBannerSerializer(serializers.ModelSerializer):
             "reserved_copies",
             "banner_uma",
             "banner_support",
+            "banner_step_up",
         )
         read_only_fields = ("user",)
 
@@ -35,19 +42,41 @@ class UserPlannedBannerSerializer(serializers.ModelSerializer):
             representation["banner_support"] = BannerSupportSerializer(
                 instance.banner_support, context=self.context
             ).data
+        if instance.banner_step_up:
+            representation["banner_step_up"] = BannerStepUpSerializer(
+                instance.banner_step_up, context=self.context
+            ).data
         return representation
 
-    def validate(self, attrs):
-        banner_uma = attrs.get("banner_uma")
-        banner_support = attrs.get("banner_support")
+    TARGET_FIELDS = ("banner_uma", "banner_support", "banner_step_up")
 
-        if not banner_uma and not banner_support:
-            raise serializers.ValidationError(
-                "Either banner_uma or banner_support must be provided."
+    def validate(self, attrs):
+        """Exactly one target, checked across all three FKs.
+
+        Mirrors the model's exactly_one_banner_target check constraint. Both
+        exist on purpose: the constraint is the guarantee, this is the readable
+        400 the client gets instead of a 500 from the database.
+
+        On a PARTIAL update the incoming body may name only some of the fields,
+        so unmentioned ones fall back to what the instance already holds —
+        otherwise PATCHing just `number_of_pulls` would read as "no target
+        provided" and be rejected.
+        """
+        chosen = [
+            field for field in self.TARGET_FIELDS
+            if attrs.get(
+                field,
+                getattr(self.instance, field, None) if self.instance else None,
             )
-        if banner_uma and banner_support:
+        ]
+
+        if not chosen:
             raise serializers.ValidationError(
-                "Cannot provide both banner_uma and banner_support."
+                "One of banner_uma, banner_support or banner_step_up must be provided."
+            )
+        if len(chosen) > 1:
+            raise serializers.ValidationError(
+                f"Only one banner target may be set; got {', '.join(chosen)}."
             )
 
         return attrs

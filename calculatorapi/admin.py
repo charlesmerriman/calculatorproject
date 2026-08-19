@@ -44,7 +44,7 @@ from .predictions import GAME_EVENT_END_DATE_BUFFER
 from .models import (
     CustomUser, Uma, SupportCard, UserPlannedBanner,
     TeamTrialsRank, ClubRank, ChampionsMeetingRank, LeagueOfHeroesRank,
-    BannerTimeline, BannerUma, BannerSupport,
+    BannerTimeline, BannerUma, BannerSupport, BannerStepUp,
     ChampionsMeeting, ChampionsMeetingUmaRecommendation,
     SupportsOnSupportBanner, UmasOnUmaBanner,
     GameEvent, LeagueOfHeroes,
@@ -321,6 +321,62 @@ class BannerSupportAdmin(PlannedByColumnMixin, ModelAdmin):
     search_fields = ("name",)
     autocomplete_fields = ("banner_timeline",)
     inlines = (SupportOnBannerInline,)
+
+
+@admin.register(BannerStepUp)
+class BannerStepUpAdmin(ImagePreviewMixin, SpacesImagePickerMixin, ModelAdmin):
+    """A Select Step-Up banner, sold during a campaign for paid carats only.
+
+    Unlike its uma/support peers there is no card inline: the player picks their
+    own 10 cards from the back catalogue, bounded by the campaign's JP cutoff,
+    so there is nothing to list here.
+    """
+
+    list_display = ("name", "anniversary_event", "card_type", "banner_count",
+                    "max_steps", "banner_timeline")
+    list_filter = ("card_type", "anniversary_event")
+    list_select_related = ("anniversary_event", "banner_timeline")
+    search_fields = ("name",)
+    ordering = ("anniversary_event", "order")
+    autocomplete_fields = ("banner_timeline",)
+    readonly_fields = ("image_preview",)
+    fieldsets = (
+        (None, {"fields": ("name", "anniversary_event", "banner_timeline", "order")}),
+        ("Ladder", {
+            "description": (
+                "Card type picks which pool this draws from and how its odds are "
+                "labelled. Banner count is how many of this type the campaign "
+                "sells — the ceiling on steps is five times that. The step COSTS "
+                "are shared across every step-up and live in Calculation "
+                "constants, not here."
+            ),
+            "fields": ("card_type", "banner_count"),
+        }),
+        ("Artwork", {"fields": ("image", "image_preview")}),
+        ("Notes", {"fields": ("admin_comments",)}),
+    )
+
+    @admin.display(description="Max steps")
+    def max_steps(self, obj):
+        return obj.max_steps
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """Offer only the selected campaign's own parts for banner_timeline.
+
+        The model's clean() is the real guard; this keeps an editor from having
+        to hunt through ~200 timelines to find one of the three that are valid.
+        Falls back to the full list while adding, when there is no campaign to
+        filter by yet.
+        """
+        if db_field.name == "banner_timeline":
+            step_up_id = request.resolver_match.kwargs.get("object_id")
+            if step_up_id:
+                step_up = BannerStepUp.objects.filter(pk=step_up_id).first()
+                if step_up:
+                    kwargs["queryset"] = BannerTimeline.objects.filter(
+                        anniversary_links__anniversary_event=step_up.anniversary_event_id
+                    ).distinct()
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 @admin.register(Uma)
@@ -715,6 +771,24 @@ class CalculationConstantsAdmin(ModelAdmin):
                 "pull_cost_carats",
                 "discounted_pull_cost_carats",
                 "shards_per_crystal",
+            ),
+        }),
+        ("Step-up banners", {
+            "description": (
+                "The Select Step-Up cost ladder. The five step costs repeat every "
+                "five steps, so they describe a ladder of any length. The target "
+                "rate is DERIVED from the pool size (~3% total rate across 10 "
+                "selected cards) — it is not an independent dial."
+            ),
+            "fields": (
+                "step_up_cost_step_1",
+                "step_up_cost_step_2",
+                "step_up_cost_step_3",
+                "step_up_cost_step_4",
+                "step_up_cost_step_5",
+                "step_up_pulls_per_step",
+                "step_up_target_rate",
+                "step_up_max_rounds",
             ),
         }),
         ("Event carat decay curve", {

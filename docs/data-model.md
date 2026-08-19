@@ -113,7 +113,19 @@ erDiagram
         int user_id FK
         int banner_uma_id FK
         int banner_support_id FK
-        int number_of_pulls
+        int banner_step_up_id FK
+        int number_of_pulls "steps on a step-up row"
+    }
+
+    BannerStepUp {
+        int id PK
+        int banner_timeline_id FK
+        int anniversary_event_id FK
+        string name
+        string card_type "uma | support"
+        int banner_count
+        string image
+        int order
     }
 
     GameEvent {
@@ -213,6 +225,9 @@ erDiagram
     UserPlannedBanner }o--|| CustomUser : "user"
     UserPlannedBanner }o--o| BannerUma : "banner_uma"
     UserPlannedBanner }o--o| BannerSupport : "banner_support"
+    UserPlannedBanner }o--o| BannerStepUp : "banner_step_up"
+    BannerStepUp }o--|| BannerTimeline : "banner_timeline"
+    BannerStepUp }o--|| AnniversaryEvent : "anniversary_event"
 
     GameEvent }o--o| BannerTimeline : "banner_timeline"
     ChangelogChange }o--|| ChangelogEntry : "entry"
@@ -263,9 +278,41 @@ anchor governs every income source uniformly.
 
 ### `UserPlannedBanner` — exactly-one check constraint
 
-A DB-level `CheckConstraint` named `only_one_support_or_uma` enforces that every row has exactly one of `banner_uma` or `banner_support` set and the other null. The serializer also validates this at the application layer before the row reaches the database.
+A DB-level `CheckConstraint` named `exactly_one_banner_target` enforces that every row has
+exactly one of `banner_uma`, `banner_support` or `banner_step_up` set and the other two
+null. The serializer also validates this at the application layer before the row reaches
+the database.
 
-This is the discriminated union that the frontend mirrors with the `SavedPlannedBanner` / `LocalPlannedBanner` types.
+It replaced the two-way `only_one_support_or_uma` in migration `0039` when step-ups were
+added. A three-way `Q(...) | Q(...) | Q(...)` rather than a count, because the constraint
+has to be expressible in SQL and enumerating the legal combinations is what Django's
+`CheckConstraint` can compile.
+
+This is the discriminated union that the frontend mirrors — narrowed with
+`plannedBannerTarget()`, never by checking which FK happens to be set.
+
+### `BannerStepUp` — a campaign's Select Step-Up ladder
+
+A Select Step-Up is not a banner you pull on; it is a five-step cost ladder bought with
+paid carats, where the fifth step of each round hands over a card the player chooses from
+the back catalogue. One row per **pool** per campaign, not one per banner: `card_type`
+says which pool (`uma` = star-3, `support` = SSR) and `banner_count` says how many such
+banners the campaign runs. The 5th Anniversary is therefore two rows, not five.
+
+`max_steps` is a property, `banner_count * 5` — served rather than left to the client so
+the count and the rule that turns it into steps stay together.
+
+**Two FKs, and they must agree.** `banner_timeline` says when the ladder is buyable;
+`anniversary_event` says which campaign it belongs to (and therefore which
+`jp_cutoff_date` bounds its candidates). `clean()` validates that the timeline is one of
+the campaign's own Parts, because nothing in the schema prevents wiring a step-up to a
+window its campaign never runs in. Both use `related_name="step_up_banners"` — different
+models, so no clash, and each side reads naturally.
+
+The cutoff is **folded onto the serialized step-up** as `jp_cutoff_date`, the same way
+`AnniversaryEventProductSerializer` folds it onto a selector product. The client reads it
+from there rather than joining the campaign: one place resolves the cutoff, and it is the
+server.
 
 ### `AnniversaryEvent` owns the link to `BannerTimeline`, not the other way round
 
@@ -340,7 +387,7 @@ frontend translates them into a pending state rather than rendering them raw.
 
 ### `GameEvent` reward amounts are fields, not a separate model
 
-Reward amounts used to live on a separate `EventReward` model, one-to-many with `GameEvent`. In practice every event had at most one immediate reward and one throughout-the-event reward, so the two were folded directly onto `GameEvent` as fields instead: `carat_amount` (+ the ticket/shard/crystal fields) is earned once the event's own resolved `start_date` passes, and `carats_throughout` is prorated by elapsed time across `start_date`..`end_date` (computed client-side — see `getThroughoutCaratsInWindow` in `frontend/src/utils/incomeCalculationUtils.ts`), independent of `start_date`. Only carats are ever distributed this way; tickets/shards/crystals are always a lump on `start_date`.
+Reward amounts used to live on a separate `EventReward` model, one-to-many with `GameEvent`. In practice every event had at most one immediate reward and one throughout-the-event reward, so the two were folded directly onto `GameEvent` as fields instead: `carat_amount` (+ the ticket/shard/crystal fields) is earned once the event's own resolved `start_date` passes, and `carats_throughout` is prorated by elapsed time across `start_date`..`end_date` (computed client-side — see `remainingThroughoutForRow` in `frontend/src/utils/incomeLedger.ts`), independent of `start_date`. Only carats are ever distributed this way; tickets/shards/crystals are always a lump on `start_date`.
 
 ### `BannerTimeline.banner_category` — presentation only, and it mirrors the sheet
 
