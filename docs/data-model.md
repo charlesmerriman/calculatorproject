@@ -314,6 +314,43 @@ The cutoff is **folded onto the serialized step-up** as `jp_cutoff_date`, the sa
 from there rather than joining the campaign: one place resolves the cutoff, and it is the
 server.
 
+### `UserStepUpSelection` — the ten cards a user would pick
+
+One row per filled slot, keyed to **`BannerStepUp`** rather than to `UserPlannedBanner`.
+"Which ten cards would I pick here" is a fact about the banner, not about a plan row: it
+changes no cost, no odds and no eligibility. So it needs no plan to exist, and survives
+one being deleted.
+
+That keying is also what keeps it a **flat sibling collection** in the PATCH body.
+Hanging it off `UserPlannedBanner` would have forced a writable nested serializer,
+because a newly staged planner row has no id until the same request creates it — the
+client could not have referenced it.
+
+Three constraints:
+
+| Constraint | What it says |
+|---|---|
+| `exactly_one_selection_card` | one of `uma` / `support`. **Exactly** one, unlike `UserPlannedPurchase.at_most_one_selector_target` — an empty slot is an absent row, so a row with no card means nothing |
+| `unique_step_up_selection_slot` | one card per `(user, banner_step_up, slot)` |
+| `one_step_up_target_per_banner` | partial unique index on `is_target=True` — at most one step 5 pick per banner |
+
+The card FKs **CASCADE**, not `SET_NULL`. A nulled FK would leave a row the first
+constraint forbids, and nothing is lost: the UI renders slots 1–10 and derives the empty
+ones from *missing* rows, so a cascaded delete and a nulled FK look identical on screen.
+
+**Eligibility is validated but grandfathered.** A card released on JP after the
+campaign's `jp_cutoff_date` is rejected — *unless* the user already had that
+`(step-up, card)` pair stored. Cutoffs are reference data editors keep correcting, and
+re-checking untouched picks lets one narrowed cutoff `400` an entire PATCH, taking the
+user's stats and banners with it. `UserPlannedPurchaseSerializer` learned this the hard
+way and solves it with `_pairing_is_unchanged`; that keys off `self.instance`, which
+cannot work here because selections are replaced wholesale with **id-less** rows, so
+every row is a create. `_stored_selection_pairs` snapshots the prior set before the
+reconcile instead.
+
+Nothing in the projection reads any of this — see
+`frontend/docs/resource-projection-logic.md`.
+
 ### `AnniversaryEvent` owns the link to `BannerTimeline`, not the other way round
 
 A campaign spans several banner "Parts" (the 3rd Anniversary is four separate
