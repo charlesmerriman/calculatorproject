@@ -19,7 +19,8 @@ from calculatorapi.predictions import (
 from calculatorapi.models import (
     CalculationConstants,
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
-    UserPlannedBanner, UserPlannedPurchase, BannerUma, BannerSupport, BannerStepUp,
+    UserPlannedBanner, UserPlannedPurchase, UserStepUpSelection,
+    BannerUma, BannerSupport, BannerStepUp,
     ChampionsMeeting, LeagueOfHeroes, GameEvent, BannerTimeline,
     AnniversaryEvent
 )
@@ -42,9 +43,15 @@ from calculatorapi.views.anniversary_event import AnniversaryEventSerializer
 from calculatorapi.views.ledger import IncomeLedgerRowSerializer
 from calculatorapi.views.calculation_constants import CalculationConstantsSerializer
 from calculatorapi.views.user_planned_purchase import UserPlannedPurchaseSerializer
+from calculatorapi.views.user_step_up_selection import UserStepUpSelectionSerializer
 
 
-def _replace_user_rows(rows, *, model, serializer_class, user, missing_message):
+def _replace_user_rows(rows, *, model, serializer_class, user, missing_message,
+                       context=None):
+    # pylint: disable=too-many-arguments
+    # Every one after `rows` is keyword-only and names a distinct part of the
+    # contract below; bundling them into a config object would hide which
+    # collection is being reconciled at each call site.
     """Reconcile one of the PATCH body's user-owned collections against the DB.
 
     The contract every such collection shares:
@@ -55,10 +62,21 @@ def _replace_user_rows(rows, *, model, serializer_class, user, missing_message):
                                                    id isn't this user's
       * row without an id                       -> create, owned by this user
 
+    `context` is handed to every row's serializer. Collections that validate a
+    row against something outside it (step-up selections against the JP cutoff,
+    and against what the user already had stored) pass their shared lookups in
+    that way rather than rebuilding them per row.
+
     Returns an error Response to bail out with, or None on success. The caller
     runs inside transaction.atomic(), so returning early rolls back whatever
     earlier collections had already written -- a half-saved plan is worse than
     a rejected one.
+
+    NOTE for collections with a UNIQUE constraint: sending rows WITHOUT ids
+    makes this a delete-all-then-create, which is collision-free. Sending ids
+    updates rows one at a time, so moving a value between two rows (a card from
+    slot 3 to slot 4) transiently duplicates it and trips the constraint.
+    UserStepUpSelection relies on the id-less form.
     """
     if rows is None:
         return None
@@ -74,15 +92,36 @@ def _replace_user_rows(rows, *, model, serializer_class, user, missing_message):
             except model.DoesNotExist:
                 return Response({"error": missing_message},
                                 status=status.HTTP_404_NOT_FOUND)
-            serializer = serializer_class(instance, data=row, partial=True)
+            serializer = serializer_class(
+                instance, data=row, partial=True, context=context or {}
+            )
         else:
-            serializer = serializer_class(data=row)
+            serializer = serializer_class(data=row, context=context or {})
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer.save(user=user)
 
     return None
+
+
+def _stored_selection_pairs(user):
+    """{(banner_step_up_id, "uma"|"support", card_id)} the user already had saved.
+
+    The grandfathering set for step-up selection eligibility. One values_list
+    query; a card FK that has gone null (its card was deleted) contributes
+    nothing, which is right -- there is no pairing left to grandfather.
+    """
+    pairs = set()
+    rows = UserStepUpSelection.objects.filter(user=user).values_list(
+        "banner_step_up_id", "uma_id", "support_id"
+    )
+    for step_up_id, uma_id, support_id in rows:
+        if uma_id is not None:
+            pairs.add((step_up_id, "uma", uma_id))
+        elif support_id is not None:
+            pairs.add((step_up_id, "support", support_id))
+    return pairs
 
 
 class CalculatorViewSet(ViewSet):
@@ -182,10 +221,18 @@ class CalculatorViewSet(ViewSet):
                     anniversary_emap.get(pp.product.anniversary_event_id)
                 ),
             )
+            # Ordered by the model's own Meta.ordering (banner, then slot) so
+            # the client can render the ten slots without re-sorting. Cards are
+            # joined for nothing here -- only ids are serialized -- so this stays
+            # a single query.
+            user_step_up_selection_data = UserStepUpSelection.objects.filter(
+                user=request.user
+            )
             user_stats_data = UserStatsSerializer(request.user).data
         else:
             user_planned_banner_data = UserPlannedBanner.objects.none()
             user_planned_purchase_data = UserPlannedPurchase.objects.none()
+            user_step_up_selection_data = UserStepUpSelection.objects.none()
             user_stats_data = None
         events_data = GameEvent.objects.select_related("banner_timeline").all()
         # GameEvent has no dates of its own — resolved via the BannerTimeline
@@ -260,6 +307,9 @@ class CalculatorViewSet(ViewSet):
             "user_planned_purchase_data": UserPlannedPurchaseSerializer(
                 user_planned_purchase_data, many=True
             ).data,
+            "user_step_up_selection_data": UserStepUpSelectionSerializer(
+                user_step_up_selection_data, many=True
+            ).data,
             "anniversary_event_data": AnniversaryEventSerializer(
                 anniversary_event_data, many=True,
                 context={"effective_dates": anniversary_emap}
@@ -322,19 +372,36 @@ class CalculatorViewSet(ViewSet):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             serializer.save()
 
+        # Snapshotted BEFORE any collection is written, because
+        # _replace_user_rows deletes the user's existing selections before
+        # recreating them -- read it afterwards and every pick would look new.
+        # See UserStepUpSelectionSerializer._validate_eligibility for why
+        # grandfathering the stored set is what stops a corrected cutoff from
+        # 400ing an untouched plan.
+        selection_context = None
+        if request.data.get("user_step_up_selection_data") is not None:
+            selection_context = {
+                "stored_pairs": _stored_selection_pairs(user),
+                "first_jp_dates": build_first_jp_date_maps(),
+            }
+
         collections = (
             ("user_planned_banner_data", UserPlannedBanner,
-             UserPlannedBannerSerializer, "Banner not found"),
+             UserPlannedBannerSerializer, "Banner not found", None),
             ("user_planned_purchase_data", UserPlannedPurchase,
-             UserPlannedPurchaseSerializer, "Purchase not found"),
+             UserPlannedPurchaseSerializer, "Purchase not found", None),
+            ("user_step_up_selection_data", UserStepUpSelection,
+             UserStepUpSelectionSerializer, "Step-up selection not found",
+             selection_context),
         )
-        for key, model, serializer_class, missing_message in collections:
+        for key, model, serializer_class, missing_message, context in collections:
             error = _replace_user_rows(
                 request.data.get(key),
                 model=model,
                 serializer_class=serializer_class,
                 user=user,
                 missing_message=missing_message,
+                context=context,
             )
             if error is not None:
                 return error
