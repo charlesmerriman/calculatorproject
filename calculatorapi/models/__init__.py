@@ -15,6 +15,7 @@ from .champions_meeting_uma_recommendation import ChampionsMeetingUmaRecommendat
 from .umas_on_uma_banner import UmasOnUmaBanner
 from .supports_on_support_banner import SupportsOnSupportBanner
 from .game_event import GameEvent
+from .scenario import Scenario
 from .league_of_heroes_rank import LeagueOfHeroesRank
 from .league_of_heroes import LeagueOfHeroes
 from .changelog_entry import ChangelogEntry

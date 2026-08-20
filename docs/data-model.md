@@ -143,6 +143,13 @@ erDiagram
         int ssr_crystal_amount
     }
 
+    Scenario {
+        int id PK
+        string name
+        string image "nullable; art often lands after the row"
+        int banner_timeline_id FK "nullable; supplies the START only"
+    }
+
     ChangelogEntry {
         int id PK
         string title
@@ -230,6 +237,7 @@ erDiagram
     BannerStepUp }o--|| AnniversaryEvent : "anniversary_event"
 
     GameEvent }o--o| BannerTimeline : "banner_timeline"
+    Scenario }o--o| BannerTimeline : "banner_timeline"
     ChangelogChange }o--|| ChangelogEntry : "entry"
 
     AnniversaryEventBanner }o--|| AnniversaryEvent : "anniversary_event"
@@ -507,3 +515,24 @@ Because those dates are read *after* the offset pass has run, a `GameEvent` inhe
 `banner_timeline` is nullable (`on_delete=SET_NULL`) because not every event corresponds to a single banner — some tie to Champions Meeting rewards instead, some are campaign-wide events spanning multiple banners at once, and some are future placeholders — and because an event's own content (image, reward amounts) stays meaningful even if the banner it was tied to is later deleted. An unlinked (or unresolvable) event simply resolves to `null` dates, same as any other "no anchor" case in this system.
 
 The standalone `/events` route serves **confirmed-only** dates (`game_event_confirmed_dates()`, no prediction), matching the same convention used by `/leagueofheroes` — prediction is reserved for `/calculator-data`, which builds the richer map (`build_game_event_date_map()`) and reuses the request's single `BannerTimeline` emap rather than computing a second one.
+
+### `Scenario` borrows a start and never has an end — the fourth date shape
+
+A **training scenario** is a new, optional way to play the game (URA Finals, Aoharu, Grand Live, Hashire! Mecha Umamusume). It grants nothing: it exists to mark *when the game changed* on the timeline and in the calculator's section bands.
+
+There are now four ways a model gets dates from `BannerTimeline`, and it is worth reading them together:
+
+| # | Shape | Who | Dates |
+|---|---|---|---|
+| 1 | Content on a banner | `BannerUma`, `BannerSupport`, `BannerStepUp` | none of its own |
+| 2 | Borrow the banner's window | `GameEvent` | start = banner start; end = banner end **+ 4 days** |
+| 3 | Span several "Parts" | `AnniversaryEvent` | earliest part start → latest part end |
+| 4 | **Borrow the banner's START only** | **`Scenario`** | **start = banner start; no end, ever** |
+
+**Shape 4 is the only one with no end at all, and that is a fact about scenarios rather than a gap in the data.** A scenario is released and then stays available permanently — a newer scenario does *not* retire an older one, it just tends to get played more because it is more rewarding. There is therefore nothing for an end date to mean, and deriving one from the launch banner would invent an expiry the scenario has never had. `scenario_effective_dates()` returns `end_date: None` unconditionally, and `StartInstantDateMixin` drops the field from the wire entirely rather than emitting a permanent `null`.
+
+Otherwise it follows `GameEvent`'s precedent exactly: a nullable `banner_timeline` FK (`on_delete=SET_NULL`, because a scenario's name and image stay real content if its launch banner is later deleted), resolved against the *existing* `BannerTimeline` effective-date map, with `is_predicted` and `applied_offset_days` propagating from the banner — so a scenario inherits its banner's schedule offset for free.
+
+`scenario_effective_dates()` is deliberately its **own** function rather than a generalisation shared with `anniversary_event_effective_dates()`. `predictions.py`'s convention is one function per derivation shape: the mechanisms are shared (`_ResolvedDateMixin`, `effective_sort_key`), the policies are not. An anniversary's range is a *sales window* whose start is the instant purchases are credited; a scenario's start is just when a new way to play appeared. Merging them would put a scenario-only concern inside anniversary date maths the first time the two diverge.
+
+`image` is nullable by workflow, not by accident: scenarios get entered while a feature is being built and the art arrives later. Every consumer must render without it.

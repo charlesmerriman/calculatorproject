@@ -72,6 +72,7 @@ from calculatorapi.predictions import (
     build_effective_date_map,
     build_effective_date_maps,
     build_anniversary_event_date_map,
+    build_scenario_date_map,
 )
 from calculatorapi.eligibility import build_first_jp_date_maps, is_eligible
 from calculatorapi.management.commands.create_content_editor_group import CONTENT_MODELS
@@ -79,7 +80,7 @@ from calculatorapi.models import (
     CustomUser, Uma, SupportCard,
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
     BannerTimeline, BannerUma, BannerSupport, BannerStepUp, UserPlannedBanner,
-    ChampionsMeeting, LeagueOfHeroes, GameEvent,
+    ChampionsMeeting, LeagueOfHeroes, GameEvent, Scenario,
     ChangelogEntry, ChangelogChange,
     SocialAccount,
     CalculationConstants,
@@ -231,6 +232,18 @@ def make_game_event(name='Test Event', banner_timeline=None, **reward_fields):
     has no date fields of its own. Reward amounts (carat_amount,
     carats_throughout, etc.) can be passed as kwargs; they default to 0."""
     return GameEvent.objects.create(name=name, banner_timeline=banner_timeline, **reward_fields)
+
+
+def make_scenario(name='Test Scenario', banner_timeline=None, image=None):
+    """Create a Scenario, optionally linked to its launch BannerTimeline.
+
+    A scenario's start comes from that banner and it has NO end date at all --
+    it stays playable after release, so there is nothing for an end to mean.
+    `image` is routinely None: scenarios get entered before their art exists.
+    """
+    return Scenario.objects.create(
+        name=name, banner_timeline=banner_timeline, image=image,
+    )
 
 
 def make_anniversary_event(name='Test Anniversary', event_type='anniversary',
@@ -1200,7 +1213,7 @@ _EXPECTED_GET_KEYS = {
     'banner_step_up_data',
     'user_planned_banner_data', 'champions_meeting_data', 'league_of_heroes_event_data',
     'events_data', 'user_stats_data', 'banner_timeline_data',
-    'anniversary_event_data', 'user_planned_purchase_data',
+    'anniversary_event_data', 'scenario_data', 'user_planned_purchase_data',
     'user_step_up_selection_data',
     'income_ledger', 'calculation_constants',
 }
@@ -2439,6 +2452,139 @@ class SelectorEligibilityTests(TestCase):
         self.assertFalse(is_eligible(None, datetime.date(2024, 1, 31)))
 
 
+class ScenarioDateTests(TestCase):
+    """A scenario borrows its launch banner's START, and has no end at all."""
+
+    def test_start_comes_from_the_launch_banner_and_there_is_no_end(self):
+        now = timezone.now()
+        banner = make_timeline(
+            name='Launch banner', global_start_date=now,
+            global_end_date=now + datetime.timedelta(days=14),
+        )
+        scenario = make_scenario(banner_timeline=banner)
+
+        emap = build_effective_date_maps()[BannerTimeline]
+        resolved = build_scenario_date_map([scenario], emap)[scenario.id]
+
+        self.assertEqual(resolved['start_date'], banner.global_start_date)
+        # The banner ends; the scenario does not. Borrowing the banner's end
+        # would invent an expiry the scenario has never had.
+        self.assertIsNone(resolved['end_date'])
+        self.assertFalse(resolved['is_predicted'])
+
+    def test_prediction_and_offset_propagate_from_the_banner(self):
+        now = timezone.now()
+        # Anchor: a confirmed JP+global pair the predictor can measure from.
+        make_timeline(
+            name='Anchor',
+            jp_start_date=timezone.make_aware(datetime.datetime(2022, 1, 1)),
+            jp_end_date=timezone.make_aware(datetime.datetime(2022, 1, 14)),
+            global_start_date=now, global_end_date=now + datetime.timedelta(days=14),
+        )
+        predicted = make_timeline(
+            name='Predicted launch banner',
+            jp_start_date=timezone.make_aware(datetime.datetime(2022, 6, 1)),
+            jp_end_date=timezone.make_aware(datetime.datetime(2022, 6, 14)),
+            global_start_date=None, global_end_date=None,
+        )
+        scenario = make_scenario(banner_timeline=predicted)
+
+        emap = build_effective_date_maps()[BannerTimeline]
+        resolved = build_scenario_date_map([scenario], emap)[scenario.id]
+
+        self.assertTrue(resolved['is_predicted'])
+        self.assertEqual(resolved['start_date'], emap[predicted.id]['start_date'])
+        self.assertEqual(
+            resolved['applied_offset_days'], emap[predicted.id]['applied_offset_days']
+        )
+        self.assertIsNone(resolved['end_date'])
+
+    def test_unlinked_scenario_resolves_to_a_null_start(self):
+        scenario = make_scenario(banner_timeline=None)
+        emap = build_effective_date_maps()[BannerTimeline]
+        resolved = build_scenario_date_map([scenario], emap)[scenario.id]
+
+        self.assertIsNone(resolved['start_date'])
+        self.assertIsNone(resolved['end_date'])
+        self.assertFalse(resolved['is_predicted'])
+
+
+class ScenarioApiTests(TestCase):
+    """/calculator-data serves scenarios, start-only and image-optional."""
+
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_scenario_payload_has_a_start_and_no_end_date_key_at_all(self):
+        now = timezone.now()
+        banner = make_timeline(
+            name='Launch banner', global_start_date=now,
+            global_end_date=now + datetime.timedelta(days=14),
+        )
+        scenario = make_scenario(name='Hashire! Mecha Umamusume',
+                                 banner_timeline=banner)
+
+        response = self.client.get('/calculator-data')
+        row = next(
+            r for r in response.data['scenario_data'] if r['id'] == scenario.id
+        )
+
+        self.assertEqual(row['name'], 'Hashire! Mecha Umamusume')
+        self.assertIsNotNone(row['start_date'])
+        # Absent, not null. A structurally-always-null end_date would invite a
+        # consumer to render a range that does not exist -- see
+        # StartInstantDateMixin.
+        self.assertNotIn('end_date', row)
+
+    def test_banner_timeline_is_emitted_as_a_bare_id_for_band_pinning(self):
+        now = timezone.now()
+        banner = make_timeline(name='Launch banner', global_start_date=now)
+        scenario = make_scenario(banner_timeline=banner)
+
+        response = self.client.get('/calculator-data')
+        row = next(
+            r for r in response.data['scenario_data'] if r['id'] == scenario.id
+        )
+
+        # The frontend pins the scenario's band directly above this banner's
+        # planner row, so it needs the id rather than a nested banner.
+        self.assertEqual(row['banner_timeline'], banner.id)
+
+    def test_scenario_without_an_image_still_serves(self):
+        # The normal state while a scenario is being entered -- art lands later.
+        now = timezone.now()
+        banner = make_timeline(name='Launch banner', global_start_date=now)
+        scenario = make_scenario(banner_timeline=banner, image=None)
+
+        response = self.client.get('/calculator-data')
+        row = next(
+            r for r in response.data['scenario_data'] if r['id'] == scenario.id
+        )
+
+        self.assertIsNone(row['image'])
+        self.assertIsNotNone(row['start_date'])
+
+    def test_unlinked_scenario_serves_with_a_null_start(self):
+        scenario = make_scenario(banner_timeline=None)
+
+        response = self.client.get('/calculator-data')
+        row = next(
+            r for r in response.data['scenario_data'] if r['id'] == scenario.id
+        )
+
+        self.assertIsNone(row['start_date'])
+
+    def test_guests_can_read_scenarios(self):
+        now = timezone.now()
+        banner = make_timeline(name='Launch banner', global_start_date=now)
+        make_scenario(banner_timeline=banner)
+
+        response = self.client.get('/calculator-data')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data['scenario_data']), 1)
+
+
 class AnniversaryEventDateTests(TestCase):
     """A campaign spans its banner parts rather than owning dates."""
 
@@ -3366,6 +3512,7 @@ class AdminSmokeTests(TestCase):
         'admin:calculatorapi_leagueofheroes',
         'admin:calculatorapi_clubrank',
         'admin:calculatorapi_anniversaryevent',
+        'admin:calculatorapi_scenario',
     ]
 
     @classmethod
@@ -3674,7 +3821,7 @@ class ImageLibraryTests(TestCase):
             frozenset({
                 'umas/', 'support_cards/', 'banner_timelines/',
                 'game_events/', 'champions_meetings/', 'league_of_heroes/',
-                'anniversary_events/', 'step_up_banners/',
+                'anniversary_events/', 'step_up_banners/', 'scenarios/',
             }),
         )
 
