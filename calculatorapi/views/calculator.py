@@ -13,6 +13,7 @@ from calculatorapi.predictions import (
     build_anniversary_event_date_map,
     build_effective_date_maps,
     build_game_event_date_map,
+    build_scenario_date_map,
     effective_sort_key,
     planned_effective_start,
 )
@@ -22,7 +23,7 @@ from calculatorapi.models import (
     UserPlannedBanner, UserPlannedPurchase, UserStepUpSelection,
     BannerUma, BannerSupport, BannerStepUp,
     ChampionsMeeting, LeagueOfHeroes, GameEvent, BannerTimeline,
-    AnniversaryEvent
+    AnniversaryEvent, Scenario
 )
 from calculatorapi.views.rank_viewsets import (
     ClubRankSerializer,
@@ -40,6 +41,7 @@ from calculatorapi.views.league_of_heroes import LeagueOfHeroesSerializer
 from calculatorapi.views.game_event import GameEventSerializer
 from calculatorapi.views.banner_timeline import BannerTimelineForViewingSerializer
 from calculatorapi.views.anniversary_event import AnniversaryEventSerializer
+from calculatorapi.views.scenario import ScenarioSerializer
 from calculatorapi.views.ledger import IncomeLedgerRowSerializer
 from calculatorapi.views.calculation_constants import CalculationConstantsSerializer
 from calculatorapi.views.user_planned_purchase import UserPlannedPurchaseSerializer
@@ -189,6 +191,16 @@ class CalculatorViewSet(ViewSet):
             anniversary_event_data,
             key=lambda ev: effective_sort_key(anniversary_emap.get(ev.id)),
         )
+        # Scenarios borrow their launch banner's START and nothing else — they
+        # have no end date at all, so they resolve through their own map rather
+        # than the campaign one. select_related is not needed: the resolver reads
+        # banner_timeline_id off the row and looks it up in the emap.
+        scenario_data = Scenario.objects.all()
+        scenario_emap = build_scenario_date_map(scenario_data, emap)
+        scenario_data = sorted(
+            scenario_data,
+            key=lambda sc: effective_sort_key(scenario_emap.get(sc.id)),
+        )
 
         # Selector eligibility keys off each card's earliest JP banner. Built
         # once here and handed to every serializer that nests a card, because
@@ -313,6 +325,10 @@ class CalculatorViewSet(ViewSet):
             "anniversary_event_data": AnniversaryEventSerializer(
                 anniversary_event_data, many=True,
                 context={"effective_dates": anniversary_emap}
+            ).data,
+            "scenario_data": ScenarioSerializer(
+                scenario_data, many=True,
+                context={"effective_dates": scenario_emap}
             ).data,
             "champions_meeting_data": ChampionsMeetingSerializer(
                 champions_meeting_data, many=True, context={"effective_dates": cm_emap}

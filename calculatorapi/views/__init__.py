@@ -20,6 +20,7 @@ from .banner_step_up import BannerStepUpSerializer
 from .champions_meeting import ChampionsMeetingSerializer
 from .league_of_heroes import LeagueOfHeroesSerializer, LeagueOfHeroesViewSet
 from .game_event import GameEventSerializer, GameEventViewSet
+from .scenario import ScenarioSerializer
 from .changelog import ChangelogEntrySerializer, ChangelogEntryViewSet
 from .anniversary_event import (
     AnniversaryEventSerializer,

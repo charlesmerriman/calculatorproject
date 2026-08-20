@@ -32,6 +32,7 @@ from calculatorapi.models import (
     ChangelogEntry, ChangelogChange,
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
     AnniversaryEvent, AnniversaryEventBanner, AnniversaryEventProduct,
+    Scenario,
 )
 
 GROUP_NAME = "Content editors"
@@ -50,6 +51,9 @@ CONTENT_MODELS = [
     # Campaigns are content: an editor sets up an anniversary's packs and
     # selectors. UserPlannedPurchase is deliberately absent — it's user data.
     AnniversaryEvent, AnniversaryEventBanner, AnniversaryEventProduct,
+    # A scenario is content too: an editor names it, points it at its launch
+    # banner, and adds the art whenever the art exists.
+    Scenario,
 ]
 
 

@@ -169,6 +169,11 @@ UNFOLD = {
                         "icon": "redeem",
                         "link": reverse_lazy("admin:calculatorapi_anniversaryevent_changelist"),
                     },
+                    {
+                        "title": _("Scenarios"),
+                        "icon": "stadia_controller",
+                        "link": reverse_lazy("admin:calculatorapi_scenario_changelist"),
+                    },
                 ],
             },
             {
