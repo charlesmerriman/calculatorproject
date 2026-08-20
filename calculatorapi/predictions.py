@@ -399,6 +399,50 @@ def build_game_event_confirmed_date_map(game_events):
     }
 
 
+def scenario_effective_dates(scenario, banner_timeline_emap):
+    """
+    Resolve a Scenario's START from its launch banner, by following its
+    banner_timeline FK into an already-built BannerTimeline effective-date map.
+    No prediction of its own, exactly like game_event_effective_dates.
+
+    There is NO end date and there must not be one. A scenario is released and
+    then stays available permanently — a newer scenario doesn't retire an older
+    one — so borrowing the launch banner's end would invent an expiry the
+    scenario does not have. See the Scenario model docstring.
+
+    end_date stays in the returned dict as a permanent None so this entry has
+    the same shape as every other effective-date entry: _ResolvedDateMixin._entry
+    and effective_sort_key both index these blindly. It is simply never emitted
+    on the wire — see StartInstantDateMixin.
+
+    is_predicted and applied_offset_days propagate from the banner's own entry,
+    which is how a scenario picks up a schedule offset for free: the banner's
+    dates are already shifted by the time this reads them.
+
+    An unlinked scenario (or one whose banner has no resolved start) resolves to
+    a null start and sorts last, exactly as an unlinked GameEvent does.
+    """
+    entry = banner_timeline_emap.get(scenario.banner_timeline_id)
+    if entry is None or entry["start_date"] is None:
+        return {"start_date": None, "end_date": None, "is_predicted": False,
+                "applied_offset_days": 0}
+    return {
+        "start_date": entry["start_date"],
+        "end_date": None,
+        "is_predicted": entry["is_predicted"],
+        "applied_offset_days": entry["applied_offset_days"],
+    }
+
+
+def build_scenario_date_map(scenarios, banner_timeline_emap):
+    """Wraps scenario_effective_dates over a queryset/iterable of Scenario rows,
+    resolving each via the shared BannerTimeline map."""
+    return {
+        scenario.id: scenario_effective_dates(scenario, banner_timeline_emap)
+        for scenario in scenarios
+    }
+
+
 def anniversary_event_effective_dates(anniversary_event, banner_timeline_emap):
     """
     Resolve an AnniversaryEvent's date range by spanning every BannerTimeline

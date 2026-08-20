@@ -47,7 +47,7 @@ from .models import (
     BannerTimeline, BannerUma, BannerSupport, BannerStepUp,
     ChampionsMeeting, ChampionsMeetingUmaRecommendation,
     SupportsOnSupportBanner, UmasOnUmaBanner,
-    GameEvent, LeagueOfHeroes,
+    GameEvent, LeagueOfHeroes, Scenario,
     ChangelogEntry, ChangelogChange,
     SocialAccount,
     AnniversaryEvent, AnniversaryEventBanner, AnniversaryEventProduct,
@@ -434,6 +434,42 @@ class GameEventAdmin(ImagePreviewMixin, SpacesImagePickerMixin, ModelAdmin):
         if obj.banner_timeline_id is None or obj.banner_timeline.global_end_date is None:
             return "—"
         return obj.banner_timeline.global_end_date + GAME_EVENT_END_DATE_BUFFER
+
+
+@admin.register(Scenario)
+class ScenarioAdmin(ImagePreviewMixin, SpacesImagePickerMixin, ModelAdmin):
+    """A training scenario — a new, optional way to play the game.
+
+    No date fields to edit, and no end date to edit anywhere: a scenario takes
+    its start from its launch banner and never ends. It stays available forever
+    once released, so there is nothing for an end date to mean. The list column
+    shows the banner's confirmed start with no prediction math — same rule
+    GameEventAdmin uses.
+
+    No inline: this is a single FK, not a parts table like a campaign's.
+    """
+    list_display = ("name", "banner_timeline", "confirmed_start_date")
+    ordering = ("-banner_timeline__global_start_date",)
+    search_fields = ("name",)
+    autocomplete_fields = ("banner_timeline",)
+    list_select_related = ("banner_timeline",)
+    readonly_fields = ("image_preview",)
+    fieldsets = (
+        (None, {"fields": ("name", "image", "image_preview")}),
+        ("Launch", {
+            "fields": ("banner_timeline",),
+            "description": (
+                "The scenario's start date is taken from this banner. A "
+                "scenario has no end date — it stays playable after release."
+            ),
+        }),
+    )
+
+    @admin.display(description="Start date")
+    def confirmed_start_date(self, obj):
+        if obj.banner_timeline_id is None:
+            return "—"
+        return obj.banner_timeline.global_start_date or "—"
 
 
 @admin.register(AnniversaryEvent)

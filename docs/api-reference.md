@@ -117,6 +117,7 @@ For anonymous requests, all reference keys are populated as usual but the user-s
   "user_stats_data":             UserStats,
   "banner_timeline_data":        [ BannerTimeline ],
   "anniversary_event_data":      [ AnniversaryEvent ],
+  "scenario_data":               [ Scenario ],
   "user_planned_purchase_data":  [ UserPlannedPurchase ],
   "user_step_up_selection_data": [ UserStepUpSelection ],
   "income_ledger":               [ IncomeLedgerRow ],
@@ -124,7 +125,7 @@ For anonymous requests, all reference keys are populated as usual but the user-s
 }
 ```
 
-`user_planned_banner_data`, `banner_uma_data`, `banner_support_data`, `champions_meeting_data`, `league_of_heroes_event_data`, `events_data`, `anniversary_event_data` and `user_planned_purchase_data` are all ordered by each row's **resolved** (confirmed-or-predicted) global start date, sorted server-side in Python since predicted dates aren't a DB column.
+`user_planned_banner_data`, `banner_uma_data`, `banner_support_data`, `champions_meeting_data`, `league_of_heroes_event_data`, `events_data`, `anniversary_event_data`, `scenario_data` and `user_planned_purchase_data` are all ordered by each row's **resolved** (confirmed-or-predicted) global start date, sorted server-side in Python since predicted dates aren't a DB column.
 
 ---
 
@@ -336,6 +337,48 @@ true if **any** contributing part is predicted.
 `event_type` is one of `anniversary` / `new_year` / `campaign` — the source sheet plans
 New Years campaigns and one-off promotions alongside anniversaries, and this keeps them
 in one table without the name lying about what a row holds.
+
+> `AnniversaryEvent.event_type` is the **campaign kind**. It is not the timeline
+> discriminated-union tag of the same name emitted by `EventTypeMixin` on
+> `banner_timeline_data` / `champions_meeting_data` / `league_of_heroes_event_data`.
+> Don't merge the two.
+
+### `Scenario` (from `scenario_data`)
+
+A training scenario — a new, optional way to play the game (URA Finals, Aoharu, Grand
+Live, Hashire! Mecha Umamusume). Public. Grants no resources: it is purely a marker on
+the timeline and in the calculator's section bands.
+
+**There is no `end_date` key in this payload, and that is deliberate.** A scenario is
+released and then stays available permanently — a newer scenario does not retire an older
+one, it just tends to get played more because it is more rewarding. So there is no end to
+report. It is omitted rather than emitted as a permanent `null`, because a
+structurally-always-null field invites a consumer to render a range that doesn't exist.
+This is the only collection on `/calculator-data` with a start and no end.
+
+`start_date` is borrowed from the scenario's launch banner (`banner_timeline`) and follows
+the same confirmed-or-predicted rules as everything else on the calendar; `is_predicted`
+and `applied_offset_days` propagate from that banner. `start_date` is `null` when the
+scenario has no linked banner, or that banner has no resolved start.
+
+`image` is frequently `null`: scenarios get entered before their art exists, and every
+consumer is expected to render without it.
+
+```json
+{
+  "id": 3,
+  "name": "Hashire! Mecha Umamusume",
+  "image": null,
+  "banner_timeline": 142,
+  "start_date": "2028-02-08T22:00:00Z",
+  "is_predicted": true,
+  "applied_offset_days": 0
+}
+```
+
+`banner_timeline` is a bare id, not a nested object — the frontend already holds every
+banner in `banner_timeline_data`, and it needs the id to pin the scenario's band directly
+above that banner's row in the planner.
 
 ### `AnniversaryEventProduct`
 

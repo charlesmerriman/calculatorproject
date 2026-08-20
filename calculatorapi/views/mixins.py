@@ -139,3 +139,30 @@ class GameEventDateMixin(_ResolvedDateMixin):
     def _fallback(self, obj):
         return {"start_date": None, "end_date": None, "is_predicted": False,
                 "applied_offset_days": 0}
+
+
+class StartInstantDateMixin(_ResolvedDateMixin):
+    """
+    A single dated instant borrowed from a BannerTimeline, with no end — used by
+    Scenario, the only model whose dates are a start and nothing else.
+
+    `end_date` is REMOVED from the wire rather than emitted as a permanent null.
+    A field that is structurally always null invites a consumer to render a range
+    that doesn't exist, and a scenario genuinely has no end (it stays available
+    forever once released). Reassigning an inherited declared field to None is
+    DRF's own idiom for dropping it: SerializerMetaclass skips any base-class
+    declared field whose name is redefined in the subclass. That also means
+    `end_date` must NOT appear in a subclass's Meta.fields, or DRF raises.
+
+    The inherited get_end_date is dead here and live for the other two mixins;
+    it stays on _ResolvedDateMixin.
+
+    Fails safe to unresolved dates when serialized with no context map, as
+    GameEventDateMixin does — there's no per-object fallback to compute.
+    """
+
+    end_date = None
+
+    def _fallback(self, obj):
+        return {"start_date": None, "end_date": None, "is_predicted": False,
+                "applied_offset_days": 0}
