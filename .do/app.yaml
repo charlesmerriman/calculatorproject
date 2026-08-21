@@ -124,6 +124,23 @@ services:
   - key: FRONTEND_URL
     scope: RUN_TIME
     value: https://umamusme-calculator-7zdcg.ondigitalocean.app
+  # OAUTH_EXTRA_REDIRECT_URIS is set in the DigitalOcean DASHBOARD, not here, and
+  # is deliberately absent from this file. Current value:
+  #
+  #   http://localhost:5173/auth/callback
+  #
+  # It allowlists that one extra redirect URI so `npm run dev:live` — a local
+  # Vite server pointed at THIS deployment — can complete a real sign-in instead
+  # of bouncing the developer to the deployed site. Consequence: a signed-in
+  # local frontend writes to the live database. See backend/docs/auth-and-privacy.md.
+  #
+  # Kept out of the committed spec because this repo is public and there is no
+  # reason to advertise that production accepts a loopback callback, and because
+  # revoking it should not require a commit.
+  #
+  # ⚠ `doctl apps update --spec .do/app.yaml` WOULD ERASE IT. Read the live spec
+  # first (`doctl apps spec get <app-id>`) and re-apply the key, or set it again
+  # in the dashboard afterwards.
   # Social sign-in credentials. Client IDs are public; the secrets must be set
   # in the DigitalOcean dashboard and never committed.
   - key: GOOGLE_OAUTH_CLIENT_ID

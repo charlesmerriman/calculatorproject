@@ -29,8 +29,10 @@ import shutil
 import tempfile
 from io import StringIO
 from unittest.mock import patch
+from urllib.parse import parse_qs, urlencode, urlparse
 
 from django.contrib.auth.models import Group
+from django.core import signing
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models, transaction
 from django.core.cache import cache
@@ -59,6 +61,7 @@ from calculatorapi.visits import (
 )
 from calculatorapi.ledger import AMOUNT_FIELDS, build_income_ledger
 from calculatorapi.views.ledger import IncomeLedgerRowSerializer
+from calculatorapi.views.social_auth import STATE_SALT
 from calculatorapi.views.calculation_constants import CalculationConstantsSerializer
 from calculatorapi.views.user_planned_banner import UserPlannedBannerSerializer
 from calculatorapi.predictions import (
@@ -4858,3 +4861,178 @@ class FixSupportCardVariantsTests(TestCase):
         link.refresh_from_db()
         self.assertEqual(link.support_card_id, card.pk)
         self.assertIn('no game_id', out.getvalue())
+
+
+CANONICAL_REDIRECT = "https://app.example.com/auth/callback"
+DEV_REDIRECT = "http://localhost:5173/auth/callback"
+UNLISTED_REDIRECT = "https://attacker.example.net/auth/callback"
+
+
+@override_settings(
+    GOOGLE_OAUTH_CLIENT_ID="test-google-client",
+    GOOGLE_OAUTH_CLIENT_SECRET="test-google-secret",
+    DISCORD_OAUTH_CLIENT_ID="test-discord-client",
+    DISCORD_OAUTH_CLIENT_SECRET="test-discord-secret",
+    OAUTH_REDIRECT_URI=CANONICAL_REDIRECT,
+    OAUTH_ALLOWED_REDIRECT_URIS=frozenset([CANONICAL_REDIRECT, DEV_REDIRECT]),
+)
+class SocialAuthRedirectUriTests(TestCase):
+    """The allowlisted `redirect_uri` parameter on /auth/<provider>/start.
+
+    It exists so `npm run dev:live` -- a local Vite server talking to a deployed
+    backend -- can complete a sign-in on localhost instead of being bounced to
+    the deployed site. The allowlist is the security boundary: without it the
+    endpoint would mail authorization codes to any address a caller named.
+    """
+
+    def _start(self, provider="google", redirect_uri=None):
+        url = f"/auth/{provider}/start"
+        if redirect_uri is not None:
+            url += "?" + urlencode({"redirect_uri": redirect_uri})
+        return self.client.get(url)
+
+    @staticmethod
+    def _redirect_param(response):
+        """The redirect_uri the provider consent URL actually carries."""
+        authorize_url = response.json()["authorize_url"]
+        return parse_qs(urlparse(authorize_url).query)["redirect_uri"][0]
+
+    def test_start_without_the_parameter_uses_the_canonical_uri(self):
+        """The deployed SPA sends no parameter; its behaviour must not change."""
+        response = self._start()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self._redirect_param(response), CANONICAL_REDIRECT)
+
+    def test_start_accepts_an_allowlisted_uri(self):
+        response = self._start(redirect_uri=DEV_REDIRECT)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self._redirect_param(response), DEV_REDIRECT)
+
+    def test_start_rejects_an_unlisted_uri(self):
+        """The whole point: an arbitrary address must not be honoured."""
+        response = self._start(redirect_uri=UNLISTED_REDIRECT)
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_an_unlisted_uri_is_refused_rather_than_silently_defaulted(self):
+        """Falling back to the canonical URI would look like a working login
+        that mysteriously lands somewhere else. Fail loudly instead."""
+        response = self._start(redirect_uri=UNLISTED_REDIRECT)
+
+        self.assertNotIn("authorize_url", response.json())
+
+    def test_rejected_uri_is_not_echoed_back_to_the_caller(self):
+        response = self._start(redirect_uri=UNLISTED_REDIRECT)
+
+        self.assertNotIn(UNLISTED_REDIRECT, json.dumps(response.json()))
+
+    def test_allowlist_is_enforced_for_discord_too(self):
+        self.assertEqual(
+            self._start(provider="discord", redirect_uri=UNLISTED_REDIRECT).status_code,
+            400,
+        )
+        self.assertEqual(
+            self._start(provider="discord", redirect_uri=DEV_REDIRECT).status_code,
+            200,
+        )
+
+    def test_completion_exchanges_with_the_uri_the_login_started_with(self):
+        """Providers bind the code to the redirect_uri, so the token request has
+        to repeat the one used at the start -- not the canonical default."""
+        state = self._start(redirect_uri=DEV_REDIRECT).json()["state"]
+
+        with patch("calculatorapi.oauth.exchange_code", return_value="sub-1") as mocked:
+            response = self.client.post(
+                "/auth/social",
+                {"provider": "google", "code": "CODE", "state": state},
+                content_type="application/json",
+            )
+
+        self.assertEqual(response.status_code, 201)
+        mocked.assert_called_once_with("google", "CODE", DEV_REDIRECT)
+
+    def test_completion_uses_the_canonical_uri_when_none_was_requested(self):
+        state = self._start().json()["state"]
+
+        with patch("calculatorapi.oauth.exchange_code", return_value="sub-2") as mocked:
+            self.client.post(
+                "/auth/social",
+                {"provider": "google", "code": "CODE", "state": state},
+                content_type="application/json",
+            )
+
+        mocked.assert_called_once_with("google", "CODE", CANONICAL_REDIRECT)
+
+    def test_a_state_predating_the_redirect_field_still_completes(self):
+        """A login in flight while this release deploys carries a state with no
+        "r". It was started against the canonical URI, so it must finish there
+        rather than 400 on a field that did not exist when it was minted."""
+        legacy_state = signing.dumps({"p": "google", "n": "nonce"}, salt=STATE_SALT)
+
+        with patch("calculatorapi.oauth.exchange_code", return_value="sub-3") as mocked:
+            response = self.client.post(
+                "/auth/social",
+                {"provider": "google", "code": "CODE", "state": legacy_state},
+                content_type="application/json",
+            )
+
+        self.assertEqual(response.status_code, 201)
+        mocked.assert_called_once_with("google", "CODE", CANONICAL_REDIRECT)
+
+    def test_the_redirect_uri_cannot_be_swapped_by_tampering_with_the_state(self):
+        """The signature is what makes the sealed URI trustworthy on return."""
+        forged = signing.dumps(
+            {"p": "google", "n": "nonce", "r": UNLISTED_REDIRECT},
+            salt="some-other-salt",
+        )
+
+        with patch("calculatorapi.oauth.exchange_code") as mocked:
+            response = self.client.post(
+                "/auth/social",
+                {"provider": "google", "code": "CODE", "state": forged},
+                content_type="application/json",
+            )
+
+        self.assertEqual(response.status_code, 400)
+        mocked.assert_not_called()
+
+    def test_a_state_minted_for_one_provider_is_not_replayable_against_another(self):
+        """Pre-existing guarantee; the payload refactor must not have lost it."""
+        state = self._start(provider="google", redirect_uri=DEV_REDIRECT).json()["state"]
+
+        with patch("calculatorapi.oauth.exchange_code") as mocked:
+            response = self.client.post(
+                "/auth/social",
+                {"provider": "discord", "code": "CODE", "state": state},
+                content_type="application/json",
+            )
+
+        self.assertEqual(response.status_code, 400)
+        mocked.assert_not_called()
+
+
+@override_settings(
+    GOOGLE_OAUTH_CLIENT_ID="test-google-client",
+    GOOGLE_OAUTH_CLIENT_SECRET="test-google-secret",
+    OAUTH_REDIRECT_URI=CANONICAL_REDIRECT,
+    OAUTH_ALLOWED_REDIRECT_URIS=frozenset([CANONICAL_REDIRECT]),
+)
+class SocialAuthDefaultAllowlistTests(TestCase):
+    """With no extra URIs configured -- the default for any deployment that has
+    not opted in -- the endpoint behaves exactly as it did before."""
+
+    def test_localhost_is_not_allowed_by_default(self):
+        response = self.client.get(
+            "/auth/google/start?" + urlencode({"redirect_uri": DEV_REDIRECT})
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_the_canonical_uri_is_always_allowed_even_if_named_explicitly(self):
+        response = self.client.get(
+            "/auth/google/start?" + urlencode({"redirect_uri": CANONICAL_REDIRECT})
+        )
+
+        self.assertEqual(response.status_code, 200)

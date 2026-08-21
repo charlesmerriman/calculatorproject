@@ -343,6 +343,31 @@ FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/")
 # has to be kept in sync by hand.
 OAUTH_REDIRECT_URI = f"{FRONTEND_URL}/auth/callback"
 
+# Redirect URIs that /auth/<provider>/start will honour when the SPA asks for
+# one explicitly, on top of the canonical OAUTH_REDIRECT_URI above. Comma-
+# separated; empty by default, which reproduces the old single-address
+# behaviour exactly.
+#
+# WHY THIS EXISTS: `npm run dev:live` runs the local Vite dev server against a
+# DEPLOYED backend, so a login started there has to come back to
+# http://localhost:5173/auth/callback -- otherwise a developer can never be
+# signed in while looking at real content, which is the whole point of that
+# mode. Setting this on a deployed app is a deliberate act: it lets that app
+# hand authorization codes to a loopback address.
+#
+# The ALLOWLIST is the security boundary. Honouring an arbitrary client-supplied
+# redirect_uri would turn this endpoint into an open redirector that leaks
+# authorization codes to whoever asked, so the server -- never the client --
+# decides which addresses are acceptable. Entries must match BYTE-FOR-BYTE for
+# the same reason OAUTH_REDIRECT_URI does, and must also be registered in the
+# provider console.
+_extra_redirect_uris = [
+    uri.strip()
+    for uri in os.getenv("OAUTH_EXTRA_REDIRECT_URIS", "").split(",")
+    if uri.strip()
+]
+OAUTH_ALLOWED_REDIRECT_URIS = frozenset([OAUTH_REDIRECT_URI, *_extra_redirect_uris])
+
 # How long a signed OAuth `state` stays valid. Covers a slow trip through the
 # provider's consent screen without leaving replay material lying around.
 OAUTH_STATE_MAX_AGE_SECONDS = 600

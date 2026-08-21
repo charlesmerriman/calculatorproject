@@ -42,8 +42,9 @@ MAX_USERNAME_ATTEMPTS = 5
 GENERIC_AUTH_ERROR = {"error": "Could not complete sign in. Please try again."}
 
 
-def _issue_state(provider):
-    """Sign a short-lived state token binding this login attempt to a provider.
+def _issue_state(provider, redirect_uri):
+    """Sign a short-lived state token binding this login attempt to a provider
+    AND to the redirect URI it started with.
 
     Guards against login CSRF: without it, an attacker could pre-start a login
     with their own account and trick a victim's browser into completing it,
@@ -54,14 +55,24 @@ def _issue_state(provider):
     compares it on return, which an attacker cannot write to.
     """
     return signing.dumps(
-        {"p": provider, "n": secrets.token_urlsafe(16)},
+        # "r" is the redirect URI. It rides along in the SIGNED state rather
+        # than being re-sent by the client at completion time, because the token
+        # exchange must repeat it byte-for-byte -- and a value the browser could
+        # edit between the two halves of the flow would be worthless as a
+        # binding. The signature is what makes it trustworthy on the way back.
+        {"p": provider, "n": secrets.token_urlsafe(16), "r": redirect_uri},
         salt=STATE_SALT,
     )
 
 
-def _state_is_valid(state, provider):
+def _load_state(state, provider):
+    """Verify a returned state and hand back its payload, or None if it fails.
+
+    Returns the payload rather than a bool so the caller can recover the
+    redirect URI sealed inside it.
+    """
     if not state:
-        return False
+        return None
     try:
         payload = signing.loads(
             state,
@@ -70,9 +81,37 @@ def _state_is_valid(state, provider):
         )
     except signing.BadSignature:
         # Covers SignatureExpired too (it subclasses BadSignature).
-        return False
+        return None
     # A state minted for Google must not be replayable against Discord.
-    return payload.get("p") == provider
+    if payload.get("p") != provider:
+        return None
+    return payload
+
+
+def _resolve_redirect_uri(request):
+    """Pick the redirect URI for this login: (uri, error_response).
+
+    No `redirect_uri` parameter -> the canonical one. That is what the deployed
+    SPA sends and what every client sent before this parameter existed, so the
+    default path is unchanged.
+
+    A parameter -> it must appear verbatim in the server-side allowlist. THIS IS
+    THE SECURITY BOUNDARY of the whole feature. Honouring an arbitrary value
+    would make this endpoint an open redirector that mails authorization codes
+    to whatever address the caller named, so an unlisted URI is refused outright
+    rather than quietly falling back to the default (which would send the user
+    somewhere they did not expect and look like a broken login).
+    """
+    requested = request.query_params.get("redirect_uri")
+    if not requested:
+        return settings.OAUTH_REDIRECT_URI, None
+    if requested not in settings.OAUTH_ALLOWED_REDIRECT_URIS:
+        # Deliberately does not echo the rejected value back to the caller.
+        return None, Response(
+            {"error": "That redirect URI is not allowed for this deployment."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    return requested, None
 
 
 def _create_anonymous_user():
@@ -104,9 +143,13 @@ def social_auth_start(request, provider):
         return Response(
             {"error": "Unknown provider"}, status=status.HTTP_404_NOT_FOUND
         )
-    state = _issue_state(provider)
+    redirect_uri, redirect_error = _resolve_redirect_uri(request)
+    if redirect_error is not None:
+        return redirect_error
+
+    state = _issue_state(provider, redirect_uri)
     try:
-        authorize_url = oauth.build_authorize_url(provider, state)
+        authorize_url = oauth.build_authorize_url(provider, state, redirect_uri)
     except oauth.OAuthError:
         # Only reachable when the client id/secret env vars are missing, which
         # is a deployment fault rather than anything the user did.
@@ -129,11 +172,21 @@ def social_auth_complete(request):
         return Response(
             {"error": "Unknown provider"}, status=status.HTTP_404_NOT_FOUND
         )
-    if not code or not _state_is_valid(state, provider):
+    state_payload = _load_state(state, provider)
+    if not code or state_payload is None:
         return Response(GENERIC_AUTH_ERROR, status=status.HTTP_400_BAD_REQUEST)
 
+    # The URI this login actually started with. Not re-checked against the
+    # allowlist: by this point the browser is already back, so the value is no
+    # longer a redirect target -- it is only the string the provider requires us
+    # to repeat. Re-checking would also break a login that was in flight while
+    # the allowlist changed. A state predating this field (one issued by the
+    # previous release, mid-deploy) has no "r" and correctly falls back to the
+    # canonical URI, which is what it was started with.
+    redirect_uri = state_payload.get("r") or settings.OAUTH_REDIRECT_URI
+
     try:
-        subject_id = oauth.exchange_code(provider, code)
+        subject_id = oauth.exchange_code(provider, code, redirect_uri)
     except oauth.OAuthError:
         # Expired/replayed code, provider outage, or a redirect_uri mismatch.
         # The underlying detail stays server-side.

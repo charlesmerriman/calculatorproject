@@ -22,11 +22,18 @@ Ordinary accounts are created and authenticated **only** through Google or Disco
 
 Public. `<provider>` is `google` or `discord`. Returns the provider consent URL to redirect the browser to, plus the signed `state` the caller must echo back.
 
+**Query parameters**
+
+| Name | Required | Meaning |
+|---|---|---|
+| `redirect_uri` | no | Where the provider should return the browser. Omitted → `settings.OAUTH_REDIRECT_URI`. Supplied → must appear verbatim in `settings.OAUTH_ALLOWED_REDIRECT_URIS`, else `400`. The value is sealed into the signed `state` and reused for the token exchange. → `auth-and-privacy.md` |
+
 **Response `200`**
 ```json
 { "authorize_url": "https://accounts.google.com/o/oauth2/v2/auth?...", "state": "string" }
 ```
 
+**Response `400`** — `redirect_uri` was supplied but is not allowlisted for this deployment. The rejected value is not echoed back.
 **Response `404`** — unknown provider.
 **Response `503`** — the provider's client id/secret is not configured on the server.
 

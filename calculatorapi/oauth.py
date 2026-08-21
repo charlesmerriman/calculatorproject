@@ -100,12 +100,19 @@ def get_config(provider):
     return config
 
 
-def build_authorize_url(provider, state):
-    """The provider's consent-screen URL to send the browser to."""
+def build_authorize_url(provider, state, redirect_uri=None):
+    """The provider's consent-screen URL to send the browser to.
+
+    `redirect_uri` overrides the canonical OAUTH_REDIRECT_URI. The caller is
+    responsible for having validated it against settings.OAUTH_ALLOWED_REDIRECT_URIS
+    FIRST -- this function does no checking, because an unvalidated value here
+    would leak authorization codes to any address a client cared to name.
+    Whatever is used must be repeated verbatim in exchange_code().
+    """
     config = get_config(provider)
     params = {
         "client_id": config["client_id"],
-        "redirect_uri": settings.OAUTH_REDIRECT_URI,
+        "redirect_uri": redirect_uri or settings.OAUTH_REDIRECT_URI,
         "response_type": "code",
         "scope": config["scope"],
         "state": state,
@@ -114,7 +121,7 @@ def build_authorize_url(provider, state):
     return f"{config['authorize_url']}?{urlencode(params)}"
 
 
-def _post_token_request(config, code):
+def _post_token_request(config, code, redirect_uri=None):
     """Redeem the one-time code for provider tokens. Server-to-server: this is
     the only place the client secret is used, and it never touches the browser."""
     payload = {
@@ -124,7 +131,10 @@ def _post_token_request(config, code):
         "grant_type": "authorization_code",
         # Must match the value sent to the authorize endpoint exactly; providers
         # treat this as part of the code's binding, not as a redirect target.
-        "redirect_uri": settings.OAUTH_REDIRECT_URI,
+        # That is why the view carries the chosen URI through the signed state
+        # rather than recomputing it here -- a login started against one address
+        # must finish against the same one, even if the default has changed.
+        "redirect_uri": redirect_uri or settings.OAUTH_REDIRECT_URI,
     }
     try:
         response = requests.post(
@@ -232,9 +242,13 @@ _SUBJECT_EXTRACTORS = {
 }
 
 
-def exchange_code(provider, code):
+def exchange_code(provider, code, redirect_uri=None):
     """Redeem a one-time authorization code and return the provider's opaque
-    subject id. Raises OAuthError on every failure path."""
+    subject id. Raises OAuthError on every failure path.
+
+    `redirect_uri` must be the SAME value build_authorize_url() was given, or
+    the provider rejects the exchange.
+    """
     config = get_config(provider)
-    token_data = _post_token_request(config, code)
+    token_data = _post_token_request(config, code, redirect_uri)
     return _SUBJECT_EXTRACTORS[provider](config, token_data)

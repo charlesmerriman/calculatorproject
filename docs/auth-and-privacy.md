@@ -103,6 +103,41 @@ match the provider console entry exactly — a trailing slash breaks it.
 Note the frontend owns the `/auth/callback` route: the SPA's `catchall_document:
 index.html` serves it, and DigitalOcean ingress does **not** proxy it to Django.
 
+### The redirect URI allowlist
+
+`GET /auth/<provider>/start` accepts an optional `?redirect_uri=`. Omitted, it uses the
+canonical `OAUTH_REDIRECT_URI` — which is what the deployed SPA does and what every
+client did before the parameter existed. Supplied, it must appear **verbatim** in
+`settings.OAUTH_ALLOWED_REDIRECT_URIS`, which is `OAUTH_REDIRECT_URI` plus the
+comma-separated `OAUTH_EXTRA_REDIRECT_URIS` env var. An unlisted value is refused with a
+400 rather than quietly falling back.
+
+**The allowlist is the security boundary.** Honouring an arbitrary client-supplied
+`redirect_uri` would make this an open redirector that mails single-use authorization
+codes to whatever address the caller named. The server decides; the client only asks.
+
+**Why it exists:** `npm run dev:live` runs the local Vite server against a *deployed*
+backend. Without this, a sign-in started on `localhost:5173` returns to the deployed site
+and the developer can never be authenticated while looking at real content. Production
+sets `OAUTH_EXTRA_REDIRECT_URIS=http://localhost:5173/auth/callback` to permit exactly
+that one address.
+
+The consequence is that **`dev:live` is no longer read-only** — a signed-in local
+frontend writes to the live database under a real account. That was previously a
+structural guarantee and is now only a matter of not being signed in.
+
+**The chosen URI is sealed into the signed `state`** (`{"p": provider, "n": nonce,
+"r": redirect_uri}`) and recovered from it at completion. Providers bind the code to the
+redirect URI, so the token exchange must repeat it byte-for-byte — and a value the
+browser could edit between the two halves of the flow would be worthless as a binding.
+**Never read it from the client's `POST /auth/social` body.** At completion it is no
+longer a redirect target (the browser is already back), so it is not re-checked against
+the allowlist; that also keeps a login that was in flight during an allowlist change from
+failing. A state with no `"r"` — one minted by a previous release, mid-deploy — falls
+back to the canonical URI.
+
+Covered by `SocialAuthRedirectUriTests` and `SocialAuthDefaultAllowlistTests`.
+
 ---
 
 ## `purge_user_pii`
