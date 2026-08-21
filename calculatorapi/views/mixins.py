@@ -141,6 +141,32 @@ class GameEventDateMixin(_ResolvedDateMixin):
                 "applied_offset_days": 0}
 
 
+class AnniversaryEventDateMixin(GameEventDateMixin):
+    """
+    GameEventDateMixin plus `main_start_date` — the start of the part that IS the
+    campaign's event, as opposed to `start_date`, which is when the campaign
+    first opens.
+
+    The two differ for anniversaries, which run a Part 1 of login rewards before
+    the anniversary proper (predictions._main_part explains the selection). Both
+    are on the wire because they answer different questions: consumers placing a
+    landmark on a calendar, or crediting a purchase, want main_start_date;
+    consumers describing the campaign's whole window want start_date/end_date.
+
+    Inherits the no-context-map fallback and extends it with the new key, so a
+    standalone serialization still emits every field the type promises.
+    """
+
+    main_start_date = serializers.SerializerMethodField()
+
+    def get_main_start_date(self, obj):
+        value = self._entry(obj)["main_start_date"]
+        return _DT.to_representation(value) if value is not None else None
+
+    def _fallback(self, obj):
+        return {**super()._fallback(obj), "main_start_date": None}
+
+
 class StartInstantDateMixin(_ResolvedDateMixin):
     """
     A single dated instant borrowed from a BannerTimeline, with no end — used by

@@ -2639,8 +2639,123 @@ class AnniversaryEventDateTests(TestCase):
         resolved = build_anniversary_event_date_map([event], emap)[event.id]
 
         self.assertIsNone(resolved['start_date'])
+        self.assertIsNone(resolved['main_start_date'])
         self.assertIsNone(resolved['end_date'])
         self.assertFalse(resolved['is_predicted'])
+
+    def test_main_start_date_is_part_2_for_an_anniversary(self):
+        """Part 1 is the run-up; the anniversary itself is Part 2."""
+        now = timezone.now()
+        part1 = make_timeline(
+            name='Run-up', global_start_date=now,
+            global_end_date=now + datetime.timedelta(days=10),
+        )
+        part2 = make_timeline(
+            name='The anniversary',
+            global_start_date=now + datetime.timedelta(days=10),
+            global_end_date=now + datetime.timedelta(days=30),
+        )
+        event = make_anniversary_event(parts=[part1, part2])
+
+        emap = build_effective_date_maps()[BannerTimeline]
+        resolved = build_anniversary_event_date_map([event], emap)[event.id]
+
+        # The campaign still OPENS at Part 1 -- packs and the run-up rewards are
+        # real -- but the event it is named after starts at Part 2.
+        self.assertEqual(resolved['start_date'], part1.global_start_date)
+        self.assertEqual(resolved['main_start_date'], part2.global_start_date)
+        self.assertEqual(resolved['end_date'], part2.global_end_date)
+
+    def test_main_start_date_picks_part_2_by_number_not_by_date(self):
+        """The 5th Anniversary's Part 4 opens before its Part 3.
+
+        Concurrent banners, which is how the source sheet records them. Ordering
+        the parts by date would therefore not put Part 2 second, so the selection
+        has to key on part_number.
+        """
+        now = timezone.now()
+        timelines = [
+            make_timeline(
+                name=f'Part {number}',
+                global_start_date=now + datetime.timedelta(days=offset),
+                global_end_date=now + datetime.timedelta(days=offset + 10),
+            )
+            for number, offset in [(1, 0), (2, 10), (3, 30), (4, 20)]
+        ]
+        event = make_anniversary_event(parts=[])
+        for number, timeline in enumerate(timelines, start=1):
+            AnniversaryEventBanner.objects.create(
+                anniversary_event=event, banner_timeline=timeline,
+                part_number=number,
+            )
+
+        emap = build_effective_date_maps()[BannerTimeline]
+        resolved = build_anniversary_event_date_map([event], emap)[event.id]
+
+        self.assertEqual(resolved['main_start_date'], timelines[1].global_start_date)
+
+    def test_main_start_date_falls_back_when_there_is_no_part_2(self):
+        """The 0.5th Anniversary's shape: its Part 2 banner has no timeline row.
+
+        Only the Part 3 link resolves, and that one part is the whole campaign as
+        far as the app can see -- so it supplies both dates rather than leaving
+        the campaign unplaceable.
+        """
+        now = timezone.now()
+        part3 = make_timeline(
+            name='Only surviving part', global_start_date=now,
+            global_end_date=now + datetime.timedelta(days=11),
+        )
+        event = make_anniversary_event(parts=[])
+        AnniversaryEventBanner.objects.create(
+            anniversary_event=event, banner_timeline=part3, part_number=3,
+        )
+
+        emap = build_effective_date_maps()[BannerTimeline]
+        resolved = build_anniversary_event_date_map([event], emap)[event.id]
+
+        self.assertEqual(resolved['main_start_date'], part3.global_start_date)
+        self.assertEqual(resolved['start_date'], part3.global_start_date)
+
+    def test_main_start_date_falls_back_when_only_a_part_1_is_linked(self):
+        now = timezone.now()
+        part1 = make_timeline(
+            name='Run-up only', global_start_date=now,
+            global_end_date=now + datetime.timedelta(days=10),
+        )
+        event = make_anniversary_event(parts=[part1])
+
+        emap = build_effective_date_maps()[BannerTimeline]
+        resolved = build_anniversary_event_date_map([event], emap)[event.id]
+
+        self.assertEqual(resolved['main_start_date'], part1.global_start_date)
+
+    def test_a_new_year_campaign_keeps_its_opening_as_its_main_start(self):
+        """Only anniversaries run a Part 1 run-up.
+
+        A New Year campaign's Part 1 IS the New Year banner (New Years 2025 =
+        Katsuragi Ace + Mr. C.B.), so moving it to Part 2 would place it on the
+        follow-up banner instead of the event.
+        """
+        now = timezone.now()
+        part1 = make_timeline(
+            name='New Year banner', global_start_date=now,
+            global_end_date=now + datetime.timedelta(days=14),
+        )
+        part2 = make_timeline(
+            name='Follow-up',
+            global_start_date=now + datetime.timedelta(days=9),
+            global_end_date=now + datetime.timedelta(days=20),
+        )
+        event = make_anniversary_event(
+            name='New Years 2025', event_type='new_year', parts=[part1, part2],
+        )
+
+        emap = build_effective_date_maps()[BannerTimeline]
+        resolved = build_anniversary_event_date_map([event], emap)[event.id]
+
+        self.assertEqual(resolved['main_start_date'], part1.global_start_date)
+        self.assertEqual(resolved['start_date'], part1.global_start_date)
 
 
 class AnniversaryEventApiTests(TestCase):
@@ -2696,6 +2811,23 @@ class AnniversaryEventApiTests(TestCase):
         selector = next(p for p in event['products'] if p['name'] == '$70 SSR Selector')
 
         self.assertEqual(selector['jp_cutoff_date'], '2023-01-01')
+
+    def test_campaign_emits_a_main_start_date_alongside_its_window(self):
+        """The wire carries the event's own start, not just the campaign's."""
+        part2 = make_timeline(
+            name='3rd Anniv Part 2',
+            global_start_date=self.timeline.global_end_date,
+            global_end_date=self.timeline.global_end_date + datetime.timedelta(days=20),
+        )
+        AnniversaryEventBanner.objects.create(
+            anniversary_event=self.event, banner_timeline=part2, part_number=2,
+        )
+
+        event = self.client.get('/calculator-data').json()['anniversary_event_data'][0]
+
+        self.assertEqual(event['start_date'], _iso(self.timeline.global_start_date))
+        self.assertEqual(event['main_start_date'], _iso(part2.global_start_date))
+        self.assertEqual(event['end_date'], _iso(part2.global_end_date))
 
     def test_banner_carries_its_campaign_and_part_number(self):
         res = self.client.get('/calculator-data')
