@@ -107,6 +107,36 @@ def _replace_user_rows(rows, *, model, serializer_class, user, missing_message,
     return None
 
 
+def _planned_banner_kind_rank(planned_banner):
+    """Tie-break for two planned rows sharing a start date.
+
+    A campaign routinely opens several banners on one instant, and the plan is
+    sorted by resolved start date alone -- so tied rows fall back to whatever
+    order the queryset returned them in (effectively primary key, i.e. the order
+    the user happened to add them). The client re-sorts on every edit, so
+    without a matching rank here the sheet appears to reshuffle itself the next
+    time the user reloads.
+
+    The order is Uma -> Support -> Step-Up Uma -> Step-Up Support. The step-up
+    split reads `BannerStepUp.card_type`, which is why this cannot be expressed
+    as `Meta.ordering` or an `order_by`: the discriminator lives one FK away on
+    whichever of the three targets is set, and the primary key is a resolved
+    date map that is computed in Python anyway.
+
+    MUST stay in step with `plannedBannerOrderRank` in
+    `frontend/src/utils/bannerHelpers.ts`.
+    """
+    if planned_banner.banner_uma_id is not None:
+        return 0
+    if planned_banner.banner_support_id is not None:
+        return 1
+    if planned_banner.banner_step_up_id is not None:
+        return 2 if planned_banner.banner_step_up.card_type == "uma" else 3
+    # Unreachable while exactly_one_banner_target holds, but a row with no
+    # target sorts last rather than raising.
+    return 4
+
+
 def _stored_selection_pairs(user):
     """{(banner_step_up_id, "uma"|"support", card_id)} the user already had saved.
 
@@ -221,7 +251,10 @@ class CalculatorViewSet(ViewSet):
                     "banner_step_up__banner_timeline",
                     "banner_step_up__anniversary_event",
                 ),
-                key=lambda pb: effective_sort_key(planned_effective_start(pb, emap)),
+                key=lambda pb: (
+                    effective_sort_key(planned_effective_start(pb, emap)),
+                    _planned_banner_kind_rank(pb),
+                ),
             )
             # Ordered by their campaign's resolved start so the planner renders
             # chronologically without re-deriving dates client-side.
