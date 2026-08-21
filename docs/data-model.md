@@ -376,6 +376,30 @@ and with only ~3 campaigns holding confirmed global dates that anchor would be f
 weaker than `BannerTimeline`'s. `is_predicted` is true if **any** contributing part is
 predicted: a range is only as certain as its least certain edge.
 
+**`main_start_date` is a third date: when the event itself begins.** An anniversary opens
+with a **Part 1 run-up** — "the anniversary is coming, here are some login rewards" — and
+the anniversary proper starts at **Part 2**, on JP 02-24 or 08-24, the game's own launch
+date. `start_date` answers "when does the campaign open"; `main_start_date` answers "when
+is the anniversary", and they sit about ten days apart. `predictions._main_part` picks it:
+
+- **Anniversaries** take the lowest `part_number` **≥ 2**. Selected on part number, never
+  on date order — the 5th Anniversary's Part 4 opens *before* its Part 3 (concurrent
+  banners, as the sheet records them), so "the second part by date" is not Part 2.
+- **Falling back to the opening part** covers two real shapes. The 0.5th Anniversary has
+  no Part 2 in the timeline data at all (that banner has no `BannerTimeline` row, so only
+  its Part 3 link resolves), and a campaign an editor has linked only a Part 1 to has no
+  later part to point at.
+- **`new_year` and `campaign` keep the opening part.** Only anniversaries run a run-up. A
+  New Year campaign's Part 1 *is* the New Year banner (New Years 2025 = Katsuragi Ace +
+  Mr. C.B.), and the `campaign` catch-all is a single-part promotion. For both,
+  `main_start_date == start_date`.
+
+It is never null when `start_date` isn't, and always inside `[start_date, end_date]`.
+`applied_offset_days` tracks the **main** part, because that is the instant the projection
+credits a purchase at. Consumers that *place* a campaign on a calendar (the planner's
+section bands, the Timeline's campaign card) or credit a purchase read `main_start_date`;
+consumers describing the campaign's window read `start_date` / `end_date`.
+
 ### `AnniversaryEventProduct` — one tagged model for packs and selectors
 
 Carat packs and selector tickets are the same shape: a priced item attached to a
