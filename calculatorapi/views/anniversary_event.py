@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from calculatorapi.models import AnniversaryEvent, AnniversaryEventProduct
 
-from .mixins import GameEventDateMixin
+from .mixins import AnniversaryEventDateMixin
 
 
 class AnniversaryEventProductSerializer(serializers.ModelSerializer):
@@ -46,13 +46,17 @@ class AnniversaryEventProductSerializer(serializers.ModelSerializer):
         )
 
 
-class AnniversaryEventSerializer(GameEventDateMixin, serializers.ModelSerializer):
+class AnniversaryEventSerializer(AnniversaryEventDateMixin, serializers.ModelSerializer):
     """A campaign, with its dates resolved from the banner parts it spans.
 
-    GameEventDateMixin (not EffectiveDateMixin) because this model owns no
-    global_start_date/global_end_date to fall back to — without a context map it
-    fails safe to null dates. The map comes from
+    A GameEventDateMixin subclass (not EffectiveDateMixin) because this model
+    owns no global_start_date/global_end_date to fall back to — without a context
+    map it fails safe to null dates. The map comes from
     predictions.build_anniversary_event_date_map.
+
+    Three dates, not two: `start_date`/`end_date` are the campaign's whole
+    window, while `main_start_date` is when the event it is named after actually
+    begins. See AnniversaryEventDateMixin.
     """
 
     products = AnniversaryEventProductSerializer(many=True, read_only=True)
@@ -68,6 +72,7 @@ class AnniversaryEventSerializer(GameEventDateMixin, serializers.ModelSerializer
             "image",
             "accent_label",
             "start_date",
+            "main_start_date",
             "end_date",
             "is_predicted",
             "applied_offset_days",

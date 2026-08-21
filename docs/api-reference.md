@@ -317,6 +317,15 @@ the same confirmed-or-predicted rules as everything else on the calendar. Both a
 `null` when the campaign has no linked parts with resolved dates, and `is_predicted` is
 true if **any** contributing part is predicted.
 
+`main_start_date` is a **third** date, and the one most consumers want: when the event the
+campaign is named after actually begins. An anniversary opens with a Part 1 run-up of
+login rewards and only reaches the anniversary itself at Part 2, ~10 days later — so
+`start_date` places the campaign's opening while `main_start_date` places the anniversary.
+It is null exactly when `start_date` is, always falls inside the window, and equals
+`start_date` for `new_year` and `campaign` rows, which have no run-up. Use it to place a
+campaign on a calendar or to date a purchase; use `start_date`/`end_date` to describe the
+campaign's span. Full rule: `backend/docs/data-model.md`.
+
 ```json
 {
   "id": 8,
@@ -326,6 +335,7 @@ true if **any** contributing part is predicted.
   "image": null,
   "accent_label": "",
   "start_date": "2027-07-17T22:00:00Z",
+  "main_start_date": "2027-07-27T22:00:00Z",
   "end_date": "2027-08-19T21:59:59Z",
   "is_predicted": true,
   "applied_offset_days": 0,

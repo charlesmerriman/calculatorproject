@@ -443,6 +443,52 @@ def build_scenario_date_map(scenarios, banner_timeline_emap):
     }
 
 
+#: The part number carrying an anniversary's headline banner. Every anniversary
+#: opens with a Part 1 lead-up campaign — "the anniversary is coming, here are
+#: some rewards" — and the anniversary proper starts one part later, on JP 02-24
+#: or 08-24, the game's own launch date. True of all ten anniversaries in
+#: seed_anniversary_campaigns.CAMPAIGNS, and corroborated by the source sheet's
+#: "Anniversary" column, which marks exactly that one banner per campaign.
+MAIN_ANNIVERSARY_PART = 2
+
+
+def _opening_part(parts):
+    """The earliest-starting resolved part — when the campaign first opens."""
+    return min(parts, key=lambda part: part[1]["start_date"])[1]
+
+
+def _main_part(anniversary_event, parts):
+    """The resolved part that IS the event, given [(part_number, entry)].
+
+    `start_date` says when a campaign opens; this says when the thing it is named
+    after actually happens. For an anniversary those differ by roughly ten days,
+    because Part 1 is a run-up of login rewards rather than the anniversary
+    itself. Calendar landmarks (the planner's section bands, the timeline's
+    campaign card) and the instant a purchase's paid carats are credited all
+    belong at the event, not at the run-up.
+
+    Selected on part_number, never on date order: the 5th Anniversary's Part 4
+    opens BEFORE its Part 3 — concurrent banners, which is how the sheet records
+    them — so "the second part by date" would not be Part 2.
+
+    Falling back to the opening covers two real shapes. The 0.5th Anniversary has
+    no Part 2 in the timeline data at all (that banner has no BannerTimeline row,
+    so only its Part 3 link resolves), and a campaign an editor has linked only a
+    Part 1 to has no later part to point at. Both are better served by the
+    opening date than by no date.
+
+    Only `anniversary` campaigns have a run-up. A New Year campaign's Part 1 IS
+    the New Year banner (New Years 2025 = Katsuragi Ace + Mr. C.B.), and the
+    `campaign` catch-all is a single-part promotion, so for both the main part is
+    the opening one and this returns exactly what it always did.
+    """
+    if anniversary_event.event_type == "anniversary":
+        main = [part for part in parts if part[0] >= MAIN_ANNIVERSARY_PART]
+        if main:
+            return min(main, key=lambda part: part[0])[1]
+    return _opening_part(parts)
+
+
 def anniversary_event_effective_dates(anniversary_event, banner_timeline_emap):
     """
     Resolve an AnniversaryEvent's date range by spanning every BannerTimeline
@@ -452,36 +498,43 @@ def anniversary_event_effective_dates(anniversary_event, banner_timeline_emap):
     what keeps campaigns on the one shared calendar and gives them schedule
     offsets for free.
 
+    `main_start_date` is a THIRD date alongside those two: the start of the part
+    that is the event itself rather than its run-up — see _main_part. It always
+    falls inside [start_date, end_date] and is never null when start_date isn't,
+    so a consumer can prefer it unconditionally.
+
     is_predicted is True if ANY contributing part is predicted: the range is only
     as certain as its least certain edge, so a campaign whose Part 1 is confirmed
     but whose Part 4 is still predicted must show as predicted.
 
     A campaign with no links (or whose links have no resolved dates) resolves to
-    (None, None, False) and sorts last, exactly as an unlinked GameEvent does.
-    Callers must not assume a campaign is dated.
+    all-null dates and sorts last, exactly as an unlinked GameEvent does. Callers
+    must not assume a campaign is dated.
     """
-    starts, ends, predicted, offsets = [], [], False, []
+    parts, ends = [], []
     for link in anniversary_event.banner_links.all():
         entry = banner_timeline_emap.get(link.banner_timeline_id)
         if entry is None or entry["start_date"] is None:
             continue
-        starts.append(entry["start_date"])
+        parts.append((link.part_number, entry))
         if entry["end_date"] is not None:
             ends.append(entry["end_date"])
-        predicted = predicted or entry["is_predicted"]
-        offsets.append(entry["applied_offset_days"])
 
-    if not starts:
-        return {"start_date": None, "end_date": None, "is_predicted": False,
-                "applied_offset_days": 0}
+    if not parts:
+        return {"start_date": None, "main_start_date": None, "end_date": None,
+                "is_predicted": False, "applied_offset_days": 0}
+
+    main = _main_part(anniversary_event, parts)
     return {
-        "start_date": min(starts),
+        "start_date": _opening_part(parts)["start_date"],
+        "main_start_date": main["start_date"],
         "end_date": max(ends) if ends else None,
-        "is_predicted": predicted,
-        # The offset that moved the campaign's opening date, which is the instant
-        # purchases are credited at. Reporting max() here would describe a later
+        "is_predicted": any(entry["is_predicted"] for _, entry in parts),
+        # The offset that moved the MAIN part, which is the instant purchases are
+        # credited at. It tracks main_start_date rather than start_date for that
+        # reason; reporting max() across the parts would describe some other
         # part's shift, not the one the projection actually uses.
-        "applied_offset_days": offsets[starts.index(min(starts))],
+        "applied_offset_days": main["applied_offset_days"],
     }
 
 
