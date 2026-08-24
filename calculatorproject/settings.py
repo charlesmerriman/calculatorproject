@@ -252,6 +252,16 @@ UNFOLD = {
                         "icon": "history",
                         "link": reverse_lazy("admin:calculatorapi_changelogentry_changelist"),
                     },
+                    {
+                        "title": _("Feedback"),
+                        "icon": "feedback",
+                        "link": reverse_lazy("admin:calculatorapi_feedback_changelist"),
+                        # Permission-gated unlike the Changelog above it: this is
+                        # visitor-submitted text, not editorial content, so it
+                        # follows the user-data items' rule rather than the
+                        # content editors'.
+                        "permission": _requires_perm("calculatorapi.view_feedback"),
+                    },
                 ],
             },
             {
@@ -309,13 +319,21 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    # Only the public traffic beacon is throttled (views/visits.py). It is
-    # unauthenticated and write-only, so this is what stops one client running
-    # the page-view counter up on its own. 60/hour is far above what the SPA
-    # does -- one beacon per browser session -- with headroom for a group of
-    # people sharing an office or campus NAT.
+    # The two public, unauthenticated write endpoints are throttled; nothing
+    # else needs to be, since everything else is either read-only or requires a
+    # token.
+    #
+    # visit_beacon (views/visits.py) is what stops one client running the
+    # page-view counter up on its own. 60/hour is far above what the SPA does
+    # -- one beacon per browser session -- with headroom for a group of people
+    # sharing an office or campus NAT.
+    #
+    # feedback (views/feedback.py) is sized for a human typing a report rather
+    # than a script. Much lower than the beacon because a real person submits
+    # once and then stops, and each request here writes a row.
     "DEFAULT_THROTTLE_RATES": {
         "visit_beacon": "60/hour",
+        "feedback": "10/hour",
     },
 }
 

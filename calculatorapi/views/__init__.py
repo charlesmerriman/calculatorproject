@@ -27,3 +27,4 @@ from .anniversary_event import (
     AnniversaryEventProductSerializer,
 )
 from .user_planned_purchase import UserPlannedPurchaseSerializer
+from .feedback import FeedbackSerializer, submit_feedback

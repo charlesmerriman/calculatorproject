@@ -560,3 +560,37 @@ Otherwise it follows `GameEvent`'s precedent exactly: a nullable `banner_timelin
 `scenario_effective_dates()` is deliberately its **own** function rather than a generalisation shared with `anniversary_event_effective_dates()`. `predictions.py`'s convention is one function per derivation shape: the mechanisms are shared (`_ResolvedDateMixin`, `effective_sort_key`), the policies are not. An anniversary's range is a *sales window* whose start is the instant purchases are credited; a scenario's start is just when a new way to play appeared. Merging them would put a scenario-only concern inside anniversary date maths the first time the two diverge.
 
 `image` is nullable by workflow, not by accident: scenarios get entered while a feature is being built and the art arrives later. Every consumer must render without it.
+
+### `Feedback` — visitor-submitted, deliberately unattributable
+
+One message from the public feedback form (`POST /feedback`). Unusual among the
+models here in that its rows come from *visitors* rather than from an editor or
+from a signed-in user's plan, which drives three decisions worth stating.
+
+**No IP address column, ever.** The privacy policy's promise that a visitor's IP
+is never stored is site-wide, not scoped to the traffic beacon. The instinct when
+building an abusable public endpoint is to log the submitter's address for
+forensics; doing that here would quietly make a published promise false. Abuse is
+handled by rate limiting instead (`feedback` throttle scope, 10/hour), which
+reads the address to build a cache key but never persists it.
+
+**No contact details.** The form has no reply-address field, so feedback is
+one-way by design and the "we do not collect or store your email address"
+sentence in the policy stays true as written. A sender who types an address into
+the message body has it stored as ordinary text — which is why the form carries a
+"please don't include personal details" hint and the policy gained a "Feedback
+you send us" section.
+
+**`user` is `on_delete=SET_NULL`, not `CASCADE`.** This is load-bearing rather
+than stylistic. `purge_user_pii` is IRREVERSIBLE and is meant to be run against
+production; under `CASCADE`, stripping PII from accounts would also destroy every
+bug report those accounts had ever filed. `SET_NULL` keeps the report and drops
+only the linkage. The column has to be nullable regardless, because guests — the
+majority of senders, since the whole site works signed out — submit with no user
+at all.
+
+The admin (`FeedbackAdmin`) is read-mostly to match: every content field is
+`readonly`, `has_add_permission` is `False`, and `is_resolved` is the only
+editable field. A row is a record of what somebody said; the workflow is triage,
+not authoring, and making that structural keeps "accidentally reword a user's
+report" out of reach.

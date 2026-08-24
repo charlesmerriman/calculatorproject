@@ -17,6 +17,7 @@ from calculatorapi.views.admin_images import admin_image_library
 from calculatorapi.views.analytics import analytics_dashboard
 from calculatorapi.views.user import user_login, user_logout
 from calculatorapi.views.visits import site_visit
+from calculatorapi.views.feedback import submit_feedback
 from calculatorapi.views.social_auth import social_auth_start, social_auth_complete
 
 router = routers.SimpleRouter(trailing_slash=False)
@@ -46,6 +47,9 @@ urlpatterns = [
     # — the frontend is a separate static site, so this is the only way Django
     # learns that a page was loaded at all.
     path("visit", site_visit, name="site-visit"),
+    # Public feedback form. Like the beacon above it is unauthenticated,
+    # write-only and rate limited; unlike the beacon it has a validated body.
+    path("feedback", submit_feedback, name="submit-feedback"),
     # Social sign-in (Google / Discord). The <provider> segment is validated by
     # the view against oauth.SUPPORTED_PROVIDERS rather than by a URL regex, so
     # an unknown provider gets a JSON 404 instead of Django's HTML one.
