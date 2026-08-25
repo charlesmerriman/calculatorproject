@@ -330,7 +330,8 @@ See `frontend/src/utils/stepUpLadder.ts` and `applyStepUpStrategy` in
 
 The third and only non-recurring source of paid carats. A user plans, per anniversary or
 other paid campaign, how many discounted carat packs to buy and which selector tickets to
-claim; each planned line credits **paid carats** and accumulates a USD total.
+claim; each planned line credits **paid carats** — plus **free** carats when the webstore
+bonus applies, see below — and accumulates a USD total.
 
 **Off by default.** Nothing reaches the projection until `include_purchases_in_projection`
 is switched on. Until then the Selectors page is pure budgeting and every banner estimate
@@ -351,7 +352,16 @@ carats), each granting one selector ticket. Confirmed against the sheet's own to
 1st Anniversary's two $21 selectors sum to "3,000 Carats / $42".
 
 **Webstore bonus.** When `webstore_bonus` is on, each pack's carats are multiplied by its
-own rate. The whole multiplied amount is **paid** carats — the bonus is not free currency.
+own rate — and the two halves are **different currencies**. The pack's own carats stay
+**paid**; the extra the webstore adds on top is granted as **free** carats. So a $140 pack
+bought through the webstore adds 11,000 paid and 2,200 free, not 13,200 paid.
+
+That distinction is load-bearing rather than cosmetic: only paid carats fund discounted
+pulls and step-ups, so folding the bonus into the paid figure would quietly enlarge the
+budget a step-up is allowed to spend. `purchaseCarats()`
+(`frontend/src/utils/campaignPurchases.ts`) is the single place the split is computed, read
+by both the Selectors page totals and the per-banner projection. It derives the bonus as
+`total - paid` so the halves always re-sum to the same rounded total.
 
 **When it lands.** At the campaign's resolved **start** — packs go on sale when the
 campaign opens. That instant is absolute, which is what keeps the banner windows tiling;

@@ -48,7 +48,10 @@ class CustomUser(AbstractUser):
     include_purchases_in_projection = models.BooleanField(default=False)
     # Webstore bonus: the webstore sells the same packs with extra carats. The
     # rate is per-pack (see AnniversaryEventProduct.webstore_multiplier); this
-    # only says whether to apply it. The whole multiplied amount is paid carats.
+    # only says whether to apply it. The pack's own carats are PAID; the bonus on
+    # top is granted as FREE carats, so it never enlarges the paid balance that
+    # funds step-ups. The split itself is computed client-side —
+    # frontend/src/utils/campaignPurchases.ts.
     webstore_bonus = models.BooleanField(default=False)
     current_carat = models.IntegerField(default=0)
     current_paid_carat = models.IntegerField(default=0)
