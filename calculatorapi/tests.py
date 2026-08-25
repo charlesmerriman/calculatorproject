@@ -376,8 +376,11 @@ PLAIN_TEST_STORAGES = {
 }
 
 
-def _dt(y, m, d):
-    return datetime.datetime(y, m, d, tzinfo=_UTC)
+def _dt(y, m, d, hour=0, minute=0, second=0):
+    """A UTC datetime. Time-of-day defaults to midnight — most fixtures only
+    care about the calendar day — but is available for the cases that turn on
+    it, e.g. a confirmed global window running 22:00 -> 21:59:59."""
+    return datetime.datetime(y, m, d, hour, minute, second, tzinfo=_UTC)
 
 
 def _predicted(anchor_global_start, jp_gap_days, offset_days=0):
@@ -1122,7 +1125,11 @@ class LedgerTests(TestCase):
                                jp_end_date=_dt(2025, 1, 8))
         self.assertEqual(self._ledger(), [])
 
-    def test_race_rows_are_dated_at_end_and_carry_no_amounts(self):
+    def test_race_rows_are_dated_at_end_less_lead_time_and_carry_no_amounts(self):
+        # A Champions Meeting settles its placements 24h before its window
+        # closes; League of Heroes has no lead time. The gap between the two is
+        # the only place these otherwise identical kinds diverge, so it is
+        # asserted side by side rather than in separate tests.
         make_champions_meeting(
             name='CM', global_start_date=_dt(2025, 6, 1),
             global_end_date=_dt(2025, 6, 8),
@@ -1135,13 +1142,24 @@ class LedgerTests(TestCase):
         self.assertEqual(len(rows), 2)
         cm, loh = rows[0], rows[1]
         self.assertEqual((cm['kind'], cm['date']),
-                         ('champions_meeting', _dt(2025, 6, 8)))
+                         ('champions_meeting', _dt(2025, 6, 7)))
         self.assertEqual((loh['kind'], loh['date']),
                          ('league_of_heroes', _dt(2025, 7, 8)))
         # Amounts stay zero: what a placement pays depends on the user's rank.
         for row in (cm, loh):
             self.assertEqual(row['carats'], 0)
             self.assertEqual(row['uma_tickets'], 0)
+
+    def test_cm_lead_time_keeps_the_time_of_day(self):
+        # Confirmed global windows run 22:00 -> 21:59:59, not midnight to
+        # midnight. The lead time is a timedelta off the resolved end, so it
+        # shifts the whole instant and must NOT truncate to a date — a CM
+        # closing at 21:59:59 settles at 21:59:59 the previous day.
+        make_champions_meeting(
+            name='CM', global_start_date=_dt(2025, 6, 1, 22, 0, 0),
+            global_end_date=_dt(2025, 6, 8, 21, 59, 59),
+        )
+        self.assertEqual(self._one_row()['date'], _dt(2025, 6, 7, 21, 59, 59))
 
     def test_past_events_are_included(self):
         # Deliberate: the ledger is a set of dated facts with no "as of today"
@@ -1152,7 +1170,7 @@ class LedgerTests(TestCase):
             global_end_date=_dt(2020, 1, 8),
         )
         row = self._one_row()
-        self.assertEqual(row['date'], _dt(2020, 1, 8))
+        self.assertEqual(row['date'], _dt(2020, 1, 7))
 
     def test_rows_are_sorted_by_date(self):
         late = make_timeline(name='Late', global_start_date=_dt(2025, 9, 1),

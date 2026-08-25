@@ -35,6 +35,8 @@ already-resolved rows and date maps, so it unit-tests directly without fixtures.
 `views/ledger.py` holds the thin serializer that puts it on the wire.
 """
 
+from datetime import timedelta
+
 from .predictions import GAME_EVENT_END_DATE_BUFFER
 
 # Row kinds. `event` rows carry amounts; the two race kinds are indicator rows
@@ -43,6 +45,24 @@ from .predictions import GAME_EVENT_END_DATE_BUFFER
 KIND_EVENT = "event"
 KIND_CHAMPIONS_MEETING = "champions_meeting"
 KIND_LEAGUE_OF_HEROES = "league_of_heroes"
+
+# How far BEFORE its listed end date each race kind actually pays out.
+#
+# A Champions Meeting's finals resolve and distribute placement rewards a day
+# before the event window closes — the last 24 hours are the results/wind-down
+# tail, not another round. Dating the row at the raw end therefore credited the
+# carats a day late, which is visible whenever a banner closes in that gap: the
+# CM fell on the wrong side of the banner and its payout slipped to the next row.
+#
+# League of Heroes is listed explicitly at zero rather than omitted. CM and LoH
+# are field-identical and handled identically everywhere else (they even share
+# one timeline card), so a divergence between them has to read as deliberate at
+# the point it happens, not as a kind someone forgot to add. Giving LoH the same
+# lead time later is a one-line change here and nowhere else.
+RACE_REWARD_LEAD_TIME = {
+    KIND_CHAMPIONS_MEETING: timedelta(hours=24),
+    KIND_LEAGUE_OF_HEROES: timedelta(0),
+}
 
 # Every amount field a ledger row can carry, so callers (and the serializer) have
 # one list to iterate rather than a hand-maintained copy each.
@@ -137,11 +157,18 @@ def _game_event_rows(game_events, game_event_emap):
 def _race_rows(events, emap, kind):
     """One indicator row per Champions Meeting / League of Heroes event.
 
-    Dated at the event's resolved END date — the payout lands when the event
-    finishes, which is also the date the sheet keys these off. Amounts stay zero:
-    what a placement is worth depends on the user's rank row, which only the
-    client knows.
+    Dated at the event's resolved END date, less that kind's
+    RACE_REWARD_LEAD_TIME — the payout lands when the event's placements are
+    settled, which for a Champions Meeting is a day before the window closes.
+    Amounts stay zero: what a placement is worth depends on the user's rank row,
+    which only the client knows.
+
+    The lead time is applied HERE rather than client-side on purpose. Dating a
+    row is this module's whole job, and every consumer — the per-banner rows, the
+    income tiles, the uncap panel — then reads one instant instead of each
+    keeping its own copy of the offset to subtract.
     """
+    lead_time = RACE_REWARD_LEAD_TIME.get(kind, timedelta(0))
     rows = []
     for event in events:
         entry = emap.get(event.id)
@@ -149,7 +176,7 @@ def _race_rows(events, emap, kind):
             continue
         rows.append(
             _row(
-                date=entry["end_date"],
+                date=entry["end_date"] - lead_time,
                 kind=kind,
                 source_id=event.id,
                 name=event.name,
@@ -170,9 +197,11 @@ def build_income_ledger(*, game_events, game_event_emap, race_sources):
 
     `race_sources` is an iterable of `(kind, rows, emap)`. Champions Meetings and
     League of Heroes events are one argument rather than two pairs because they
-    are field-identical and handled identically — the same reason they share one
-    timeline card on the frontend. A third race type would be one more tuple at
-    the call site and no change here.
+    are field-identical and handled almost identically — the same reason they
+    share one timeline card on the frontend. Their only divergence is
+    RACE_REWARD_LEAD_TIME, which is keyed by kind precisely so it stays the one
+    visible exception. A third race type would be one more tuple at the call site
+    and one more entry there.
 
     Rows with no resolvable date are dropped rather than emitted with a null: a
     ledger row's whole purpose is its position on the calendar, and a client
