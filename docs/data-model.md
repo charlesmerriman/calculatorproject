@@ -605,3 +605,46 @@ The admin (`FeedbackAdmin`) is read-mostly to match: every content field is
 editable field. A row is a record of what somebody said; the workflow is triage,
 not authoring, and making that structural keeps "accidentally reword a user's
 report" out of reach.
+
+---
+
+## `PatreonTier` / `PatreonSupporter`
+
+The public thank-you list on the home page (`GET /supporters`), authored in the
+admin. Two models: `PatreonTier` is the pledge ladder (`name` + a hand-set
+`order`), `PatreonSupporter` is one person on it.
+
+**This is the only table holding data about people who never signed up to this
+site**, which is what shapes every decision in it.
+
+**It holds a display name and a tier, and nothing else — keep it that way.**
+Patreon's members export is a wide PII file: email, Discord handle, Patreon user
+ID, postal address, phone, charge history, lifetime totals. None of it is needed
+to say thank you, none of it was given to this site, and `purge_user_pii` does
+not know this table exists. `admin_patreon_import.py` names the three columns it
+reads (`Name`, `Tier`, `Patron Status`) and drops the rest of the row before
+returning — there is no passthrough dict, deliberately, so adding a field is a
+visible change rather than a silent one.
+
+**`is_public` defaults to `False` and an import never touches it.** The export's
+`Name` column is frequently a real billing name rather than a chosen handle, so
+"is in the CSV" cannot mean "is publishable". A supporter is counted in
+`anonymous_count` until an editor ticks the box on their row; re-importing next
+month's export can add, deactivate and re-tier people, but it can neither
+publish a name nor un-publish one. Publishing is always a deliberate human act.
+
+**Lapsed supporters are deactivated, not deleted** (`is_active`), so a returning
+patron keeps their `patron_since` and — more importantly — the consent decision
+already made about them, instead of silently reverting to the default.
+
+**`display_name` is unique case-insensitively** (`unique_patreon_supporter_display_name`
+over `Lower("display_name")`). That constraint is also the importer's match key,
+which is what makes a re-import an update rather than a second row.
+
+**`tier` is `on_delete=SET_NULL`.** Deleting a tier must not delete the people on
+it; they fall back to the unstyled base rendering until re-tiered.
+
+`PatreonTier` deliberately carries **no money column**. The pledge amount is
+Patreon's to change and would only go stale here, and the CSV's `Lifetime Amount`
+is a running total that would reorder the list every month as long-standing
+entry-tier patrons overtake newer higher-tier ones. `order` is set by hand.

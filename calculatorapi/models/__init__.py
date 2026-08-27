@@ -28,3 +28,5 @@ from .user_planned_purchase import UserPlannedPurchase
 from .user_step_up_selection import UserStepUpSelection, SELECTION_SLOTS
 from .site_visit import DailyVisit, MonthlyVisit, VisitorHash
 from .feedback import Feedback, FeedbackCategory, MESSAGE_MAX_LENGTH
+from .patreon_tier import PatreonTier
+from .patreon_supporter import PatreonSupporter
