@@ -253,6 +253,16 @@ UNFOLD = {
                         "link": reverse_lazy("admin:calculatorapi_changelogentry_changelist"),
                     },
                     {
+                        "title": _("Patreon supporters"),
+                        "icon": "volunteer_activism",
+                        "link": reverse_lazy("admin:calculatorapi_patreonsupporter_changelist"),
+                    },
+                    {
+                        "title": _("Patreon tiers"),
+                        "icon": "workspace_premium",
+                        "link": reverse_lazy("admin:calculatorapi_patreontier_changelist"),
+                    },
+                    {
                         "title": _("Feedback"),
                         "icon": "feedback",
                         "link": reverse_lazy("admin:calculatorapi_feedback_changelist"),

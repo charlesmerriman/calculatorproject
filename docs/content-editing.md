@@ -127,6 +127,56 @@ are edited in the table at the bottom of the entry's page: give each line a
 **order** number (lower numbers show first). Entries appear newest-first on the
 site, and the home page shows how long ago the most recent entry was posted.
 
+## Patreon supporters
+
+The thank-you list at the bottom of the home page. Two pages in **Site content**:
+
+- **Patreon tiers** — your pledge tiers. Each has a name and an **order** number;
+  lower numbers show first, and the first two tiers get a bit more visual emphasis
+  on the site. You can renumber the whole ladder on the list screen and save once.
+- **Patreon supporters** — the people. Each has a **display name**, a tier, and
+  three switches.
+
+**"Show name publicly" is the important one, and it starts switched off.**
+
+A supporter with it off is still thanked — they are counted in the *"… and 12
+anonymous supporters"* line — but their name never appears. Switch it on only for
+a name the person chose to be thanked by. This matters because Patreon's export
+often lists someone's **real name from their payment details** rather than the
+handle they use publicly, and nobody has agreed to have that put on a website.
+
+You can flip the switch for lots of people at once from the supporters list
+screen, then hit Save.
+
+**"Is active"** — switch this off when someone's pledge ends. Don't delete the
+row: keeping it means that if they come back you still have their details and
+your publish decision, instead of starting over.
+
+### Importing the monthly CSV
+
+Rather than typing everyone in, download the **members export** from Patreon and
+use the **Import Patreon CSV** button on the supporters list.
+
+1. Leave **Preview only** ticked the first time and hit *Run import*. You'll get a
+   summary of exactly what would change — who'd be added, deactivated or moved
+   tier — without anything being saved.
+2. If it looks right, untick **Preview only** and run it again.
+
+Two things worth knowing:
+
+- **The import never publishes anyone.** New people are added switched off, and it
+  won't change the switch for anyone already on your list, either way. Publishing
+  is always your separate decision.
+- Only the **Name**, **Tier** and **Patron Status** columns are read. Email
+  addresses, Discord handles, addresses and payment details in that file are
+  ignored and never saved anywhere.
+- **"Deactivate supporters missing from this file"** is off by default. Only tick
+  it when you've uploaded a *complete* export — otherwise a partial file would
+  switch off everyone it happens to leave out.
+
+If new tiers appear in the file they're created for you at the bottom of the
+order; set their proper order on the Patreon tiers page afterwards.
+
 ## Champions Meetings & League of Heroes
 
 - **Champions Meetings**: the form is grouped into basic info, **JP / Global

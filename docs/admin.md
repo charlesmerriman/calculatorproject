@@ -98,6 +98,33 @@ Two deliberate behaviours:
   and **Stat recommendations** groups — because the two models hold the same data and
   render through the same timeline card. Keep them in step when editing either.
   (`ChampionsMeetingAdmin` additionally carries the `RecommendedUmaInline`.)
+- `PatreonSupporterAdmin` has **"Show name publicly" as a `list_editable` column**, so the
+  whole list can be consent-reviewed in one pass. It is the only thing that puts a name on
+  the website, and the CSV importer never sets it.
+
+---
+
+## Patreon CSV import
+
+`PatreonSupporterAdmin` adds an **Import Patreon CSV** button to its changelist
+(`get_urls` + a `change_list.html` that overrides `object-tools-items`). The view is
+registered under the model's own URL namespace, so `admin_view()` plus a
+`has_add_permission` check gate it exactly like adding a supporter by hand.
+
+Parsing and reconciliation live in `admin_patreon_import.py`, away from the form:
+
+- It reads **only** `Name`, `Tier` and `Patron Status`. The rest of Patreon's export is
+  billing and contact data — see `backend/docs/data-model.md` for why that boundary is
+  structural rather than incidental.
+- **Preview only** is ticked by default. The dry run executes the real reconcile inside
+  the atomic block and then `set_rollback(True)`s it, so the preview cannot drift from
+  what a live run would do — there is no parallel "what if" code path.
+- **Deactivate supporters missing from this file** is off by default, because a partial
+  or filtered export would otherwise deactivate everyone it happens to omit.
+- Matching is on casefolded `display_name`, the same key as the model's uniqueness
+  constraint, so re-importing updates rather than duplicating.
+- New tiers found in the file are created at the bottom of the order; the editor
+  reorders them on the Patreon Tiers page.
 
 ---
 
