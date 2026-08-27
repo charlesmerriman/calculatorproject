@@ -229,8 +229,9 @@ These endpoints return static rank tables. All are public and support `list` and
 | `GET /leagueofheroesranks` | League of Heroes rank tiers and income amounts |
 | `GET /events` | Game events, including their own reward amounts |
 | `GET /changelog` | Patch-note entries (newest first) with nested, ordered change lines |
+| `GET /supporters` | Patreon thank-you list — **not** an array, see below |
 
-All list responses return an array of the resource object. Retrieve by appending `/<id>`.
+All list responses return an array of the resource object, **except `/supporters`** (an object — the anonymous count is not derivable from the rows). Retrieve by appending `/<id>`; `/supporters` has no retrieve action.
 
 ---
 
@@ -696,6 +697,39 @@ unset). `category` is one of `"added"`, `"fixed"`, `"changed"`.
       "order": 0
     }
   ]
+}
+```
+
+### `Supporters` (from `GET /supporters`)
+
+The public Patreon thank-you list rendered on the home page. Read-only by
+construction: `PatreonSupporterViewSet` defines `list` and nothing else, so the
+router never routes a write to it.
+
+**Only supporters with `is_public=True` AND `is_active=True` appear as rows.**
+Everyone else who is active is represented solely by `anonymous_count` — the
+name never leaves the server. `is_public`, `is_active` and `patron_since` are
+editorial state and are deliberately absent from the wire.
+
+`tiers` is the full ordered tier list, sent so a client can render an ordering
+or legend; `tier_name`/`tier_order` are flattened onto each supporter because
+the list renders inline and needs nothing else about the tier. Both are `null`
+for a supporter with no tier.
+
+```json
+{
+  "tiers": [
+    { "id": 1, "name": "Junior Class", "order": 10 }
+  ],
+  "supporters": [
+    {
+      "id": 1,
+      "display_name": "string",
+      "tier_name": "Junior Class",
+      "tier_order": 10
+    }
+  ],
+  "anonymous_count": 16
 }
 ```
 

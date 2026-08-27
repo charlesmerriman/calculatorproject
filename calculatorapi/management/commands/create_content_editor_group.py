@@ -33,6 +33,7 @@ from calculatorapi.models import (
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
     AnniversaryEvent, AnniversaryEventBanner, AnniversaryEventProduct,
     Scenario,
+    PatreonTier, PatreonSupporter,
 )
 
 GROUP_NAME = "Content editors"
@@ -54,6 +55,13 @@ CONTENT_MODELS = [
     # A scenario is content too: an editor names it, points it at its launch
     # banner, and adds the art whenever the art exists.
     Scenario,
+    # The Patreon thank-you list. Included because deciding who is thanked, and
+    # by what name, is exactly the editorial judgement this group exists for —
+    # and the sidebar links it ungated, like the Changelog. Note that `add`
+    # permission also unlocks the CSV import page, which is intended: the
+    # importer cannot publish a name, so the consent decision stays a separate
+    # tick either way.
+    PatreonTier, PatreonSupporter,
 ]
 
 

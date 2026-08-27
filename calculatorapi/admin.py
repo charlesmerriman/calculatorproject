@@ -14,6 +14,7 @@ Layout of this file:
   6. User data admins (owner-only; hidden from content editors by permissions)
   7. Calculation constants (the projection's tunable numbers, one singleton row)
   8. Feedback (read-only inbox for the public form; triage only, no authoring)
+  9. Patreon supporters (the public thank-you list, plus its CSV importer)
 
 The three join models (UmasOnUmaBanner, SupportsOnSupportBanner,
 ChampionsMeetingUmaRecommendation) are deliberately NOT registered top-level —
@@ -26,13 +27,21 @@ permissions on them for the inlines to save.
 # max-parents of 7 — every admin in this file trips it, so disable once here.
 # pylint: disable=too-many-ancestors
 
+# One admin per file would scatter nine cohesive sections across nine modules
+# for no reader's benefit — the section index in the docstring above is how you
+# navigate this, and it works. That said, this file passed 1000 lines with the
+# Patreon section, so splitting the *content* admins (section 4) out into
+# admin_content.py is worth doing as its own change.
+# pylint: disable=too-many-lines
+
 from django.contrib import admin
 from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
 from django.db.models import Count
 from django.shortcuts import redirect
-from django.urls import reverse
+from django.template.response import TemplateResponse
+from django.urls import path, reverse
 from django.utils.html import format_html
 # django-unfold themes the admin, but only for admins that inherit its base
 # classes — a plain admin.ModelAdmin would render unstyled under unfold's
@@ -41,6 +50,11 @@ from unfold.admin import ModelAdmin, TabularInline
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
 from .admin_image_picker import SpacesImagePickerMixin
+from .admin_patreon_import import (
+    PatreonCsvImportForm,
+    apply_patreon_import,
+    parse_patreon_csv,
+)
 from .predictions import GAME_EVENT_END_DATE_BUFFER
 from .models import (
     CustomUser, Uma, SupportCard, UserPlannedBanner,
@@ -56,6 +70,7 @@ from .models import (
     UserStepUpSelection,
     CalculationConstants,
     Feedback,
+    PatreonTier, PatreonSupporter,
 )
 
 # ── 1. Site branding ─────────────────────────────────────────────────────────
@@ -948,3 +963,117 @@ class FeedbackAdmin(ModelAdmin):
     def mark_unresolved(self, request, queryset):
         updated = queryset.update(is_resolved=False)
         self.message_user(request, f"{updated} marked unresolved.")
+
+
+# ── 9. Patreon supporters ────────────────────────────────────────────────────
+
+@admin.register(PatreonTier)
+class PatreonTierAdmin(ModelAdmin):
+    """Pledge tiers, ordered by hand.
+
+    `order` is list_editable so the whole ladder can be renumbered on one
+    screen — which is the only thing anyone ever wants to do here.
+    """
+
+    list_display = ("name", "order", "supporter_count")
+    list_editable = ("order",)
+    ordering = ("order", "name")
+    search_fields = ("name",)
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).annotate(_supporter_count=Count("supporters"))
+
+    @admin.display(description="Supporters", ordering="_supporter_count")
+    def supporter_count(self, obj):
+        return obj._supporter_count  # pylint: disable=protected-access
+
+
+@admin.register(PatreonSupporter)
+class PatreonSupporterAdmin(ModelAdmin):
+    """The public thank-you list.
+
+    The important column here is "Show name publicly", which is off by default
+    and is the only thing that puts a name on the website. It is `list_editable`
+    so the whole list can be reviewed and cleared in one pass, and it is the one
+    field the CSV importer will never touch.
+    """
+
+    change_list_template = "admin/calculatorapi/patreonsupporter/change_list.html"
+
+    list_display = ("display_name", "tier", "is_public", "is_active", "patron_since")
+    list_editable = ("is_public", "is_active")
+    list_filter = ("is_public", "is_active", "tier")
+    ordering = ("tier__order", "display_name")
+    search_fields = ("display_name",)
+    autocomplete_fields = ("tier",)
+
+    fieldsets = (
+        (None, {
+            "fields": ("display_name", "tier"),
+        }),
+        ("Publication", {
+            "description": (
+                "A supporter is counted anonymously until 'Show name publicly' is "
+                "ticked. Only tick it for a name they chose to be thanked by — the "
+                "Patreon export's Name column is often a real billing name."
+            ),
+            "fields": ("is_public", "is_active", "patron_since"),
+        }),
+    )
+
+    def get_urls(self):
+        # Extra admin view, registered under this model's URL namespace so it
+        # inherits the changelist's own permission check via admin_view().
+        return [
+            path(
+                "import-csv/",
+                self.admin_site.admin_view(self.import_csv_view),
+                name="calculatorapi_patreonsupporter_import_csv",
+            ),
+            *super().get_urls(),
+        ]
+
+    def import_csv_view(self, request):
+        """Upload a Patreon members export and reconcile it against the table."""
+        # Same gate as adding a row by hand: this view creates supporters.
+        if not self.has_add_permission(request):
+            return redirect(reverse("admin:calculatorapi_patreonsupporter_changelist"))
+
+        summary = None
+        was_dry_run = False
+        if request.method == "POST":
+            form = PatreonCsvImportForm(request.POST, request.FILES)
+            if form.is_valid():
+                try:
+                    rows = parse_patreon_csv(form.cleaned_data["csv_file"])
+                except ValueError as exc:
+                    form.add_error("csv_file", str(exc))
+                else:
+                    was_dry_run = form.cleaned_data["dry_run"]
+                    summary = apply_patreon_import(
+                        rows,
+                        deactivate_missing=form.cleaned_data["deactivate_missing"],
+                        dry_run=was_dry_run,
+                    )
+                    if not was_dry_run:
+                        self.message_user(
+                            request,
+                            f"Imported {len(rows)} row(s): "
+                            f"{len(summary['created'])} added, "
+                            f"{len(summary['deactivated'])} deactivated. "
+                            "No names were published — tick 'Show name publicly' to do that.",
+                        )
+        else:
+            form = PatreonCsvImportForm()
+
+        context = {
+            **self.admin_site.each_context(request),
+            "title": "Import Patreon CSV",
+            "opts": self.model._meta,  # pylint: disable=protected-access
+            "form": form,
+            "summary": summary,
+            "was_dry_run": was_dry_run,
+        }
+        return TemplateResponse(
+            request, "admin/calculatorapi/patreonsupporter/import_csv.html", context
+        )

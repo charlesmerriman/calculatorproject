@@ -28,3 +28,8 @@ from .anniversary_event import (
 )
 from .user_planned_purchase import UserPlannedPurchaseSerializer
 from .feedback import FeedbackSerializer, submit_feedback
+from .patreon_supporters import (
+    PatreonSupporterSerializer,
+    PatreonSupporterViewSet,
+    PatreonTierSerializer,
+)
