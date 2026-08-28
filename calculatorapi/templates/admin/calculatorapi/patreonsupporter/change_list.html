@@ -1,11 +1,19 @@
 {% extends "admin/change_list.html" %}
 {% comment %}
-Adds an "Import Patreon CSV" button to the supporters changelist toolbar.
+Adds the two import buttons to the supporters changelist toolbar.
 Everything else is unfold's stock changelist — only the object-tools block is
 overridden, and it calls {{ block.super }} so the standard "Add" button stays.
+
+"Sync from Patreon" comes first because it is the one to reach for: the CSV
+upload is the fallback for when the API connection is down or unconfigured.
 {% endcomment %}
 
 {% block object-tools-items %}
+  <li>
+    <a href="{% url 'admin:calculatorapi_patreonsupporter_sync_patreon' %}" class="button">
+      Sync from Patreon
+    </a>
+  </li>
   <li>
     <a href="{% url 'admin:calculatorapi_patreonsupporter_import_csv' %}" class="button">
       Import Patreon CSV

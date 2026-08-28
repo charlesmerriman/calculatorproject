@@ -1,0 +1,44 @@
+{% comment %}
+Scoped styles shared by the CSV import and API sync pages.
+
+Here for the same reason as admin/analytics.html: unfold ships Tailwind's reset,
+so the stock admin form styling isn't there to inherit. Colors use color-mix on
+currentColor so they follow unfold's active theme.
+
+Shared rather than copied because both pages render the same summary partial —
+two copies of these rules would let the two pages drift apart visually.
+{% endcomment %}
+<style>
+  .patreon-import { max-width: 70ch; }
+  .patreon-import h1 { font-size: 1.5rem; font-weight: 600; margin: 0 0 0.75rem; }
+  .patreon-import h2 { font-size: 1.05rem; font-weight: 600; margin: 1.25rem 0 0.5rem; }
+  .patreon-import p, .patreon-import li { margin: 0 0 0.5rem; line-height: 1.5; }
+  .patreon-import .module {
+    border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .patreon-import .field { margin-bottom: 1rem; }
+  .patreon-import label { font-weight: 600; display: inline-block; margin-bottom: 0.25rem; }
+  .patreon-import .helptext {
+    display: block;
+    font-size: 0.85rem;
+    opacity: 0.75;
+    margin-top: 0.25rem;
+  }
+  .patreon-import .errorlist { color: #dc2626; list-style: none; padding: 0; }
+  .patreon-import .names {
+    font-size: 0.9rem;
+    opacity: 0.85;
+    word-break: break-word;
+  }
+  .patreon-import .actions { display: flex; gap: 0.75rem; align-items: center; }
+  .patreon-import .error-box {
+    border: 1px solid #dc2626;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .patreon-import .meta { font-size: 0.9rem; opacity: 0.75; }
+</style>

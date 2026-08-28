@@ -1,5 +1,14 @@
 """
-Patreon member-CSV import for the supporters list.
+Patreon member-CSV import for the supporters list, and the reconcile both import
+paths share.
+
+TWO PRODUCERS, ONE RECONCILE
+----------------------------
+`parse_patreon_csv` (here) and `patreon_api.fetch_members` both emit the same row
+dicts, and both hand them to `apply_patreon_import`. Keeping the reconcile in one
+place is what stops the manual and automatic paths drifting into treating the
+same data differently — and means the consent rule below is stated once and holds
+for both.
 
 WHY THIS EXISTS AS ITS OWN NARROW PARSER
 ----------------------------------------
@@ -19,6 +28,11 @@ An import NEVER sets `is_public`. New rows are created with the model default
 (False, i.e. counted anonymously) and existing rows keep whatever the editor
 chose. So re-importing the monthly export can add and remove supporters, but it
 can never publish a name, and it can never un-publish one either.
+
+This holds for the API sync too, which runs unattended on a schedule — so it is
+the rule that keeps an automated job from publishing a real billing name at 6am
+with nobody watching. Patreon has no field recording consent to be named on
+someone else's website, so that decision cannot be automated from their data.
 """
 
 import csv
@@ -62,6 +76,31 @@ class PatreonCsvImportForm(forms.Form):
         help_text=(
             "Only tick this for a COMPLETE export. A partial or filtered file would "
             "otherwise deactivate everyone it happens to omit."
+        ),
+    )
+    dry_run = forms.BooleanField(
+        required=False,
+        initial=True,
+        label="Preview only (don't save)",
+        help_text="Shows exactly what would change without writing anything.",
+    )
+
+
+class PatreonSyncForm(forms.Form):
+    """Options for the API sync. No file — the server fetches the list itself."""
+
+    # Defaults the OPPOSITE way to the CSV form's equivalent, and the difference
+    # is deliberate: an uploaded file might have been filtered, but a paginated
+    # API response is the complete member list, so a supporter it omits has
+    # genuinely lapsed. See sync_patreon_supporters.py.
+    deactivate_missing = forms.BooleanField(
+        required=False,
+        initial=True,
+        label="Deactivate supporters Patreon no longer lists",
+        help_text=(
+            "Recommended. Patreon returns every member, so anyone missing from the "
+            "response has cancelled. Untick only if you keep supporters here that "
+            "Patreon doesn't know about."
         ),
     )
     dry_run = forms.BooleanField(
@@ -140,18 +179,61 @@ def _resolve_tier(tier_name, tiers_by_name, created_tiers):
     return tier
 
 
+def _update_supporter(supporter, row, tier, summary):
+    """Bring one existing supporter into line with its row.
+
+    Returns True if anything was written. Note what is NOT here: `is_public` is
+    never assigned, on any path. That is the consent rule in the module
+    docstring, and it holds for the unattended API sync as much as for a manual
+    upload.
+    """
+    changed_fields = []
+
+    if supporter.tier_id != (tier.id if tier else None):
+        supporter.tier = tier
+        changed_fields.append("tier")
+        summary["tier_changed"].append(supporter.display_name)
+
+    if supporter.is_active != row["is_active"]:
+        supporter.is_active = row["is_active"]
+        changed_fields.append("is_active")
+        bucket = "reactivated" if row["is_active"] else "deactivated"
+        summary[bucket].append(supporter.display_name)
+
+    # Fill only, never overwrite. Patreon is authoritative about when a pledge
+    # started, but this field is also editable by hand, and a date an editor
+    # corrected (a patron who resubscribed, say) should not be reset to
+    # Patreon's version on the next sync. A row with no `patron_since` key at
+    # all — every CSV row — means "don't know", never "clear it".
+    if row.get("patron_since") and supporter.patron_since is None:
+        supporter.patron_since = row["patron_since"]
+        changed_fields.append("patron_since")
+        summary["dates_filled"].append(supporter.display_name)
+
+    if not changed_fields:
+        return False
+    supporter.save(update_fields=changed_fields)
+    return True
+
+
 @transaction.atomic
 def apply_patreon_import(rows, deactivate_missing=False, dry_run=False):
     """Reconcile parsed rows against the table. Returns a summary dict.
 
     Matching is on casefolded `display_name`, the same key as the model's
     uniqueness constraint, so a re-import updates rather than duplicating.
+
+    Rows come from either source — `parse_patreon_csv` or `patreon_api.fetch_members`
+    — and carry the same keys, with one optional extra: the API knows each
+    patron's pledge start date and the CSV does not. A row may therefore include
+    `patron_since`; a row without the key leaves the stored value alone.
     """
     summary = {
         "created": [],
         "reactivated": [],
         "tier_changed": [],
         "deactivated": [],
+        "dates_filled": [],
         "unchanged": 0,
         "tiers_created": [],
     }
@@ -176,25 +258,12 @@ def apply_patreon_import(rows, deactivate_missing=False, dry_run=False):
                 display_name=row["display_name"],
                 tier=tier,
                 is_active=row["is_active"],
+                patron_since=row.get("patron_since"),
             )
             summary["created"].append(row["display_name"])
             continue
 
-        changed_fields = []
-        if supporter.tier_id != (tier.id if tier else None):
-            supporter.tier = tier
-            changed_fields.append("tier")
-            summary["tier_changed"].append(supporter.display_name)
-        if supporter.is_active != row["is_active"]:
-            supporter.is_active = row["is_active"]
-            changed_fields.append("is_active")
-            if row["is_active"]:
-                summary["reactivated"].append(supporter.display_name)
-            else:
-                summary["deactivated"].append(supporter.display_name)
-        if changed_fields:
-            supporter.save(update_fields=changed_fields)
-        else:
+        if not _update_supporter(supporter, row, tier, summary):
             summary["unchanged"] += 1
 
     if deactivate_missing:

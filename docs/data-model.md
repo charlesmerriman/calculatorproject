@@ -617,21 +617,35 @@ admin. Two models: `PatreonTier` is the pledge ladder (`name` + a hand-set
 **This is the only table holding data about people who never signed up to this
 site**, which is what shapes every decision in it.
 
-**It holds a display name and a tier, and nothing else — keep it that way.**
-Patreon's members export is a wide PII file: email, Discord handle, Patreon user
-ID, postal address, phone, charge history, lifetime totals. None of it is needed
-to say thank you, none of it was given to this site, and `purge_user_pii` does
-not know this table exists. `admin_patreon_import.py` names the three columns it
-reads (`Name`, `Tier`, `Patron Status`) and drops the rest of the row before
-returning — there is no passthrough dict, deliberately, so adding a field is a
-visible change rather than a silent one.
+**It holds a display name, a tier and a pledge start date, and nothing else —
+keep it that way.** Patreon's members export is a wide PII file: email, Discord
+handle, Patreon user ID, postal address, phone, charge history, lifetime totals.
+None of it is needed to say thank you, none of it was given to this site, and
+`purge_user_pii` does not know this table exists.
 
-**`is_public` defaults to `False` and an import never touches it.** The export's
-`Name` column is frequently a real billing name rather than a chosen handle, so
-"is in the CSV" cannot mean "is publishable". A supporter is counted in
-`anonymous_count` until an editor ticks the box on their row; re-importing next
-month's export can add, deactivate and re-tier people, but it can neither
-publish a name nor un-publish one. Publishing is always a deliberate human act.
+Both import paths exclude it by construction rather than by filtering afterwards:
+
+- `admin_patreon_import.py` names the three CSV columns it reads (`Name`, `Tier`,
+  `Patron Status`) and drops the rest of the row before returning — there is no
+  passthrough dict, so adding a field is a visible change rather than a silent one.
+- `patreon_api.py` names the fields it requests (`MEMBER_FIELDS`), so the excluded
+  data is never sent at all. Note this is the *only* thing excluding it: a creator
+  access token automatically holds every v2 scope, so the token is capable of
+  reading patron emails and addresses and simply never asks. There are no scopes
+  to leave unticked.
+
+**`is_public` defaults to `False` and no import ever touches it.** Patreon's
+`full_name` is frequently a real billing name rather than a chosen handle, so
+"is a patron" cannot mean "is publishable" — and Patreon has no field recording
+consent to be named on someone else's website, so the decision is not derivable
+from their data at all. A supporter is counted in `anonymous_count` until an
+editor ticks the box on their row; a sync can add, deactivate and re-tier people,
+but it can neither publish a name nor un-publish one. **This is the rule that
+makes the unattended daily sync safe** — without it, an automated job would put a
+stranger's legal name on the home page at 06:17 UTC with nobody watching.
+
+**`patron_since` is filled, never overwritten.** Only the API supplies it; a date
+an editor corrected by hand survives every later sync.
 
 **Lapsed supporters are deactivated, not deleted** (`is_active`), so a returning
 patron keeps their `patron_since` and — more importantly — the consent decision
@@ -648,3 +662,35 @@ it; they fall back to the unstyled base rendering until re-tiered.
 Patreon's to change and would only go stale here, and the CSV's `Lifetime Amount`
 is a running total that would reorder the list every month as long-standing
 entry-tier patrons overtake newer higher-tier ones. `order` is set by hand.
+
+---
+
+## `PatreonCredentials`
+
+The OAuth token pair for the API sync, in one row (singleton, `pk=1`, read with
+`load()` — the same pattern as `CalculationConstants`).
+
+**Tokens live here rather than in the environment because they are mutable
+state, not configuration.** A Patreon access token expires roughly monthly, and
+refreshing one **rotates the refresh token too** — the one just used is spent. So
+the pair has to be written somewhere the running process can write to, and App
+Platform env vars are read-only at runtime. The client id and secret stay in the
+environment, where they belong: they never rotate on their own, and keeping them
+out of the database means a database dump does not carry the half that mints
+tokens.
+
+**`load()` seeds from `PATREON_ACCESS_TOKEN` / `PATREON_REFRESH_TOKEN` only when
+the row is empty.** That is what lets production bootstrap itself on the first
+sync — the production database has no external endpoint, so the only other route
+is the POST_DEPLOY job recipe in `.do/app.yaml`. Once a pair is stored, the
+environment is ignored: after the first refresh those values are stale, and
+honouring them would resurrect a spent token.
+
+**Deliberately not registered in the admin.** A live API token has no business
+being rendered into a web page, and nothing here is editable by hand. It is
+therefore also absent from `UNFOLD["SIDEBAR"]["navigation"]` and from
+`create_content_editor_group`'s `CONTENT_MODELS` — an editor can run a sync
+without being able to read the credentials it uses.
+
+`last_sync_error` holds our own diagnostic string, never a Patreon response body,
+so an upstream error cannot smuggle member data into this row.

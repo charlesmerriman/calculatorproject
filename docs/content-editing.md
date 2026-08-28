@@ -134,6 +134,10 @@ The thank-you list at the bottom of the home page. Two pages in **Site content**
 - **Patreon tiers** — your pledge tiers. Each has a name and an **order** number;
   lower numbers show first, and the first two tiers get a bit more visual emphasis
   on the site. You can renumber the whole ladder on the list screen and save once.
+  **The tier name is shown on the site**, as the heading above that tier's
+  supporters, so write it as something you are happy for visitors to read.
+  Put your *highest* tier on the lowest order number — the site reads the first
+  tier as the top one and gives it the strongest styling.
 - **Patreon supporters** — the people. Each has a **display name**, a tier, and
   three switches.
 
