@@ -42,6 +42,7 @@ from django.db.models import Count
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
+from django.utils import timezone
 from django.utils.html import format_html
 # django-unfold themes the admin, but only for admins that inherit its base
 # classes — a plain admin.ModelAdmin would render unstyled under unfold's
@@ -50,8 +51,10 @@ from unfold.admin import ModelAdmin, TabularInline
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
 from .admin_image_picker import SpacesImagePickerMixin
+from . import patreon_api
 from .admin_patreon_import import (
     PatreonCsvImportForm,
+    PatreonSyncForm,
     apply_patreon_import,
     parse_patreon_csv,
 )
@@ -70,7 +73,7 @@ from .models import (
     UserStepUpSelection,
     CalculationConstants,
     Feedback,
-    PatreonTier, PatreonSupporter,
+    PatreonTier, PatreonSupporter, PatreonCredentials,
 )
 
 # ── 1. Site branding ─────────────────────────────────────────────────────────
@@ -1022,13 +1025,18 @@ class PatreonSupporterAdmin(ModelAdmin):
     )
 
     def get_urls(self):
-        # Extra admin view, registered under this model's URL namespace so it
-        # inherits the changelist's own permission check via admin_view().
+        # Extra admin views, registered under this model's URL namespace so they
+        # inherit the changelist's own permission check via admin_view().
         return [
             path(
                 "import-csv/",
                 self.admin_site.admin_view(self.import_csv_view),
                 name="calculatorapi_patreonsupporter_import_csv",
+            ),
+            path(
+                "sync-patreon/",
+                self.admin_site.admin_view(self.sync_patreon_view),
+                name="calculatorapi_patreonsupporter_sync_patreon",
             ),
             *super().get_urls(),
         ]
@@ -1076,4 +1084,76 @@ class PatreonSupporterAdmin(ModelAdmin):
         }
         return TemplateResponse(
             request, "admin/calculatorapi/patreonsupporter/import_csv.html", context
+        )
+
+    def sync_patreon_view(self, request):
+        """Fetch the member list from the Patreon API and reconcile it.
+
+        The same two steps as `sync_patreon_supporters`, and the same two steps
+        as the scheduled endpoint — fetch rows, hand them to
+        `apply_patreon_import`. Only the trigger differs. Nothing here decides
+        what a sync means, which is what keeps the three in agreement.
+
+        Gated on `has_add_permission` like the CSV view: a sync creates
+        supporters, so it needs the same permission adding one by hand does.
+        Notably it does NOT need access to the credentials, which live on an
+        unregistered model precisely so no admin page can read them.
+        """
+        if not self.has_add_permission(request):
+            return redirect(reverse("admin:calculatorapi_patreonsupporter_changelist"))
+
+        credentials = PatreonCredentials.load()
+        summary = None
+        was_dry_run = False
+        error = None
+
+        if request.method == "POST":
+            form = PatreonSyncForm(request.POST)
+            if form.is_valid():
+                was_dry_run = form.cleaned_data["dry_run"]
+                try:
+                    rows = patreon_api.fetch_members(credentials)
+                except patreon_api.PatreonApiError as exc:
+                    error = str(exc)
+                    if not was_dry_run:
+                        credentials.last_sync_error = error
+                        credentials.save(update_fields=["last_sync_error"])
+                else:
+                    summary = apply_patreon_import(
+                        rows,
+                        deactivate_missing=form.cleaned_data["deactivate_missing"],
+                        dry_run=was_dry_run,
+                    )
+                    if not was_dry_run:
+                        credentials.last_synced_at = timezone.now()
+                        credentials.last_sync_error = ""
+                        credentials.save(
+                            update_fields=["last_synced_at", "last_sync_error"]
+                        )
+                        self.message_user(
+                            request,
+                            f"Synced {len(rows)} member(s) from Patreon: "
+                            f"{len(summary['created'])} added, "
+                            f"{len(summary['deactivated'])} deactivated. "
+                            "No names were published — tick 'Show name publicly' to do that.",
+                        )
+        else:
+            form = PatreonSyncForm()
+
+        context = {
+            **self.admin_site.each_context(request),
+            "title": "Sync from Patreon",
+            "opts": self.model._meta,  # pylint: disable=protected-access
+            "form": form,
+            "summary": summary,
+            "was_dry_run": was_dry_run,
+            "error": error,
+            "is_configured": credentials.is_configured,
+            "last_synced_at": credentials.last_synced_at,
+            # Suppressed once this run has produced its own error, so the page
+            # shows one failure rather than the same message twice.
+            "last_sync_error": "" if error else credentials.last_sync_error,
+        }
+        return TemplateResponse(
+            request, "admin/calculatorapi/patreonsupporter/sync_patreon.html", context
         )

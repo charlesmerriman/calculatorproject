@@ -304,6 +304,47 @@ field at all. See the "Feedback you send us" section of the privacy policy.
 
 ---
 
+### `POST /patreon/sync`
+
+The scheduled trigger for the Patreon supporters sync, called once a day by
+`.github/workflows/patreon-sync.yml`. Takes no body.
+
+**Authorised by a shared secret, not by a user.** The caller is a GitHub Action,
+which has no account here and should not be given one — a staff token would hand
+a CI secret the run of the admin API. So it presents `X-Patreon-Sync-Key`, which
+authorises this one action and nothing else, compared with `hmac.compare_digest`
+so a wrong key cannot be recovered a character at a time by timing.
+
+| Condition | Response |
+|---|---|
+| `PATREON_SYNC_SECRET` unset | `404` — the route does not exist |
+| Header missing or wrong | `403`, generic body |
+| Patreon unreachable / token dead | `502`, message recorded on `PatreonCredentials` |
+| Success | `200` with counts |
+
+The `404` is deliberate: there is no state in which the endpoint exists but
+accepts anything. The `502` is deliberate too — the scheduled job fails on
+non-200, so a dead token surfaces as a red X rather than a list going quietly
+stale.
+
+```json
+{
+  "members_returned": 22, "created": 1, "reactivated": 0,
+  "tier_changed": 0, "deactivated": 2, "dates_filled": 1, "unchanged": 19
+}
+```
+
+**Counts, never names** — the job log is a third-party surface, and most
+supporters have not been cleared for publication. Throttled at 12/hour
+(`patreon_sync` scope).
+
+This endpoint **cannot publish a name**: it takes no caller-supplied content and
+runs the same `apply_patreon_import` as every other path, which never writes
+`is_public`. The worst a stolen key achieves is an early refresh and some spent
+Patreon quota.
+
+---
+
 ## Shape Reference
 
 ### `UserStats`

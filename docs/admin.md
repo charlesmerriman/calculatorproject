@@ -104,27 +104,53 @@ Two deliberate behaviours:
 
 ---
 
-## Patreon CSV import
+## Patreon import: two buttons, one reconcile
 
-`PatreonSupporterAdmin` adds an **Import Patreon CSV** button to its changelist
-(`get_urls` + a `change_list.html` that overrides `object-tools-items`). The view is
-registered under the model's own URL namespace, so `admin_view()` plus a
-`has_add_permission` check gate it exactly like adding a supporter by hand.
+`PatreonSupporterAdmin` adds **Sync from Patreon** and **Import Patreon CSV** to its
+changelist (`get_urls` + a `change_list.html` that overrides `object-tools-items`). Both
+views are registered under the model's own URL namespace, so `admin_view()` plus a
+`has_add_permission` check gate them exactly like adding a supporter by hand.
 
-Parsing and reconciliation live in `admin_patreon_import.py`, away from the form:
+They differ only in where the rows come from. **`patreon_api.fetch_members` and
+`parse_patreon_csv` emit the same row dicts, and both hand them to
+`apply_patreon_import`** — so the reconcile rules below are stated once and hold for the
+API sync, the CSV upload, the management command and the scheduled endpoint alike. A
+change to what a sync *means* belongs in `admin_patreon_import.py`, never in a caller.
 
-- It reads **only** `Name`, `Tier` and `Patron Status`. The rest of Patreon's export is
-  billing and contact data — see `backend/docs/data-model.md` for why that boundary is
-  structural rather than incidental.
-- **Preview only** is ticked by default. The dry run executes the real reconcile inside
-  the atomic block and then `set_rollback(True)`s it, so the preview cannot drift from
-  what a live run would do — there is no parallel "what if" code path.
-- **Deactivate supporters missing from this file** is off by default, because a partial
-  or filtered export would otherwise deactivate everyone it happens to omit.
+- **Neither ever sets `is_public`.** New supporters are counted anonymously; publishing a
+  name stays a deliberate tick on the changelist. This is what makes an unattended
+  scheduled sync safe — see `backend/docs/data-model.md`.
+- **Preview only** is ticked by default on both. The dry run executes the real reconcile
+  inside the atomic block and then `set_rollback(True)`s it, so the preview cannot drift
+  from what a live run would do — there is no parallel "what if" code path.
+- **Deactivating missing supporters defaults differently, on purpose.** Off for the CSV,
+  because a partial or filtered export would deactivate everyone it happens to omit; on
+  for the API sync, because a fully-paginated response *is* the complete member list.
 - Matching is on casefolded `display_name`, the same key as the model's uniqueness
-  constraint, so re-importing updates rather than duplicating.
-- New tiers found in the file are created at the bottom of the order; the editor
-  reorders them on the Patreon Tiers page.
+  constraint, so re-running updates rather than duplicating.
+- New tiers are created at the bottom of the order; reorder them on the Patreon Tiers
+  page or with `set_patreon_tier_order`.
+- `patron_since` is **filled, never overwritten**. Only the API supplies it (the CSV has
+  no such column), and a date an editor corrected by hand survives the next sync.
+
+**Sync from Patreon** additionally shows when the last sync ran and why the last one
+failed, and disables its own submit button when no token is configured. The CSV upload
+stays as the fallback for exactly that case.
+
+### What the API asks for
+
+`MEMBER_FIELDS` in `calculatorapi/patreon_api.py` names the four fields requested:
+`full_name`, `patron_status`, `pledge_relationship_start` (plus the tier `title`).
+
+**That list is the only thing excluding the PII — don't assume scopes back it up.** A
+creator access token (the kind the developer portal issues, and what this integration
+uses) automatically carries *every* v2 scope, including `campaigns.members[email]` and
+`campaigns.members.address`. There are no checkboxes to leave unticked. The token is
+capable of reading patron emails and postal addresses; it doesn't because we never ask.
+
+Still better than the CSV path, where the wide export reaches the server and the parser
+discards columns — here the data never leaves Patreon. But it rests on one mechanism, not
+two, so adding a name to `MEMBER_FIELDS` is the review point.
 
 ---
 

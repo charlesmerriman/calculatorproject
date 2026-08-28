@@ -19,6 +19,7 @@ from calculatorapi.views.analytics import analytics_dashboard
 from calculatorapi.views.user import user_login, user_logout
 from calculatorapi.views.visits import site_visit
 from calculatorapi.views.feedback import submit_feedback
+from calculatorapi.views.patreon_supporters import patreon_sync
 from calculatorapi.views.social_auth import social_auth_start, social_auth_complete
 
 router = routers.SimpleRouter(trailing_slash=False)
@@ -54,6 +55,10 @@ urlpatterns = [
     # Public feedback form. Like the beacon above it is unauthenticated,
     # write-only and rate limited; unlike the beacon it has a validated body.
     path("feedback", submit_feedback, name="submit-feedback"),
+    # Trigger for the scheduled supporters sync, called by a GitHub Action.
+    # Authorised by a shared secret header, and 404s entirely while
+    # PATREON_SYNC_SECRET is unset. Cannot publish a name — see the view.
+    path("patreon/sync", patreon_sync, name="patreon-sync"),
     # Social sign-in (Google / Discord). The <provider> segment is validated by
     # the view against oauth.SUPPORTED_PROVIDERS rather than by a URL regex, so
     # an unknown provider gets a JSON 404 instead of Django's HTML one.

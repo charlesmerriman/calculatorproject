@@ -1,0 +1,58 @@
+name: Patreon supporters sync
+
+# App Platform has no scheduler of its own — its only job hooks are PRE_DEPLOY
+# and POST_DEPLOY, which fire on deploys rather than on a clock. So the schedule
+# lives here and the work happens in the API, behind POST /patreon/sync.
+#
+# This job never sees member data: it posts a key and gets counts back. Nothing
+# it can do publishes a name — see calculatorapi/views/patreon_supporters.py.
+#
+# Required repository secrets:
+#   PATREON_SYNC_URL     e.g. https://<host>/api/patreon/sync
+#   PATREON_SYNC_SECRET  must match the API's PATREON_SYNC_SECRET byte-for-byte
+on:
+  schedule:
+    # 06:17 UTC daily. Off the hour deliberately — scheduled runs cluster at :00
+    # across all of GitHub and get queued behind everyone else's.
+    - cron: "17 6 * * *"
+  # So the sync can be run by hand from the Actions tab without waiting a day,
+  # and so a failure can be retried immediately after fixing the token.
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger the supporters sync
+        env:
+          SYNC_URL: ${{ secrets.PATREON_SYNC_URL }}
+          SYNC_SECRET: ${{ secrets.PATREON_SYNC_SECRET }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${SYNC_URL:-}" ] || [ -z "${SYNC_SECRET:-}" ]; then
+            echo "PATREON_SYNC_URL / PATREON_SYNC_SECRET are not set on this repo."
+            echo "Add them under Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+
+          # -sS: quiet, but still print errors. Body and status captured
+          # separately so a failure can report both.
+          response=$(curl -sS -X POST "$SYNC_URL" \
+            -H "X-Patreon-Sync-Key: $SYNC_SECRET" \
+            -H "Content-Type: application/json" \
+            -w "\n%{http_code}")
+
+          status=$(printf '%s' "$response" | tail -n 1)
+          body=$(printf '%s' "$response" | sed '$d')
+
+          echo "HTTP $status"
+          echo "$body"
+
+          # Fail loudly. A silently stale supporters list is the failure mode
+          # this whole job exists to prevent, so an expired token has to show up
+          # as a red X rather than a green tick over a 502.
+          if [ "$status" != "200" ]; then
+            echo "::error::Patreon sync failed with HTTP $status"
+            exit 1
+          fi

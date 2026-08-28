@@ -1,0 +1,84 @@
+{% extends "admin/base_site.html" %}
+{% comment %}
+"Sync from Patreon" — the API equivalent of the CSV upload page.
+
+Same shape and the same shared summary partial, minus the file field: the server
+fetches the member list itself, so the only choices left are preview-or-apply and
+what to do about supporters Patreon no longer returns.
+{% endcomment %}
+
+{% block content %}
+{% include "admin/calculatorapi/patreonsupporter/_import_styles.html" %}
+
+<div class="patreon-import">
+  <h1>Sync from Patreon</h1>
+
+  {% if not is_configured %}
+    <div class="error-box">
+      <p>
+        <strong>Patreon isn&rsquo;t connected yet.</strong> Set
+        <code>PATREON_CLIENT_ID</code>, <code>PATREON_CLIENT_SECRET</code>,
+        <code>PATREON_ACCESS_TOKEN</code> and <code>PATREON_REFRESH_TOKEN</code> in the
+        environment, then reload this page.
+      </p>
+      <p class="meta">
+        Tokens come from the Patreon developer portal, under your registered client.
+      </p>
+    </div>
+  {% endif %}
+
+  <div class="module">
+    <p>
+      Fetches the current member list straight from Patreon &mdash; no file to download or
+      upload. Only each patron&rsquo;s <strong>name, tier, status and pledge start
+      date</strong> are requested; email addresses and postal addresses are behind
+      permissions this connection does not hold, so they are never sent.
+    </p>
+    <p>
+      <strong>This never publishes a name.</strong> New supporters are added counted
+      anonymously, and an existing supporter&rsquo;s &ldquo;Show name publicly&rdquo;
+      setting is left exactly as you set it. Publishing is always a separate, deliberate
+      tick on the supporters list.
+    </p>
+    {% if last_synced_at %}
+      <p class="meta">Last synced {{ last_synced_at }}.</p>
+    {% endif %}
+  </div>
+
+  {% if last_sync_error %}
+    <div class="error-box">
+      <p><strong>The last sync failed.</strong></p>
+      <p class="meta">{{ last_sync_error }}</p>
+    </div>
+  {% endif %}
+
+  {% if error %}
+    <div class="error-box">
+      <p><strong>This sync failed.</strong> Nothing was changed.</p>
+      <p class="meta">{{ error }}</p>
+    </div>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="field">
+        {{ field.errors }}
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}
+      </div>
+    {% endfor %}
+    <div class="actions">
+      <button type="submit" class="button default" {% if not is_configured %}disabled{% endif %}>
+        Run sync
+      </button>
+      <a href="{% url 'admin:calculatorapi_patreonsupporter_changelist' %}">Back to supporters</a>
+    </div>
+  </form>
+
+  {% if summary %}
+    {% include "admin/calculatorapi/patreonsupporter/_import_summary.html" %}
+  {% endif %}
+</div>
+{% endblock %}
