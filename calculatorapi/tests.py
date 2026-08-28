@@ -5394,3 +5394,110 @@ class PatreonImportAdminViewTests(TestCase):
         upload = patreon_csv(("Rhondal", "r@example.com", "", "Active patron", "Junior Class"))
         self.client.post(self.url, {"csv_file": upload, "dry_run": "on"})
         self.assertEqual(PatreonSupporter.objects.count(), 0)
+
+
+class SetPatreonTierOrderCommandTests(TestCase):
+    """`set_patreon_tier_order` — the admin-free route to renumbering the ladder.
+
+    It is built to be run as a POST_DEPLOY job against production, where a
+    non-zero exit fails the whole deployment, so most of these cases are about
+    it REFUSING cleanly rather than raising.
+    """
+
+    def setUp(self):
+        # The order production actually shipped with: entry tier first, so the
+        # home page gave 21 entry-tier supporters the top emphasis and the sole
+        # Senior supporter the grey fallback.
+        self.junior = PatreonTier.objects.create(name="Junior Class", order=10)
+        self.classic = PatreonTier.objects.create(name="Classic Class", order=20)
+        self.senior = PatreonTier.objects.create(name="Senior Class", order=30)
+
+    def run_command(self, *args, **kwargs):
+        out = StringIO()
+        call_command('set_patreon_tier_order', *args, stdout=out, **kwargs)
+        return out.getvalue()
+
+    def refresh(self):
+        for tier in (self.junior, self.classic, self.senior):
+            tier.refresh_from_db()
+
+    def test_reverses_the_ladder(self):
+        self.run_command(
+            'Senior Class=10', 'Classic Class=20', 'Junior Class=30', no_input=True
+        )
+        self.refresh()
+        self.assertEqual(self.senior.order, 10)
+        self.assertEqual(self.classic.order, 20)
+        self.assertEqual(self.junior.order, 30)
+
+    def test_matches_tier_names_case_insensitively(self):
+        self.run_command('senior class=10', 'JUNIOR CLASS=30', no_input=True)
+        self.refresh()
+        self.assertEqual(self.senior.order, 10)
+        self.assertEqual(self.junior.order, 30)
+
+    def test_dry_run_writes_nothing(self):
+        output = self.run_command(
+            'Senior Class=10', 'Junior Class=30', '--dry-run'
+        )
+        self.refresh()
+        self.assertEqual(self.senior.order, 30)
+        self.assertEqual(self.junior.order, 10)
+        self.assertIn('Dry run', output)
+
+    def test_second_run_is_a_no_op(self):
+        args = ('Senior Class=10', 'Classic Class=20', 'Junior Class=30')
+        self.run_command(*args, no_input=True)
+        output = self.run_command(*args, no_input=True)
+        self.assertIn('Already in this order', output)
+
+    def test_unnamed_tiers_keep_their_order(self):
+        self.run_command('Senior Class=5', no_input=True)
+        self.refresh()
+        self.assertEqual(self.senior.order, 5)
+        self.assertEqual(self.junior.order, 10)
+        self.assertEqual(self.classic.order, 20)
+
+    def test_unknown_tier_name_changes_nothing_and_does_not_raise(self):
+        # A CommandError here would fail the deployment the job runs in.
+        output = self.run_command(
+            'Senior Clas=10', 'Junior Class=30', no_input=True
+        )
+        self.refresh()
+        self.assertEqual(self.senior.order, 30)
+        self.assertEqual(self.junior.order, 10)
+        self.assertIn('No tier named', output)
+        self.assertIn('Nothing was changed', output)
+
+    def test_refuses_to_leave_two_tiers_sharing_an_order(self):
+        # The frontend groups supporters by tier ORDER, so a collision merges
+        # two tiers into one block on the page.
+        output = self.run_command('Senior Class=10', no_input=True)
+        self.refresh()
+        self.assertEqual(self.senior.order, 30)
+        self.assertEqual(self.junior.order, 10)
+        self.assertIn('share an order number', output)
+
+    def test_rejects_a_malformed_pair(self):
+        output = self.run_command('Senior Class', no_input=True)
+        self.refresh()
+        self.assertEqual(self.senior.order, 30)
+        self.assertIn('is not NAME=ORDER', output)
+
+    def test_rejects_a_non_numeric_order(self):
+        output = self.run_command('Senior Class=first', no_input=True)
+        self.refresh()
+        self.assertEqual(self.senior.order, 30)
+        self.assertIn('not a whole number', output)
+
+    def test_rejects_an_out_of_range_order(self):
+        output = self.run_command('Senior Class=-1', no_input=True)
+        self.refresh()
+        self.assertEqual(self.senior.order, 30)
+        self.assertIn('between 0 and', output)
+
+    def test_reports_nothing_to_do_with_no_tiers_at_all(self):
+        PatreonTier.objects.all().delete()
+        output = self.run_command('Senior Class=10', no_input=True)
+        self.assertIn('No Patreon tiers exist', output)
+
