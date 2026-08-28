@@ -1,0 +1,43 @@
+{% comment %}
+The result block shared by the CSV import and the API sync pages.
+
+Both run the same reconcile (calculatorapi/admin_patreon_import.py), so they
+report the same buckets; keeping one template means a new bucket shows up on
+both pages instead of only the one whose author remembered.
+
+Expects `summary` and `was_dry_run` in the context.
+{% endcomment %}
+<h2>
+  {% if was_dry_run %}Preview &mdash; nothing was saved{% else %}Complete{% endif %}
+</h2>
+<div class="module">
+  <ul>
+    <li><strong>{{ summary.created|length }}</strong> supporter(s) added
+      {% if summary.created %}<span class="names">&mdash; {{ summary.created|join:", " }}</span>{% endif %}
+    </li>
+    <li><strong>{{ summary.reactivated|length }}</strong> reactivated
+      {% if summary.reactivated %}<span class="names">&mdash; {{ summary.reactivated|join:", " }}</span>{% endif %}
+    </li>
+    <li><strong>{{ summary.tier_changed|length }}</strong> moved tier
+      {% if summary.tier_changed %}<span class="names">&mdash; {{ summary.tier_changed|join:", " }}</span>{% endif %}
+    </li>
+    <li><strong>{{ summary.deactivated|length }}</strong> deactivated
+      {% if summary.deactivated %}<span class="names">&mdash; {{ summary.deactivated|join:", " }}</span>{% endif %}
+    </li>
+    {% if summary.dates_filled %}
+      <li><strong>{{ summary.dates_filled|length }}</strong> had their pledge start date filled in
+        <span class="names">&mdash; {{ summary.dates_filled|join:", " }}</span>
+      </li>
+    {% endif %}
+    <li><strong>{{ summary.unchanged }}</strong> unchanged</li>
+    {% if summary.tiers_created %}
+      <li><strong>{{ summary.tiers_created|length }}</strong> new tier(s) created
+        <span class="names">&mdash; {{ summary.tiers_created|join:", " }}</span>.
+        Set their display order on the Patreon Tiers page.
+      </li>
+    {% endif %}
+  </ul>
+  {% if was_dry_run %}
+    <p>Untick <em>Preview only</em> and run again to apply these changes.</p>
+  {% endif %}
+</div>

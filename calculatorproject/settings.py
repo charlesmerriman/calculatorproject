@@ -344,6 +344,10 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_RATES": {
         "visit_beacon": "60/hour",
         "feedback": "10/hour",
+        # The scheduled sync runs once a day. This is generous enough for manual
+        # workflow_dispatch runs and retries while still capping what a leaked
+        # key could do -- each accepted request spends Patreon API quota.
+        "patreon_sync": "12/hour",
     },
 }
 
@@ -359,6 +363,24 @@ GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID", "")
 GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET", "")
 DISCORD_OAUTH_CLIENT_ID = os.getenv("DISCORD_OAUTH_CLIENT_ID", "")
 DISCORD_OAUTH_CLIENT_SECRET = os.getenv("DISCORD_OAUTH_CLIENT_SECRET", "")
+
+# --- Patreon supporters sync -------------------------------------------------
+# Client credentials for the Patreon API v2 client (registered at
+# patreon.com/portal/registration/register-clients). Here rather than read inside
+# calculatorapi/patreon_api.py so tests can swap them with @override_settings,
+# same reason as the OAuth pair above.
+#
+# The ACCESS and REFRESH tokens are deliberately NOT settings: they rotate on
+# every refresh and so live on the PatreonCredentials row, which reads the
+# environment only to seed itself the first time.
+PATREON_CLIENT_ID = os.getenv("PATREON_CLIENT_ID", "")
+PATREON_CLIENT_SECRET = os.getenv("PATREON_CLIENT_SECRET", "")
+
+# Shared secret for POST /patreon/sync, which the scheduled GitHub Action calls.
+# While this is empty the route returns 404 and the scheduled sync is simply
+# switched off -- there is no half-configured state in which the endpoint exists
+# but accepts anything.
+PATREON_SYNC_SECRET = os.getenv("PATREON_SYNC_SECRET", "")
 
 # Where the SPA lives. In production the ingress serves it from the same host
 # as the API; in dev it is the Vite server on :5173.
