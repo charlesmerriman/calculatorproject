@@ -31,7 +31,12 @@ class BannerSupportNestedSerializer(serializers.ModelSerializer):
 
     def get_support_cards(self, obj):
         result = []
-        for junction in obj.supportsonsupportbanner_set.select_related('support_card').all():
+        # BARE .all() ON PURPOSE -- do not "optimise" this back to
+        # .select_related('support_card'). Calling select_related() on a related
+        # manager builds a NEW queryset, which bypasses the prefetch cache the
+        # view filled and re-queries once per banner (an N+1). The join lives in
+        # the Prefetch() in views/calculator.py instead; the two must stay paired.
+        for junction in obj.supportsonsupportbanner_set.all():
             # Context is forwarded so the nested card can resolve first_jp_date
             # from the request-wide map; a SerializerMethodField doesn't inherit
             # it the way a declared nested field would.
@@ -52,7 +57,9 @@ class BannerUmaNestedSerializer(serializers.ModelSerializer):
 
     def get_umas(self, obj):
         result = []
-        for junction in obj.umasonumabanner_set.select_related('uma').all():
+        # Bare .all() for the same reason as get_support_cards above: the
+        # select_related belongs in the view's Prefetch(), not here.
+        for junction in obj.umasonumabanner_set.all():
             # See get_support_cards above on why context is forwarded here.
             uma_data = UmaSerializer(junction.uma, context=self.context).data
             uma_data['recommendation'] = junction.recommendation

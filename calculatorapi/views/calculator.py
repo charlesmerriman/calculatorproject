@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import permissions, status
 from django.db import transaction
+from django.db.models import Prefetch
 from calculatorapi.eligibility import build_first_jp_date_maps
 from calculatorapi.ledger import (
     KIND_CHAMPIONS_MEETING,
@@ -23,7 +24,8 @@ from calculatorapi.models import (
     UserPlannedBanner, UserPlannedPurchase, UserStepUpSelection,
     BannerUma, BannerSupport, BannerStepUp,
     ChampionsMeeting, LeagueOfHeroes, GameEvent, BannerTimeline,
-    AnniversaryEvent, Scenario
+    AnniversaryEvent, Scenario,
+    UmasOnUmaBanner, SupportsOnSupportBanner,
 )
 from calculatorapi.views.rank_viewsets import (
     ClubRankSerializer,
@@ -191,12 +193,19 @@ class CalculatorViewSet(ViewSet):
         cm_emap = date_maps[ChampionsMeeting]
         loh_emap = date_maps[LeagueOfHeroes]
 
+        # prefetch_related on the M2M is what keeps this ONE query for every
+        # card rather than one per banner: BannerUmaSerializer nests
+        # `umas`/`support_cards`, so without it DRF walks the relation per row
+        # and the endpoint costs ~340 extra round trips. Cheap on SQLite,
+        # ~6ms each against the networked prod Postgres.
         banner_uma_data = sorted(
-            BannerUma.objects.select_related("banner_timeline"),
+            BannerUma.objects.select_related("banner_timeline").prefetch_related("umas"),
             key=lambda b: effective_sort_key(emap.get(b.banner_timeline_id)),
         )
         banner_support_data = sorted(
-            BannerSupport.objects.select_related("banner_timeline"),
+            BannerSupport.objects.select_related("banner_timeline").prefetch_related(
+                "support_cards"
+            ),
             key=lambda b: effective_sort_key(emap.get(b.banner_timeline_id)),
         )
         # Sorted through the same emap as its two peers — a step-up dates itself
@@ -250,7 +259,10 @@ class CalculatorViewSet(ViewSet):
                     "banner_support__banner_timeline",
                     "banner_step_up__banner_timeline",
                     "banner_step_up__anniversary_event",
-                ),
+                # UserPlannedBannerSerializer nests BannerUma/BannerSupportSerializer,
+                # so a signed-in user pays the same M2M N+1 as the catalogue above --
+                # once per planned row rather than once per banner, but same cause.
+                ).prefetch_related("banner_uma__umas", "banner_support__support_cards"),
                 key=lambda pb: (
                     effective_sort_key(planned_effective_start(pb, emap)),
                     _planned_banner_kind_rank(pb),
@@ -297,8 +309,25 @@ class CalculatorViewSet(ViewSet):
         )
         banner_timeline_data = sorted(
             BannerTimeline.objects.prefetch_related(
-                "uma_banners",
-                "support_banners",
+                # The nested serializers walk the JUNCTION rows (they need
+                # `recommendation`, which lives on the through model), so it is
+                # the junction sets that must be prefetched -- prefetching
+                # "uma_banners" alone leaves the cards themselves an N+1.
+                # select_related("uma") rides along inside the Prefetch so the
+                # card arrives on the same query; it CANNOT go in the serializer,
+                # because select_related() on a related manager builds a fresh
+                # queryset and silently bypasses this cache.
+                # -> BannerUmaNestedSerializer.get_umas in views/banner_timeline.py
+                Prefetch(
+                    "uma_banners__umasonumabanner_set",
+                    queryset=UmasOnUmaBanner.objects.select_related("uma"),
+                ),
+                Prefetch(
+                    "support_banners__supportsonsupportbanner_set",
+                    queryset=SupportsOnSupportBanner.objects.select_related(
+                        "support_card"
+                    ),
+                ),
                 # Prefetched so the attached-campaign strip costs no extra query
                 # per banner (195 rows would otherwise be 195 lookups).
                 "anniversary_links__anniversary_event",
