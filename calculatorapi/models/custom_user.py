@@ -32,11 +32,12 @@ class CustomUser(AbstractUser):
     misc_earnings = models.BooleanField(default=True)
     # Monthly shop tickets: the game lets you buy 4 uma + 4 support gacha
     # tickets every month with a currency not tracked here, so when enabled the
-    # projection simply credits those tickets monthly at no carat cost.
-    monthly_shop_tickets = models.BooleanField(default=False)
+    # projection simply credits those tickets monthly at no carat cost. On by
+    # default alongside the other three projection toggles.
+    monthly_shop_tickets = models.BooleanField(default=True)
     # Discounted paid pulls: a once-per-day option to spend 50 (instead of 150)
     # PAID carats on a single pull. Only usable while paid carats remain.
-    discounted_paid_pulls = models.BooleanField(default=False)
+    discounted_paid_pulls = models.BooleanField(default=True)
     # Full-price paid pulls: whether paid carats may be spent normally (150 per
     # pull) on banners. On by default so paid carats keep counting toward pulls,
     # matching the historical behavior of a single merged carat pool.
