@@ -91,11 +91,11 @@ instant before counting days. Constants: `MISC_EARNINGS_PER_DAY` /
 
 ---
 
-## Monthly Shop Tickets (monthly, opt-in — off by default)
+## Monthly Shop Tickets (monthly, toggleable — on by default)
 
 Each month the in-game shop lets you buy **4 uma tickets** and **4 support tickets** with a
 currency the calculator doesn't track, so when enabled these are credited as pure ticket
-income at **no carat cost**. Gated behind `CustomUser.monthly_shop_tickets` (`default=False`).
+income at **no carat cost**. Gated behind `CustomUser.monthly_shop_tickets` (`default=True`).
 Credited on the **2nd of each month** (`MONTHLY_SHOP_TICKET_DAY`) via
 `calculateDayOfMonthOccurrences` — *not* on the month boundary Club Rank uses. Constants
 `MONTHLY_SHOP_UMA_TICKETS` / `MONTHLY_SHOP_SUPPORT_TICKETS` in
@@ -280,7 +280,7 @@ banner's "Max Pulls" figure from the same strategy.
 
 Constants: `PULL_COST_CARATS` (150) and `DISCOUNTED_PULL_COST_CARATS` (50) in
 `frontend/src/constants/gameConstants.ts`. Toggles live on `CustomUser`
-(`discounted_paid_pulls` `default=False`, `full_price_paid_pulls` `default=True`).
+(both `default=True`, as are the other two projection toggles).
 
 ---
 
