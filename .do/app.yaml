@@ -77,6 +77,17 @@ features:
 #   - key: DATABASE_URL
 #     scope: RUN_TIME
 #     value: ${dev-db-462490.DATABASE_URL}
+# Custom domains, added 2026-08-31. The apex is PRIMARY; www is an ALIAS. Both
+# name the DigitalOcean-managed DNS zone, so App Platform writes the records and
+# renews the certificate itself. The .ondigitalocean.app hostname keeps working
+# permanently alongside these and stays the health-check target.
+domains:
+- domain: umacaratcalculator.com
+  type: PRIMARY
+  zone: umacaratcalculator.com
+- domain: www.umacaratcalculator.com
+  type: ALIAS
+  zone: umacaratcalculator.com
 ingress:
   rules:
   - component:
@@ -116,20 +127,26 @@ services:
     value: ""  # Set this in the DigitalOcean dashboard — never commit the real value
   - key: DJANGO_ALLOWED_HOSTS
     scope: RUN_AND_BUILD_TIME
-    value: umamusme-calculator-7zdcg.ondigitalocean.app
+    value: umacaratcalculator.com,www.umacaratcalculator.com,umamusme-calculator-7zdcg.ondigitalocean.app
   # Origin of the SPA. The backend derives OAUTH_REDIRECT_URI from this as
   # "<FRONTEND_URL>/auth/callback", which must match the redirect URI registered
   # in the Google and Discord consoles EXACTLY — including the scheme and the
   # absence of a trailing slash.
   - key: FRONTEND_URL
     scope: RUN_TIME
-    value: https://umamusme-calculator-7zdcg.ondigitalocean.app
+    value: https://umacaratcalculator.com
   # OAUTH_EXTRA_REDIRECT_URIS is set in the DigitalOcean DASHBOARD, not here, and
   # is deliberately absent from this file. Current value:
   #
-  #   http://localhost:5173/auth/callback
+  #   http://localhost:5173/auth/callback,
+  #   https://umamusme-calculator-7zdcg.ondigitalocean.app/auth/callback
   #
-  # It allowlists that one extra redirect URI so `npm run dev:live` — a local
+  # The second entry keeps sign-in working on the old App Platform hostname now
+  # that FRONTEND_URL points at the custom domain: OAUTH_ALLOWED_REDIRECT_URIS is
+  # {derived OAUTH_REDIRECT_URI} + these, so moving FRONTEND_URL silently drops
+  # the old host. Remove it once the domain has been stable for a week or two.
+  #
+  # The localhost entry is what lets `npm run dev:live` — a local
   # Vite server pointed at THIS deployment — can complete a real sign-in instead
   # of bouncing the developer to the deployed site. Consequence: a signed-in
   # local frontend writes to the live database. See backend/docs/auth-and-privacy.md.
@@ -176,7 +193,7 @@ static_sites:
   envs:
   - key: VITE_API_URL
     scope: BUILD_TIME
-    value: https://umamusme-calculator-7zdcg.ondigitalocean.app/api
+    value: https://umacaratcalculator.com/api
   github:
     branch: master
     deploy_on_push: true
