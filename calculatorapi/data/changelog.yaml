@@ -43,7 +43,6 @@
     - added: "The Timeline can be filtered by banner type, training scenario and campaign, so you can find what you care about without scrolling through all of it."
     - added: "Banners that run at the same time now share one Timeline card instead of being listed one after another."
     - added: "You can jump from a banner in your plan straight to its place on the Timeline, and from a campaign on the Timeline to its packs on the Selectors page."
-    - added: "Planned banners are grouped into sections by training scenario and anniversary, so a long plan is easier to read."
     - added: "A thank-you list on the home page for the people supporting the site."
     - changed: "The planner works properly on a phone now, instead of making you scroll a wide table sideways."
     - changed: "Carat forecasts are more accurate, and now line up with the community spreadsheet the calculator is based on. If your plan reads differently from how you remember it, this is why."
