@@ -182,7 +182,18 @@ services:
   instance_count: 1
   instance_size_slug: apps-s-1vcpu-0.5gb
   name: calculatorproject
-  run_command: python manage.py migrate && gunicorn calculatorproject.wsgi:application --bind 0.0.0.0:8080
+  # sync_changelog writes calculatorapi/data/changelog.yaml into the changelog
+  # table. It sits here because a deploy is the only route to the production
+  # database (see the POST_DEPLOY recipe above), and it is SAFE here because a
+  # changelog file that does not validate reports the problem and exits 0 —
+  # a typo in a patch note must not be able to stop the API booting. Pass
+  # --strict locally, never here.
+  #
+  # ⚠ This line is part of the SERVER-SIDE spec: editing it in this file does
+  # nothing on its own. Apply it with the `doctl apps spec get` /
+  # `doctl apps update` dance described above, which preserves the secrets
+  # this committed copy carries as "".
+  run_command: python manage.py migrate && python manage.py sync_changelog && gunicorn calculatorproject.wsgi:application --bind 0.0.0.0:8080
   source_dir: /
 static_sites:
 - build_command: npm install && npm run build
