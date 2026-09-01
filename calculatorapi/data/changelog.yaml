@@ -1,0 +1,52 @@
+# Changelog content — the source of truth for the /changelog page.
+#
+# `python manage.py sync_changelog` writes these entries into the database, and
+# the production service runs it on every deploy (see backend/.do/app.yaml's
+# run_command). So a changelog update is a normal commit: edit this file, open a
+# PR into develop, and it goes live with the next push to master.
+#
+# Rules:
+#   - `key` is the stable identity of an entry. Never change one after it has
+#     shipped — a renamed key does not rename the entry, it creates a second one
+#     and orphans the first.
+#   - The file OWNS every entry whose key it lists. Editing one of those in the
+#     Django admin works until the next deploy, which puts it back to what is
+#     written here. Edit the file instead.
+#   - Entries created by hand in the admin have no key, and this file never
+#     touches them.
+#   - Removing an entry from this file does NOT delete it from the site; it just
+#     stops being managed. Delete it in the admin if that is what you meant.
+#
+# Shape of an entry:
+#
+#   - key: some-slug           # required, unique, stable
+#     date: 2026-09-01         # required, ISO. What the page shows and sorts by.
+#     title: "Open beta"       # required, <= 255 chars
+#     version: "v1.0"          # optional badge, <= 50 chars. Omit for none.
+#     changes:                 # optional; each item is one {category: text} pair
+#       - added: "..."         #   categories: added | fixed | changed
+#       - fixed: "..."         #   text <= 500 chars
+#       - changed: "..."       #   displayed in the order written here
+#
+# Write for a player, not a developer: say what is different for them, not which
+# module changed. Newest entry first is conventional here but not required — the
+# page sorts by date.
+
+- key: open-beta
+  date: 2026-09-01
+  title: "Open beta"
+  version: "v1.0"
+  changes:
+    - added: "Open beta — the calculator is now open to everyone. No passcode, no account needed."
+    - added: "Plan a run of banners and see how many carats, tickets and pulls you will actually have for each one, projected from your rank income, events and campaigns."
+    - added: "Step-up banners can be planned alongside Uma and Support banners, with their own ladder costs and pull odds."
+    - added: "A Timeline of upcoming banners, Champions Meetings, League of Heroes and anniversary campaigns, with global dates predicted from the JP schedule where they have not been confirmed yet."
+    - added: "A Selectors page for planning campaign purchases and choosing which cards to take with your selector tickets, filtered by each ticket's eligibility cutoff."
+    - added: "Sign in with Google or Discord to save your plan. Everything works signed out as well — it just is not kept between visits."
+    - added: "A thank-you list on the home page for the supporters funding the site, and a feedback form for telling me what is wrong with it."
+    - added: "This changelog, and an FAQ covering how the projections are worked out."
+    - changed: "The site has moved to umacaratcalculator.com."
+    - changed: "The Timeline keeps its filter controls in view while you scroll, and has a back-to-top arrow for getting out of a long one."
+    - changed: "New plans start with all four projection toggles switched on, rather than off."
+    - fixed: "Champions Meeting rewards now land a day before the event ends, which is when the game actually pays them out."
+    - fixed: "The calculator's data loads considerably faster, especially on a plan with a lot of banners in it."

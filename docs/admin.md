@@ -104,6 +104,18 @@ Two deliberate behaviours:
 
 ---
 
+## Changelog: two authoring routes, one table
+
+`ChangelogEntryAdmin` carries a **Source** column reading either *Written here* or
+*Repo file*, off whether `ChangelogEntry.key` is set. It is there because an
+editor who changes a *Repo file* entry will see the edit reverted by the next
+deploy, and nothing else on the page would explain why. The `key` field sits in
+its own "Managed entries" fieldset with help text saying to leave it blank.
+
+The repo-side half is `calculatorapi/data/changelog.yaml` plus
+`manage.py sync_changelog` — see `backend/docs/data-model.md`, "The changelog is
+authored in the repo, and synced on deploy".
+
 ## Patreon import: two buttons, one reconcile
 
 `PatreonSupporterAdmin` adds **Sync from Patreon** and **Import Patreon CSV** to its

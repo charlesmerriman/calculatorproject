@@ -127,6 +127,14 @@ are edited in the table at the bottom of the entry's page: give each line a
 **order** number (lower numbers show first). Entries appear newest-first on the
 site, and the home page shows how long ago the most recent entry was posted.
 
+**Check the "Source" column before you edit one.** Entries marked *Written here*
+are yours — they behave like every other page in this admin. Entries marked *Repo
+file* are written in the project's code and copied over on each deploy, so an
+edit you make to one here is replaced the next time the site updates. There is
+nothing wrong with reading them; just ask for a code change rather than editing
+in place. New entries you add are always *Written here*: leave the **key** field
+blank, which it is by default.
+
 ## Patreon supporters
 
 The thank-you list at the bottom of the home page. Two pages in **Site content**:

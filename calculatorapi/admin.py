@@ -583,11 +583,32 @@ class ChampionsMeetingAdmin(GlobalDatesStatusMixin, ScheduleOffsetMixin, ImagePr
 
 @admin.register(ChangelogEntry)
 class ChangelogEntryAdmin(ModelAdmin):
-    list_display = ("title", "version", "date")
+    list_display = ("title", "version", "date", "source")
     date_hierarchy = "date"
     ordering = ("-date",)
     search_fields = ("title",)
     inlines = (ChangelogChangeInline,)
+    fieldsets = (
+        (None, {
+            "fields": ("title", "version", "date"),
+        }),
+        # Separated because it is not really content: it is the switch between an
+        # entry written here and one written in the repo. See the field help text
+        # and calculatorapi/management/commands/sync_changelog.py.
+        ("Managed entries", {
+            "fields": ("key",),
+        }),
+    )
+
+    @admin.display(description="Source", ordering="key")
+    def source(self, obj):
+        """Which of the two authoring routes owns this entry.
+
+        Worth a column: an editor who changes a "Repo file" entry here will see
+        their edit reverted by the next deploy, and nothing else on the page
+        would tell them why.
+        """
+        return "Repo file" if obj.key else "Written here"
 
 
 @admin.register(LeagueOfHeroes)
