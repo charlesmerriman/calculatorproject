@@ -155,6 +155,7 @@ erDiagram
         string title
         string version
         date date
+        string key "nullable unique; set = owned by changelog.yaml"
     }
 
     ChangelogChange {
@@ -571,6 +572,47 @@ Otherwise it follows `GameEvent`'s precedent exactly: a nullable `banner_timelin
 `scenario_effective_dates()` is deliberately its **own** function rather than a generalisation shared with `anniversary_event_effective_dates()`. `predictions.py`'s convention is one function per derivation shape: the mechanisms are shared (`_ResolvedDateMixin`, `effective_sort_key`), the policies are not. An anniversary's range is a *sales window* whose start is the instant purchases are credited; a scenario's start is just when a new way to play appeared. Merging them would put a scenario-only concern inside anniversary date maths the first time the two diverge.
 
 `image` is nullable by workflow, not by accident: scenarios get entered while a feature is being built and the art arrives later. Every consumer must render without it.
+
+### The changelog is authored in the repo, and synced on deploy
+
+`ChangelogEntry` is the one content model with a second authoring route.
+`calculatorapi/data/changelog.yaml` holds patch notes as text, and
+`manage.py sync_changelog` writes them into the table. Production runs that
+command in the service's `run_command`, right after `migrate` — a deploy is the
+only route to the production database, since the app's database is an App
+Platform *dev* database with no external endpoint.
+
+The reason is that the changelog is the one piece of site content that describes
+the **code**: an entry is written in the same pull request as the work it
+announces, reviewed with it, and ships when it ships. Nothing else here has that
+property, which is why nothing else gets this treatment.
+
+`key` is what divides the two routes:
+
+| `key` | Written by | On a deploy |
+|---|---|---|
+| set | `changelog.yaml` | title, version, date and **every** change line are replaced from the file |
+| NULL | a person, in the admin | untouched |
+
+Three consequences worth knowing:
+
+- **`key` is NULL, not `""`, for a hand-written entry.** It is `unique`, and a
+  unique column permits any number of NULLs but only one empty string — so a
+  blank default would make the *second* admin-written entry an `IntegrityError`.
+  `ChangelogEntry.save()` normalises falsy to `None` so every write path agrees.
+- **Change lines are replaced wholesale**, not reconciled row by row. The file is
+  the authority on the whole list, and delete-then-create is immune to the
+  ordering collisions a per-row update hits when a line moves position — the same
+  reasoning as `user_step_up_selection_data`'s id-less PATCH.
+- **Removing an entry from the file does not delete it.** It only stops being
+  managed. A deploy silently deleting published content is a worse failure than a
+  stale line, so that direction is deliberately not automated.
+
+`sync_changelog` **exits 0 on a file it cannot parse** and writes nothing, because
+it runs on the path that starts the web service: a typo in a patch note must not
+be able to keep the API from booting. `--strict` inverts that for local checks,
+and `ShippedChangelogFileTests` validates the committed file so a broken one
+never reaches a deploy in the first place.
 
 ### `Feedback` — visitor-submitted, deliberately unattributable
 

@@ -1,0 +1,54 @@
+# Changelog content — the source of truth for the /changelog page.
+#
+# `python manage.py sync_changelog` writes these entries into the database, and
+# the production service runs it on every deploy (see backend/.do/app.yaml's
+# run_command). So a changelog update is a normal commit: edit this file, open a
+# PR into develop, and it goes live with the next push to master.
+#
+# Rules:
+#   - `key` is the stable identity of an entry. Never change one after it has
+#     shipped — a renamed key does not rename the entry, it creates a second one
+#     and orphans the first.
+#   - The file OWNS every entry whose key it lists. Editing one of those in the
+#     Django admin works until the next deploy, which puts it back to what is
+#     written here. Edit the file instead.
+#   - Entries created by hand in the admin have no key, and this file never
+#     touches them.
+#   - Removing an entry from this file does NOT delete it from the site; it just
+#     stops being managed. Delete it in the admin if that is what you meant.
+#
+# Shape of an entry:
+#
+#   - key: some-slug           # required, unique, stable
+#     date: 2026-09-01         # required, ISO. What the page shows and sorts by.
+#     title: "Open beta"       # required, <= 255 chars
+#     version: "v1.0"          # optional badge, <= 50 chars. Omit for none.
+#     changes:                 # optional; each item is one {category: text} pair
+#       - added: "..."         #   categories: added | fixed | changed
+#       - fixed: "..."         #   text <= 500 chars
+#       - changed: "..."       #   displayed in the order written here
+#
+# Write for a player, not a developer: say what is different for them, not which
+# module changed. Newest entry first is conventional here but not required — the
+# page sorts by date.
+
+- key: open-beta
+  date: 2026-09-01
+  title: "Open beta"
+  version: "v1.0"
+  changes:
+    - added: "The calculator is open to everyone. The access code is gone, and you no longer need one to get in."
+    - added: "Step-up banners can be planned like any other banner, with their own step costs and odds, and a picker for the ten cards you would be aiming at."
+    - added: "An FAQ explaining where the carat numbers come from, and a feedback form for telling me when something looks wrong."
+    - added: "The Timeline can be filtered by banner type, training scenario and campaign, so you can find what you care about without scrolling through all of it."
+    - added: "Banners that run at the same time now share one Timeline card instead of being listed one after another."
+    - added: "You can jump from a banner in your plan straight to its place on the Timeline, and from a campaign on the Timeline to its packs on the Selectors page."
+    - added: "A thank-you list on the home page for the people supporting the site."
+    - changed: "The planner works properly on a phone now, instead of making you scroll a wide table sideways."
+    - changed: "Carat forecasts are more accurate, and now line up with the community spreadsheet the calculator is based on. If your plan reads differently from how you remember it, this is why."
+    - changed: "New plans start with all four projection toggles switched on."
+    - changed: "The site has moved to umacaratcalculator.com. Update your bookmark if you still have the old address saved."
+    - changed: "The Timeline keeps its filters in view while you scroll, and has a button for getting back to the top of a long page."
+    - fixed: "Champions Meeting rewards now arrive a day before the event ends, which is when the game actually pays them out."
+    - fixed: "Predicted release dates for banners Global has not announced yet were counting some schedule adjustments twice. They are corrected — and they are still predictions based on the Japanese schedule, so they can move."
+    - fixed: "Selector tickets are counted properly against the banners they can reach, and the webstore purchase bonus is credited as free carats."
