@@ -659,22 +659,56 @@ admin. Two models: `PatreonTier` is the pledge ladder (`name` + a hand-set
 **This is the only table holding data about people who never signed up to this
 site**, which is what shapes every decision in it.
 
-**It holds a display name, a tier and a pledge start date, and nothing else —
-keep it that way.** Patreon's members export is a wide PII file: email, Discord
-handle, Patreon user ID, postal address, phone, charge history, lifetime totals.
-None of it is needed to say thank you, none of it was given to this site, and
-`purge_user_pii` does not know this table exists.
+**It holds a display name, an email, a tier and a pledge start date, and nothing
+else — keep it that way.** Patreon's members export is a wide PII file: email,
+Discord handle, Patreon user ID, postal address, phone, charge history, lifetime
+totals. Only the email is kept; nothing else on that list is needed to say thank
+you or to run the admin.
 
-Both import paths exclude it by construction rather than by filtering afterwards:
+Both import paths exclude the rest by construction rather than by filtering
+afterwards:
 
-- `admin_patreon_import.py` names the three CSV columns it reads (`Name`, `Tier`,
-  `Patron Status`) and drops the rest of the row before returning — there is no
-  passthrough dict, so adding a field is a visible change rather than a silent one.
+- `admin_patreon_import.py` names the four CSV columns it reads (`Name`, `Email`,
+  `Tier`, `Patron Status`) and drops the rest of the row before returning — there
+  is no passthrough dict, so adding a field is a visible change rather than a
+  silent one. `Email` is read but **not required**: an export predating the column
+  still imports, leaving the field empty.
 - `patreon_api.py` names the fields it requests (`MEMBER_FIELDS`), so the excluded
   data is never sent at all. Note this is the *only* thing excluding it: a creator
   access token automatically holds every v2 scope, so the token is capable of
-  reading patron emails and addresses and simply never asks. There are no scopes
-  to leave unticked.
+  reading patron addresses and phone numbers and simply never asks. There are no
+  scopes to leave unticked.
+
+### `email` — admin-only, and why it is the exception
+
+Patreon display names are not stable and not distinctive: a patron who renames
+themselves imports as a *second* row beside the one they already had, and two
+people can pick names differing only in punctuation. The email is the one value
+in the export that is stable and unique per person, so it is what lets an editor
+tell those rows apart.
+
+Three things keep it contained, and all three are load-bearing:
+
+1. **It is not on the wire.** `PatreonSupporterSerializer` lists its fields
+   explicitly and `email` is not among them. `GET /supporters` is public and
+   unauthenticated, so serializing it would publish every consenting supporter's
+   address to anyone loading the home page. `test_email_never_reaches_the_public_endpoint`
+   asserts this on its own rather than leaving it to the field-set check.
+2. **It is shown in the admin and nowhere else** — `list_display`, `search_fields`
+   and the first fieldset of `PatreonSupporterAdmin`. The import summaries name
+   *who* had an email updated, never the address itself.
+3. **It is overwritten, but never cleared.** Unlike `patron_since`, a non-empty
+   incoming value wins (a patron who changes their Patreon address should show
+   the new one, and there is no editorial judgement to preserve). An **empty**
+   incoming value means "don't know" — a CSV with no `Email` column, or a member
+   Patreon holds no address for — so the stored value survives.
+
+`purge_user_pii` still does not touch this table on an ordinary run: supporters
+are not accounts, and wiping the field the admin identifies them by should not be
+a side effect of the legacy account purge. Pass **`--include-patreon`** to blank
+supporter emails deliberately — for a takedown request, or when decommissioning
+the Patreon integration. It blanks the email only; rows, tiers and publication
+decisions survive.
 
 **`is_public` defaults to `False` and no import ever touches it.** Patreon's
 `full_name` is frequently a real billing name rather than a chosen handle, so

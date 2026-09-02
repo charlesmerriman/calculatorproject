@@ -146,8 +146,13 @@ The thank-you list at the bottom of the home page. Two pages in **Site content**
   supporters, so write it as something you are happy for visitors to read.
   Put your *highest* tier on the lowest order number — the site reads the first
   tier as the top one and gives it the strongest styling.
-- **Patreon supporters** — the people. Each has a **display name**, a tier, and
-  three switches.
+- **Patreon supporters** — the people. Each has a **display name**, an **email**,
+  a tier, and three switches.
+
+  The email is filled in by the import and is **only ever visible to you, here**.
+  It is never shown on the website. It's there so you can tell two supporters
+  apart when their names look alike, or when somebody changes their Patreon name
+  and turns up as a second row — you can also search the list by it.
 
 **"Show name publicly" is the important one, and it starts switched off.**
 

@@ -115,6 +115,15 @@ class CalculationConstants(models.Model):
         default=2, validators=[MinValueValidator(0)],
         help_text="EXTRA monthly support tickets from the paid pass, added to the free tier's.",
     )
+    training_pass_paid_ssr_shards = models.IntegerField(
+        default=1, validators=[MinValueValidator(0)],
+        help_text=(
+            "Monthly SSR uncap shards from an ACTIVE paid Training Pass. The "
+            "free tier earns none, so unlike the tickets above there is no free "
+            "counterpart to add this to. Delivered on the same monthly clock as "
+            "the pass's carats and tickets."
+        ),
+    )
 
     # ── Login campaigns & annual gifts ───────────────────────────────────────
     misc_earnings_monthly = models.IntegerField(
@@ -123,10 +132,9 @@ class CalculationConstants(models.Model):
         help_text=(
             "Monthly approximation of gifts, career and Team Trials extras, "
             "dripped daily as monthly/30. Toggled per user. "
-            "KNOWN GAP: the sheet's own figure (Timeline!AW1) is 3000, i.e. 100 "
-            "a day against our 60. This default preserves current behaviour; "
-            "raising it is a deliberate parity change to make once the harness "
-            "can measure the effect."
+            "The live value is 2700 (90 a day), set here in the admin; this "
+            "field default is only what a fresh database starts from. For "
+            "reference the source sheet's own figure (Timeline!AW1) is 3000."
         ),
     )
     misc_earnings_delay_days = models.IntegerField(

@@ -29,6 +29,13 @@ Expects `summary` and `was_dry_run` in the context.
         <span class="names">&mdash; {{ summary.dates_filled|join:", " }}</span>
       </li>
     {% endif %}
+    {# Who changed, not what to. The address itself belongs on the row, not in
+       a summary that stays on screen after the import. #}
+    {% if summary.emails_updated %}
+      <li><strong>{{ summary.emails_updated|length }}</strong> had their email updated
+        <span class="names">&mdash; {{ summary.emails_updated|join:", " }}</span>
+      </li>
+    {% endif %}
     <li><strong>{{ summary.unchanged }}</strong> unchanged</li>
     {% if summary.tiers_created %}
       <li><strong>{{ summary.tiers_created|length }}</strong> new tier(s) created

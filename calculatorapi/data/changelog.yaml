@@ -32,6 +32,23 @@
 # module changed. Newest entry first is conventional here but not required — the
 # page sorts by date.
 
+- key: post-beta-polish
+  date: 2026-09-02
+  title: "Staging, themes, and a round of fixes"
+  version: "v1.1"
+  changes:
+    - added: "Colorblind mode. It is a switch in the theme menu, and it repaints the red and green status colours wherever they turn up."
+    - added: "About and Terms pages, linked from the footer."
+    - added: "The training pass pays an SSR uncap shard every month and the projection was counting none of it. Paid tier only."
+    - changed: "The staging area no longer looks like the calculator. Staged rows sit on an amber background, the button reads \"Add to calculator\", and a line underneath says nothing is counted until you press it."
+    - changed: "Every cell in the Uncap Crystals panel now names its unit."
+    - changed: "The uncap banner picker lists names, not end dates."
+    - changed: "Campaign rows on the Selectors page lost a lot of empty space. Card art doubled in size."
+    - fixed: "Clearing a Timeline search or filter keeps your place. It used to fling you back to the top."
+    - fixed: "Light theme \u2014 text in the banner dropdown was near unreadable, and the step-up button looked out of place."
+    - fixed: "The Misc Earnings toggle was quoting 60 carats a day. It reads the live number now."
+    - fixed: "A mistyped address gets a proper page-not-found."
+
 - key: open-beta
   date: 2026-09-01
   title: "Open beta"

@@ -14,13 +14,18 @@ WHY THIS EXISTS AS ITS OWN NARROW PARSER
 ----------------------------------------
 Patreon's member export is a wide, PII-heavy file: email, Discord handle,
 Patreon user ID, postal address, phone, charge history and lifetime totals.
-None of that belongs in this database, and the safest way to guarantee it never
-lands there is to never read those columns at all.
+Almost none of that belongs in this database, and the safest way to guarantee
+it never lands there is to never read those columns at all.
 
-`parse_patreon_csv` therefore names the three columns it wants and discards the
+`parse_patreon_csv` therefore names the four columns it wants and discards the
 row's every other field before it is returned. There is no "extra data" dict
 and no passthrough — if a future field is wanted it has to be added here
 deliberately, which is the review point.
+
+Email is the one contact column that IS read, so an editor can tell two
+supporters with similar or changed display names apart. It is admin-only and
+excluded from the public serializer; see the field comment on PatreonSupporter.
+Discord, user id, address, phone and every money column stay unread.
 
 CONSENT
 -------
@@ -43,12 +48,17 @@ from django.db import transaction
 
 from .models import PatreonSupporter, PatreonTier
 
-# The only three columns this importer will look at. Everything else in the
+# The only four columns this importer will look at. Everything else in the
 # Patreon export is billing or contact data — see the module docstring.
 NAME_COLUMN = "Name"
+EMAIL_COLUMN = "Email"
 TIER_COLUMN = "Tier"
 STATUS_COLUMN = "Patron Status"
 REQUIRED_COLUMNS = (NAME_COLUMN, TIER_COLUMN, STATUS_COLUMN)
+# Email is read but NOT required: a file exported before this column existed, or
+# one an editor trimmed by hand, must still import. A missing column simply
+# leaves every row's email empty, which the reconcile reads as "don't know".
+OPTIONAL_COLUMNS = (EMAIL_COLUMN,)
 
 # Patreon writes "Active patron", "Declined patron" or "Former patron".
 ACTIVE_STATUS = "active patron"
@@ -64,9 +74,9 @@ class PatreonCsvImportForm(forms.Form):
     csv_file = forms.FileField(
         label="Patreon members CSV",
         help_text=(
-            "The members export from Patreon. Only the Name, Tier and Patron Status "
-            "columns are read — email, Discord, address and payment columns are ignored "
-            "and never stored."
+            "The members export from Patreon. Only the Name, Email, Tier and Patron "
+            "Status columns are read — Discord, address and payment columns are ignored "
+            "and never stored. The email is admin-only and never appears on the website."
         ),
     )
     deactivate_missing = forms.BooleanField(
@@ -140,7 +150,7 @@ def parse_patreon_csv(uploaded_file):
     rows = []
     seen = set()
     for record in reader:
-        # Only these three keys are ever touched. `record` is dropped here.
+        # Only these four keys are ever touched. `record` is dropped here.
         name = (record.get(NAME_COLUMN) or "").strip()
         if not name:
             # A patron with no name can't be thanked and can't be matched to an
@@ -154,6 +164,9 @@ def parse_patreon_csv(uploaded_file):
             # Truncated to the model's max_length rather than raising: a name
             # over 100 characters is a display problem, not an import failure.
             "display_name": name[:100],
+            # Absent column or empty cell both give "", which the reconcile
+            # treats as "don't know" rather than "clear the stored one".
+            "email": (record.get(EMAIL_COLUMN) or "").strip(),
             "tier_name": (record.get(TIER_COLUMN) or "").strip(),
             "is_active": (record.get(STATUS_COLUMN) or "").strip().casefold() == ACTIVE_STATUS,
         })
@@ -200,6 +213,18 @@ def _update_supporter(supporter, row, tier, summary):
         bucket = "reactivated" if row["is_active"] else "deactivated"
         summary[bucket].append(supporter.display_name)
 
+    # Unlike `patron_since` below, email IS overwritten: a patron who changes
+    # their billing address on Patreon should show the new one here, and there
+    # is no editorial judgement to preserve — nobody hand-corrects an email to
+    # something Patreon disagrees with. But an EMPTY incoming value never wins:
+    # a file with no Email column, or a member Patreon gave us no address for,
+    # means "don't know", so the stored value stays.
+    incoming_email = (row.get("email") or "").strip()
+    if incoming_email and supporter.email != incoming_email:
+        supporter.email = incoming_email
+        changed_fields.append("email")
+        summary["emails_updated"].append(supporter.display_name)
+
     # Fill only, never overwrite. Patreon is authoritative about when a pledge
     # started, but this field is also editable by hand, and a date an editor
     # corrected (a patron who resubscribed, say) should not be reset to
@@ -227,6 +252,10 @@ def apply_patreon_import(rows, deactivate_missing=False, dry_run=False):
     — and carry the same keys, with one optional extra: the API knows each
     patron's pledge start date and the CSV does not. A row may therefore include
     `patron_since`; a row without the key leaves the stored value alone.
+
+    `email` behaves the same way when it is empty (an older CSV export has no
+    such column, and Patreon does not always have an address for a member), but
+    a NON-empty one overwrites — see _update_supporter.
     """
     summary = {
         "created": [],
@@ -234,6 +263,7 @@ def apply_patreon_import(rows, deactivate_missing=False, dry_run=False):
         "tier_changed": [],
         "deactivated": [],
         "dates_filled": [],
+        "emails_updated": [],
         "unchanged": 0,
         "tiers_created": [],
     }
@@ -256,6 +286,9 @@ def apply_patreon_import(rows, deactivate_missing=False, dry_run=False):
             # must never publish a name — see the module docstring.
             PatreonSupporter.objects.create(
                 display_name=row["display_name"],
+                # "" when the source had no email for them — the model's own
+                # default, and a legitimate state for a hand-entered supporter.
+                email=row.get("email") or "",
                 tier=tier,
                 is_active=row["is_active"],
                 patron_since=row.get("patron_since"),
