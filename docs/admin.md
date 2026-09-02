@@ -101,6 +101,11 @@ Two deliberate behaviours:
 - `PatreonSupporterAdmin` has **"Show name publicly" as a `list_editable` column**, so the
   whole list can be consent-reviewed in one pass. It is the only thing that puts a name on
   the website, and the CSV importer never sets it.
+- It also shows **`email`**, in `list_display`, `search_fields` and the first fieldset.
+  That is the only surface it appears on: it exists to tell two supporters apart when
+  their display names collide or a patron renames themselves, and it is absent from
+  `PatreonSupporterSerializer`, so it cannot reach the public `GET /supporters`.
+  → `backend/docs/data-model.md` ("`email` — admin-only, and why it is the exception")
 
 ---
 
@@ -152,13 +157,15 @@ stays as the fallback for exactly that case.
 ### What the API asks for
 
 `MEMBER_FIELDS` in `calculatorapi/patreon_api.py` names the four fields requested:
-`full_name`, `patron_status`, `pledge_relationship_start` (plus the tier `title`).
+`full_name`, `email`, `patron_status`, `pledge_relationship_start` (plus the tier `title`).
 
-**That list is the only thing excluding the PII — don't assume scopes back it up.** A
-creator access token (the kind the developer portal issues, and what this integration
-uses) automatically carries *every* v2 scope, including `campaigns.members[email]` and
-`campaigns.members.address`. There are no checkboxes to leave unticked. The token is
-capable of reading patron emails and postal addresses; it doesn't because we never ask.
+**That list is the only thing excluding the rest of the PII — don't assume scopes back it
+up.** A creator access token (the kind the developer portal issues, and what this
+integration uses) automatically carries *every* v2 scope, including
+`campaigns.members[email]` and `campaigns.members.address`. There are no checkboxes to
+leave unticked. The token is capable of reading patron postal addresses and phone numbers;
+it doesn't because we never ask. `email` is the one contact field we do ask for, and it is
+admin-only once stored.
 
 Still better than the CSV path, where the wide export reaches the server and the parser
 discards columns — here the data never leaves Patreon. But it rests on one mechanism, not

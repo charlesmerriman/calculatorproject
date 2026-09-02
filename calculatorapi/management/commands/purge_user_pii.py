@@ -15,6 +15,14 @@ For every user with is_staff=False it:
 Staff accounts are untouched — they still sign in with a password to reach
 /admin and the analytics dashboard.
 
+PATREON SUPPORTERS ARE NOT ACCOUNTS, and are left alone unless you pass
+--include-patreon. PatreonSupporter.email is the admin's only way to tell two
+supporters apart, so wiping it is a deliberate act, not a side effect of the
+legacy account purge this command exists for. The flag is here so there IS a
+lever — a takedown request, or decommissioning the Patreon integration — rather
+than because a routine run should pull it. It blanks the email and nothing else:
+the rows, the tiers and the publication decisions survive.
+
 IRREVERSIBLE. There is no backup of the blanked values, and afterwards those
 accounts cannot be logged into at all (their plans stay in the database but
 become unreachable). This is the accepted consequence of the migration; see
@@ -24,6 +32,7 @@ Usage:
     python manage.py purge_user_pii --dry-run   # report only, changes nothing
     python manage.py purge_user_pii             # prompts for confirmation
     python manage.py purge_user_pii --no-input  # for scripted/CI runs
+    python manage.py purge_user_pii --include-patreon   # also blank supporter emails
 
 Run it ONCE in production (DigitalOcean API component's Console tab) after the
 social-login deploy has gone out and been verified.
@@ -33,7 +42,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from rest_framework.authtoken.models import Token
 
-from calculatorapi.models import CustomUser
+from calculatorapi.models import CustomUser, PatreonSupporter
 
 CONFIRM_PHRASE = "purge"
 
@@ -56,12 +65,25 @@ class Command(BaseCommand):
             action="store_true",
             help="Skip the confirmation prompt (for scripted runs).",
         )
+        parser.add_argument(
+            "--include-patreon",
+            action="store_true",
+            help=(
+                "Also blank the email on every Patreon supporter. Off by default: "
+                "that field is the admin's only way to tell supporters apart."
+            ),
+        )
 
     def handle(self, *args, **options):
         targets = CustomUser.objects.filter(is_staff=False)
         total = targets.count()
 
-        if not total:
+        include_patreon = options["include_patreon"]
+        # Counted whether or not the flag is set, so a dry run always shows what
+        # the flag WOULD reach.
+        patreon_with_email = PatreonSupporter.objects.exclude(email="").count()
+
+        if not total and not (include_patreon and patreon_with_email):
             self.stdout.write(self.style.SUCCESS("No non-staff accounts found; nothing to do."))
             return
 
@@ -80,6 +102,15 @@ class Command(BaseCommand):
                 f"Staff accounts left untouched: {CustomUser.objects.filter(is_staff=True).count()}"
             )
         )
+        if include_patreon:
+            self.stdout.write(
+                f"Patreon supporter emails to blank: {patreon_with_email}"
+            )
+        elif patreon_with_email:
+            self.stdout.write(
+                f"Patreon supporters holding an email: {patreon_with_email} "
+                "(left alone — pass --include-patreon to blank them too)"
+            )
 
         if options["dry_run"]:
             self.stdout.write(self.style.SUCCESS("\nDry run — no changes written."))
@@ -113,6 +144,15 @@ class Command(BaseCommand):
 
             CustomUser.objects.bulk_update(users, PII_FIELDS + ["password"])
 
+            if include_patreon:
+                # Blanked, not deleted: the supporter still needs thanking, and
+                # their publication decision must survive.
+                PatreonSupporter.objects.exclude(email="").update(email="")
+
         self.stdout.write(self.style.SUCCESS(
             f"\nPurged {len(users)} account(s) and deleted {token_count} token(s)."
         ))
+        if include_patreon:
+            self.stdout.write(self.style.SUCCESS(
+                f"Blanked the email on {patreon_with_email} Patreon supporter(s)."
+            ))
