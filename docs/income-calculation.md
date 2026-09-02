@@ -68,7 +68,8 @@ removing banners never changes the total. Constants: `DAILY_CARAT_PACK_PER_DAY`,
 
 ## Misc Earnings Approximation (daily drip after a 30-day ramp-in, toggle — on by default)
 
-A flat **60 carats per day** approximating miscellaneous earnings the projection doesn't
+A flat **`misc_earnings_monthly / 30` carats per day** — 90 with the live value of 2,700 —
+approximating miscellaneous earnings the projection doesn't
 model individually — gifts, Team Trials extras, and career-mode rewards. This mirrors the
 source sheet's "Misc Earnings" figure, which the projection is calibrated against; the
 sheet accrues it per-day in exactly this way.
@@ -77,7 +78,7 @@ Gated behind the user's `misc_earnings` boolean (`CustomUser.misc_earnings`,
 `default=True`). Unlike the other flat incomes here, it is **not** credited on
 1st-of-month boundaries, and unlike the rolling-cycle incomes it doesn't arrive in lumps:
 after a **30-day ramp-in anchored to the day the user opens the calculator**, every single
-day earns 60. Days 1–30 earn nothing (so a banner ending inside the ramp-in gets none of
+day earns that amount. Days 1–30 earn nothing (so a banner ending inside the ramp-in gets none of
 it) and the drip starts on day 31. Anchoring to today rather than to each banner's window
 keeps the drip's start instant absolute, so adding or removing banners never changes the
 total — see `countDaysAfterDelay`, which clamps each window's start forward to that

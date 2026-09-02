@@ -132,10 +132,9 @@ class CalculationConstants(models.Model):
         help_text=(
             "Monthly approximation of gifts, career and Team Trials extras, "
             "dripped daily as monthly/30. Toggled per user. "
-            "KNOWN GAP: the sheet's own figure (Timeline!AW1) is 3000, i.e. 100 "
-            "a day against our 60. This default preserves current behaviour; "
-            "raising it is a deliberate parity change to make once the harness "
-            "can measure the effect."
+            "The live value is 2700 (90 a day), set here in the admin; this "
+            "field default is only what a fresh database starts from. For "
+            "reference the source sheet's own figure (Timeline!AW1) is 3000."
         ),
     )
     misc_earnings_delay_days = models.IntegerField(
