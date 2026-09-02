@@ -10,18 +10,18 @@ readable line instead of leaking Patreon's internals.
 WHAT IT ASKS FOR, AND WHY THAT LIST IS THE POINT
 ------------------------------------------------
 Patreon's member resource can carry email, shipping address, phone, charge
-history and lifetime totals. None of that belongs in this database.
+history and lifetime totals. Almost none of that belongs in this database.
 
-MEMBER_FIELDS below is the ONLY thing keeping it out. We name the four fields we
-want, so the response does not contain the rest in the first place.
+MEMBER_FIELDS below is the ONLY thing keeping the rest out. We name the fields
+we want, so the response does not contain the others in the first place.
 
 Do not expect the OAuth scopes to be a second line of defence here. Email and
 address have their own scopes (`campaigns.members[email]`,
 `campaigns.members.address`), but a CREATOR access token — the kind issued
 straight from the developer portal, which is what this integration uses —
 automatically carries every v2 scope. There are no scope checkboxes to leave
-unticked. So the token CAN read email and postal addresses, and the only reason
-it does not is that this list does not ask for them.
+unticked. So the token CAN read postal addresses and phone numbers, and the
+only reason it does not is that this list does not ask for them.
 
 That still leaves this stronger than the CSV path in admin_patreon_import.py,
 where the wide export reaches the server and the parser has to discard columns;
@@ -29,12 +29,17 @@ here the data never leaves Patreon. But it rests on one thing, not two. Adding a
 name to MEMBER_FIELDS is the review point — the same role REQUIRED_COLUMNS plays
 over there. Do not add one without a reason that survives being written down.
 
+`email` is asked for, and is the only contact field that is. It is stored on
+PatreonSupporter for one purpose — telling two supporters apart in the admin
+when their display names collide or one of them renames — and it is never
+published; see the field's comment on the model. Address and phone stay out.
+
 OUTPUT SHAPE
 ------------
 `fetch_members()` returns the SAME row dicts `parse_patreon_csv` returns —
-display_name / tier_name / is_active — plus an optional `patron_since`. Both
-feed the one reconcile, `apply_patreon_import`, so the CSV and the API cannot
-drift into treating the same data differently.
+display_name / email / tier_name / is_active — plus an optional `patron_since`.
+Both feed the one reconcile, `apply_patreon_import`, so the CSV and the API
+cannot drift into treating the same data differently.
 
 WHO COUNTS
 ----------
@@ -62,7 +67,8 @@ HTTP_TIMEOUT_SECONDS = 10
 PAGE_SIZE = 500
 
 # ── The privacy boundary. Read the module docstring before touching. ──────────
-MEMBER_FIELDS = ("full_name", "patron_status", "pledge_relationship_start")
+# `email` is here deliberately and is the only contact field on the list.
+MEMBER_FIELDS = ("full_name", "email", "patron_status", "pledge_relationship_start")
 # `amount_cents` is the TIER's price, not a person's billing data, and it is read
 # transiently to tell a paid tier from a free one — see _row_from_member. It is
 # never stored: PatreonTier deliberately carries no money column.
@@ -266,6 +272,10 @@ def _row_from_member(member, tiers):
         # Truncated rather than raising, matching parse_patreon_csv: an
         # over-long name is a display problem, not an import failure.
         "display_name": name[:100],
+        # Patreon can withhold an email (a member who joined without one, or a
+        # response where the field is simply absent), so this is "" as often as
+        # not. The reconcile treats "" as "don't know", never as "clear it".
+        "email": (attributes.get("email") or "").strip(),
         "tier_name": tier_name,
         "is_active": attributes.get("patron_status") == ACTIVE_STATUS,
         "patron_since": _parse_pledge_start(attributes.get("pledge_relationship_start")),

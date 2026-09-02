@@ -8,12 +8,15 @@ class PatreonSupporter(models.Model):
     PRIVACY — read before adding a field.
 
     This is the only model holding data about people who never signed up to
-    this site, so it deliberately holds the bare minimum needed to say thank
-    you: a display name and a tier. Do NOT add email, Discord handle, Patreon
-    user ID, pledge amount, or anything else from the Patreon CSV export. Those
-    columns are billing data belonging to a third party; the site has no use
-    for them and no consent to publish them, and `purge_user_pii` does not
-    know about this table.
+    this site, so it holds the minimum needed to say thank you and to tell two
+    supporters apart in the admin: a display name, a tier, and an email.
+
+    `email` is the ONE piece of contact data here, added deliberately (see its
+    own comment below). Nothing else from the Patreon export belongs in this
+    database — no Discord handle, no Patreon user id, no postal address, no
+    phone, no pledge amount, no charge history. Those are billing data
+    belonging to a third party, the site has no use for them, and the two
+    import paths are written to never read them at all.
 
     `display_name` is the name the patron chose to be thanked by. The CSV's
     "Name" column is frequently a real billing name, so it is not automatically
@@ -24,6 +27,27 @@ class PatreonSupporter(models.Model):
         max_length=100,
         help_text="The name to thank them by. Use their Patreon handle, never a billing name.",
     )
+    # ADMIN-ONLY. Patreon display names collide and change — a patron who
+    # renames themselves imports as a second row, and two people can pick names
+    # that differ only in punctuation. The email is the one value in the export
+    # that is stable and unique per person, so it is what lets an editor tell
+    # those rows apart.
+    #
+    # It is NOT published: `PatreonSupporterSerializer` lists its fields
+    # explicitly and this is not among them, so it cannot reach GET /supporters
+    # by being added here. Keep it that way.
+    #
+    # Optional because it is not load-bearing: a hand-entered supporter has no
+    # email, and an older CSV export without the column must still import.
+    email = models.EmailField(
+        blank=True,
+        default="",
+        help_text=(
+            "Admin only — never shown on the website. Used to tell supporters "
+            "with similar or changed display names apart."
+        ),
+    )
+
     tier = models.ForeignKey(
         "calculatorapi.PatreonTier",
         null=True,

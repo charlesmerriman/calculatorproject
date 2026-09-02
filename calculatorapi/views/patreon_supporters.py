@@ -47,6 +47,11 @@ class PatreonSupporterSerializer(serializers.ModelSerializer):
         # content — they decide what appears here, and none of them belong on
         # the wire. `patron_since` in particular is a fact about a person that
         # the page does not display.
+        #
+        # `email` is admin-only and NEVER goes on the wire. This endpoint is
+        # public and unauthenticated, so adding it here would publish the
+        # address of every supporter to the internet. This explicit list is the
+        # thing stopping that — see the field comment on PatreonSupporter.
         fields = ("id", "display_name", "tier_name", "tier_order")
 
 
@@ -158,5 +163,6 @@ def patreon_sync(request):
         "tier_changed": len(summary["tier_changed"]),
         "deactivated": len(summary["deactivated"]),
         "dates_filled": len(summary["dates_filled"]),
+        "emails_updated": len(summary["emails_updated"]),
         "unchanged": summary["unchanged"],
     })

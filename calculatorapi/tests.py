@@ -4054,6 +4054,44 @@ class PurgeUserPiiTests(TestCase):
         self.assertEqual(self.user.email, '')
         self.assertFalse(self.user.has_usable_password())
 
+    def test_patreon_emails_survive_an_ordinary_purge(self):
+        """Supporters are not accounts. A routine run must not wipe the field
+        the admin uses to tell them apart — that needs asking for."""
+        supporter = PatreonSupporter.objects.create(
+            display_name='Rhondal', email='rtibplays@gmail.com')
+        output = self._run()
+        supporter.refresh_from_db()
+        self.assertEqual(supporter.email, 'rtibplays@gmail.com')
+        self.assertIn('--include-patreon', output)
+
+    def test_include_patreon_blanks_supporter_emails(self):
+        supporter = PatreonSupporter.objects.create(
+            display_name='Rhondal', email='rtibplays@gmail.com',
+            is_public=True, patron_since=datetime.date(2025, 1, 1))
+        self._run(include_patreon=True)
+        supporter.refresh_from_db()
+        self.assertEqual(supporter.email, '')
+        # Blanked, not deleted — the thank-you list and its consent survive.
+        self.assertTrue(supporter.is_public)
+        self.assertEqual(supporter.patron_since, datetime.date(2025, 1, 1))
+
+    def test_include_patreon_dry_run_changes_nothing(self):
+        supporter = PatreonSupporter.objects.create(
+            display_name='Rhondal', email='rtibplays@gmail.com')
+        self._run(dry_run=True, include_patreon=True)
+        supporter.refresh_from_db()
+        self.assertEqual(supporter.email, 'rtibplays@gmail.com')
+
+    def test_include_patreon_runs_with_no_accounts_left_to_purge(self):
+        """The account purge is a one-shot; the supporter lever must still work
+        long after every account has already been scrubbed."""
+        CustomUser.objects.filter(is_staff=False).delete()
+        supporter = PatreonSupporter.objects.create(
+            display_name='Rhondal', email='rtibplays@gmail.com')
+        self._run(include_patreon=True)
+        supporter.refresh_from_db()
+        self.assertEqual(supporter.email, '')
+
     def test_social_users_survive_purge(self):
         """A social account has no PII to begin with; the purge must not break
         its ability to sign in (its token is deleted, but the link remains)."""
@@ -5392,6 +5430,22 @@ class PatreonSupporterEndpointTests(TestCase):
         row = response.data["supporters"][0]
         self.assertEqual(set(row), {"id", "display_name", "tier_name", "tier_order"})
 
+    def test_email_never_reaches_the_public_endpoint(self):
+        """The one that matters: this route is public and unauthenticated.
+
+        The email is stored so the ADMIN can tell supporters apart. Serializing
+        it here would publish the address of every consenting supporter to
+        anyone who loads the home page, so it is asserted on its own rather than
+        left to the field-set check above.
+        """
+        PatreonSupporter.objects.create(
+            display_name="Rhondal", tier=self.junior, is_public=True,
+            is_active=True, email="rtibplays@gmail.com")
+
+        response = self.client.get("/supporters")
+        self.assertNotIn("email", response.data["supporters"][0])
+        self.assertNotIn(b"rtibplays", response.content)
+
     def test_public_endpoint_needs_no_auth_and_has_no_write_actions(self):
         response = self.client.get("/supporters")
         self.assertEqual(response.status_code, 200)
@@ -5415,28 +5469,84 @@ class PatreonSupporterEndpointTests(TestCase):
 class PatreonCsvImportTests(TestCase):
     """The importer's two jobs: reconcile the roster, and touch nothing else."""
 
-    def test_parse_reads_only_name_tier_and_status(self):
+    def test_parse_reads_only_name_email_tier_and_status(self):
         upload = patreon_csv(
             ("Rhondal", "rtibplays@gmail.com", "rhondal", "Active patron", "Junior Class"),
         )
         rows = parse_patreon_csv(upload)
         self.assertEqual(rows, [{
             "display_name": "Rhondal",
+            "email": "rtibplays@gmail.com",
             "tier_name": "Junior Class",
             "is_active": True,
         }])
 
-    def test_import_stores_no_pii_from_the_csv(self):
+    def test_import_stores_the_email_and_nothing_else_from_the_csv(self):
+        """Email in, everything else out — the boundary, in one test.
+
+        Email is deliberately kept (it is what tells two supporters apart in the
+        admin). The Discord handle beside it in the export, and every billing
+        column after it, must still never land — including via a stray field
+        added later, hence checking every value rather than a named list.
+        """
         email = "rtibplays@gmail.com"
-        upload = patreon_csv(("Rhondal", email, "rhondal", "Active patron", "Junior Class"))
+        # A Discord handle that is not a substring of the name or the email, so
+        # "it wasn't stored" is actually provable.
+        upload = patreon_csv(
+            ("Rhondal", email, "dsc_handle_7", "Active patron", "Junior Class"))
         apply_patreon_import(parse_patreon_csv(upload))
 
         supporter = PatreonSupporter.objects.get(display_name="Rhondal")
-        # Nothing on the row may carry the email or handle — including via a
-        # stray field added later, hence checking every value rather than a list.
-        stored = " ".join(str(value) for value in supporter.__dict__.values())
+        self.assertEqual(supporter.email, email)
+
+        # Every OTHER value on the row, so a stray field added later fails here.
+        stored = " ".join(
+            str(value)
+            for key, value in supporter.__dict__.items()
+            if key != "email"
+        )
         self.assertNotIn(email, stored)
-        self.assertNotIn("rhondal@", stored)
+        self.assertNotIn("dsc_handle_7", stored)
+        for billing_value in ("2.99", "12345678", "monthly", "USD"):
+            self.assertNotIn(billing_value, stored)
+
+    def test_import_without_an_email_column_still_works(self):
+        """An export predating the column, or one trimmed by hand, must import."""
+        # Dropping a column shifts every value after it, so the row is built
+        # against the trimmed header by name rather than reusing patreon_csv().
+        columns = [c for c in PATREON_CSV_HEADER.split(",") if c != "Email"]
+        record = dict.fromkeys(columns, "")
+        record["Name"] = "Rhondal"
+        record["Patron Status"] = "Active patron"
+        record["Tier"] = "Junior Class"
+        upload = SimpleUploadedFile(
+            "members.csv",
+            (",".join(columns) + "\n"
+             + ",".join(record[column] for column in columns) + "\n").encode("utf-8"),
+            content_type="text/csv",
+        )
+
+        apply_patreon_import(parse_patreon_csv(upload))
+        self.assertEqual(PatreonSupporter.objects.get(display_name="Rhondal").email, "")
+
+    def test_reimport_updates_a_changed_email(self):
+        apply_patreon_import(parse_patreon_csv(patreon_csv(
+            ("Rhondal", "old@example.com", "", "Active patron", "Junior Class"))))
+        apply_patreon_import(parse_patreon_csv(patreon_csv(
+            ("Rhondal", "new@example.com", "", "Active patron", "Junior Class"))))
+
+        supporter = PatreonSupporter.objects.get(display_name="Rhondal")
+        self.assertEqual(supporter.email, "new@example.com")
+
+    def test_reimport_without_an_email_keeps_the_stored_one(self):
+        """An empty incoming value means "don't know", never "clear it"."""
+        apply_patreon_import(parse_patreon_csv(patreon_csv(
+            ("Rhondal", "keep@example.com", "", "Active patron", "Junior Class"))))
+        apply_patreon_import(parse_patreon_csv(patreon_csv(
+            ("Rhondal", "", "", "Active patron", "Junior Class"))))
+
+        supporter = PatreonSupporter.objects.get(display_name="Rhondal")
+        self.assertEqual(supporter.email, "keep@example.com")
 
     def test_import_never_publishes_a_name(self):
         upload = patreon_csv(
@@ -5674,13 +5784,16 @@ class SetPatreonTierOrderCommandTests(TestCase):
 
 # ── Patreon API sync ──────────────────────────────────────────────────────────
 
-def patreon_member(name, tier_id=None, status="active_patron", pledge_start=None):
+def patreon_member(name, tier_id=None, status="active_patron", pledge_start=None, email=None):
     """One member resource, shaped like Patreon's JSON:API response."""
     return {
         "id": f"member-{name}",
         "type": "member",
         "attributes": {
             "full_name": name,
+            # Patreon omits the key entirely for a member it has no address for,
+            # which is why the client reads it with a default rather than [].
+            **({"email": email} if email is not None else {}),
             "patron_status": status,
             "pledge_relationship_start": pledge_start,
         },
@@ -5738,12 +5851,14 @@ class PatreonApiClientTests(TestCase):
         self.credentials.campaign_id = "camp-1"
         self.credentials.save()
 
-    def test_request_never_asks_for_email_or_address(self):
+    def test_request_asks_for_email_but_never_address_or_phone(self):
         """The whole privacy argument for the API route rests on this.
 
-        Scopes are the other half and are set outside the code, so this is the
-        half a test can hold: the request names the fields it wants, and that
-        list contains nothing about contacting or billing a person.
+        Scopes are the other half and are set outside the code — a creator token
+        carries every v2 scope automatically — so this is the half a test can
+        hold: the request names the fields it wants, and that list is exactly
+        what we decided to store. Email is on it deliberately; address, phone
+        and the money fields are the ones this asserts we never even ask for.
         """
         captured = {}
 
@@ -5755,13 +5870,33 @@ class PatreonApiClientTests(TestCase):
             patreon_api.fetch_members(self.credentials)
 
         requested = captured["fields[member]"]
-        self.assertNotIn("email", requested)
         self.assertNotIn("address", requested)
         self.assertNotIn("phone", requested)
+        self.assertNotIn("lifetime_support_cents", requested)
         self.assertEqual(
             set(requested.split(",")),
-            {"full_name", "patron_status", "pledge_relationship_start"},
+            {"full_name", "email", "patron_status", "pledge_relationship_start"},
         )
+
+    def test_member_email_reaches_the_row(self):
+        page = patreon_page(
+            [patreon_member("Rhondal", "t1", email="rtibplays@gmail.com")],
+            {"t1": "Junior Class"},
+        )
+        with patch("calculatorapi.patreon_api.requests.request",
+                   side_effect=[FakeResponse(page)]):
+            rows = patreon_api.fetch_members(self.credentials)
+
+        self.assertEqual(rows[0]["email"], "rtibplays@gmail.com")
+
+    def test_member_with_no_email_gives_an_empty_string(self):
+        """Patreon can omit the attribute; that must not become the string "None"."""
+        page = patreon_page([patreon_member("Rhondal", "t1")], {"t1": "Junior Class"})
+        with patch("calculatorapi.patreon_api.requests.request",
+                   side_effect=[FakeResponse(page)]):
+            rows = patreon_api.fetch_members(self.credentials)
+
+        self.assertEqual(rows[0]["email"], "")
 
     def test_pagination_is_followed_to_the_end(self):
         pages = [
@@ -5789,6 +5924,7 @@ class PatreonApiClientTests(TestCase):
 
         self.assertEqual(rows, [{
             "display_name": "Rhondal",
+            "email": "",
             "tier_name": "Junior Class",
             "is_active": True,
             "patron_since": datetime.date(2025, 3, 4),

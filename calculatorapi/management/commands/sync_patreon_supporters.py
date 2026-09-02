@@ -96,6 +96,7 @@ class Command(BaseCommand):
             ("moved tier", "tier_changed"),
             ("deactivated", "deactivated"),
             ("pledge date filled", "dates_filled"),
+            ("email updated", "emails_updated"),
         ):
             names = summary[key]
             if names:

@@ -1021,20 +1021,32 @@ class PatreonSupporterAdmin(ModelAdmin):
     and is the only thing that puts a name on the website. It is `list_editable`
     so the whole list can be reviewed and cleared in one pass, and it is the one
     field the CSV importer will never touch.
+
+    `email` is shown here and NOWHERE else. It is what distinguishes two rows
+    whose display names collide, or the old and new row left behind when a
+    patron renames themselves on Patreon. It is not on the public serializer and
+    must not be added to it.
     """
 
     change_list_template = "admin/calculatorapi/patreonsupporter/change_list.html"
 
-    list_display = ("display_name", "tier", "is_public", "is_active", "patron_since")
+    list_display = ("display_name", "email", "tier", "is_public", "is_active", "patron_since")
     list_editable = ("is_public", "is_active")
     list_filter = ("is_public", "is_active", "tier")
     ordering = ("tier__order", "display_name")
-    search_fields = ("display_name",)
+    # Searching by email is the fast way to find the row for a patron who wrote
+    # in, when the name they signed the message with isn't the one on the row.
+    search_fields = ("display_name", "email")
     autocomplete_fields = ("tier",)
 
     fieldsets = (
         (None, {
-            "fields": ("display_name", "tier"),
+            "description": (
+                "The email is for identification inside the admin only. It is never "
+                "sent to the website, and it is not a mailing list — see the privacy "
+                "note on the model before using it for anything else."
+            ),
+            "fields": ("display_name", "email", "tier"),
         }),
         ("Publication", {
             "description": (
