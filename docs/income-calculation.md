@@ -155,14 +155,16 @@ boundary is paid by exactly one window. Constants: `VALENTINES_CARATS`, `VALENTI
 
 > **Available from August 15, 2027.** No training pass income is projected for any period before this date — neither the paid reward nor the free tier.
 
-Carats and tickets behave differently: the paid carat reward **replaces** the free tier's, while the tickets **stack** on top of it.
+Carats and tickets behave differently: the paid carat reward **replaces** the free tier's, while the tickets **stack** on top of it. The SSR shard is a third case again — paid tier only, with no free-tier amount to stack on.
 
-| State | Carats | Uma tickets | Support tickets |
-|---|---|---|---|
-| Training pass active | **+2,200** on the 24th of each month (**1,850 free + 350 paid**) | **4/month** (2 free + 2 paid bonus) | **4/month** (2 free + 2 paid bonus) |
-| No training pass | **+500** per calendar month (free tier, all free carats) | **2/month** | **2/month** |
+| State | Carats | Uma tickets | Support tickets | SSR shards |
+|---|---|---|---|---|
+| Training pass active | **+2,200** on the 24th of each month (**1,850 free + 350 paid**) | **4/month** (2 free + 2 paid bonus) | **4/month** (2 free + 2 paid bonus) | **1/month** |
+| No training pass | **+500** per calendar month (free tier, all free carats) | **2/month** | **2/month** | none |
 
-The 500-carat figure is the free tier of the Training Pass — it applies to all accounts once the feature launches, regardless of whether the paid pass is active. The same is true of the 2 free-tier tickets of each type.
+The 500-carat figure is the free tier of the Training Pass — it applies to all accounts once the feature launches, regardless of whether the paid pass is active. The same is true of the 2 free-tier tickets of each type. The shard is not: it is a paid-pass perk, so a free-tier account earns none.
+
+**The SSR shard is the only uncap income that is not dated.** Every other shard and crystal in the projection comes from a `GameEvent`'s reward amounts or a Champions Meeting / League of Heroes payout, all of which land on a specific instant. The pass's shard is monthly, on the same clock as its carats and tickets, so it does not go through the event/race accrual at all — it is added by `cumulativeTrainingPassIncome` and reaches all three places that report shards (the banner rows, the "Income & Resources" tiles, and the Uncap Crystals panel) from that one helper. Constant: `training_pass_paid_ssr_shards`, mirrored by `TRAINING_PASS_PAID_SSR_SHARDS` in `frontend/src/constants/gameConstants.ts`.
 
 **Free/paid carat split.** Like the Daily Carat Pack, part of the paid pass's reward is purchased currency: 350 of the 2,200 land in the **paid** balance (the only one that can buy discounted pulls), the other 1,850 in the free balance. The free tier's 500 is entirely free carats. The 2,200 total is unaffected, so with the default toggles (discounted pulls off, full-price paid pulls on) projections are unchanged — the split only matters to accounts using discounted pulls. Constants: `TRAINING_PASS_MONTHLY_FREE_CARATS` / `TRAINING_PASS_MONTHLY_PAID_CARATS` in `frontend/src/constants/gameConstants.ts`, with `TRAINING_PASS_MONTHLY_REWARD` derived from their sum.
 

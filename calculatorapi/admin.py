@@ -844,6 +844,7 @@ class CalculationConstantsAdmin(ModelAdmin):
                 "training_pass_free_support_tickets",
                 "training_pass_paid_bonus_uma_tickets",
                 "training_pass_paid_bonus_support_tickets",
+                "training_pass_paid_ssr_shards",
             ),
         }),
         ("Login campaigns & gifts", {

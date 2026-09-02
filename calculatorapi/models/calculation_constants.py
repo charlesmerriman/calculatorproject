@@ -115,6 +115,15 @@ class CalculationConstants(models.Model):
         default=2, validators=[MinValueValidator(0)],
         help_text="EXTRA monthly support tickets from the paid pass, added to the free tier's.",
     )
+    training_pass_paid_ssr_shards = models.IntegerField(
+        default=1, validators=[MinValueValidator(0)],
+        help_text=(
+            "Monthly SSR uncap shards from an ACTIVE paid Training Pass. The "
+            "free tier earns none, so unlike the tickets above there is no free "
+            "counterpart to add this to. Delivered on the same monthly clock as "
+            "the pass's carats and tickets."
+        ),
+    )
 
     # ── Login campaigns & annual gifts ───────────────────────────────────────
     misc_earnings_monthly = models.IntegerField(

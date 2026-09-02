@@ -897,6 +897,8 @@ class CalculationConstantsTests(TestCase):
         # 1800/month = the 60/day the projection currently uses. The sheet says
         # 3000; closing that gap is a deliberate parity change, not a default.
         self.assertEqual(constants.misc_earnings_monthly, 1800)
+        # Paid tier only — the free tier earns no shards from the pass.
+        self.assertEqual(constants.training_pass_paid_ssr_shards, 1)
         self.assertEqual(float(constants.prediction_factor), PREDICTION_FACTOR)
         self.assertEqual(
             constants.game_event_end_buffer_days, GAME_EVENT_END_DATE_BUFFER.days
