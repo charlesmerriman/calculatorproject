@@ -32,6 +32,16 @@
 # module changed. Newest entry first is conventional here but not required — the
 # page sorts by date.
 
+- key: pull-count-pad
+  date: 2026-09-03
+  title: "Setting pull counts in bulk"
+  version: "v1.1.1"
+  changes:
+    - added: "Click into the pulls box on a planner row and a pad of buttons opens under it: 10 at a time, 200 at a time, straight to the next pity threshold, or Max for everything that banner's carats, tickets and free pulls can pay for. Step-up rows get the same pad, counted in steps and rounds."
+    - added: "Shift and Ctrl with the arrow keys move by ten and two hundred."
+    - changed: "Only support banners show up in the Uncap Crystals picker now. Uma banners were in the list too, and none of them have a support card to uncap."
+    - fixed: "A very long banner name no longer drags the staging row off the side of the screen, taking the confirm and discard buttons with it."
+
 - key: post-beta-polish
   date: 2026-09-02
   title: "Staging, themes, and a round of fixes"
