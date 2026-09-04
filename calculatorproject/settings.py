@@ -519,6 +519,27 @@ SPECTACULAR_SETTINGS = {
 
 WHITENOISE_STATIC_PREFIX = '/static/'
 
+# Local-memory cache, holding the public half of GET /calculator-data so the
+# app's hot route stops rebuilding a ~1MB response per visitor. This is Django's
+# default backend and was already in effect implicitly; it is spelled out here
+# so the size limit and the deployment assumption are visible.
+#
+# LocMem lives inside ONE process, which is correct only while the service runs
+# a single one (.do/app.yaml: instance_count 1, gunicorn with no --workers).
+# calculatorapi/public_payload_cache.py carries the full reasoning and what to
+# change if that ever stops being true.
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "calculator-data",
+        "OPTIONS": {
+            # One entry is all this cache is for. The default (300) would let an
+            # accidental per-request key quietly hold 300 copies of a megabyte.
+            "MAX_ENTRIES": 8,
+        },
+    }
+}
+
 # Log all Django errors to stdout so DigitalOcean runtime logs capture tracebacks.
 # Without this, Django silently swallows 500 errors when DEBUG=False.
 LOGGING = {

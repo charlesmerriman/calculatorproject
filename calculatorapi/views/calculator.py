@@ -1,9 +1,13 @@
+import json
+
 from rest_framework.viewsets import ViewSet
 from rest_framework.decorators import action
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework import permissions, status
 from django.db import transaction
 from django.db.models import Prefetch
+from calculatorapi import public_payload_cache
 from calculatorapi.eligibility import build_first_jp_date_maps
 from calculatorapi.ledger import (
     KIND_CHAMPIONS_MEETING,
@@ -158,6 +162,89 @@ def _stored_selection_pairs(user):
     return pairs
 
 
+def _build_user_context():
+    """The three lookups the user-scoped collections need, and nothing else.
+
+    A signed-in request still has to order its planned banners by resolved
+    banner date and its planned purchases by resolved campaign date, and to
+    resolve selector eligibility on the cards nested inside a planned row --
+    none of which the cached public bytes carry in usable form.
+
+    _build_public_payload() derives the same three while assembling the
+    catalogue and passes its own down; this exists for the cache-HIT path,
+    where none of that work has happened. Six queries against a payload that
+    would otherwise cost hundreds.
+    """
+    date_maps = build_effective_date_maps()
+    emap = date_maps[BannerTimeline]
+    # banner_links only: build_anniversary_event_date_map spans a campaign's
+    # banner "Parts" to date it, and reads nothing off products.
+    anniversary_emap = build_anniversary_event_date_map(
+        AnniversaryEvent.objects.prefetch_related("banner_links"), emap
+    )
+    uma_first_jp_dates, support_first_jp_dates = build_first_jp_date_maps()
+    return emap, anniversary_emap, {
+        "uma_first_jp_dates": uma_first_jp_dates,
+        "support_first_jp_dates": support_first_jp_dates,
+    }
+
+
+def _build_user_payload(user, *, emap, anniversary_emap, card_context):
+    """The four user-owned collections, serialized, for merging over the
+    cached guest payload. Every key here MUST also appear in
+    _build_public_payload()'s response dict with its guest value, or a signed-in
+    response and a guest one would carry different keys."""
+    planned_banners = sorted(
+        UserPlannedBanner.objects.filter(user=user).select_related(
+            "banner_uma__banner_timeline",
+            "banner_support__banner_timeline",
+            "banner_step_up__banner_timeline",
+            "banner_step_up__anniversary_event",
+        # UserPlannedBannerSerializer nests BannerUma/BannerSupportSerializer,
+        # so a signed-in user pays the same M2M N+1 as the catalogue does --
+        # once per planned row rather than once per banner, but same cause.
+        ).prefetch_related("banner_uma__umas", "banner_support__support_cards"),
+        key=lambda pb: (
+            effective_sort_key(planned_effective_start(pb, emap)),
+            _planned_banner_kind_rank(pb),
+        ),
+    )
+    # Ordered by their campaign's resolved start so the planner renders
+    # chronologically without re-deriving dates client-side.
+    planned_purchases = sorted(
+        UserPlannedPurchase.objects.filter(user=user).select_related(
+            "product__anniversary_event"
+        ),
+        key=lambda pp: effective_sort_key(
+            anniversary_emap.get(pp.product.anniversary_event_id)
+        ),
+    )
+    # Ordered by the model's own Meta.ordering (banner, then slot) so the client
+    # can render the ten slots without re-sorting. Cards are joined for nothing
+    # here -- only ids are serialized -- so this stays a single query.
+    step_up_selections = UserStepUpSelection.objects.filter(user=user)
+
+    return {
+        "user_planned_banner_data": UserPlannedBannerSerializer(
+            planned_banners, many=True,
+            # No "request" in context on purpose: with it, DRF's ImageField
+            # emits absolute URLs via request.build_absolute_uri(), which
+            # behind the prod reverse proxy point at the wrong (internal/http)
+            # host and break the nested banner images. Every other serializer
+            # omits request and emits relative /media/... URLs that the
+            # frontend/ingress resolves correctly — keep this one consistent.
+            context={"effective_dates": emap, **card_context},
+        ).data,
+        "user_planned_purchase_data": UserPlannedPurchaseSerializer(
+            planned_purchases, many=True
+        ).data,
+        "user_step_up_selection_data": UserStepUpSelectionSerializer(
+            step_up_selections, many=True
+        ).data,
+        "user_stats_data": UserStatsSerializer(user).data,
+    }
+
+
 class CalculatorViewSet(ViewSet):
     def get_permissions(self):
         # GET serves mostly reference data, so guests may read it; the PATCH
@@ -168,6 +255,47 @@ class CalculatorViewSet(ViewSet):
 
     @action(detail=False, methods=["get"], url_path="calculator-data")
     def get_calculator_data(self, request):
+        """The app's hot route: everything under /app blocks on it.
+
+        Served from calculatorapi/public_payload_cache.py, because the expensive
+        part of this response is identical for every visitor -- the catalogue
+        below serializes ~900 nested cards twice over and none of it is
+        per-user. On a cache hit neither branch runs a single catalogue query:
+        a guest is answered straight from the cached JSON, and a signed-in user
+        has only their own four collections read and merged over it.
+        """
+        cached_json = public_payload_cache.read()
+        if cached_json is None:
+            payload = self._build_public_payload()
+            public_payload_cache.store(JSONRenderer().render(payload))
+        else:
+            # ~4ms for the megabyte, against the ~2s the cache just saved. A
+            # guest could be answered with those bytes verbatim via HttpResponse
+            # and skip even this, but that costs the endpoint its DRF Response
+            # -- and with it .data, content negotiation, and one uniform shape
+            # across both branches -- to save single-digit milliseconds.
+            payload = json.loads(cached_json)
+
+        if request.user.is_authenticated:
+            emap, anniversary_emap, card_context = _build_user_context()
+            payload.update(
+                _build_user_payload(
+                    request.user,
+                    emap=emap,
+                    anniversary_emap=anniversary_emap,
+                    card_context=card_context,
+                )
+            )
+
+        return Response(payload, status=status.HTTP_200_OK)
+
+    def _build_public_payload(self):
+        """Assemble the visitor-independent half of /calculator-data.
+
+        Runs only on a cache miss. Everything it touches is content an admin
+        edits, never anything about the requesting user -- which is what lets
+        the result be shared by everyone until a write invalidates it.
+        """
         # pylint: disable=too-many-locals
         #
         # This endpoint's job IS to assemble the whole payload: every local is a
@@ -250,47 +378,6 @@ class CalculatorViewSet(ViewSet):
             "support_first_jp_dates": support_first_jp_dates,
         }
 
-        # Guests get the full reference payload but no user-scoped data:
-        # an empty plan and null stats (the frontend seeds local defaults).
-        if request.user.is_authenticated:
-            user_planned_banner_data = sorted(
-                UserPlannedBanner.objects.filter(user=request.user).select_related(
-                    "banner_uma__banner_timeline",
-                    "banner_support__banner_timeline",
-                    "banner_step_up__banner_timeline",
-                    "banner_step_up__anniversary_event",
-                # UserPlannedBannerSerializer nests BannerUma/BannerSupportSerializer,
-                # so a signed-in user pays the same M2M N+1 as the catalogue above --
-                # once per planned row rather than once per banner, but same cause.
-                ).prefetch_related("banner_uma__umas", "banner_support__support_cards"),
-                key=lambda pb: (
-                    effective_sort_key(planned_effective_start(pb, emap)),
-                    _planned_banner_kind_rank(pb),
-                ),
-            )
-            # Ordered by their campaign's resolved start so the planner renders
-            # chronologically without re-deriving dates client-side.
-            user_planned_purchase_data = sorted(
-                UserPlannedPurchase.objects.filter(user=request.user).select_related(
-                    "product__anniversary_event"
-                ),
-                key=lambda pp: effective_sort_key(
-                    anniversary_emap.get(pp.product.anniversary_event_id)
-                ),
-            )
-            # Ordered by the model's own Meta.ordering (banner, then slot) so
-            # the client can render the ten slots without re-sorting. Cards are
-            # joined for nothing here -- only ids are serialized -- so this stays
-            # a single query.
-            user_step_up_selection_data = UserStepUpSelection.objects.filter(
-                user=request.user
-            )
-            user_stats_data = UserStatsSerializer(request.user).data
-        else:
-            user_planned_banner_data = UserPlannedBanner.objects.none()
-            user_planned_purchase_data = UserPlannedPurchase.objects.none()
-            user_step_up_selection_data = UserStepUpSelection.objects.none()
-            user_stats_data = None
         events_data = GameEvent.objects.select_related("banner_timeline").all()
         # GameEvent has no dates of its own — resolved via the BannerTimeline
         # emap already built above (reusing it, not a new anchor computation).
@@ -368,22 +455,13 @@ class CalculatorViewSet(ViewSet):
                 banner_step_up_data, many=True,
                 context={"effective_dates": emap}
             ).data,
-            "user_planned_banner_data": UserPlannedBannerSerializer(
-                user_planned_banner_data, many=True,
-                # No "request" in context on purpose: with it, DRF's ImageField
-                # emits absolute URLs via request.build_absolute_uri(), which
-                # behind the prod reverse proxy point at the wrong (internal/http)
-                # host and break the nested banner images. Every other serializer
-                # here omits request and emits relative /media/... URLs that the
-                # frontend/ingress resolves correctly — keep this one consistent.
-                context={"effective_dates": emap, **card_context},
-            ).data,
-            "user_planned_purchase_data": UserPlannedPurchaseSerializer(
-                user_planned_purchase_data, many=True
-            ).data,
-            "user_step_up_selection_data": UserStepUpSelectionSerializer(
-                user_step_up_selection_data, many=True
-            ).data,
+            # The guest values. A signed-in request overwrites all four from
+            # _build_user_payload() after this dict comes back out of the cache;
+            # they are spelled out here so the CACHED bytes are already a
+            # complete, correct guest response and can be returned untouched.
+            "user_planned_banner_data": [],
+            "user_planned_purchase_data": [],
+            "user_step_up_selection_data": [],
             "anniversary_event_data": AnniversaryEventSerializer(
                 anniversary_event_data, many=True,
                 context={"effective_dates": anniversary_emap}
@@ -407,14 +485,14 @@ class CalculatorViewSet(ViewSet):
             "calculation_constants": CalculationConstantsSerializer(
                 CalculationConstants.load()
             ).data,
-            "user_stats_data": user_stats_data,
+            "user_stats_data": None,
             "banner_timeline_data": BannerTimelineForViewingSerializer(
                 banner_timeline_data, many=True,
                 context={"effective_dates": emap, **card_context}
             ).data,
         }
 
-        return Response(response, status=status.HTTP_200_OK)
+        return response
 
     @action(detail=False, methods=["patch"], url_path="calculator-data")
     def update_calculator_data(self, request):

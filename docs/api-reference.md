@@ -107,6 +107,15 @@ Public. Returns a single aggregated payload containing all reference data and us
 
 For anonymous requests, all reference keys are populated as usual but the user-scoped keys are empty: `user_stats_data` is `null`, and `user_planned_banner_data` / `user_planned_purchase_data` / `user_step_up_selection_data` are `[]`. The frontend uses the `null` stats to detect guest mode and seed local defaults.
 
+**Everything except the four user-scoped keys is cached server-side.** The reference half is
+built once, kept as rendered JSON, and reused until a content write drops it — so a cache hit
+runs no catalogue queries for either a guest or a signed-in user. The user-scoped keys are
+always read fresh per request and never enter the cache. Invalidation hangs off
+`post_save`/`post_delete`/`m2m_changed`, so it does **not** catch `bulk_create()`,
+`bulk_update()`, `queryset.update()` or raw SQL; a writer using those should call
+`public_payload_cache.invalidate()` itself. Full reasoning, and the single-process deployment
+assumption it rests on, in `calculatorapi/public_payload_cache.py`.
+
 **Response `200`**
 ```json
 {
