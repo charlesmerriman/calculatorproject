@@ -44,7 +44,7 @@ from django.utils import timezone
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 
-from calculatorapi import image_library, support_backfill
+from calculatorapi import image_library, public_payload_cache, support_backfill
 from calculatorapi.management.commands.sync_changelog import (
     load_entries as load_changelog_entries,
 )
@@ -6374,3 +6374,124 @@ class PatreonSyncAdminViewTests(TestCase):
             reverse("admin:calculatorapi_patreonsupporter_changelist"))
         self.assertContains(response, "Sync from Patreon")
         self.assertContains(response, "Import Patreon CSV")
+
+
+class PublicPayloadCacheTests(TestCase):
+    """The server-side cache behind GET /calculator-data.
+
+    -> calculatorapi/public_payload_cache.py
+    """
+
+    def setUp(self):
+        # The cache outlives a test -- it is process memory, and TestCase's
+        # rollback does not touch it. Clear it so each case starts on a miss.
+        cache.clear()
+        self.user = make_user()
+        self.client, self.token = auth_client(self.user)
+        self.timeline = make_timeline(name='Cached Banner')
+        self.uma_banner = make_uma_banner(timeline=self.timeline)
+
+    def test_first_request_populates_the_cache(self):
+        self.assertIsNone(public_payload_cache.read())
+        res = APIClient().get('/calculator-data')
+        self.assertEqual(res.status_code, 200)
+        self.assertIsNotNone(public_payload_cache.read())
+
+    def test_second_guest_request_costs_no_queries(self):
+        APIClient().get('/calculator-data')
+        # The whole point: a warm cache answers a guest without touching the DB.
+        with self.assertNumQueries(0):
+            res = APIClient().get('/calculator-data')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(set(res.data.keys()), _EXPECTED_GET_KEYS)
+
+    def test_cached_response_matches_an_uncached_one(self):
+        cold = APIClient().get('/calculator-data').data
+        warm = APIClient().get('/calculator-data').data
+        self.assertEqual(json.dumps(cold, default=str),
+                         json.dumps(warm, default=str))
+
+    def test_content_write_invalidates(self):
+        APIClient().get('/calculator-data')
+        self.assertIsNotNone(public_payload_cache.read())
+        make_timeline(name='Newly Added')
+        self.assertIsNone(public_payload_cache.read())
+
+    def test_content_delete_invalidates(self):
+        APIClient().get('/calculator-data')
+        self.timeline.delete()
+        self.assertIsNone(public_payload_cache.read())
+
+    def test_a_new_banner_shows_up_on_the_next_request(self):
+        # The invalidation the content editor actually cares about.
+        first = APIClient().get('/calculator-data')
+        names = [t['name'] for t in first.data['banner_timeline_data']]
+        self.assertNotIn('Second Banner', names)
+
+        make_timeline(name='Second Banner')
+
+        second = APIClient().get('/calculator-data')
+        names = [t['name'] for t in second.data['banner_timeline_data']]
+        self.assertIn('Second Banner', names)
+
+    def test_a_visit_row_does_not_invalidate(self):
+        # Visits are written on EVERY page view. If they invalidated, the cache
+        # would be cleared continuously and never serve anything.
+        APIClient().get('/calculator-data')
+        DailyVisit.objects.create(
+            date=timezone.localdate(), page_views=1, unique_visitors=1)
+        self.assertIsNotNone(public_payload_cache.read())
+
+    def test_a_user_plan_write_does_not_invalidate(self):
+        # User-scoped rows are never part of the cached half, so saving a plan
+        # must not throw away the catalogue for everyone else.
+        APIClient().get('/calculator-data')
+        UserPlannedBanner.objects.create(
+            user=self.user, banner_uma=self.uma_banner, number_of_pulls=5)
+        self.assertIsNotNone(public_payload_cache.read())
+
+    def test_signed_in_rows_are_never_served_to_a_guest(self):
+        """The one that matters: no user's data may reach the shared cache."""
+        UserPlannedBanner.objects.create(
+            user=self.user, banner_uma=self.uma_banner, number_of_pulls=5)
+        # The SIGNED-IN request populates the cache first.
+        cache.clear()
+        signed_in = self.client.get('/calculator-data')
+        self.assertEqual(len(signed_in.data['user_planned_banner_data']), 1)
+
+        guest = APIClient().get('/calculator-data')
+        self.assertIsNone(guest.data['user_stats_data'])
+        self.assertEqual(guest.data['user_planned_banner_data'], [])
+        self.assertEqual(guest.data['user_planned_purchase_data'], [])
+        self.assertEqual(guest.data['user_step_up_selection_data'], [])
+
+    def test_signed_in_rows_merge_over_a_guest_cached_payload(self):
+        # The reverse order: a guest warms the cache, then a signed-in user must
+        # still get their own rows merged in rather than the guest's empties.
+        APIClient().get('/calculator-data')
+        UserPlannedBanner.objects.create(
+            user=self.user, banner_uma=self.uma_banner, number_of_pulls=7)
+
+        res = self.client.get('/calculator-data')
+        self.assertEqual(len(res.data['user_planned_banner_data']), 1)
+        self.assertEqual(
+            res.data['user_planned_banner_data'][0]['number_of_pulls'], 7)
+        self.assertIsNotNone(res.data['user_stats_data'])
+        # ...and the catalogue still came through with it.
+        self.assertTrue(res.data['banner_timeline_data'])
+
+    def test_one_user_never_sees_another_users_rows_from_the_cache(self):
+        UserPlannedBanner.objects.create(
+            user=self.user, banner_uma=self.uma_banner, number_of_pulls=5)
+        self.client.get('/calculator-data')
+
+        other = make_user('otheruser')
+        other_client, _ = auth_client(other)
+        res = other_client.get('/calculator-data')
+        self.assertEqual(res.data['user_planned_banner_data'], [])
+
+    def test_cached_payload_carries_every_expected_key(self):
+        # A key missing from the cached half would only show up for guests.
+        APIClient().get('/calculator-data')
+        cached = json.loads(public_payload_cache.read())
+        self.assertEqual(set(cached.keys()), _EXPECTED_GET_KEYS)
