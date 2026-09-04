@@ -32,6 +32,18 @@
 # module changed. Newest entry first is conventional here but not required — the
 # page sorts by date.
 
+- key: faster-loading
+  date: 2026-09-04
+  title: "Faster loading, and the selector tickets redone"
+  version: "v1.2"
+  changes:
+    - changed: "The calculator opens a lot faster. The page frame is up from the first moment and the data is already on its way while you are still reading the home page \u2014 clicking through used to mean a few seconds of blank spinner."
+    - changed: "Selector tickets are a checkbox column now, with the cards you picked in a strip beside them. Click a card to change it. Campaign rows lost about half their height, which you will feel most on a phone."
+    - changed: "New icons for the banner types and for the income ranks."
+    - added: "Staged rows have the bulk-adjust pad now, and the keyboard shortcuts that go with it."
+    - fixed: "That pad no longer covers the two rows underneath it. It is a single row of buttons."
+    - fixed: "Team Trials income is labelled per week. It was saying per month."
+
 - key: pull-count-pad
   date: 2026-09-03
   title: "Setting pull counts in bulk"
