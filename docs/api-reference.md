@@ -111,7 +111,7 @@ meaning anything instead of rendering a signed-in shell around nothing.
   "linked_providers": [
     { "provider": "google", "linked_at": "2026-07-02" }
   ],
-  "supporter": { "is_supporter": false }
+  "supporter": { "is_supporter": true, "tier": "Junior Class", "benefits": ["ad_free"] }
 }
 ```
 
@@ -120,11 +120,20 @@ meaning anything instead of rendering a signed-in shell around nothing.
 - **`subject_id` is never serialized, for any provider.** The serializer's
   explicit field list is the only thing keeping it off the wire — the same role
   `PatreonSupporterSerializer`'s list plays for the supporter email.
-- `supporter` currently always reports `is_supporter: false`; nothing can be a
-  supporter until `PatreonSupporter` gains `patreon_user_id` / `linked_user`
-  (Phase 2 of `patreon-accounts-plan.md`). When there is no entitlement the block
-  carries **only** `is_supporter` — no null tier fields, so a client cannot read
-  the absence of a tier as a tier.
+- `supporter` is **derived on every request** from the linked `PatreonSupporter`
+  row — `linked_user` set, `is_active`, and a tier — never read from a flag on
+  the account. → `calculatorapi/benefits.py`
+- With no entitlement the block is `{"is_supporter": false}` and **nothing
+  else**. No null tier, no empty benefits array: either would let a client read
+  the absence of a tier as a tier, or "we checked and they have none" as "we
+  have not checked".
+- `benefits` is a list of capability KEYS, not tier arithmetic. Whether
+  `ad_free` needs any paid tier or a specific one is decided server-side in
+  `benefits.BENEFITS`; a client comparing tier orders would be a second
+  implementation of the paywall, free to disagree with the real one. There is
+  deliberately no tier `order` in the response.
+- Nothing identifying the *supporter row* is here even for a supporter — no
+  display name, no admin email, no `patreon_user_id`, no row id.
 
 Deliberately its own route rather than a key on `/calculator-data`: that payload
 is not fetched on the home page, the FAQ or the changelog, and everything in it
@@ -420,9 +429,16 @@ stale.
 ```json
 {
   "members_returned": 22, "created": 1, "reactivated": 0,
-  "tier_changed": 0, "deactivated": 2, "dates_filled": 1, "unchanged": 19
+  "tier_changed": 0, "deactivated": 2, "dates_filled": 1,
+  "emails_updated": 0, "ids_filled": 0, "linked": 1, "ambiguous": 0,
+  "unchanged": 19
 }
 ```
+
+`linked` counts patrons newly matched to a website account. `ambiguous` counts
+rows the reconcile **refused to act on** because two stored supporters share
+that display name and the incoming row carried no Patreon id to tell them
+apart — nothing was written for those, and they need an editor.
 
 **Counts, never names** — the job log is a third-party surface, and most
 supporters have not been cleared for publication. Throttled at 12/hour

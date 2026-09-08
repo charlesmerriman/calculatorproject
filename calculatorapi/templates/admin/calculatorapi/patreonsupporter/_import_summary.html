@@ -36,6 +36,21 @@ Expects `summary` and `was_dry_run` in the context.
         <span class="names">&mdash; {{ summary.emails_updated|join:", " }}</span>
       </li>
     {% endif %}
+    {% if summary.linked %}
+      <li><strong>{{ summary.linked|length }}</strong> matched to a website account
+        <span class="names">&mdash; {{ summary.linked|join:", " }}</span>.
+        They can now see supporter-only features when signed in.
+      </li>
+    {% endif %}
+    {# Not an error, but the one case the import refuses to guess at: two rows
+       already share this name and the file gives nothing to tell them apart. #}
+    {% if summary.ambiguous %}
+      <li class="errornote"><strong>{{ summary.ambiguous|length }}</strong> skipped &mdash;
+        more than one supporter already uses that name
+        <span class="names">&mdash; {{ summary.ambiguous|join:", " }}</span>.
+        Nothing was changed for them; edit those rows by hand to sort it out.
+      </li>
+    {% endif %}
     <li><strong>{{ summary.unchanged }}</strong> unchanged</li>
     {% if summary.tiers_created %}
       <li><strong>{{ summary.tiers_created|length }}</strong> new tier(s) created

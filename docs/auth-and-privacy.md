@@ -209,6 +209,13 @@ Strips email, name, and password from all non-staff accounts. **Irreversible.** 
 runs, those accounts cannot sign in at all — their plans stay in the database but are
 unreachable. Intended to be run once in production.
 
+**It always clears `PatreonSupporter.linked_user` for the accounts it purges**,
+flag or no flag. The command's job is to make an account unreachable, and a
+supporter link pointing at a purged account would outlive it — granting
+entitlement to a login nobody can perform. The supporter **row** is untouched;
+only the link goes. Blanking supporter *data* is separate and still needs
+`--include-patreon`.
+
 ---
 
 ## Related

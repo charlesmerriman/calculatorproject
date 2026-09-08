@@ -24,7 +24,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 
-from calculatorapi import oauth
+from calculatorapi import benefits, oauth
 from calculatorapi.models import CustomUser, SocialAccount
 
 logger = logging.getLogger(__name__)
@@ -220,6 +220,14 @@ def social_auth_complete(request):
 
     social.last_login_at = timezone.now()
     social.save(update_fields=["last_login_at"])
+
+    # Someone signing in with Patreon may already be a known patron. This is a
+    # LOCAL lookup only — no request to Patreon — because sign-in is the hot
+    # path and most people signing in are not patrons. The link endpoint, which
+    # is a deliberate "give me my benefits" action, is where it is worth asking
+    # Patreon directly; here a new patron simply waits for the daily sync.
+    if provider == SocialAccount.PROVIDER_PATREON:
+        benefits.link_supporter_to_user(social.user, subject_id)
 
     token, _ = Token.objects.get_or_create(user=social.user)
     return Response(

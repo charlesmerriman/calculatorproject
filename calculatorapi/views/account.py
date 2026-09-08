@@ -32,18 +32,18 @@ PatreonSupporterSerializer's does for the supporter email: it is the one thing
 standing between a private column and a response body. Add a field to it only
 with a reason that survives being written down.
 
-SUPPORTER STATUS IS A STUB, ON PURPOSE
---------------------------------------
-`supporter` is always {"is_supporter": false} today. Nothing CAN be a supporter
-yet: no site account can be matched to a Patreon patron until PatreonSupporter
-grows `patreon_user_id` and `linked_user`, which is Phase 2 work.
+SUPPORTER STATUS IS DERIVED ON EVERY REQUEST
+--------------------------------------------
+`supporter` is computed from the linked PatreonSupporter row each time, never
+read from a flag on the account — see calculatorapi/benefits.py for why that
+matters more than it looks like it should.
 
-The block ships now anyway so the client contract does not change when
-entitlement becomes real — the frontend reads `supporter.is_supporter` today
-and keeps reading the same key afterwards. Retrofitting the shape later would
-mean touching every consumer twice.
+`benefits` is a list of keys rather than a set of booleans so the client never
+has to reimplement the tier arithmetic: whether "ad_free" needs any paid tier or
+a specific one is decided in one place on the server, and adding a benefit later
+does not change the response SHAPE, only its contents.
 
-See patreon-accounts-plan.md, Phase 0.
+See patreon-accounts-plan.md, Phase 2.
 """
 
 from django.utils import timezone
@@ -51,6 +51,7 @@ from rest_framework import permissions, serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
+from calculatorapi import benefits
 from calculatorapi.models import SocialAccount
 
 
@@ -82,26 +83,30 @@ class LinkedProviderSerializer(serializers.ModelSerializer):
         return timezone.localdate(obj.created_at)
 
 
-def _supporter_block(_user):
+def _supporter_block(user):
     """The caller's Patreon entitlement.
 
-    Always "not a supporter" in Phase 0 — see the module docstring. When Phase 2
-    lands, this reads the linked PatreonSupporter row and becomes:
-
-        is_supporter = row exists AND row.is_active AND row.tier is not None
-
-    DERIVED, never a cached boolean on CustomUser. A copied flag is a second
-    truth that drifts the moment a pledge lapses or resumes, and the drift is
-    invisible: someone cancels and keeps their benefits, or renews and silently
-    does not get them back. The daily Patreon sync already keeps the supporter
-    row honest, so deriving from it costs nothing and cannot go stale.
-
     When there is no entitlement the block carries `is_supporter` and NOTHING
-    ELSE — no null tier fields. A null tier name sitting next to
-    `is_supporter: false` is an invitation for a client to render an empty badge
-    or read the absence of a tier as a tier.
+    ELSE — no null tier fields, no empty benefits list. A null tier name sitting
+    next to `is_supporter: false` is an invitation for a client to render an
+    empty badge or read the absence of a tier as a tier.
+
+    NOTE WHAT IS ABSENT even when they ARE a supporter: no display name, no
+    email, no `patreon_user_id`, no supporter row id. The account owner has no
+    use for any of it, and it is the same field-list discipline the linked
+    providers are under above.
     """
-    return {"is_supporter": False}
+    supporter = benefits.entitled_supporter(user)
+    if supporter is None:
+        return {"is_supporter": False}
+    return {
+        "is_supporter": True,
+        # The tier NAME, which is what a badge shows. Not `order` — that is an
+        # internal display rank the client has no business doing maths on; the
+        # server has already done that maths to produce `benefits`.
+        "tier": supporter.tier.name,
+        "benefits": benefits.benefit_keys_for(supporter),
+    }
 
 
 @api_view(["GET"])

@@ -54,8 +54,9 @@ from rest_framework.decorators import api_view, permission_classes, throttle_cla
 from rest_framework.response import Response
 from rest_framework.throttling import UserRateThrottle
 
-from calculatorapi import oauth
-from calculatorapi.models import SocialAccount
+from calculatorapi import benefits, oauth, patreon_api
+from calculatorapi.admin_patreon_import import apply_patreon_import
+from calculatorapi.models import PatreonCredentials, SocialAccount
 from calculatorapi.views.account import LinkedProviderSerializer
 
 # The redirect-URI allowlist check is IMPORTED, not reimplemented. It is the
@@ -81,6 +82,11 @@ class AccountLinkThrottle(UserRateThrottle):
     Scoped to the user rather than the IP because the route is authenticated.
     Each accepted call mints a state and sends someone to a provider, so this
     caps outbound work rather than guarding a public write.
+
+    Applied to COMPLETE as well as start, because completing a Patreon link can
+    trigger a full member fetch against Patreon (see
+    _resolve_patreon_entitlement) — the one place a single user action reaches
+    a third-party API more than once.
     """
 
     scope = "account_link"
@@ -201,8 +207,69 @@ def _attach_identity(user, provider, subject_id):
     return Response(LinkedProviderSerializer(link).data, status=status.HTTP_201_CREATED)
 
 
+def _refresh_supporters_from_patreon():
+    """Run the real sync now, best effort. True if it completed.
+
+    The FOURTH caller of the one reconcile, and a thin one like the other three
+    (the management command, the admin button, POST /patreon/sync): fetch rows
+    with `patreon_api.fetch_members`, hand them to `apply_patreon_import`. What
+    a sync MEANS still lives in one place; this only decides when to run one.
+
+    `deactivate_missing=False`, unlike the scheduled run. Retiring lapsed
+    patrons is the daily job's business — a user action should only ever be
+    able to ADD what it came for.
+
+    Every failure is swallowed. The link itself has already succeeded by the
+    time this runs, so Patreon being unreachable must not turn that into an
+    error response; the daily sync will pick the same patron up.
+    """
+    # Checked before the call rather than caught after it. With no token there
+    # is nothing to attempt, and letting it fail would write a traceback into
+    # the log on every link — indistinguishable from a real outage, and the
+    # normal state of a dev machine that has no Patreon credentials.
+    if not PatreonCredentials.load().is_configured:
+        return False
+    try:
+        rows = patreon_api.fetch_members()
+    except patreon_api.PatreonApiError:
+        logger.warning("Inline Patreon refresh failed", exc_info=True)
+        return False
+    apply_patreon_import(rows, deactivate_missing=False)
+    return True
+
+
+def _resolve_patreon_entitlement(user, patreon_user_id):
+    """Make a brand-new supporter a supporter NOW, not tomorrow morning.
+
+    Two steps, cheapest first:
+
+      1. A local match against the supporters table. This is the common case —
+         the daily sync already knows about anyone who pledged before today —
+         and it costs one indexed query.
+      2. Only if that finds nothing: run the real sync inline. Someone who
+         pledged and linked within the same minute is invisible to step 1
+         through no fault of their own, and "come back tomorrow" is a poor
+         answer for a person who has just paid.
+
+    Step 2 goes through the SAME producer and the SAME reconcile as every other
+    sync — `fetch_members` into `apply_patreon_import` — rather than reading
+    this user's membership from their own OAuth token. Reading their token
+    would need a wider Patreon scope, would arrive without the display name a
+    supporter row requires, and would be a second path into entitlement that
+    the one-reconcile rule exists to prevent.
+    """
+    if benefits.link_supporter_to_user(user, patreon_user_id) is not None:
+        return
+    if _refresh_supporters_from_patreon():
+        # The reconcile attaches the row itself, having just met a patron whose
+        # id now has a SocialAccount. Repeated here so this function's contract
+        # does not depend on that staying true.
+        benefits.link_supporter_to_user(user, patreon_user_id)
+
+
 @api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
+@throttle_classes([AccountLinkThrottle])
 def account_link_complete(request, provider):
     """Redeem the code and attach the identity to the signed-in account.
 
@@ -233,7 +300,15 @@ def account_link_complete(request, provider):
         logger.warning("OAuth link failed for %s", provider, exc_info=True)
         return Response(GENERIC_LINK_ERROR, status=status.HTTP_400_BAD_REQUEST)
 
-    return _attach_identity(request.user, provider, subject_id)
+    response = _attach_identity(request.user, provider, subject_id)
+
+    # Only on a successful attach, and only for Patreon: a 409 means the
+    # identity belongs to someone else, and resolving entitlement off it would
+    # be reading a pledge that is not this user's.
+    if provider == SocialAccount.PROVIDER_PATREON and response.status_code < 400:
+        _resolve_patreon_entitlement(request.user, subject_id)
+
+    return response
 
 
 @api_view(["DELETE"])
@@ -249,6 +324,12 @@ def account_link_delete(request, provider):
 
     Enforced here rather than by hiding the button: a client-side check is a
     suggestion, and this one has to be a rule.
+
+    Unlinking Patreon also drops supporter entitlement, because entitlement is
+    derived from the link. The SUPPORTER ROW SURVIVES with its publication
+    consent and pledge date intact — they are still a patron, they have just
+    taken their account off it. Identical treatment to a lapse; this table is
+    not ours to delete from.
     """
     if not oauth.is_supported(provider):
         return Response({"error": "Unknown provider"}, status=status.HTTP_404_NOT_FOUND)
@@ -275,4 +356,6 @@ def account_link_delete(request, provider):
         )
 
     link.delete()
+    if provider == SocialAccount.PROVIDER_PATREON:
+        benefits.unlink_supporter(request.user)
     return Response(status=status.HTTP_204_NO_CONTENT)
