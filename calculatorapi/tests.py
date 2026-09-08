@@ -65,6 +65,7 @@ from calculatorapi.visits import (
 from calculatorapi.ledger import AMOUNT_FIELDS, build_income_ledger
 from calculatorapi.views.ledger import IncomeLedgerRowSerializer
 from calculatorapi.views.social_auth import STATE_SALT
+from calculatorapi.views.account_linking import LINK_STATE_SALT
 from calculatorapi.views.calculation_constants import CalculationConstantsSerializer
 from calculatorapi.views.user_planned_banner import UserPlannedBannerSerializer
 from calculatorapi.predictions import (
@@ -84,6 +85,7 @@ from calculatorapi.eligibility import build_first_jp_date_maps, is_eligible
 from calculatorapi.management.commands.create_content_editor_group import CONTENT_MODELS
 from calculatorapi.admin_patreon_import import apply_patreon_import, parse_patreon_csv
 from calculatorapi import patreon_api
+from calculatorapi import oauth
 from calculatorapi.models import (
     CustomUser, Uma, SupportCard,
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
@@ -6615,3 +6617,422 @@ class AccountEndpointTests(TestCase):
         res = self.client.get('/account')
 
         self.assertEqual(set(res.data['supporter']), {'is_supporter'})
+
+
+@override_settings(
+    PATREON_OAUTH_CLIENT_ID="test-patreon-oauth-client",
+    PATREON_OAUTH_CLIENT_SECRET="test-patreon-oauth-secret",
+)
+class PatreonOAuthProviderTests(TestCase):
+    """Patreon as a third SIGN-IN provider.
+
+    The privacy posture is the whole point of these: Patreon will happily send
+    an email address and a display name if asked, and the only thing stopping it
+    is what this module asks for.
+    """
+
+    def test_patreon_is_a_supported_provider(self):
+        self.assertTrue(oauth.is_supported("patreon"))
+
+    def test_it_uses_the_sign_in_credentials_not_the_creator_ones(self):
+        """The trap this project is most likely to fall into.
+
+        PATREON_CLIENT_ID is the CREATOR app used by the supporters sync;
+        PATREON_OAUTH_CLIENT_ID is the identity app used here. Wiring the wrong
+        pair fails in a way that reads like an outage.
+        """
+        with override_settings(
+            PATREON_CLIENT_ID="creator-app-id",
+            PATREON_CLIENT_SECRET="creator-app-secret",
+        ):
+            config = oauth.get_config("patreon")
+
+        self.assertEqual(config["client_id"], "test-patreon-oauth-client")
+        self.assertEqual(config["client_secret"], "test-patreon-oauth-secret")
+
+    def test_the_scope_never_asks_for_an_email(self):
+        """Patreon's email sits behind a separate `identity[email]` scope.
+
+        Asking for it would put an address in the response for every person who
+        signs in — the exact thing the whole social-auth design avoids.
+        """
+        scope = oauth.get_config("patreon")["scope"]
+
+        self.assertEqual(scope, "identity")
+        self.assertNotIn("email", scope)
+
+    def test_subject_id_is_read_from_the_json_api_resource(self):
+        payload = {"data": {"type": "user", "id": "1234567", "attributes": {}}}
+
+        with patch("calculatorapi.oauth.requests.get", return_value=FakeResponse(payload)):
+            result = oauth._patreon_subject_id(  # pylint: disable=protected-access
+                {}, {"access_token": "at-1"}
+            )
+
+        self.assertEqual(result, "1234567")
+
+    def test_it_requests_no_user_attributes_at_all(self):
+        """An empty sparse fieldset. Without it Patreon returns its default
+        attribute set — full name, vanity URL, avatar, social handles — none of
+        which we want to receive, let alone store."""
+        payload = {"data": {"id": "1234567"}}
+
+        with patch(
+            "calculatorapi.oauth.requests.get", return_value=FakeResponse(payload)
+        ) as mocked:
+            oauth._patreon_subject_id({}, {"access_token": "at-1"})  # pylint: disable=protected-access
+
+        self.assertEqual(mocked.call_args.kwargs["params"], {"fields[user]": ""})
+
+    def test_a_response_without_a_user_resource_is_refused(self):
+        """Guessing at an unexpected shape is how a wrong id gets bound to an
+        account, so anything but a single resource object is an error."""
+        for payload in ({"data": []}, {"data": None}, {}, {"data": {"type": "user"}}):
+            with self.subTest(payload=payload):
+                with patch(
+                    "calculatorapi.oauth.requests.get", return_value=FakeResponse(payload)
+                ):
+                    with self.assertRaises(oauth.OAuthError):
+                        oauth._patreon_subject_id(  # pylint: disable=protected-access
+                            {}, {"access_token": "at-1"}
+                        )
+
+    def test_a_non_200_from_patreon_is_an_oauth_error(self):
+        with patch(
+            "calculatorapi.oauth.requests.get", return_value=FakeResponse({}, status_code=401)
+        ):
+            with self.assertRaises(oauth.OAuthError):
+                oauth._patreon_subject_id({}, {"access_token": "at-1"})  # pylint: disable=protected-access
+
+
+@override_settings(
+    PATREON_OAUTH_CLIENT_ID="test-patreon-oauth-client",
+    PATREON_OAUTH_CLIENT_SECRET="test-patreon-oauth-secret",
+    GOOGLE_OAUTH_CLIENT_ID="test-google-client",
+    GOOGLE_OAUTH_CLIENT_SECRET="test-google-secret",
+    OAUTH_REDIRECT_URI=CANONICAL_REDIRECT,
+    OAUTH_ALLOWED_REDIRECT_URIS=frozenset([CANONICAL_REDIRECT, DEV_REDIRECT]),
+)
+class AccountLinkStartTests(TestCase):
+    """GET /account/link/<provider>/start."""
+
+    def setUp(self):
+        # The start route is throttled, and DRF keeps its counter in the cache —
+        # which a TestCase rollback does not clear. Without this, the suite's own
+        # request volume eventually trips a 429 that looks like a code failure.
+        cache.clear()
+        self.user = make_user('linkuser')
+        self.client, _ = auth_client(self.user)
+
+    def test_anonymous_callers_are_rejected(self):
+        """Linking attaches an identity to an account. With no account in hand
+        there is nothing to attach it to, and this must never fall back to
+        creating one — that is sign-in's job."""
+        response = APIClient().get("/account/link/patreon/start")
+
+        self.assertEqual(response.status_code, 401)
+
+    def test_unknown_provider_is_a_404(self):
+        response = self.client.get("/account/link/myspace/start")
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_returns_a_consent_url_and_state(self):
+        response = self.client.get("/account/link/patreon/start")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("patreon.com", response.json()["authorize_url"])
+        self.assertTrue(response.json()["state"])
+
+    def test_the_allowlist_still_governs_the_redirect_uri(self):
+        """Same security boundary as sign-in, and deliberately the same code:
+        a second copy could drift, and a drifted copy is an open redirector."""
+        allowed = self.client.get(
+            "/account/link/patreon/start?" + urlencode({"redirect_uri": DEV_REDIRECT})
+        )
+        refused = self.client.get(
+            "/account/link/patreon/start?" + urlencode({"redirect_uri": UNLISTED_REDIRECT})
+        )
+
+        self.assertEqual(allowed.status_code, 200)
+        self.assertEqual(refused.status_code, 400)
+
+    def test_the_state_carries_the_user_it_was_minted_for(self):
+        state = self.client.get("/account/link/patreon/start").json()["state"]
+
+        payload = signing.loads(state, salt=LINK_STATE_SALT)
+        self.assertEqual(payload["u"], self.user.pk)
+
+    def test_starting_a_link_is_rate_limited(self):
+        """Each accepted call sends someone to a provider, so the cap is on
+        outbound work rather than on a public write. Asserted because a throttle
+        that silently does not throttle looks exactly like one that does."""
+        for _ in range(20):
+            self.assertEqual(
+                self.client.get("/account/link/patreon/start").status_code, 200
+            )
+
+        self.assertEqual(
+            self.client.get("/account/link/patreon/start").status_code, 429
+        )
+
+
+@override_settings(
+    PATREON_OAUTH_CLIENT_ID="test-patreon-oauth-client",
+    PATREON_OAUTH_CLIENT_SECRET="test-patreon-oauth-secret",
+    GOOGLE_OAUTH_CLIENT_ID="test-google-client",
+    GOOGLE_OAUTH_CLIENT_SECRET="test-google-secret",
+    OAUTH_REDIRECT_URI=CANONICAL_REDIRECT,
+    OAUTH_ALLOWED_REDIRECT_URIS=frozenset([CANONICAL_REDIRECT, DEV_REDIRECT]),
+)
+class AccountLinkCompleteTests(TestCase):
+    """POST /account/link/<provider>/complete — the account-takeover surface.
+
+    Every test here is about something that must NOT happen.
+    """
+
+    def setUp(self):
+        cache.clear()  # see AccountLinkStartTests.setUp
+        self.user = make_user('linkuser')
+        self.client, _ = auth_client(self.user)
+
+    def _state(self, provider="patreon", client=None):
+        return (client or self.client).get(
+            f"/account/link/{provider}/start"
+        ).json()["state"]
+
+    def _complete(self, state, code="CODE", provider="patreon", subject_id="patreon-1",
+                  client=None):
+        with patch("calculatorapi.oauth.exchange_code", return_value=subject_id) as mocked:
+            response = (client or self.client).post(
+                f"/account/link/{provider}/complete",
+                {"code": code, "state": state},
+                format="json",
+            )
+        return response, mocked
+
+    def test_links_the_identity_to_the_signed_in_account(self):
+        response, _ = self._complete(self._state())
+
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(
+            SocialAccount.objects.filter(
+                user=self.user, provider="patreon", subject_id="patreon-1"
+            ).exists()
+        )
+
+    def test_linking_never_creates_an_account(self):
+        """The invariant that separates this endpoint from sign-in. If this ever
+        fails, the endpoint has become a second account-creation path — one that
+        runs while someone else is authenticated."""
+        before = CustomUser.objects.count()
+
+        self._complete(self._state())
+
+        self.assertEqual(CustomUser.objects.count(), before)
+
+    def test_completing_twice_is_idempotent(self):
+        state_one = self._state()
+        state_two = self._state()
+        self._complete(state_one)
+
+        response, _ = self._complete(state_two)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(SocialAccount.objects.filter(user=self.user).count(), 1)
+
+    def test_an_identity_owned_by_someone_else_is_refused(self):
+        """The takeover case. Reassigning the row would strip another account of
+        its sign-in method — and hand it to the caller."""
+        stranger = make_user('stranger')
+        SocialAccount.objects.create(
+            user=stranger, provider="patreon", subject_id="patreon-1")
+
+        response, _ = self._complete(self._state())
+
+        self.assertEqual(response.status_code, 409)
+        link = SocialAccount.objects.get(provider="patreon", subject_id="patreon-1")
+        self.assertEqual(link.user, stranger)
+
+    def test_a_second_identity_for_the_same_provider_is_refused(self):
+        """One identity per provider per account, so DELETE by provider stays
+        unambiguous. Unlink the first one to swap."""
+        self._complete(self._state())
+
+        response, _ = self._complete(self._state(), subject_id="patreon-2")
+
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(SocialAccount.objects.filter(user=self.user).count(), 1)
+
+    def test_a_state_minted_for_another_user_is_refused(self):
+        """Login-CSRF, aimed at linking. Without the user binding, an attacker
+        starts a link on their own account, gets the victim's browser to
+        complete it, and their Patreon identity lands on the victim's account —
+        after which they can sign in as the victim at will.
+        """
+        attacker = make_user('attacker')
+        attacker_client, _ = auth_client(attacker)
+        attacker_state = self._state(client=attacker_client)
+
+        response, mocked = self._complete(attacker_state)
+
+        self.assertEqual(response.status_code, 400)
+        mocked.assert_not_called()
+        self.assertFalse(SocialAccount.objects.filter(user=self.user).exists())
+
+    def test_a_sign_in_state_cannot_be_used_to_link(self):
+        """Why the two salts differ.
+
+        A sign-in state carries no `u` at all, so if this endpoint accepted them
+        the user-binding check above would pass vacuously and every protection
+        it provides would be gone.
+        """
+        sign_in_state = self.client.get("/auth/patreon/start").json()["state"]
+
+        response, mocked = self._complete(sign_in_state)
+
+        self.assertEqual(response.status_code, 400)
+        mocked.assert_not_called()
+
+    def test_a_forged_state_is_refused(self):
+        forged = signing.dumps(
+            {"p": "patreon", "n": "nonce", "r": CANONICAL_REDIRECT, "u": self.user.pk},
+            salt="not-the-real-salt",
+        )
+
+        response, mocked = self._complete(forged)
+
+        self.assertEqual(response.status_code, 400)
+        mocked.assert_not_called()
+
+    def test_a_state_for_one_provider_is_not_replayable_against_another(self):
+        state = self._state(provider="google")
+
+        response, mocked = self._complete(state, provider="patreon")
+
+        self.assertEqual(response.status_code, 400)
+        mocked.assert_not_called()
+
+    def test_the_exchange_repeats_the_uri_the_flow_started_with(self):
+        state = self.client.get(
+            "/account/link/patreon/start?" + urlencode({"redirect_uri": DEV_REDIRECT})
+        ).json()["state"]
+
+        _, mocked = self._complete(state)
+
+        mocked.assert_called_once_with("patreon", "CODE", DEV_REDIRECT)
+
+    def test_anonymous_callers_are_rejected(self):
+        response = APIClient().post(
+            "/account/link/patreon/complete", {"code": "C", "state": "S"}, format="json"
+        )
+
+        self.assertEqual(response.status_code, 401)
+
+
+class AccountLinkDeleteTests(TestCase):
+    """DELETE /account/link/<provider> — and the refusal that prevents lockouts."""
+
+    def setUp(self):
+        self.user = make_user('linkuser')
+        # Ordinary accounts have no usable password: a provider is the ONLY way in.
+        self.user.set_unusable_password()
+        self.user.save()
+        self.client, _ = auth_client(self.user)
+
+    def test_unlinks_a_provider(self):
+        SocialAccount.objects.create(user=self.user, provider="google", subject_id="g-1")
+        SocialAccount.objects.create(user=self.user, provider="patreon", subject_id="p-1")
+
+        response = self.client.delete("/account/link/patreon")
+
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(
+            SocialAccount.objects.filter(user=self.user, provider="patreon").exists()
+        )
+
+    def test_unlinking_something_that_is_not_linked_is_a_404(self):
+        response = self.client.delete("/account/link/patreon")
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_the_last_sign_in_method_cannot_be_removed(self):
+        """There is no password and no email to send a reset to — by design. So
+        removing the only provider would lock someone out of their own saved
+        plan permanently, with nothing to recover through."""
+        SocialAccount.objects.create(user=self.user, provider="google", subject_id="g-1")
+
+        response = self.client.delete("/account/link/google")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue(SocialAccount.objects.filter(user=self.user).exists())
+
+    def test_staff_may_remove_their_last_provider(self):
+        """Staff sign in with a password that actually works, so they are not
+        locking themselves out."""
+        staff = make_user('staffuser', is_staff=True)
+        SocialAccount.objects.create(user=staff, provider="google", subject_id="g-staff")
+        staff_client, _ = auth_client(staff)
+
+        response = staff_client.delete("/account/link/google")
+
+        self.assertEqual(response.status_code, 204)
+
+    def test_one_user_cannot_unlink_another_users_provider(self):
+        stranger = make_user('stranger')
+        SocialAccount.objects.create(
+            user=stranger, provider="patreon", subject_id="p-stranger")
+
+        response = self.client.delete("/account/link/patreon")
+
+        self.assertEqual(response.status_code, 404)
+        self.assertTrue(SocialAccount.objects.filter(user=stranger).exists())
+
+    def test_anonymous_callers_are_rejected(self):
+        response = APIClient().delete("/account/link/patreon")
+
+        self.assertEqual(response.status_code, 401)
+
+
+@override_settings(
+    PATREON_OAUTH_CLIENT_ID="test-patreon-oauth-client",
+    PATREON_OAUTH_CLIENT_SECRET="test-patreon-oauth-secret",
+    OAUTH_REDIRECT_URI=CANONICAL_REDIRECT,
+    OAUTH_ALLOWED_REDIRECT_URIS=frozenset([CANONICAL_REDIRECT]),
+)
+class PatreonSignInTests(TestCase):
+    """Signing in WITH Patreon, as opposed to linking it."""
+
+    def test_sign_in_resolves_to_the_account_that_linked_it(self):
+        """The payoff for linking: after attaching Patreon to an existing
+        account, signing in with Patreon must land in THAT account rather than
+        minting a second empty one."""
+        user = make_user('linkuser')
+        SocialAccount.objects.create(
+            user=user, provider="patreon", subject_id="patreon-1")
+        state = self.client.get("/auth/patreon/start").json()["state"]
+
+        with patch("calculatorapi.oauth.exchange_code", return_value="patreon-1"):
+            response = self.client.post(
+                "/auth/social",
+                {"provider": "patreon", "code": "CODE", "state": state},
+                content_type="application/json",
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["token"], Token.objects.get(user=user).key)
+
+    def test_an_unknown_patreon_identity_still_creates_an_account(self):
+        """Patreon is a first-class sign-in provider, not link-only."""
+        before = CustomUser.objects.count()
+        state = self.client.get("/auth/patreon/start").json()["state"]
+
+        with patch("calculatorapi.oauth.exchange_code", return_value="patreon-new"):
+            response = self.client.post(
+                "/auth/social",
+                {"provider": "patreon", "code": "CODE", "state": state},
+                content_type="application/json",
+            )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(CustomUser.objects.count(), before + 1)

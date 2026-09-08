@@ -18,6 +18,11 @@ from calculatorapi.views.admin_images import admin_image_library
 from calculatorapi.views.analytics import analytics_dashboard
 from calculatorapi.views.user import user_login, user_logout
 from calculatorapi.views.account import account_detail
+from calculatorapi.views.account_linking import (
+    account_link_complete,
+    account_link_delete,
+    account_link_start,
+)
 from calculatorapi.views.visits import site_visit
 from calculatorapi.views.feedback import submit_feedback
 from calculatorapi.views.patreon_supporters import patreon_sync
@@ -54,6 +59,25 @@ urlpatterns = [
     # replacing a localStorage token check that could only describe the browser.
     # The `supporter` block is a deliberate stub until Phase 2; see the view.
     path("account", account_detail, name="account"),
+    # Attaching a provider identity to an account that is ALREADY signed in.
+    # Separate from /auth/* above and deliberately so: those create accounts,
+    # these must never. The signed state here is bound to the user it was minted
+    # for. → views/account_linking.py
+    path(
+        "account/link/<str:provider>/start",
+        account_link_start,
+        name="account-link-start",
+    ),
+    path(
+        "account/link/<str:provider>/complete",
+        account_link_complete,
+        name="account-link-complete",
+    ),
+    path(
+        "account/link/<str:provider>",
+        account_link_delete,
+        name="account-link-delete",
+    ),
     # Traffic beacon, pinged once per session by the SPA. Public and write-only
     # — the frontend is a separate static site, so this is the only way Django
     # learns that a page was loaded at all.
