@@ -6495,3 +6495,123 @@ class PublicPayloadCacheTests(TestCase):
         APIClient().get('/calculator-data')
         cached = json.loads(public_payload_cache.read())
         self.assertEqual(set(cached.keys()), _EXPECTED_GET_KEYS)
+
+
+class AccountEndpointTests(TestCase):
+    """GET /account — the SPA's source of truth for "who am I signed in as?".
+
+    This route exists so the client can stop inferring identity from the mere
+    presence of a token string in localStorage. What it must get right is
+    therefore narrow but load-bearing: it answers only for the caller, it
+    refuses anonymous callers outright, and it never emits the one column on
+    SocialAccount that the sign-in design exists to keep private.
+    """
+
+    def setUp(self):
+        self.user = make_user('accountuser')
+        self.client, _ = auth_client(self.user)
+
+    def test_anonymous_request_is_rejected(self):
+        """401 rather than an empty account body.
+
+        This is what lets the client treat a token as untrustworthy: a revoked
+        or expired token gets a 401 here, so the SPA learns the string it is
+        holding has stopped meaning anything instead of rendering a signed-in
+        shell around nothing.
+        """
+        res = APIClient().get('/account')
+        self.assertEqual(res.status_code, 401)
+
+    def test_returns_the_expected_top_level_shape(self):
+        res = self.client.get('/account')
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(set(res.data), {'username', 'linked_providers', 'supporter'})
+        self.assertEqual(res.data['username'], 'accountuser')
+
+    def test_lists_linked_providers_oldest_first(self):
+        SocialAccount.objects.create(
+            user=self.user, provider='discord', subject_id='discord-999')
+        SocialAccount.objects.create(
+            user=self.user, provider='google', subject_id='google-111')
+        # Force a deterministic order: created_at is auto_now_add, so both rows
+        # can land in the same microsecond on a fast machine.
+        SocialAccount.objects.filter(provider='discord').update(
+            created_at=datetime.datetime(2026, 1, 1, tzinfo=datetime.timezone.utc))
+        SocialAccount.objects.filter(provider='google').update(
+            created_at=datetime.datetime(2026, 2, 1, tzinfo=datetime.timezone.utc))
+
+        res = self.client.get('/account')
+
+        providers = [row['provider'] for row in res.data['linked_providers']]
+        self.assertEqual(providers, ['discord', 'google'])
+
+    def test_a_linked_provider_carries_only_provider_and_date(self):
+        SocialAccount.objects.create(
+            user=self.user, provider='google', subject_id='google-111')
+
+        res = self.client.get('/account')
+
+        row = res.data['linked_providers'][0]
+        self.assertEqual(set(row), {'provider', 'linked_at'})
+
+    def test_subject_id_never_reaches_the_response(self):
+        """The one that matters.
+
+        subject_id is the provider's permanent opaque id for a person. The
+        serializer's explicit field list is the only thing keeping it off the
+        wire, so it is asserted on its own rather than left to the field-set
+        check above — the same treatment the supporter email gets.
+        """
+        SocialAccount.objects.create(
+            user=self.user, provider='google', subject_id='super-secret-subject')
+
+        res = self.client.get('/account')
+
+        self.assertNotIn('super-secret-subject', json.dumps(res.data, default=str))
+
+    def test_only_the_callers_own_providers_are_listed(self):
+        """An account summary that leaked another user's linked identities would
+        be a cross-account disclosure, so it gets its own case."""
+        stranger = make_user('stranger')
+        SocialAccount.objects.create(
+            user=stranger, provider='discord', subject_id='not-mine')
+        SocialAccount.objects.create(
+            user=self.user, provider='google', subject_id='google-111')
+
+        res = self.client.get('/account')
+
+        providers = [row['provider'] for row in res.data['linked_providers']]
+        self.assertEqual(providers, ['google'])
+
+    def test_staff_accounts_answer_with_no_linked_providers(self):
+        """Staff sign in with a password and hold no SocialAccount rows at all.
+
+        An empty list is the correct answer for them, not an error — asserted so
+        a future change can't start treating "no providers" as a broken account.
+        """
+        staff = make_user('staffaccount', is_staff=True)
+        staff_client, _ = auth_client(staff)
+
+        res = staff_client.get('/account')
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.data['linked_providers'], [])
+
+    def test_supporter_block_is_present_and_false_for_everyone(self):
+        """Phase 0 has no entitlement path, so nobody can be a supporter yet.
+
+        The block still ships, because the client contract must not change when
+        Phase 2 makes it real.
+        """
+        res = self.client.get('/account')
+
+        self.assertEqual(res.data['supporter'], {'is_supporter': False})
+
+    def test_supporter_block_carries_no_null_tier_fields(self):
+        """A null tier_name sitting beside is_supporter: false invites a client
+        to render an empty badge, or to read the absence of a tier as a tier.
+        Absent means absent."""
+        res = self.client.get('/account')
+
+        self.assertEqual(set(res.data['supporter']), {'is_supporter'})

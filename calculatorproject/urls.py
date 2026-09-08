@@ -17,6 +17,7 @@ from calculatorapi.views import (
 from calculatorapi.views.admin_images import admin_image_library
 from calculatorapi.views.analytics import analytics_dashboard
 from calculatorapi.views.user import user_login, user_logout
+from calculatorapi.views.account import account_detail
 from calculatorapi.views.visits import site_visit
 from calculatorapi.views.feedback import submit_feedback
 from calculatorapi.views.patreon_supporters import patreon_sync
@@ -48,6 +49,11 @@ urlpatterns = [
     # There is intentionally no "register" route — see views/user.py.
     path("login", user_login, name="login"),
     path("logout", user_logout, name="logout"),
+    # Who the caller is, and what they are entitled to. Authenticated-only and
+    # never cached — it is the SPA's source of truth for "am I signed in?",
+    # replacing a localStorage token check that could only describe the browser.
+    # The `supporter` block is a deliberate stub until Phase 2; see the view.
+    path("account", account_detail, name="account"),
     # Traffic beacon, pinged once per session by the SPA. Public and write-only
     # — the frontend is a separate static site, so this is the only way Django
     # learns that a page was loaded at all.
