@@ -133,6 +133,53 @@ entitlement must never be answerable from.
 
 ---
 
+### `GET /account/link/<provider>/start`
+
+Protected, throttled to **20/hour per user**. Returns a consent URL for attaching
+`provider` to the account already signed in.
+
+**Response `200`** — same shape as `/auth/<provider>/start`:
+```json
+{ "authorize_url": "https://www.patreon.com/oauth2/authorize?...", "state": "..." }
+```
+
+`404` unknown provider · `400` unlisted `redirect_uri` · `401` anonymous ·
+`503` provider credentials not configured.
+
+The `state` is signed with salt `calculatorapi.account-link-state` — **not** the
+sign-in salt — and carries the id of the user it was minted for.
+
+### `POST /account/link/<provider>/complete`
+
+Protected. Redeems the one-time code and attaches the identity.
+
+**Request** `{ "code": "...", "state": "..." }`
+
+**Response `201`** (linked) or **`200`** (already linked — completing twice is not
+an error):
+```json
+{ "provider": "patreon", "linked_at": "2026-09-08" }
+```
+
+- `409` — that identity belongs to a different account, **or** this account
+  already has a login for that provider. Never reassigns; see
+  [auth-and-privacy.md](auth-and-privacy.md).
+- `400` — bad or expired state, a state minted for another user, a **sign-in**
+  state, or a failed exchange. One generic message for all of them.
+- **This endpoint never creates a `CustomUser`.** That invariant is what separates
+  it from `POST /auth/social`.
+
+### `DELETE /account/link/<provider>`
+
+Protected. Detaches the provider. **`204`** on success.
+
+- `404` — not linked to this account (including when it is linked to someone else).
+- `400` — it is the account's **last** sign-in method and the account has no usable
+  password. An ordinary account has neither a password nor an email to reset
+  through, so this would be an unrecoverable lockout. Staff are exempt.
+
+---
+
 ## Core Calculator
 
 ### `GET /calculator-data`
