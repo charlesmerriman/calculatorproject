@@ -97,6 +97,40 @@ Protected. Deletes the user's current auth token.
 { "message": "Successfully logged out" }
 ```
 
+### `GET /account`
+
+Protected. Who the caller is, and what they are entitled to. `401` for anonymous
+callers — which is what lets the SPA treat it as the source of truth: a revoked
+token gets a 401 here, so the client learns the string it holds has stopped
+meaning anything instead of rendering a signed-in shell around nothing.
+
+**Response `200`**
+```json
+{
+  "username": "user_a3f9c1",
+  "linked_providers": [
+    { "provider": "google", "linked_at": "2026-07-02" }
+  ],
+  "supporter": { "is_supporter": false }
+}
+```
+
+- `linked_providers` is empty for staff, who sign in with a password and hold no
+  `SocialAccount` rows. That is a correct answer, not an error.
+- **`subject_id` is never serialized, for any provider.** The serializer's
+  explicit field list is the only thing keeping it off the wire — the same role
+  `PatreonSupporterSerializer`'s list plays for the supporter email.
+- `supporter` currently always reports `is_supporter: false`; nothing can be a
+  supporter until `PatreonSupporter` gains `patreon_user_id` / `linked_user`
+  (Phase 2 of `patreon-accounts-plan.md`). When there is no entitlement the block
+  carries **only** `is_supporter` — no null tier fields, so a client cannot read
+  the absence of a tier as a tier.
+
+Deliberately its own route rather than a key on `/calculator-data`: that payload
+is not fetched on the home page, the FAQ or the changelog, and everything in it
+but the four user-scoped keys is served from a shared process-wide cache, which
+entitlement must never be answerable from.
+
 ---
 
 ## Core Calculator
