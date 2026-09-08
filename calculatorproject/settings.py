@@ -577,6 +577,13 @@ LOGGING = {
         },
     },
     "loggers": {
+        # Our own app. Without this, calculatorapi's logger.warning calls
+        # propagate to the root logger, which has no handler configured here --
+        # so an OAuth integration failing would write nothing anywhere.
+        "calculatorapi": {
+            "handlers": ["console"],
+            "level": "WARNING",
+        },
         "django": {
             "handlers": ["console"],
             "level": "WARNING",

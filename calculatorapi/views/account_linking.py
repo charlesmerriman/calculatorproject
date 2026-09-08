@@ -43,6 +43,7 @@ wants to ask, and DELETE /account/link/google would become ambiguous. Unlink,
 then link the other one.
 """
 
+import logging
 import secrets
 
 from django.conf import settings
@@ -70,6 +71,8 @@ LINK_STATE_SALT = "calculatorapi.account-link-state"
 # the same reason the sign-in view has one: distinguishing "bad state" from "bad
 # code" only helps someone probing the endpoint.
 GENERIC_LINK_ERROR = {"error": "Could not complete linking. Please try again."}
+
+logger = logging.getLogger(__name__)
 
 
 class AccountLinkThrottle(UserRateThrottle):
@@ -225,6 +228,9 @@ def account_link_complete(request, provider):
     try:
         subject_id = oauth.exchange_code(provider, code, redirect_uri)
     except oauth.OAuthError:
+        # Generic to the client, detailed in the log -- see the same handler in
+        # social_auth.py for why both halves are deliberate.
+        logger.warning("OAuth link failed for %s", provider, exc_info=True)
         return Response(GENERIC_LINK_ERROR, status=status.HTTP_400_BAD_REQUEST)
 
     return _attach_identity(request.user, provider, subject_id)
