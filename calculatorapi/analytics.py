@@ -10,7 +10,9 @@ averages). No function in this module may ever return per-user rows or any
 identifying field (username, email, etc.).
 """
 
-from django.db.models import Avg, Count, Q, Sum
+from statistics import median
+
+from django.db.models import Avg, Count, F, Q, Sum
 from django.utils import timezone
 
 from .models import CustomUser, UserPlannedBanner
@@ -42,6 +44,36 @@ PAID_PRODUCT_FIELDS = [
     ("daily_carat", "Daily Carat Pack"),
     ("training_pass", "Training Pass"),
 ]
+
+
+# ── Sanity bounds ────────────────────────────────────────────────────────────
+# Ceilings above which a stored number stops being an answer and starts being
+# someone finding out what the field does.
+#
+# These are ANALYTICS-ONLY, and deliberately NOT validation. The API accepts any
+# value on purpose: a user is free to sandbox "what if I had a billion carats"
+# and watch their own projection respond, and that is a legitimate thing to want
+# from a calculator. These bounds decide only what counts as a DATA POINT on
+# this page — nobody's saved plan is touched, rejected or rewritten.
+#
+# Both sit orders of magnitude above any real answer, so what they exclude is
+# unambiguous rather than merely unusual. A cautious ceiling would be the wrong
+# trade: wrongly dropping a genuine whale biases the report quietly, while a
+# ceiling this high can only catch values that were never answers at all.
+#
+#   pulls    — pity is 200 and MLB of a five-copy card is ~1,000 pulls, so
+#              2,000 is ten pity copies budgeted for one banner: double what
+#              maxing out a banner costs, and still a number someone could
+#              plausibly mean.
+#   resource — 10,000,000 carats is ~66,000 pulls' worth, and the same ceiling
+#              is generous past absurdity for tickets, crystals and shards.
+#
+# What prompted them: the client sanitiser caps typed input at nine digits
+# (frontend NumberField.sanitise), so a user leaning on a digit key lands on
+# exactly 999,999,999. That one value, on one account, was adding ~169,000 to
+# every resource mean and turning a 145-avg banner into a 447,572 one.
+SANE_MAX_PULLS = 2_000
+SANE_MAX_RESOURCE = 10_000_000
 
 
 def _pct(part, whole):
@@ -76,7 +108,22 @@ def _banner_popularity(fk_name):
 
     Grouped by banner id (name/timeline included for display), ranked by
     distinct planners, then total pulls.
+
+    WHY `planners` IS COUNTED UNFILTERED WHILE THE PULL FIGURES ARE NOT.
+    They answer different questions. Someone who typed 999,999,999 into a
+    banner's pull field really does have that banner in their plan, and
+    popularity — the primary signal this table exists for — should say so.
+    What they do NOT have is a budget of a billion pulls, so their row is
+    excluded from the two figures that treat the number as a quantity. Filtering
+    both would quietly understate demand; filtering neither is what produced a
+    447,572 average.
+
+    `excluded` reports how many rows were dropped from those two figures, so a
+    surprising average can be checked against the count that caused it instead
+    of being reverse-engineered from the arithmetic.
     """
+    # Non-null ints, so ~sane is a clean complement with no third case.
+    sane = Q(number_of_pulls__lte=SANE_MAX_PULLS)
     rows = (
         UserPlannedBanner.objects
         # Only this banner type, and never count staff/admin test accounts.
@@ -92,10 +139,15 @@ def _banner_popularity(fk_name):
         )
         .annotate(
             planners=Count("user", distinct=True),
-            total_pulls=Sum("number_of_pulls"),
-            avg_pulls=Avg("number_of_pulls"),
+            total_pulls=Sum("number_of_pulls", filter=sane),
+            avg_pulls=Avg("number_of_pulls", filter=sane),
+            excluded=Count("id", filter=~sane),
         )
-        .order_by("-planners", "-total_pulls")
+        # nulls_last matters now that total_pulls is filtered: a banner whose
+        # every row was excluded aggregates to NULL, and Postgres sorts NULLs
+        # FIRST in a plain DESC — which would put the one banner we have no
+        # figures for at the top of the table.
+        .order_by("-planners", F("total_pulls").desc(nulls_last=True))
     )
     return [
         {
@@ -107,11 +159,61 @@ def _banner_popularity(fk_name):
             "start_date": row[f"{fk_name}__banner_timeline__global_start_date"],
             "end_date": row[f"{fk_name}__banner_timeline__global_end_date"],
             "planners": row["planners"],
-            "total_pulls": row["total_pulls"],
-            "avg_pulls": round(row["avg_pulls"], 1),
+            # Both aggregates come back NULL when the filter matched nothing,
+            # which is a real state (a banner planned only by the outlier), not
+            # an error — report it as zero rather than crashing the page.
+            "total_pulls": row["total_pulls"] or 0,
+            "avg_pulls": round(row["avg_pulls"] or 0, 1),
+            "excluded": row["excluded"],
         }
         for row in rows
     ]
+
+
+def _resource_statistics(engaged):
+    """Mean, median and dropped-value count for each resource field.
+
+    ONE query for all eight columns, both statistics computed in Python.
+
+    Why not in SQL: a median has no portable aggregate — Postgres has
+    PERCENTILE_CONT, the SQLite the tests run on has nothing — and doing the
+    mean the same way is what guarantees the two figures describe the identical
+    filtered set. The cost is materialising engaged_users x 8 ints; at the
+    current few thousand accounts that is a single query and well under a
+    megabyte. If this page ever reports on a user base two or three orders of
+    magnitude larger, move the mean back to a filtered Avg() and the median to a
+    database-specific percentile.
+
+    The MEDIAN is the number to trust, and it is here for a reason that outlives
+    the bounds above: carat balances are genuinely long-tailed, so a handful of
+    real whales pull the mean well off where most people sit even when every
+    value in the set is honest. A median cannot be moved by an extreme value at
+    all, which makes it the only figure on this page that stays meaningful
+    whatever anyone types.
+
+    Filtering is PER FIELD, not per user: an account with plausible carats and
+    an absurd crystal count still contributes its carats. Dropping the whole row
+    would discard good answers to punish a bad one.
+    """
+    fields = [field for field, _ in RESOURCE_FIELDS]
+    rows = list(engaged.values_list(*fields))
+    # zip(*[]) is empty rather than eight empty columns, so an empty user base
+    # would otherwise fall out of the loop below and report no rows at all.
+    columns = list(zip(*rows)) if rows else [()] * len(fields)
+
+    statistics = []
+    for (field, label), values in zip(RESOURCE_FIELDS, columns):
+        # The lower bound is not redundant with the client's floor of 0: these
+        # fields are plain IntegerFields and the API accepts a negative, which
+        # would drag a mean down as effectively as a huge value drags it up.
+        sane = [value for value in values if 0 <= value <= SANE_MAX_RESOURCE]
+        statistics.append({
+            "label": label,
+            "avg": round(sum(sane) / len(sane), 1) if sane else 0,
+            "median": round(median(sane), 1) if sane else 0,
+            "excluded": len(values) - len(sane),
+        })
+    return statistics
 
 
 def build_analytics_report():
@@ -123,8 +225,15 @@ def build_analytics_report():
       - traffic: daily and monthly site visits (the one section with history)
       - paid_products: daily carat pack / training pass adoption
       - rank_distributions: users per rank, per rank type
-      - resource_averages: average current resources among engaged users
+      - resource_averages: mean, median and dropped count per resource,
+        among engaged users
       - popular_uma_banners / popular_support_banners: ranked pull plans
+
+    Implausible values are excluded from every figure that treats a stored
+    number as a QUANTITY (see SANE_MAX_PULLS / SANE_MAX_RESOURCE), and from
+    none of the figures that merely count people. Each affected section reports
+    how many values it dropped, so the exclusion is visible on the page rather
+    than being something a reader has to know about.
 
     Everything but `traffic` is a snapshot of the database as it stands right
     now. Traffic is accumulated over time by calculatorapi/visits.py, so it is
@@ -185,13 +294,7 @@ def build_analytics_report():
     # ── Resource averages (engaged users only) ───────────────────────────
     # Averaging over never-configured accounts full of zeroes would be
     # meaningless, so this section uses the engaged denominator.
-    averages = engaged.aggregate(
-        **{field: Avg(field) for field, _ in RESOURCE_FIELDS}
-    )
-    resource_averages = [
-        {"label": label, "avg": round(averages[field] or 0, 1)}
-        for field, label in RESOURCE_FIELDS
-    ]
+    resource_averages = _resource_statistics(engaged)
 
     # ── Traffic ──────────────────────────────────────────────────────────
     # Counts everyone who loaded the site, signed in or not — unlike every

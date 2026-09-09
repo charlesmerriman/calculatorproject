@@ -102,23 +102,30 @@ def _csv_response(report):
             writer.writerow([row["name"], row["count"], row["pct_of_total"]])
         writer.writerow([])
 
-    writer.writerow(["Average Current Resources (engaged users)"])
-    writer.writerow(["Resource", "Average"])
+    # Median leads the average deliberately: it is the figure that survives an
+    # extreme value, and in a spreadsheet the first numeric column is the one
+    # that gets charted. "Ignored" is carried so a reader who charts a month of
+    # these downloads can see whether a jump was users or a typo.
+    writer.writerow(["Current Resources (engaged users)"])
+    writer.writerow(["Resource", "Median", "Average", "Ignored values"])
     for resource in report["resource_averages"]:
-        writer.writerow([resource["label"], resource["avg"]])
+        writer.writerow([resource["label"], resource["median"],
+                         resource["avg"], resource["excluded"]])
     writer.writerow([])
 
     for title, key in [("Popular Uma Banners", "popular_uma_banners"),
                        ("Popular Support Banners", "popular_support_banners")]:
         writer.writerow([title])
         writer.writerow(["Banner", "Timeline", "Start", "End",
-                         "Planners", "Total pulls", "Avg pulls"])
+                         "Planners", "Total pulls", "Avg pulls",
+                         "Ignored values"])
         for banner in report[key]:
             writer.writerow([
                 banner["name"], banner["timeline"],
                 _date(banner["start_date"]),
                 _date(banner["end_date"]),
                 banner["planners"], banner["total_pulls"], banner["avg_pulls"],
+                banner["excluded"],
             ])
         writer.writerow([])
 

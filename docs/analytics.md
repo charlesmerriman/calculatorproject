@@ -105,10 +105,16 @@ of Heroes): how many users selected each rank. Rows are ordered by the rank's
 income amount (game progression order); **Not set** counts users who never
 picked one.
 
-### Average current resources
+### Current resources
 
-Mean of each resource field (carats, tickets, crystals, shards) across
-**engaged users only**.
+Median, mean and dropped-value count for each resource field (carats, tickets,
+crystals, shards) across **engaged users only**.
+
+**Read the median, not the average.** Carat balances are long-tailed — a
+handful of genuine whales pull a mean well above where most people actually
+sit, even when every value in the set is honest. A median cannot be moved by an
+extreme value at all, which makes it the figure that answers "what does a
+typical user have?"
 
 ### Popular banners
 
@@ -118,6 +124,37 @@ Separate tables for Uma and Support banners, ranked by:
   primary popularity signal)
 - **Total pulls** — the sum of pulls everyone has budgeted for it
 - **Avg pulls** — total pulls ÷ plan rows (how invested each planner is)
+- **Ignored** — plan rows whose pull count was too large to be a real answer
+
+### Implausible values
+
+Nothing stops a user typing 999,999,999 into a pull or resource field, and the
+API accepts it deliberately: sandboxing "what if I had a billion carats" and
+watching the projection respond is a reasonable thing to want from a
+calculator. It is also, unfiltered, enough to break this page — a single such
+account was adding ~169,000 to every resource mean and reporting one banner's
+average as 447,572 pulls.
+
+So the dashboard excludes values above a sanity ceiling
+(`SANE_MAX_PULLS` / `SANE_MAX_RESOURCE` in `calculatorapi/analytics.py`) from
+every figure that treats a stored number as a **quantity**, and from none of
+the figures that merely **count people**. Three consequences worth knowing:
+
+- **Planners is not filtered.** Someone who typed a billion into a pull field
+  really does have that banner planned, and popularity should say so. Only
+  their *number* is discarded.
+- **Filtering is per field, not per user.** An account with plausible carats and
+  an absurd crystal count still contributes its carats.
+- **Nothing is rewritten.** This page filters what it reads; it never edits a
+  saved plan. A user's own projection still shows them their billion.
+
+Each affected row reports its **Ignored** count, so a surprising figure can be
+checked against the number of exclusions behind it. The ceilings sit orders of
+magnitude above any real answer (2,000 pulls is ten pity copies on one banner,
+double what maxing it out costs; 10,000,000 carats is ~66,000 pulls' worth) —
+deliberately, because wrongly dropping a real whale would bias the report
+silently, while a ceiling this high can only catch values that were never
+answers.
 
 ## CSV export & tracking trends over time
 

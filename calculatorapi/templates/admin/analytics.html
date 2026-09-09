@@ -155,16 +155,23 @@ light/dark theme unfold renders in.
 {% endfor %}
 
 <div class="module">
-  <h2>Average current resources (engaged users)</h2>
+  <h2>Current resources (engaged users)</h2>
+  <p class="help">
+    Median is the typical holding &mdash; unlike the average, no single account
+    can move it. &ldquo;Ignored&rdquo; counts values too large to be real
+    answers, which are left out of both figures; saved plans are never altered.
+  </p>
   <table>
     <thead>
-      <tr><th>Resource</th><th>Average</th></tr>
+      <tr><th>Resource</th><th>Median</th><th>Average</th><th>Ignored</th></tr>
     </thead>
     <tbody>
       {% for resource in report.resource_averages %}
       <tr>
         <td>{{ resource.label }}</td>
+        <td>{{ resource.median }}</td>
         <td>{{ resource.avg }}</td>
+        <td>{{ resource.excluded|default:"&mdash;" }}</td>
       </tr>
       {% endfor %}
     </tbody>
@@ -173,12 +180,16 @@ light/dark theme unfold renders in.
 
 <div class="module">
   <h2>Popular Uma banners</h2>
+  <p class="help">
+    Planners counts everyone who has the banner in their plan. Pull figures
+    leave out implausibly large entries; &ldquo;Ignored&rdquo; is how many.
+  </p>
   {% if report.popular_uma_banners %}
   <table>
     <thead>
       <tr>
         <th>Banner</th><th>Timeline</th><th>Runs</th>
-        <th>Planners</th><th>Total pulls</th><th>Avg pulls</th>
+        <th>Planners</th><th>Total pulls</th><th>Avg pulls</th><th>Ignored</th>
       </tr>
     </thead>
     <tbody>
@@ -190,6 +201,7 @@ light/dark theme unfold renders in.
         <td>{{ banner.planners }}</td>
         <td>{{ banner.total_pulls }}</td>
         <td>{{ banner.avg_pulls }}</td>
+        <td>{{ banner.excluded|default:"&mdash;" }}</td>
       </tr>
       {% endfor %}
     </tbody>
@@ -206,7 +218,7 @@ light/dark theme unfold renders in.
     <thead>
       <tr>
         <th>Banner</th><th>Timeline</th><th>Runs</th>
-        <th>Planners</th><th>Total pulls</th><th>Avg pulls</th>
+        <th>Planners</th><th>Total pulls</th><th>Avg pulls</th><th>Ignored</th>
       </tr>
     </thead>
     <tbody>
@@ -218,6 +230,7 @@ light/dark theme unfold renders in.
         <td>{{ banner.planners }}</td>
         <td>{{ banner.total_pulls }}</td>
         <td>{{ banner.avg_pulls }}</td>
+        <td>{{ banner.excluded|default:"&mdash;" }}</td>
       </tr>
       {% endfor %}
     </tbody>
