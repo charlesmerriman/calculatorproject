@@ -149,6 +149,38 @@ def affects_public_payload(sender):
     )
 
 
+# THE RECEIVERS LIVE AT MODULE SCOPE ON PURPOSE -- READ BEFORE MOVING THEM
+# -----------------------------------------------------------------------
+# Django's Signal.connect() defaults to weak=True: it stores a WEAK reference
+# to the receiver, so a receiver nothing else holds is garbage collected and
+# silently stops firing. Never an error, never a log line -- the signal simply
+# does nothing from then on.
+#
+# These two were previously nested inside connect_invalidation_signals(). The
+# function's frame was their only strong reference, so they died the moment it
+# returned and cache invalidation was dead in every process that ran with
+# DEBUG=False -- production included, where the 5-minute TTL below was silently
+# the ONLY thing refreshing content. It appeared to work locally because with
+# DEBUG=True something incidentally retained the frame and kept them alive.
+#
+# Defined here, the module holds them for the life of the process. weak=False
+# is then belt-and-braces: it states the requirement at the call site, so
+# nesting them again cannot quietly resurrect the bug.
+
+
+def _on_write(sender, **kwargs):
+    if affects_public_payload(sender):
+        _invalidate_now_and_on_commit()
+
+
+def _on_m2m(sender, instance=None, **kwargs):
+    # For an M2M the sender is the THROUGH model; the interesting object is
+    # `instance`, the row whose relation changed. Either side is enough of a
+    # reason to drop the cache.
+    if affects_public_payload(sender) or affects_public_payload(type(instance)):
+        _invalidate_now_and_on_commit()
+
+
 def connect_invalidation_signals():
     """Wire cache invalidation to content writes. Called from AppConfig.ready().
 
@@ -163,19 +195,12 @@ def connect_invalidation_signals():
     # touching the model registry before Django has finished populating it.
     from django.db.models.signals import m2m_changed, post_delete, post_save
 
-    def _on_write(sender, **kwargs):
-        if affects_public_payload(sender):
-            _invalidate_now_and_on_commit()
-
-    def _on_m2m(sender, instance=None, **kwargs):
-        # For an M2M the sender is the THROUGH model; the interesting object is
-        # `instance`, the row whose relation changed. Either side is enough of a
-        # reason to drop the cache.
-        if affects_public_payload(sender) or affects_public_payload(type(instance)):
-            _invalidate_now_and_on_commit()
-
     # dispatch_uid keeps a second ready() (the autoreloader, or a test that
-    # reloads apps) from registering duplicate receivers.
-    post_save.connect(_on_write, dispatch_uid="calculator_data_cache_save")
-    post_delete.connect(_on_write, dispatch_uid="calculator_data_cache_delete")
-    m2m_changed.connect(_on_m2m, dispatch_uid="calculator_data_cache_m2m")
+    # reloads apps) from registering duplicate receivers. weak=False keeps them
+    # alive -- see the note above the receivers.
+    post_save.connect(
+        _on_write, weak=False, dispatch_uid="calculator_data_cache_save")
+    post_delete.connect(
+        _on_write, weak=False, dispatch_uid="calculator_data_cache_delete")
+    m2m_changed.connect(
+        _on_m2m, weak=False, dispatch_uid="calculator_data_cache_m2m")
