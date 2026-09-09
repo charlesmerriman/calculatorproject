@@ -3347,6 +3347,8 @@ class AnalyticsReportEmptyTests(TestCase):
             self.assertEqual(product['pct_of_engaged'], 0.0)
         for resource in report['resource_averages']:
             self.assertEqual(resource['avg'], 0)
+            self.assertEqual(resource['median'], 0)
+            self.assertEqual(resource['excluded'], 0)
         self.assertEqual(report['popular_uma_banners'], [])
         self.assertEqual(report['popular_support_banners'], [])
 
@@ -3437,6 +3439,9 @@ class AnalyticsReportScenarioTests(TestCase):
                       if r['label'] == 'Carats')
         # (3000 + 1000 + 0) / 3 engaged users — lurker's zeroes not averaged in
         self.assertEqual(carats['avg'], 1333.3)
+        # planner's 0 is a real answer, so the middle of [0, 1000, 3000] is 1000
+        self.assertEqual(carats['median'], 1000)
+        self.assertEqual(carats['excluded'], 0)
 
     def test_uma_banner_popularity_ranked_and_staff_free(self):
         top, second = self.report['popular_uma_banners']
@@ -3454,6 +3459,115 @@ class AnalyticsReportScenarioTests(TestCase):
         self.assertEqual(only['name'], 'Support Y')
         self.assertEqual(only['planners'], 1)
         self.assertEqual(only['total_pulls'], 5)
+
+
+class AnalyticsOutlierTests(TestCase):
+    """Implausible stored values must not reach any figure that is a quantity.
+
+    Reproduces the shape seen in production: one account holding 999,999,999
+    (what the client sanitiser yields for any input of nine or more digits)
+    alongside a normal user base. The API accepts those values on purpose and
+    nothing here rewrites them — they are only excluded from the aggregates.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.normal_a = CustomUser.objects.create_user(
+            username='normal_a', password='x', current_carat=1000,
+        )
+        cls.normal_b = CustomUser.objects.create_user(
+            username='normal_b', password='x', current_carat=3000,
+        )
+        # Absurd carats, but a plausible ticket count: the filter is per FIELD,
+        # so the tickets must still count.
+        cls.outlier = CustomUser.objects.create_user(
+            username='outlier', password='x',
+            current_carat=999_999_999, uma_ticket=50,
+        )
+
+        timeline = make_timeline()
+        cls.banner = make_uma_banner(timeline, name='Uma X')
+        cls.solo = make_uma_banner(timeline, name='Outlier Only')
+
+        UserPlannedBanner.objects.create(
+            user=cls.normal_a, banner_uma=cls.banner, number_of_pulls=100)
+        UserPlannedBanner.objects.create(
+            user=cls.normal_b, banner_uma=cls.banner, number_of_pulls=200)
+        UserPlannedBanner.objects.create(
+            user=cls.outlier, banner_uma=cls.banner, number_of_pulls=999_999_999)
+        # A banner whose ONLY row is the absurd one — both aggregates come back
+        # NULL from the database and must not crash or render as None.
+        UserPlannedBanner.objects.create(
+            user=cls.outlier, banner_uma=cls.solo, number_of_pulls=999_999_999)
+
+        cls.report = build_analytics_report()
+
+    def _resource(self, label):
+        return next(r for r in self.report['resource_averages']
+                    if r['label'] == label)
+
+    def _banner(self, name):
+        return next(b for b in self.report['popular_uma_banners']
+                    if b['name'] == name)
+
+    def test_absurd_resource_is_dropped_from_mean_and_counted(self):
+        carats = self._resource('Carats')
+        # (1000 + 3000) / 2 — the billion is out, and the two real answers are in
+        self.assertEqual(carats['avg'], 2000.0)
+        self.assertEqual(carats['median'], 2000)
+        self.assertEqual(carats['excluded'], 1)
+
+    def test_filtering_is_per_field_not_per_user(self):
+        # The outlier's carats are excluded; their plausible tickets are not.
+        tickets = self._resource('Uma Tickets')
+        self.assertEqual(tickets['excluded'], 0)
+        self.assertEqual(tickets['avg'], round(50 / 3, 1))
+
+    def test_median_is_immune_to_a_legitimate_whale(self):
+        # No filtering involved: 9,000,000 is under SANE_MAX_RESOURCE and is a
+        # real (if extreme) answer. The mean moves a long way, the median does
+        # not — which is the whole reason the column exists.
+        CustomUser.objects.create_user(
+            username='whale', password='x', current_carat=9_000_000)
+        carats = next(r for r in build_analytics_report()['resource_averages']
+                      if r['label'] == 'Carats')
+        self.assertEqual(carats['excluded'], 1)
+        self.assertEqual(carats['avg'], round(9_004_000 / 3, 1))
+        self.assertEqual(carats['median'], 3000)
+
+    def test_banner_pull_figures_exclude_the_absurd_row(self):
+        banner = self._banner('Uma X')
+        self.assertEqual(banner['total_pulls'], 300)
+        self.assertEqual(banner['avg_pulls'], 150.0)
+        self.assertEqual(banner['excluded'], 1)
+
+    def test_planner_count_still_includes_the_outlier(self):
+        # They really do have the banner planned; only their NUMBER is junk.
+        self.assertEqual(self._banner('Uma X')['planners'], 3)
+
+    def test_banner_with_only_absurd_rows_reports_zero_not_none(self):
+        solo = self._banner('Outlier Only')
+        self.assertEqual(solo['planners'], 1)
+        self.assertEqual(solo['total_pulls'], 0)
+        self.assertEqual(solo['avg_pulls'], 0)
+        self.assertEqual(solo['excluded'], 1)
+
+    def test_all_null_banner_sorts_below_one_with_real_figures(self):
+        # Postgres sorts NULLs first in a plain DESC; the aggregate asks for
+        # nulls_last so the banner we have no figures for cannot lead the table.
+        names = [b['name'] for b in self.report['popular_uma_banners']]
+        self.assertLess(names.index('Uma X'), names.index('Outlier Only'))
+
+    def test_stored_values_are_never_rewritten(self):
+        # The report is read-only: this page filters, it does not clean up.
+        self.outlier.refresh_from_db()
+        self.assertEqual(self.outlier.current_carat, 999_999_999)
+        self.assertEqual(
+            UserPlannedBanner.objects
+            .filter(user=self.outlier, banner_uma=self.banner)
+            .first().number_of_pulls,
+            999_999_999,
+        )
 
 
 # Rendering admin templates resolves {% static %} tags; the production
