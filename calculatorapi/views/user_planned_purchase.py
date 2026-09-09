@@ -1,6 +1,9 @@
 from rest_framework import serializers
 
-from calculatorapi.eligibility import build_first_jp_date_maps, is_eligible
+from calculatorapi.eligibility import (
+    build_first_jp_date_maps,
+    selection_refusal_reason,
+)
 from calculatorapi.models import (
     AnniversaryEventProduct,
     SupportCard,
@@ -118,27 +121,30 @@ class UserPlannedPurchaseSerializer(serializers.ModelSerializer):
         )
 
     def _validate_target_eligibility(self, product, target_uma, target_support):
-        """Reject a target the selector's JP cutoff does not actually cover.
+        """Reject a target this selector cannot actually grant.
 
-        The client filters its picker by the same rule, so this is the backstop
+        The client filters its picker by the same rules, so this is the backstop
         rather than the primary gate -- but a stale client holding a campaign
         whose cutoff has since been corrected would otherwise persist a plan the
         game will not honour.
+
+        Note there is NO early return on a null cutoff. Null means the TEMPORAL
+        gate is unrestricted, not that the pick is unconditionally legal: a
+        time-limited or non-★3 uma is refused by every selector there is.
         """
-        cutoff = product.effective_jp_cutoff_date
-        if cutoff is None or not (target_uma or target_support):
+        target = target_uma or target_support
+        if target is None:
             return
 
-        uma_dates, support_dates = build_first_jp_date_maps()
-        if target_uma:
-            first_jp = uma_dates.get(target_uma.id)
-            name = target_uma.name
-        else:
-            first_jp = support_dates.get(target_support.id)
-            name = target_support.name
+        cutoff = product.effective_jp_cutoff_date
+        # The date is only consulted by the temporal gate, so an unrestricted
+        # cutoff skips building the maps entirely.
+        first_jp = None
+        if cutoff is not None:
+            uma_dates, support_dates = build_first_jp_date_maps()
+            dates = uma_dates if target_uma else support_dates
+            first_jp = dates.get(target.id)
 
-        if not is_eligible(first_jp, cutoff):
-            raise serializers.ValidationError(
-                f"{name} was released on JP after this selector's cutoff "
-                f"({cutoff.isoformat()}) and cannot be selected."
-            )
+        refusal = selection_refusal_reason(target, first_jp, cutoff, "this selector")
+        if refusal:
+            raise serializers.ValidationError(refusal)

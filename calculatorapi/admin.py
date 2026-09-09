@@ -402,11 +402,24 @@ class BannerStepUpAdmin(ImagePreviewMixin, SpacesImagePickerMixin, ModelAdmin):
 
 @admin.register(Uma)
 class UmaAdmin(ImagePreviewMixin, SpacesImagePickerMixin, ModelAdmin):
-    list_display = ("image_preview", "name")
+    list_display = ("image_preview", "name", "is_time_limited", "is_three_star")
     list_display_links = ("name",)
+    list_filter = ("is_time_limited", "is_three_star")
     ordering = ("name",)
     search_fields = ("name",)  # required: autocomplete source for banner inlines
     readonly_fields = ("image_preview",)
+    fieldsets = (
+        (None, {"fields": ("name", "image", "image_preview", "admin_comments")}),
+        ("Selector availability", {
+            "fields": ("is_time_limited", "is_three_star"),
+            "description": (
+                "Either box set against this uma hides it from selector and "
+                "step-up pickers, and stops a selector ticket paying for a "
+                "banner it is featured on. Both are independent of the "
+                "campaign cutoff dates."
+            ),
+        }),
+    )
 
 
 @admin.register(SupportCard)

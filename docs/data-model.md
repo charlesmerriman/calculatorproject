@@ -424,7 +424,36 @@ narrows on tag fields elsewhere (see `event_type` on the timeline union).
 Real-money prices live in the database, never in code, so they can be corrected without
 a deploy when the store changes.
 
-### Selector eligibility is derived, not stored
+### Selector eligibility: a derived gate and a stored one
+
+Two independent gates decide whether a selector may take a card. The **temporal** one is
+derived; the **intrinsic** one is stored. Both must pass — `eligibility.py`'s
+`selection_refusal_reason()` is the single entry point that checks both, and callers use
+it rather than `is_eligible()` alone.
+
+#### The intrinsic gate is stored, on `Uma`
+
+`Uma.is_time_limited` (default `False`) and `Uma.is_three_star` (default `True`) mark
+units a selector can **never** take at any cutoff. Neither is derivable: a time-limited or
+★1/★2 unit sits on ordinary banners and is indistinguishable from a selectable one from
+the banner data alone. Editors set them in the admin, under "Selector availability".
+
+This gate is **independent of the cutoff and bites even when the cutoff is `null`**, which
+the temporal gate waves through. That is why neither serializer backstop may early-return
+on a null cutoff — the old `if cutoff is None: return` admitted exactly these units.
+
+`SupportCard` has no equivalent: ★3 is an uma-side concept (supports are SSR/SR), so a
+support card is only ever gated on its date. Both predicates read the flags defensively
+(absent ⇒ unrestricted), so a support card passes the intrinsic gate unconditionally.
+
+Like the cutoff, both flags are **grandfathered against a user's stored picks**. An editor
+flagging a unit must not `400` the plan of everyone who already picked it — that rejection
+takes their stats and banners down with it. The existing grandfathering in
+`UserPlannedPurchaseSerializer._pairing_is_unchanged` and
+`UserStepUpSelectionSerializer`'s `stored_pairs` runs *before* either gate, so it covers
+both for free.
+
+#### The temporal gate is derived
 
 A selector may only take cards released on JP on or before its cutoff (inclusive). There
 is no stored "JP release date": it is derived as `MIN(BannerTimeline.jp_start_date)` over
