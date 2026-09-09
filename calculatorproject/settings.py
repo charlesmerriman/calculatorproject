@@ -348,6 +348,12 @@ REST_FRAMEWORK = {
         # workflow_dispatch runs and retries while still capping what a leaked
         # key could do -- each accepted request spends Patreon API quota.
         "patreon_sync": "12/hour",
+        # Starting a link is authenticated, so this is not abuse protection so
+        # much as a cap on outbound work: every accepted call mints a signed
+        # state and sends the user to a provider. 20/hour is far above any
+        # honest use (you link an account once) and low enough that a stolen
+        # token cannot be used to hammer Patreon on our behalf.
+        "account_link": "20/hour",
     },
 }
 
@@ -363,6 +369,26 @@ GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID", "")
 GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET", "")
 DISCORD_OAUTH_CLIENT_ID = os.getenv("DISCORD_OAUTH_CLIENT_ID", "")
 DISCORD_OAUTH_CLIENT_SECRET = os.getenv("DISCORD_OAUTH_CLIENT_SECRET", "")
+
+# Patreon as a SIGN-IN provider. Read the warning below before touching these.
+#
+# ⚠️ THERE ARE TWO PATREON CREDENTIAL PAIRS AND THEY ARE NOT INTERCHANGEABLE.
+#
+#   PATREON_OAUTH_CLIENT_ID / _SECRET  (here)   — the identity app. Acts on
+#       behalf of A VISITOR, who consents to it. Scope: "identity". Used by
+#       calculatorapi/oauth.py to learn one opaque user id, exactly like Google
+#       and Discord.
+#
+#   PATREON_CLIENT_ID / _SECRET  (further down) — the creator app. Acts on
+#       behalf of THE SITE OWNER, reading our own campaign's member list. Used
+#       by calculatorapi/patreon_api.py for the supporters sync.
+#
+# They can be the same registered client on Patreon's side, but they are used
+# for different things with different tokens, and wiring one pair where the
+# other belongs fails in a way that reads like an outage rather than a config
+# error. Keep the names distinct and the uses separate.
+PATREON_OAUTH_CLIENT_ID = os.getenv("PATREON_OAUTH_CLIENT_ID", "")
+PATREON_OAUTH_CLIENT_SECRET = os.getenv("PATREON_OAUTH_CLIENT_SECRET", "")
 
 # --- Patreon supporters sync -------------------------------------------------
 # Client credentials for the Patreon API v2 client (registered at
@@ -551,6 +577,13 @@ LOGGING = {
         },
     },
     "loggers": {
+        # Our own app. Without this, calculatorapi's logger.warning calls
+        # propagate to the root logger, which has no handler configured here --
+        # so an OAuth integration failing would write nothing anywhere.
+        "calculatorapi": {
+            "handlers": ["console"],
+            "level": "WARNING",
+        },
         "django": {
             "handlers": ["console"],
             "level": "WARNING",

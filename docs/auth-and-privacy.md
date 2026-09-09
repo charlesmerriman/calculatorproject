@@ -7,8 +7,8 @@ For endpoint request/response shapes see [api-reference.md](api-reference.md).
 
 ## The core privacy constraint
 
-Ordinary accounts exist **only** as a Google/Discord identity. The site holds no
-email, no name, and no usable password for them.
+Ordinary accounts exist **only** as a Google/Discord/Patreon identity. The site
+holds no email, no name, and no usable password for them.
 
 This is a deliberate design constraint, not an incidental side effect of using
 OAuth. Changes in this area should preserve it.
@@ -21,6 +21,8 @@ Concretely, a non-staff `CustomUser` row carries:
 
 The linked `SocialAccount` row stores `(provider, subject_id)` — unique together.
 That opaque `subject_id` is the only identifying value stored anywhere in the system.
+An account may hold **several** rows (one per provider); `SocialAccount.user` is a
+ForeignKey, not a OneToOne, precisely so that linking is possible.
 
 Staff accounts are the exception: they keep password login so `/admin` and the
 analytics dashboard remain reachable.
@@ -52,9 +54,16 @@ better than putting a long-lived token in a URL.
 
 - Google: `openid`
 - Discord: `identify`
+- Patreon: `identity`
 
-Neither transmits an email address to us. Widening these would break the privacy
-constraint above at the source.
+None of them transmits an email address to us. Widening these would break the
+privacy constraint above at the source.
+
+**Patreon's email has its own scope, `identity[email]`. Never request it.** Unlike
+the creator token used by the supporters sync — which carries every v2 scope
+automatically, so `MEMBER_FIELDS` is the only thing narrowing it — this is a
+user-consented app where the scope list genuinely is the boundary. Asking for the
+email here would put an address in the response for every person who signs in.
 
 ### `state` is signed and provider-bound
 
@@ -67,6 +76,53 @@ browser binding is what actually defeats login CSRF**, not the signature alone.
 
 sessionStorage rather than a cookie because dev is cross-origin (`:5173` → `:8000`),
 and a cookie would need `SameSite=None; Secure`.
+
+### Linking is a different door from sign-in, with its own salt
+
+`views/social_auth.py` is `AllowAny` and **creates an account** for an identity it
+does not recognise. `views/account_linking.py` is `IsAuthenticated` and **must never
+create one** — it attaches an identity to the account already signed in.
+
+They are separate views deliberately. Behind one view and a `mode` flag, a single
+mis-evaluated branch turns "link my Patreon" into "sign me in as whoever owns this
+Patreon".
+
+Two things make the link flow safe, and **both** are required:
+
+1. **The state is bound to the user**, carrying `u` (the user id it was minted for).
+   Without it, an attacker starts a link on their own account, gets a victim's
+   browser to complete it, and the attacker's identity lands on the victim's
+   account — after which they can sign in as the victim at will.
+2. **A separate salt**, `calculatorapi.account-link-state`. A *sign-in* state carries
+   no `u` at all, so if the link view accepted sign-in salts, check 1 would pass
+   vacuously and provide nothing.
+
+The redirect-URI allowlist check is **imported** from `social_auth.py` rather than
+reimplemented. Two copies could drift, and a drifted copy is an open redirector.
+
+### An identity belongs to one account, and is never moved
+
+Completing a link for an identity another account already owns returns **409**. We
+do not reassign it: that would let anyone who can complete a consent screen strip
+another account of its sign-in method.
+
+A second identity for a provider the account already has is also **409** — one per
+provider per account, so `DELETE /account/link/<provider>` stays unambiguous.
+
+Consequence, and it is a real one: someone who signs in with Google today and
+Patreon tomorrow lands in **two separate accounts**, and we cannot tell. `/login`
+carries a line telling people to sign in the way they did before and link
+afterwards. Merging two accounts means reconciling two plans, two purchase sets and
+two selection sets — a real feature, deliberately out of scope here.
+
+### Unlinking never removes the last way in
+
+An ordinary account has an unusable password and no email to send a reset to, so
+removing its only provider is an **unrecoverable lockout**, not an inconvenience.
+`DELETE /account/link/<provider>` refuses with 400 when it would leave a
+password-less account with no providers. Staff are exempt — their password works.
+
+Enforced server-side. Hiding the button is a suggestion; this has to be a rule.
 
 ### Google's `id_token` is decoded without signature verification
 
@@ -152,6 +208,13 @@ python manage.py purge_user_pii             # prompts for confirmation
 Strips email, name, and password from all non-staff accounts. **Irreversible.** After it
 runs, those accounts cannot sign in at all — their plans stay in the database but are
 unreachable. Intended to be run once in production.
+
+**It always clears `PatreonSupporter.linked_user` for the accounts it purges**,
+flag or no flag. The command's job is to make an account unreachable, and a
+supporter link pointing at a purged account would outlive it — granting
+entitlement to a login nobody can perform. The supporter **row** is untouched;
+only the link goes. Blanking supporter *data* is separate and still needs
+`--include-patreon`.
 
 ---
 

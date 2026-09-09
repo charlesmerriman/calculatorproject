@@ -1,5 +1,5 @@
 """
-Sign-in endpoints for Google / Discord.
+Sign-in endpoints for Google / Discord / Patreon.
 
 Two steps, matching the OAuth2 authorization-code flow in calculatorapi/oauth.py:
 
@@ -12,6 +12,7 @@ code here. The response shape {"token": ...} deliberately matches the existing
 password login so the frontend stores it identically.
 """
 
+import logging
 import secrets
 
 from django.conf import settings
@@ -23,8 +24,10 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 
-from calculatorapi import oauth
+from calculatorapi import benefits, oauth
 from calculatorapi.models import CustomUser, SocialAccount
+
+logger = logging.getLogger(__name__)
 
 # Namespaces the signature so a state string cannot be repurposed as, or forged
 # from, any other value signed with the same SECRET_KEY.
@@ -189,7 +192,13 @@ def social_auth_complete(request):
         subject_id = oauth.exchange_code(provider, code, redirect_uri)
     except oauth.OAuthError:
         # Expired/replayed code, provider outage, or a redirect_uri mismatch.
-        # The underlying detail stays server-side.
+        # The CLIENT gets one generic message -- distinguishing these would only
+        # help someone probing the endpoint -- but the detail must not vanish
+        # entirely, or a genuinely broken provider integration is invisible in
+        # production and indistinguishable from users mistyping their password.
+        # OAuthError carries no token or code, only status codes and shape
+        # complaints, so it is safe to log.
+        logger.warning("OAuth sign-in failed for %s", provider, exc_info=True)
         return Response(GENERIC_AUTH_ERROR, status=status.HTTP_400_BAD_REQUEST)
 
     # get_or_create on (provider, subject_id) is what makes a returning user
@@ -211,6 +220,14 @@ def social_auth_complete(request):
 
     social.last_login_at = timezone.now()
     social.save(update_fields=["last_login_at"])
+
+    # Someone signing in with Patreon may already be a known patron. This is a
+    # LOCAL lookup only — no request to Patreon — because sign-in is the hot
+    # path and most people signing in are not patrons. The link endpoint, which
+    # is a deliberate "give me my benefits" action, is where it is worth asking
+    # Patreon directly; here a new patron simply waits for the daily sync.
+    if provider == SocialAccount.PROVIDER_PATREON:
+        benefits.link_supporter_to_user(social.user, subject_id)
 
     token, _ = Token.objects.get_or_create(user=social.user)
     return Response(

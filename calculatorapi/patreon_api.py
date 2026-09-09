@@ -34,12 +34,24 @@ PatreonSupporter for one purpose — telling two supporters apart in the admin
 when their display names collide or one of them renames — and it is never
 published; see the field's comment on the model. Address and phone stay out.
 
+THE USER ID IS A RELATIONSHIP, NOT A FIELD
+------------------------------------------
+Each row also carries `patreon_user_id`, which is what matches a patron to a
+site account. It is deliberately NOT obtained by adding anything to
+MEMBER_FIELDS: it is the linkage id of the member's `user` relationship, and
+`fields[user]` is sent EMPTY so the sideloaded user resource arrives with no
+attributes at all — no full name, no vanity URL, no avatar, no social handles.
+So the privacy boundary this module rests on is unchanged, and a test asserts
+MEMBER_FIELDS still holds exactly what it held before.
+
 OUTPUT SHAPE
 ------------
 `fetch_members()` returns the SAME row dicts `parse_patreon_csv` returns —
-display_name / email / tier_name / is_active — plus an optional `patron_since`.
-Both feed the one reconcile, `apply_patreon_import`, so the CSV and the API
-cannot drift into treating the same data differently.
+display_name / email / tier_name / is_active — plus two the CSV path cannot
+know: `patron_since` and `patreon_user_id`. Both feed the one reconcile,
+`apply_patreon_import`, which treats an absent key as "don't know" rather than
+"clear it", so the CSV and the API cannot drift into treating the same data
+differently.
 
 WHO COUNTS
 ----------
@@ -69,6 +81,10 @@ PAGE_SIZE = 500
 # ── The privacy boundary. Read the module docstring before touching. ──────────
 # `email` is here deliberately and is the only contact field on the list.
 MEMBER_FIELDS = ("full_name", "email", "patron_status", "pledge_relationship_start")
+# Empty ON PURPOSE — a JSON:API sparse fieldset asking for the user resource
+# with NO attributes. We want the relationship's id and nothing else. Dropping
+# this parameter would bring back Patreon's DEFAULT user attribute set in full.
+USER_FIELDS = ()
 # `amount_cents` is the TIER's price, not a person's billing data, and it is read
 # transiently to tell a paid tier from a free one — see _row_from_member. It is
 # never stored: PatreonTier deliberately carries no money column.
@@ -222,6 +238,17 @@ def _tiers_by_id(included):
     return tiers
 
 
+def _member_user_id(member):
+    """The linkage id of the member's `user` relationship, or "".
+
+    Reads only `relationships.user.data.id`. The sideloaded resource itself is
+    ignored entirely — we send an empty `fields[user]`, so it carries nothing
+    worth reading anyway.
+    """
+    data = ((member.get("relationships") or {}).get("user") or {}).get("data") or {}
+    return str(data.get("id") or "")[:64]
+
+
 def _row_from_member(member, tiers):
     """One member resource -> the row dict the reconcile expects, or None.
 
@@ -272,6 +299,9 @@ def _row_from_member(member, tiers):
         # Truncated rather than raising, matching parse_patreon_csv: an
         # over-long name is a display problem, not an import failure.
         "display_name": name[:100],
+        # "" if Patreon did not send the relationship. The reconcile then falls
+        # back to matching on the display name, exactly as the CSV path does.
+        "patreon_user_id": _member_user_id(member),
         # Patreon can withhold an email (a member who joined without one, or a
         # response where the field is simply absent), so this is "" as often as
         # not. The reconcile treats "" as "don't know", never as "clear it".
@@ -285,9 +315,17 @@ def _row_from_member(member, tiers):
 def fetch_members(credentials=None):
     """Every member of the campaign, as reconcile-ready rows.
 
-    Paginates by cursor until Patreon stops offering a next one. Duplicate
-    display names are collapsed the same way the CSV parser collapses them,
-    because the supporters table is unique on a casefolded display name.
+    Paginates by cursor until Patreon stops offering a next one.
+
+    DEDUPED ON THE PATREON USER ID, not the display name. Two patrons are free
+    to choose the same display name, and collapsing them here would silently
+    drop the second one — invisibly, because a dropped row looks identical to a
+    lapsed one, and `deactivate_missing` would then retire whichever of the two
+    already had a row. Harmless while this only fed a thank-you list; once
+    entitlement hangs off the row it costs someone the thing they paid for.
+
+    The name remains the fallback key for a member with no user relationship,
+    which is the same rule the CSV path lives under permanently.
     """
     credentials = credentials or PatreonCredentials.load()
     token = get_access_token(credentials)
@@ -298,9 +336,11 @@ def fetch_members(credentials=None):
     cursor = None
     while True:
         params = {
-            "include": "currently_entitled_tiers",
+            "include": "currently_entitled_tiers,user",
             "fields[member]": ",".join(MEMBER_FIELDS),
             "fields[tier]": ",".join(TIER_FIELDS),
+            # Empty, deliberately. See USER_FIELDS.
+            "fields[user]": ",".join(USER_FIELDS),
             "page[count]": PAGE_SIZE,
         }
         if cursor:
@@ -314,7 +354,7 @@ def fetch_members(credentials=None):
             row = _row_from_member(member, tiers)
             if row is None:
                 continue
-            key = row["display_name"].casefold()
+            key = row["patreon_user_id"] or f"name:{row['display_name'].casefold()}"
             if key in seen:
                 continue
             seen.add(key)

@@ -3,21 +3,41 @@ from .custom_user import CustomUser
 
 
 class SocialAccount(models.Model):
-    """Links a CustomUser to an identity held at Google or Discord.
+    """Links a CustomUser to an identity held at Google, Discord or Patreon.
 
     This is the whole personal footprint of a non-staff account. Sign-in goes
     through the provider (see calculatorapi/oauth.py), which verifies the
     password on their side and hands us back one opaque number. We deliberately
     request the narrowest scope each provider allows -- "openid" for Google,
-    "identify" for Discord -- so no email address or display name is ever sent
-    to us, and therefore none can be stored here by accident.
+    "identify" for Discord, "identity" for Patreon -- so no email address or
+    display name is ever sent to us, and therefore none can be stored here by
+    accident.
+
+    A row can arrive two ways, and they are NOT the same operation:
+
+      SIGN-IN  (views/social_auth.py) is AllowAny and CREATES an account when
+               the identity is unknown.
+      LINKING  (views/account_linking.py) is IsAuthenticated and must NEVER
+               create one -- it attaches an identity to the account already
+               signed in.
+
+    They are separate views on purpose. Folding them into one behind a mode
+    flag puts an account-creation path one branching mistake away from an
+    account-takeover path.
+
+    A Patreon row here says only "this person can sign in with Patreon". It says
+    NOTHING about whether they are a paying patron -- that is PatreonSupporter's
+    job, kept separate because the two have independent lifecycles: most patrons
+    have no account here, and most accounts have no pledge.
     """
 
     PROVIDER_GOOGLE = "google"
     PROVIDER_DISCORD = "discord"
+    PROVIDER_PATREON = "patreon"
     PROVIDER_CHOICES = [
         (PROVIDER_GOOGLE, "Google"),
         (PROVIDER_DISCORD, "Discord"),
+        (PROVIDER_PATREON, "Patreon"),
     ]
 
     user = models.ForeignKey(

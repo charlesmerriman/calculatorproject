@@ -1039,11 +1039,23 @@ class PatreonSupporterAdmin(ModelAdmin):
     whose display names collide, or the old and new row left behind when a
     patron renames themselves on Patreon. It is not on the public serializer and
     must not be added to it.
+
+    THE ACCOUNT LINK IS READ-ONLY. `linked_user` is what grants supporter
+    entitlement on the website, and `patreon_user_id` is what the sync matches
+    on. Both are machine-derived — the sync sets them, and the person themselves
+    sets or clears them by linking their Patreon login. Making either editable
+    would put "who gets the thing they paid for" behind a form with no review,
+    and hand-editing the id would silently reassign one patron's entitlement to
+    another. `tier` and `is_active` stay editable because THOSE are editorial
+    judgements about a pledge, not identity.
     """
 
     change_list_template = "admin/calculatorapi/patreonsupporter/change_list.html"
 
-    list_display = ("display_name", "email", "tier", "is_public", "is_active", "patron_since")
+    list_display = (
+        "display_name", "email", "tier", "is_public", "is_active",
+        "has_website_account", "patron_since",
+    )
     list_editable = ("is_public", "is_active")
     list_filter = ("is_public", "is_active", "tier")
     ordering = ("tier__order", "display_name")
@@ -1051,6 +1063,15 @@ class PatreonSupporterAdmin(ModelAdmin):
     # in, when the name they signed the message with isn't the one on the row.
     search_fields = ("display_name", "email")
     autocomplete_fields = ("tier",)
+    readonly_fields = ("patreon_user_id", "linked_user")
+
+    @admin.display(boolean=True, description="Website account")
+    def has_website_account(self, obj):
+        """Whether this patron has linked a site login — i.e. whether they can
+        actually receive supporter benefits. The commonest support question is
+        'I\'m pledging but the site doesn\'t know', and this column answers it
+        at a glance without opening the row."""
+        return obj.linked_user_id is not None
 
     fieldsets = (
         (None, {
@@ -1068,6 +1089,17 @@ class PatreonSupporterAdmin(ModelAdmin):
                 "Patreon export's Name column is often a real billing name."
             ),
             "fields": ("is_public", "is_active", "patron_since"),
+        }),
+        ("Website account", {
+            "description": (
+                "Read-only. Filled automatically when this patron signs in with "
+                "Patreon or connects it to an existing account — that is what lets "
+                "them see supporter-only features. Empty is normal: most patrons "
+                "never make an account here. Supporters added from a CSV have no "
+                "Patreon ID and can never be linked, which is a reason to prefer "
+                "the API sync."
+            ),
+            "fields": ("linked_user", "patreon_user_id"),
         }),
     )
 

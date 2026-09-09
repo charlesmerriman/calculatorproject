@@ -164,5 +164,8 @@ def patreon_sync(request):
         "deactivated": len(summary["deactivated"]),
         "dates_filled": len(summary["dates_filled"]),
         "emails_updated": len(summary["emails_updated"]),
+        "ids_filled": len(summary["ids_filled"]),
+        "linked": len(summary["linked"]),
+        "ambiguous": len(summary["ambiguous"]),
         "unchanged": summary["unchanged"],
     })

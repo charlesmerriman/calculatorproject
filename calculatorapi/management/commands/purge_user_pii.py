@@ -15,8 +15,15 @@ For every user with is_staff=False it:
 Staff accounts are untouched — they still sign in with a password to reach
 /admin and the analytics dashboard.
 
-PATREON SUPPORTERS ARE NOT ACCOUNTS, and are left alone unless you pass
---include-patreon. PatreonSupporter.email is the admin's only way to tell two
+SUPPORTER LINKS ARE ALWAYS CLEARED, flag or no flag. This command's job is to
+make an account unreachable, and a `PatreonSupporter.linked_user` pointing at a
+purged account would outlive it — granting entitlement to a login nobody can
+perform, and keeping a pointer at a person the purge was meant to disconnect.
+The supporter ROW survives untouched, exactly as it does when someone unlinks
+by hand; only the link to the account goes.
+
+PATREON SUPPORTERS ARE NOT ACCOUNTS, and their DATA is left alone unless you
+pass --include-patreon. PatreonSupporter.email is the admin's only way to tell two
 supporters apart, so wiping it is a deliberate act, not a side effect of the
 legacy account purge this command exists for. The flag is here so there IS a
 lever — a takedown request, or decommissioning the Patreon integration — rather
@@ -79,6 +86,9 @@ class Command(BaseCommand):
         total = targets.count()
 
         include_patreon = options["include_patreon"]
+        linked_supporters = PatreonSupporter.objects.filter(
+            linked_user__in=targets
+        ).count()
         # Counted whether or not the flag is set, so a dry run always shows what
         # the flag WOULD reach.
         patreon_with_email = PatreonSupporter.objects.exclude(email="").count()
@@ -97,6 +107,7 @@ class Command(BaseCommand):
         self.stdout.write(f"  holding email/name:      {with_pii}")
         self.stdout.write(f"  holding a usable password: {with_password}")
         self.stdout.write(f"  API tokens to delete:    {token_count}")
+        self.stdout.write(f"  Patreon links to clear:  {linked_supporters}")
         self.stdout.write(
             self.style.WARNING(
                 f"Staff accounts left untouched: {CustomUser.objects.filter(is_staff=True).count()}"
@@ -144,6 +155,13 @@ class Command(BaseCommand):
 
             CustomUser.objects.bulk_update(users, PII_FIELDS + ["password"])
 
+            # Always, not behind --include-patreon: this severs a link, it does
+            # not touch supporter data. Leaving it would keep entitlement alive
+            # on an account that can no longer be signed into.
+            PatreonSupporter.objects.filter(linked_user__in=targets).update(
+                linked_user=None
+            )
+
             if include_patreon:
                 # Blanked, not deleted: the supporter still needs thanking, and
                 # their publication decision must survive.
@@ -152,6 +170,11 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(
             f"\nPurged {len(users)} account(s) and deleted {token_count} token(s)."
         ))
+        if linked_supporters:
+            self.stdout.write(self.style.SUCCESS(
+                f"Cleared {linked_supporters} Patreon supporter link(s). "
+                "The supporter rows themselves are unchanged."
+            ))
         if include_patreon:
             self.stdout.write(self.style.SUCCESS(
                 f"Blanked the email on {patreon_with_email} Patreon supporter(s)."

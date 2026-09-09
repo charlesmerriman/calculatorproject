@@ -97,6 +97,96 @@ Protected. Deletes the user's current auth token.
 { "message": "Successfully logged out" }
 ```
 
+### `GET /account`
+
+Protected. Who the caller is, and what they are entitled to. `401` for anonymous
+callers — which is what lets the SPA treat it as the source of truth: a revoked
+token gets a 401 here, so the client learns the string it holds has stopped
+meaning anything instead of rendering a signed-in shell around nothing.
+
+**Response `200`**
+```json
+{
+  "username": "user_a3f9c1",
+  "linked_providers": [
+    { "provider": "google", "linked_at": "2026-07-02" }
+  ],
+  "supporter": { "is_supporter": true, "tier": "Junior Class", "benefits": ["ad_free"] }
+}
+```
+
+- `linked_providers` is empty for staff, who sign in with a password and hold no
+  `SocialAccount` rows. That is a correct answer, not an error.
+- **`subject_id` is never serialized, for any provider.** The serializer's
+  explicit field list is the only thing keeping it off the wire — the same role
+  `PatreonSupporterSerializer`'s list plays for the supporter email.
+- `supporter` is **derived on every request** from the linked `PatreonSupporter`
+  row — `linked_user` set, `is_active`, and a tier — never read from a flag on
+  the account. → `calculatorapi/benefits.py`
+- With no entitlement the block is `{"is_supporter": false}` and **nothing
+  else**. No null tier, no empty benefits array: either would let a client read
+  the absence of a tier as a tier, or "we checked and they have none" as "we
+  have not checked".
+- `benefits` is a list of capability KEYS, not tier arithmetic. Whether
+  `ad_free` needs any paid tier or a specific one is decided server-side in
+  `benefits.BENEFITS`; a client comparing tier orders would be a second
+  implementation of the paywall, free to disagree with the real one. There is
+  deliberately no tier `order` in the response.
+- Nothing identifying the *supporter row* is here even for a supporter — no
+  display name, no admin email, no `patreon_user_id`, no row id.
+
+Deliberately its own route rather than a key on `/calculator-data`: that payload
+is not fetched on the home page, the FAQ or the changelog, and everything in it
+but the four user-scoped keys is served from a shared process-wide cache, which
+entitlement must never be answerable from.
+
+---
+
+### `GET /account/link/<provider>/start`
+
+Protected, throttled to **20/hour per user**. Returns a consent URL for attaching
+`provider` to the account already signed in.
+
+**Response `200`** — same shape as `/auth/<provider>/start`:
+```json
+{ "authorize_url": "https://www.patreon.com/oauth2/authorize?...", "state": "..." }
+```
+
+`404` unknown provider · `400` unlisted `redirect_uri` · `401` anonymous ·
+`503` provider credentials not configured.
+
+The `state` is signed with salt `calculatorapi.account-link-state` — **not** the
+sign-in salt — and carries the id of the user it was minted for.
+
+### `POST /account/link/<provider>/complete`
+
+Protected. Redeems the one-time code and attaches the identity.
+
+**Request** `{ "code": "...", "state": "..." }`
+
+**Response `201`** (linked) or **`200`** (already linked — completing twice is not
+an error):
+```json
+{ "provider": "patreon", "linked_at": "2026-09-08" }
+```
+
+- `409` — that identity belongs to a different account, **or** this account
+  already has a login for that provider. Never reassigns; see
+  [auth-and-privacy.md](auth-and-privacy.md).
+- `400` — bad or expired state, a state minted for another user, a **sign-in**
+  state, or a failed exchange. One generic message for all of them.
+- **This endpoint never creates a `CustomUser`.** That invariant is what separates
+  it from `POST /auth/social`.
+
+### `DELETE /account/link/<provider>`
+
+Protected. Detaches the provider. **`204`** on success.
+
+- `404` — not linked to this account (including when it is linked to someone else).
+- `400` — it is the account's **last** sign-in method and the account has no usable
+  password. An ordinary account has neither a password nor an email to reset
+  through, so this would be an unrecoverable lockout. Staff are exempt.
+
 ---
 
 ## Core Calculator
@@ -339,9 +429,16 @@ stale.
 ```json
 {
   "members_returned": 22, "created": 1, "reactivated": 0,
-  "tier_changed": 0, "deactivated": 2, "dates_filled": 1, "unchanged": 19
+  "tier_changed": 0, "deactivated": 2, "dates_filled": 1,
+  "emails_updated": 0, "ids_filled": 0, "linked": 1, "ambiguous": 0,
+  "unchanged": 19
 }
 ```
+
+`linked` counts patrons newly matched to a website account. `ambiguous` counts
+rows the reconcile **refused to act on** because two stored supporters share
+that display name and the incoming row carried no Patreon id to tell them
+apart — nothing was written for those, and they need an editor.
 
 **Counts, never names** — the job log is a third-party surface, and most
 supporters have not been cleared for publication. Throttled at 12/hour

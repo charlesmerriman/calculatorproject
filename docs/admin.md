@@ -143,12 +143,42 @@ change to what a sync *means* belongs in `admin_patreon_import.py`, never in a c
 - **Deactivating missing supporters defaults differently, on purpose.** Off for the CSV,
   because a partial or filtered export would deactivate everyone it happens to omit; on
   for the API sync, because a fully-paginated response *is* the complete member list.
-- Matching is on casefolded `display_name`, the same key as the model's uniqueness
-  constraint, so re-running updates rather than duplicating.
+- **Matching is on `patreon_user_id` first, casefolded `display_name` as the fallback.**
+  API rows carry an id, so a patron can rename themselves without becoming a second row,
+  and two patrons who chose the same name stay two people. CSV and hand-entered rows have
+  no id and are matched by name; a name match against a row with no id yet *adopts* it,
+  which is how existing rows get their id with no data migration (`Patreon id filled` in
+  the summary). The one thing the reconcile refuses to guess at is an id-less row whose
+  name matches **two** stored rows — nothing is written and the summary says so.
 - New tiers are created at the bottom of the order; reorder them on the Patreon Tiers
   page or with `set_patreon_tier_order`.
 - `patron_since` is **filled, never overwritten**. Only the API supplies it (the CSV has
-  no such column), and a date an editor corrected by hand survives the next sync.
+  no such column), and a date an editor corrected by hand survives the next sync. The
+  Patreon id follows the same rule, for a stronger reason: overwriting one would let a
+  name collision move a patron's entitlement onto somebody else's row.
+- The summary reports `matched to a website account` when a patron is joined to a site
+  login. That is what actually turns a pledge into supporter features on the site.
+
+### The website account column is read-only
+
+`PatreonSupporterAdmin` shows **Website account** on the changelist (a tick when this
+patron has linked a site login) and a read-only *Website account* fieldset on the row.
+Empty is the normal state — most patrons never make an account here.
+
+Both `linked_user` and `patreon_user_id` are **read-only on purpose**. `linked_user` is
+what grants supporter features, and it is set by the person themselves when they sign in
+with Patreon or connect it to an existing account; `patreon_user_id` is what the sync
+matches on, and hand-editing it would silently reassign one patron's entitlement to
+another. `tier` and `is_active` stay editable because those are editorial judgements
+about a pledge rather than statements about identity.
+
+**A supporter added from a CSV has no Patreon id and can never be linked.** That is the
+strongest practical reason to prefer *Sync from Patreon* over the CSV upload: the CSV
+path can thank someone, but it cannot give them the features they paid for.
+
+The commonest support question is "I'm pledging but the site doesn't know" — the answer
+is almost always that they have not linked their Patreon login to their account, which
+that column answers at a glance.
 
 **Sync from Patreon** additionally shows when the last sync ran and why the last one
 failed, and disables its own submit button when no token is configured. The CSV upload
