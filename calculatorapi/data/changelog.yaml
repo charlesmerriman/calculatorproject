@@ -32,6 +32,16 @@
 # module changed. Newest entry first is conventional here but not required — the
 # page sorts by date.
 
+- key: patreon-sign-in
+  date: 2026-09-09
+  title: "Sign in with Patreon"
+  version: "v1.2.1"
+  changes:
+    - added: "Patreon joins Google and Discord on the sign-in page."
+    - changed: "Choosing Patreon starts a fresh account. If you already have a plan saved under Google or Discord, sign in the way you always have \u2014 the login page says the same thing under the buttons."
+    - changed: "Time-limited umas, and anything under three stars, no longer show up in the selector pickers. A ticket cannot take them."
+    - fixed: "Selector tickets stop paying for a reserved copy on banners where nothing they could actually take is featured. Those banners were coming out cheaper than they are, and the ticket was being used up on them."
+
 - key: faster-loading
   date: 2026-09-04
   title: "Faster loading, and the selector tickets redone"
