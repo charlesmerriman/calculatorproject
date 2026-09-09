@@ -80,7 +80,12 @@ from calculatorapi.predictions import (
     build_anniversary_event_date_map,
     build_scenario_date_map,
 )
-from calculatorapi.eligibility import build_first_jp_date_maps, is_eligible
+from calculatorapi.eligibility import (
+    build_first_jp_date_maps,
+    is_eligible,
+    is_intrinsically_selectable,
+    selection_refusal_reason,
+)
 from calculatorapi.management.commands.create_content_editor_group import CONTENT_MODELS
 from calculatorapi.admin_patreon_import import apply_patreon_import, parse_patreon_csv
 from calculatorapi import patreon_api
@@ -2337,6 +2342,45 @@ class UserStepUpSelectionTests(TestCase):
         ])
         self.assertEqual(res.status_code, 400)
 
+    def test_rejects_a_time_limited_uma(self):
+        self.eligible_uma.is_time_limited = True
+        self.eligible_uma.save(update_fields=['is_time_limited'])
+        res = self._patch([self._slot(uma=self.eligible_uma.id)])
+        self.assertEqual(res.status_code, 400)
+
+    def test_rejects_a_non_three_star_uma(self):
+        self.eligible_uma.is_three_star = False
+        self.eligible_uma.save(update_fields=['is_three_star'])
+        res = self._patch([self._slot(uma=self.eligible_uma.id)])
+        self.assertEqual(res.status_code, 400)
+
+    def test_the_intrinsic_gate_survives_a_null_cutoff(self):
+        """A null cutoff relaxes the DATE, not the unit's own availability.
+
+        This is the case the old `if cutoff is None: return` early-out let
+        straight through -- the whole reason the intrinsic gate could not be
+        folded in behind the cutoff check.
+        """
+        self.event.jp_cutoff_date = None
+        self.event.save()
+        self.eligible_uma.is_time_limited = True
+        self.eligible_uma.save(update_fields=['is_time_limited'])
+        res = self._patch([self._slot(uma=self.eligible_uma.id)])
+        self.assertEqual(res.status_code, 400)
+
+    def test_a_stored_pick_survives_being_flagged_time_limited(self):
+        # Same lockout guard as the cutoff: an editor flagging a unit must not
+        # 400 the plans of everyone who already picked it.
+        self.assertEqual(
+            self._patch([self._slot(uma=self.eligible_uma.id)]).status_code, 200
+        )
+        self.eligible_uma.is_time_limited = True
+        self.eligible_uma.save(update_fields=['is_time_limited'])
+
+        res = self._patch([self._slot(uma=self.eligible_uma.id)])
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(UserStepUpSelection.objects.filter(user=self.user).count(), 1)
+
     def test_a_rejected_row_rolls_the_whole_patch_back(self):
         self._patch([self._slot(slot=1)])
         res = self.client.patch(
@@ -2480,6 +2524,65 @@ class SelectorEligibilityTests(TestCase):
         # Conservative: claiming a selector covers a card it can't is worse than
         # hiding one it could.
         self.assertFalse(is_eligible(None, datetime.date(2024, 1, 31)))
+
+
+class IntrinsicSelectorGateTests(TestCase):
+    """The second gate: units no selector can take at ANY cutoff."""
+
+    def test_an_ordinary_uma_is_selectable_by_default(self):
+        # The defaults have to land on "selectable", or adding the columns would
+        # silently empty every picker for the whole existing catalogue.
+        uma = Uma.objects.create(name='Ordinary')
+        self.assertFalse(uma.is_time_limited)
+        self.assertTrue(uma.is_three_star)
+        self.assertTrue(is_intrinsically_selectable(uma))
+
+    def test_time_limited_uma_is_never_selectable(self):
+        uma = Uma.objects.create(name='Limited', is_time_limited=True)
+        self.assertFalse(is_intrinsically_selectable(uma))
+
+    def test_non_three_star_uma_is_never_selectable(self):
+        uma = Uma.objects.create(name='Two Star', is_three_star=False)
+        self.assertFalse(is_intrinsically_selectable(uma))
+
+    def test_support_cards_have_no_intrinsic_gate(self):
+        # Neither flag exists on SupportCard; absent must read as unrestricted
+        # rather than as "not a ★3".
+        card = SupportCard.objects.create(name='Any SSR', game_id=30001)
+        self.assertTrue(is_intrinsically_selectable(card))
+
+    def test_intrinsic_gate_bites_under_a_null_cutoff(self):
+        # THE point of the second gate. A null cutoff makes the temporal gate
+        # wave everything through; a time-limited uma must still be refused.
+        uma = Uma.objects.create(name='Limited', is_time_limited=True)
+        self.assertTrue(is_eligible(None, None))
+        self.assertIsNotNone(
+            selection_refusal_reason(uma, None, None, 'this selector')
+        )
+
+    def test_intrinsic_refusal_names_the_card_and_not_a_cutoff(self):
+        uma = Uma.objects.create(name='Limited', is_time_limited=True)
+        reason = selection_refusal_reason(uma, None, None, 'this selector')
+        self.assertIn('Limited', reason)
+        self.assertNotIn('cutoff', reason)
+
+    def test_a_selectable_uma_inside_the_cutoff_is_refused_for_nothing(self):
+        uma = Uma.objects.create(name='Fine')
+        released = timezone.make_aware(datetime.datetime(2024, 1, 1))
+        self.assertIsNone(
+            selection_refusal_reason(
+                uma, released, datetime.date(2024, 1, 31), 'this selector'
+            )
+        )
+
+    def test_cutoff_refusal_still_fires_for_a_selectable_uma(self):
+        uma = Uma.objects.create(name='Too New')
+        released = timezone.make_aware(datetime.datetime(2024, 2, 1))
+        reason = selection_refusal_reason(
+            uma, released, datetime.date(2024, 1, 31), 'this step-up'
+        )
+        self.assertIn('this step-up', reason)
+        self.assertIn('2024-01-31', reason)
 
 
 class ScenarioDateTests(TestCase):
@@ -3067,6 +3170,49 @@ class UserPlannedPurchaseTests(TestCase):
         self.assertEqual(res.status_code, 200)
         self.user.refresh_from_db()
         self.assertEqual(self.user.current_carat, 4321)
+
+    def test_rejects_a_time_limited_target(self):
+        self.eligible_uma.is_time_limited = True
+        self.eligible_uma.save(update_fields=['is_time_limited'])
+        res = self._patch([
+            {'product': self.uma_selector.id, 'quantity': 1,
+             'target_uma': self.eligible_uma.id}
+        ])
+        self.assertEqual(res.status_code, 400)
+
+    def test_rejects_a_non_three_star_target(self):
+        self.eligible_uma.is_three_star = False
+        self.eligible_uma.save(update_fields=['is_three_star'])
+        res = self._patch([
+            {'product': self.uma_selector.id, 'quantity': 1,
+             'target_uma': self.eligible_uma.id}
+        ])
+        self.assertEqual(res.status_code, 400)
+
+    def test_the_intrinsic_gate_survives_an_unrestricted_selector(self):
+        # A null cutoff makes the DATE unrestricted; the unit is still refused.
+        # The old `if cutoff is None: return` early-out admitted this.
+        self.event.jp_cutoff_date = None
+        self.event.save()
+        self.late_uma.is_time_limited = True
+        self.late_uma.save(update_fields=['is_time_limited'])
+        res = self._patch([
+            {'product': self.uma_selector.id, 'quantity': 1,
+             'target_uma': self.late_uma.id}
+        ])
+        self.assertEqual(res.status_code, 400)
+
+    def test_grandfathers_a_saved_target_that_is_flagged_time_limited_later(self):
+        # An editor flagging a unit must not lock its plan's owner out of saving.
+        saved = self._save_target(self.eligible_uma)
+        self.eligible_uma.is_time_limited = True
+        self.eligible_uma.save(update_fields=['is_time_limited'])
+
+        res = self._patch([
+            {'id': saved.id, 'product': self.uma_selector.id, 'quantity': 1,
+             'target_uma': self.eligible_uma.id}
+        ])
+        self.assertEqual(res.status_code, 200)
 
     def test_still_rejects_a_changed_target_under_a_tightened_cutoff(self):
         # Grandfathering covers the stored pairing only — editing the row is the
