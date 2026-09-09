@@ -575,15 +575,20 @@ editor narrowing a cutoff cannot 400 a plan its owner never touched.
   "free_pulls": 0,
   "admin_comments": "string | null",
   "banner_timeline": { "id": 1, "name": "string", "start_date": "ISO8601", "end_date": "ISO8601", "is_predicted": false, "jp_start_date": "ISO8601 | null", "jp_end_date": "ISO8601 | null", "global_start_date": "ISO8601 | null", "global_end_date": "ISO8601 | null", "image": "url | null" },
-  "umas": [ { "id": 1, "name": "string", "image": "url | null", "admin_comments": "string | null", "first_jp_date": "ISO8601 | null" } ]
+  "umas": [ { "id": 1, "name": "string", "image": "url | null", "admin_comments": "string | null", "first_jp_date": "ISO8601 | null", "is_time_limited": false, "is_three_star": true } ]
 }
 ```
 
 `first_jp_date` on a nested uma or support card is the earliest JP banner it appeared
-on, derived server-side (never stored) and the key **selector eligibility** is judged
-on: a selector may only take cards released on JP on or before its cutoff, inclusive.
-`null` means the card has never been featured on a banner in our data — treat that as
-*unknown*, not *ancient*; eligibility refuses `null` under a real cutoff. See
+on, derived server-side (never stored) and the key the **temporal** half of selector
+eligibility is judged on: a selector may only take cards released on JP on or before its
+cutoff, inclusive. `null` means the card has never been featured on a banner in our data —
+treat that as *unknown*, not *ancient*; eligibility refuses `null` under a real cutoff.
+
+`is_time_limited` / `is_three_star` are the **intrinsic** half, and appear on umas only —
+a support card has no equivalent. They are stored, not derived, and are independent of the
+cutoff: a `true` / `false` here bars the uma from every selector and step-up there is,
+including one with a `null` (unrestricted) cutoff. A client must check both halves. See
 `calculatorapi/eligibility.py`.
 
 ### `BannerSupport`

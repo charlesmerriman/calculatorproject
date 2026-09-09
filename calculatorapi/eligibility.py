@@ -18,6 +18,20 @@ Note this makes eligibility USUALLY BINDING, and that is correct: a campaign's
 cutoff falls before its own banners, so a selector can essentially never take the
 featured unit of the anniversary that granted it. Selectors are for older and
 rerun banners; SSR crystals cover the rest.
+
+TWO GATES, NOT ONE
+------------------
+The date above is the TEMPORAL gate. There is a second, INTRINSIC one: some umas
+can never be taken by a selector at any cutoff -- time-limited units, and units
+that are not ★3. That is not derivable from banner data (they sit on ordinary
+banners alongside selectable units), so it is stored on the row as
+`Uma.is_time_limited` / `Uma.is_three_star`. This is the one part of selector
+eligibility that IS stored; the date half stays derived.
+
+The gates are independent, and the intrinsic one bites even under an
+unrestricted (null) cutoff, which the temporal one waves through. Go through
+`selection_refusal_reason` rather than calling `is_eligible` alone -- checking
+only the date silently offers cards the game will not grant.
 """
 
 from django.db.models import Min
@@ -69,3 +83,40 @@ def is_eligible(first_jp_date, cutoff_date):
     released = first_jp_date.date() if hasattr(first_jp_date, "date") else first_jp_date
     # Inclusive: cards released ON the cutoff date are selectable (see above).
     return released <= cutoff_date
+
+
+def is_intrinsically_selectable(card):
+    """Can a selector EVER take this card, at any cutoff?
+
+    Support cards carry no such restriction, so anything without the flags is
+    selectable -- absent means "no restriction exists for this kind of card",
+    which is also what the model defaults encode (not time-limited, is ★3).
+    """
+    if getattr(card, "is_time_limited", False):
+        return False
+    return getattr(card, "is_three_star", True)
+
+
+def selection_refusal_reason(card, first_jp_date, cutoff_date, subject):
+    """Why a selector may not take `card`, as a user-facing sentence, or None.
+
+    The single entry point for "is this pick legal", because the two gates fail
+    for unrelated reasons and a caller that checks one will not think to check
+    the other. `subject` names what is doing the refusing ("this selector",
+    "this step-up") so the message reads correctly at each call site.
+
+    Callers are expected to grandfather picks the user already had stored BEFORE
+    reaching here -- both gates move as editors correct reference data, and
+    rejecting an untouched pick 400s the whole atomic PATCH.
+    """
+    if not is_intrinsically_selectable(card):
+        return (
+            f"{card.name} is not available to selectors -- it is either "
+            f"time-limited or not a ★3."
+        )
+    if not is_eligible(first_jp_date, cutoff_date):
+        return (
+            f"{card.name} was released on JP after {subject}'s cutoff "
+            f"({cutoff_date.isoformat()}) and cannot be selected."
+        )
+    return None
