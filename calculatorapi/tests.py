@@ -31,7 +31,7 @@ from io import StringIO
 from unittest.mock import patch
 from urllib.parse import parse_qs, urlencode, urlparse
 
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import AnonymousUser, Group
 from django.core import signing
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models, transaction
@@ -65,6 +65,7 @@ from calculatorapi.visits import (
 from calculatorapi.ledger import AMOUNT_FIELDS, build_income_ledger
 from calculatorapi.views.ledger import IncomeLedgerRowSerializer
 from calculatorapi.views.social_auth import STATE_SALT
+from calculatorapi.views.account_linking import LINK_STATE_SALT
 from calculatorapi.views.calculation_constants import CalculationConstantsSerializer
 from calculatorapi.views.user_planned_banner import UserPlannedBannerSerializer
 from calculatorapi.predictions import (
@@ -80,10 +81,17 @@ from calculatorapi.predictions import (
     build_anniversary_event_date_map,
     build_scenario_date_map,
 )
-from calculatorapi.eligibility import build_first_jp_date_maps, is_eligible
+from calculatorapi.eligibility import (
+    build_first_jp_date_maps,
+    is_eligible,
+    is_intrinsically_selectable,
+    selection_refusal_reason,
+)
 from calculatorapi.management.commands.create_content_editor_group import CONTENT_MODELS
 from calculatorapi.admin_patreon_import import apply_patreon_import, parse_patreon_csv
 from calculatorapi import patreon_api
+from calculatorapi import oauth
+from calculatorapi import benefits
 from calculatorapi.models import (
     CustomUser, Uma, SupportCard,
     ClubRank, TeamTrialsRank, ChampionsMeetingRank, LeagueOfHeroesRank,
@@ -2337,6 +2345,45 @@ class UserStepUpSelectionTests(TestCase):
         ])
         self.assertEqual(res.status_code, 400)
 
+    def test_rejects_a_time_limited_uma(self):
+        self.eligible_uma.is_time_limited = True
+        self.eligible_uma.save(update_fields=['is_time_limited'])
+        res = self._patch([self._slot(uma=self.eligible_uma.id)])
+        self.assertEqual(res.status_code, 400)
+
+    def test_rejects_a_non_three_star_uma(self):
+        self.eligible_uma.is_three_star = False
+        self.eligible_uma.save(update_fields=['is_three_star'])
+        res = self._patch([self._slot(uma=self.eligible_uma.id)])
+        self.assertEqual(res.status_code, 400)
+
+    def test_the_intrinsic_gate_survives_a_null_cutoff(self):
+        """A null cutoff relaxes the DATE, not the unit's own availability.
+
+        This is the case the old `if cutoff is None: return` early-out let
+        straight through -- the whole reason the intrinsic gate could not be
+        folded in behind the cutoff check.
+        """
+        self.event.jp_cutoff_date = None
+        self.event.save()
+        self.eligible_uma.is_time_limited = True
+        self.eligible_uma.save(update_fields=['is_time_limited'])
+        res = self._patch([self._slot(uma=self.eligible_uma.id)])
+        self.assertEqual(res.status_code, 400)
+
+    def test_a_stored_pick_survives_being_flagged_time_limited(self):
+        # Same lockout guard as the cutoff: an editor flagging a unit must not
+        # 400 the plans of everyone who already picked it.
+        self.assertEqual(
+            self._patch([self._slot(uma=self.eligible_uma.id)]).status_code, 200
+        )
+        self.eligible_uma.is_time_limited = True
+        self.eligible_uma.save(update_fields=['is_time_limited'])
+
+        res = self._patch([self._slot(uma=self.eligible_uma.id)])
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(UserStepUpSelection.objects.filter(user=self.user).count(), 1)
+
     def test_a_rejected_row_rolls_the_whole_patch_back(self):
         self._patch([self._slot(slot=1)])
         res = self.client.patch(
@@ -2480,6 +2527,65 @@ class SelectorEligibilityTests(TestCase):
         # Conservative: claiming a selector covers a card it can't is worse than
         # hiding one it could.
         self.assertFalse(is_eligible(None, datetime.date(2024, 1, 31)))
+
+
+class IntrinsicSelectorGateTests(TestCase):
+    """The second gate: units no selector can take at ANY cutoff."""
+
+    def test_an_ordinary_uma_is_selectable_by_default(self):
+        # The defaults have to land on "selectable", or adding the columns would
+        # silently empty every picker for the whole existing catalogue.
+        uma = Uma.objects.create(name='Ordinary')
+        self.assertFalse(uma.is_time_limited)
+        self.assertTrue(uma.is_three_star)
+        self.assertTrue(is_intrinsically_selectable(uma))
+
+    def test_time_limited_uma_is_never_selectable(self):
+        uma = Uma.objects.create(name='Limited', is_time_limited=True)
+        self.assertFalse(is_intrinsically_selectable(uma))
+
+    def test_non_three_star_uma_is_never_selectable(self):
+        uma = Uma.objects.create(name='Two Star', is_three_star=False)
+        self.assertFalse(is_intrinsically_selectable(uma))
+
+    def test_support_cards_have_no_intrinsic_gate(self):
+        # Neither flag exists on SupportCard; absent must read as unrestricted
+        # rather than as "not a ★3".
+        card = SupportCard.objects.create(name='Any SSR', game_id=30001)
+        self.assertTrue(is_intrinsically_selectable(card))
+
+    def test_intrinsic_gate_bites_under_a_null_cutoff(self):
+        # THE point of the second gate. A null cutoff makes the temporal gate
+        # wave everything through; a time-limited uma must still be refused.
+        uma = Uma.objects.create(name='Limited', is_time_limited=True)
+        self.assertTrue(is_eligible(None, None))
+        self.assertIsNotNone(
+            selection_refusal_reason(uma, None, None, 'this selector')
+        )
+
+    def test_intrinsic_refusal_names_the_card_and_not_a_cutoff(self):
+        uma = Uma.objects.create(name='Limited', is_time_limited=True)
+        reason = selection_refusal_reason(uma, None, None, 'this selector')
+        self.assertIn('Limited', reason)
+        self.assertNotIn('cutoff', reason)
+
+    def test_a_selectable_uma_inside_the_cutoff_is_refused_for_nothing(self):
+        uma = Uma.objects.create(name='Fine')
+        released = timezone.make_aware(datetime.datetime(2024, 1, 1))
+        self.assertIsNone(
+            selection_refusal_reason(
+                uma, released, datetime.date(2024, 1, 31), 'this selector'
+            )
+        )
+
+    def test_cutoff_refusal_still_fires_for_a_selectable_uma(self):
+        uma = Uma.objects.create(name='Too New')
+        released = timezone.make_aware(datetime.datetime(2024, 2, 1))
+        reason = selection_refusal_reason(
+            uma, released, datetime.date(2024, 1, 31), 'this step-up'
+        )
+        self.assertIn('this step-up', reason)
+        self.assertIn('2024-01-31', reason)
 
 
 class ScenarioDateTests(TestCase):
@@ -3068,6 +3174,49 @@ class UserPlannedPurchaseTests(TestCase):
         self.user.refresh_from_db()
         self.assertEqual(self.user.current_carat, 4321)
 
+    def test_rejects_a_time_limited_target(self):
+        self.eligible_uma.is_time_limited = True
+        self.eligible_uma.save(update_fields=['is_time_limited'])
+        res = self._patch([
+            {'product': self.uma_selector.id, 'quantity': 1,
+             'target_uma': self.eligible_uma.id}
+        ])
+        self.assertEqual(res.status_code, 400)
+
+    def test_rejects_a_non_three_star_target(self):
+        self.eligible_uma.is_three_star = False
+        self.eligible_uma.save(update_fields=['is_three_star'])
+        res = self._patch([
+            {'product': self.uma_selector.id, 'quantity': 1,
+             'target_uma': self.eligible_uma.id}
+        ])
+        self.assertEqual(res.status_code, 400)
+
+    def test_the_intrinsic_gate_survives_an_unrestricted_selector(self):
+        # A null cutoff makes the DATE unrestricted; the unit is still refused.
+        # The old `if cutoff is None: return` early-out admitted this.
+        self.event.jp_cutoff_date = None
+        self.event.save()
+        self.late_uma.is_time_limited = True
+        self.late_uma.save(update_fields=['is_time_limited'])
+        res = self._patch([
+            {'product': self.uma_selector.id, 'quantity': 1,
+             'target_uma': self.late_uma.id}
+        ])
+        self.assertEqual(res.status_code, 400)
+
+    def test_grandfathers_a_saved_target_that_is_flagged_time_limited_later(self):
+        # An editor flagging a unit must not lock its plan's owner out of saving.
+        saved = self._save_target(self.eligible_uma)
+        self.eligible_uma.is_time_limited = True
+        self.eligible_uma.save(update_fields=['is_time_limited'])
+
+        res = self._patch([
+            {'id': saved.id, 'product': self.uma_selector.id, 'quantity': 1,
+             'target_uma': self.eligible_uma.id}
+        ])
+        self.assertEqual(res.status_code, 200)
+
     def test_still_rejects_a_changed_target_under_a_tightened_cutoff(self):
         # Grandfathering covers the stored pairing only — editing the row is the
         # user acting now, and gets checked against the cutoff as it stands.
@@ -3198,6 +3347,8 @@ class AnalyticsReportEmptyTests(TestCase):
             self.assertEqual(product['pct_of_engaged'], 0.0)
         for resource in report['resource_averages']:
             self.assertEqual(resource['avg'], 0)
+            self.assertEqual(resource['median'], 0)
+            self.assertEqual(resource['excluded'], 0)
         self.assertEqual(report['popular_uma_banners'], [])
         self.assertEqual(report['popular_support_banners'], [])
 
@@ -3288,6 +3439,9 @@ class AnalyticsReportScenarioTests(TestCase):
                       if r['label'] == 'Carats')
         # (3000 + 1000 + 0) / 3 engaged users — lurker's zeroes not averaged in
         self.assertEqual(carats['avg'], 1333.3)
+        # planner's 0 is a real answer, so the middle of [0, 1000, 3000] is 1000
+        self.assertEqual(carats['median'], 1000)
+        self.assertEqual(carats['excluded'], 0)
 
     def test_uma_banner_popularity_ranked_and_staff_free(self):
         top, second = self.report['popular_uma_banners']
@@ -3305,6 +3459,115 @@ class AnalyticsReportScenarioTests(TestCase):
         self.assertEqual(only['name'], 'Support Y')
         self.assertEqual(only['planners'], 1)
         self.assertEqual(only['total_pulls'], 5)
+
+
+class AnalyticsOutlierTests(TestCase):
+    """Implausible stored values must not reach any figure that is a quantity.
+
+    Reproduces the shape seen in production: one account holding 999,999,999
+    (what the client sanitiser yields for any input of nine or more digits)
+    alongside a normal user base. The API accepts those values on purpose and
+    nothing here rewrites them — they are only excluded from the aggregates.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.normal_a = CustomUser.objects.create_user(
+            username='normal_a', password='x', current_carat=1000,
+        )
+        cls.normal_b = CustomUser.objects.create_user(
+            username='normal_b', password='x', current_carat=3000,
+        )
+        # Absurd carats, but a plausible ticket count: the filter is per FIELD,
+        # so the tickets must still count.
+        cls.outlier = CustomUser.objects.create_user(
+            username='outlier', password='x',
+            current_carat=999_999_999, uma_ticket=50,
+        )
+
+        timeline = make_timeline()
+        cls.banner = make_uma_banner(timeline, name='Uma X')
+        cls.solo = make_uma_banner(timeline, name='Outlier Only')
+
+        UserPlannedBanner.objects.create(
+            user=cls.normal_a, banner_uma=cls.banner, number_of_pulls=100)
+        UserPlannedBanner.objects.create(
+            user=cls.normal_b, banner_uma=cls.banner, number_of_pulls=200)
+        UserPlannedBanner.objects.create(
+            user=cls.outlier, banner_uma=cls.banner, number_of_pulls=999_999_999)
+        # A banner whose ONLY row is the absurd one — both aggregates come back
+        # NULL from the database and must not crash or render as None.
+        UserPlannedBanner.objects.create(
+            user=cls.outlier, banner_uma=cls.solo, number_of_pulls=999_999_999)
+
+        cls.report = build_analytics_report()
+
+    def _resource(self, label):
+        return next(r for r in self.report['resource_averages']
+                    if r['label'] == label)
+
+    def _banner(self, name):
+        return next(b for b in self.report['popular_uma_banners']
+                    if b['name'] == name)
+
+    def test_absurd_resource_is_dropped_from_mean_and_counted(self):
+        carats = self._resource('Carats')
+        # (1000 + 3000) / 2 — the billion is out, and the two real answers are in
+        self.assertEqual(carats['avg'], 2000.0)
+        self.assertEqual(carats['median'], 2000)
+        self.assertEqual(carats['excluded'], 1)
+
+    def test_filtering_is_per_field_not_per_user(self):
+        # The outlier's carats are excluded; their plausible tickets are not.
+        tickets = self._resource('Uma Tickets')
+        self.assertEqual(tickets['excluded'], 0)
+        self.assertEqual(tickets['avg'], round(50 / 3, 1))
+
+    def test_median_is_immune_to_a_legitimate_whale(self):
+        # No filtering involved: 9,000,000 is under SANE_MAX_RESOURCE and is a
+        # real (if extreme) answer. The mean moves a long way, the median does
+        # not — which is the whole reason the column exists.
+        CustomUser.objects.create_user(
+            username='whale', password='x', current_carat=9_000_000)
+        carats = next(r for r in build_analytics_report()['resource_averages']
+                      if r['label'] == 'Carats')
+        self.assertEqual(carats['excluded'], 1)
+        self.assertEqual(carats['avg'], round(9_004_000 / 3, 1))
+        self.assertEqual(carats['median'], 3000)
+
+    def test_banner_pull_figures_exclude_the_absurd_row(self):
+        banner = self._banner('Uma X')
+        self.assertEqual(banner['total_pulls'], 300)
+        self.assertEqual(banner['avg_pulls'], 150.0)
+        self.assertEqual(banner['excluded'], 1)
+
+    def test_planner_count_still_includes_the_outlier(self):
+        # They really do have the banner planned; only their NUMBER is junk.
+        self.assertEqual(self._banner('Uma X')['planners'], 3)
+
+    def test_banner_with_only_absurd_rows_reports_zero_not_none(self):
+        solo = self._banner('Outlier Only')
+        self.assertEqual(solo['planners'], 1)
+        self.assertEqual(solo['total_pulls'], 0)
+        self.assertEqual(solo['avg_pulls'], 0)
+        self.assertEqual(solo['excluded'], 1)
+
+    def test_all_null_banner_sorts_below_one_with_real_figures(self):
+        # Postgres sorts NULLs first in a plain DESC; the aggregate asks for
+        # nulls_last so the banner we have no figures for cannot lead the table.
+        names = [b['name'] for b in self.report['popular_uma_banners']]
+        self.assertLess(names.index('Uma X'), names.index('Outlier Only'))
+
+    def test_stored_values_are_never_rewritten(self):
+        # The report is read-only: this page filters, it does not clean up.
+        self.outlier.refresh_from_db()
+        self.assertEqual(self.outlier.current_carat, 999_999_999)
+        self.assertEqual(
+            UserPlannedBanner.objects
+            .filter(user=self.outlier, banner_uma=self.banner)
+            .first().number_of_pulls,
+            999_999_999,
+        )
 
 
 # Rendering admin templates resolves {% static %} tags; the production
@@ -5476,6 +5739,9 @@ class PatreonCsvImportTests(TestCase):
         rows = parse_patreon_csv(upload)
         self.assertEqual(rows, [{
             "display_name": "Rhondal",
+            # Always "" from a CSV, even when the export carries a User ID
+            # column — see test_the_csv_parser_never_produces_an_id.
+            "patreon_user_id": "",
             "email": "rtibplays@gmail.com",
             "tier_name": "Junior Class",
             "is_active": True,
@@ -5784,8 +6050,15 @@ class SetPatreonTierOrderCommandTests(TestCase):
 
 # ── Patreon API sync ──────────────────────────────────────────────────────────
 
-def patreon_member(name, tier_id=None, status="active_patron", pledge_start=None, email=None):
-    """One member resource, shaped like Patreon's JSON:API response."""
+def patreon_member(name, tier_id=None, status="active_patron", pledge_start=None,
+                   email=None, user_id=None):
+    """One member resource, shaped like Patreon's JSON:API response.
+
+    `user_id` defaults to one derived from the name; pass "" for a response with
+    no user relationship at all, which is what the fallback-to-name path needs.
+    """
+    if user_id is None:
+        user_id = f"u-{name}"
     return {
         "id": f"member-{name}",
         "type": "member",
@@ -5800,7 +6073,11 @@ def patreon_member(name, tier_id=None, status="active_patron", pledge_start=None
         "relationships": {
             "currently_entitled_tiers": {
                 "data": [{"id": tier_id, "type": "tier"}] if tier_id else []
-            }
+            },
+            # The linkage object, and nothing else. `fields[user]` is sent empty
+            # so the sideloaded resource carries no attributes — the id here is
+            # all the client ever reads.
+            **({"user": {"data": {"id": user_id, "type": "user"}}} if user_id else {}),
         },
     }
 
@@ -5924,6 +6201,7 @@ class PatreonApiClientTests(TestCase):
 
         self.assertEqual(rows, [{
             "display_name": "Rhondal",
+            "patreon_user_id": "u-Rhondal",
             "email": "",
             "tier_name": "Junior Class",
             "is_active": True,
@@ -6495,3 +6773,1151 @@ class PublicPayloadCacheTests(TestCase):
         APIClient().get('/calculator-data')
         cached = json.loads(public_payload_cache.read())
         self.assertEqual(set(cached.keys()), _EXPECTED_GET_KEYS)
+
+
+class AccountEndpointTests(TestCase):
+    """GET /account — the SPA's source of truth for "who am I signed in as?".
+
+    This route exists so the client can stop inferring identity from the mere
+    presence of a token string in localStorage. What it must get right is
+    therefore narrow but load-bearing: it answers only for the caller, it
+    refuses anonymous callers outright, and it never emits the one column on
+    SocialAccount that the sign-in design exists to keep private.
+    """
+
+    def setUp(self):
+        self.user = make_user('accountuser')
+        self.client, _ = auth_client(self.user)
+
+    def test_anonymous_request_is_rejected(self):
+        """401 rather than an empty account body.
+
+        This is what lets the client treat a token as untrustworthy: a revoked
+        or expired token gets a 401 here, so the SPA learns the string it is
+        holding has stopped meaning anything instead of rendering a signed-in
+        shell around nothing.
+        """
+        res = APIClient().get('/account')
+        self.assertEqual(res.status_code, 401)
+
+    def test_returns_the_expected_top_level_shape(self):
+        res = self.client.get('/account')
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(set(res.data), {'username', 'linked_providers', 'supporter'})
+        self.assertEqual(res.data['username'], 'accountuser')
+
+    def test_lists_linked_providers_oldest_first(self):
+        SocialAccount.objects.create(
+            user=self.user, provider='discord', subject_id='discord-999')
+        SocialAccount.objects.create(
+            user=self.user, provider='google', subject_id='google-111')
+        # Force a deterministic order: created_at is auto_now_add, so both rows
+        # can land in the same microsecond on a fast machine.
+        SocialAccount.objects.filter(provider='discord').update(
+            created_at=datetime.datetime(2026, 1, 1, tzinfo=datetime.timezone.utc))
+        SocialAccount.objects.filter(provider='google').update(
+            created_at=datetime.datetime(2026, 2, 1, tzinfo=datetime.timezone.utc))
+
+        res = self.client.get('/account')
+
+        providers = [row['provider'] for row in res.data['linked_providers']]
+        self.assertEqual(providers, ['discord', 'google'])
+
+    def test_a_linked_provider_carries_only_provider_and_date(self):
+        SocialAccount.objects.create(
+            user=self.user, provider='google', subject_id='google-111')
+
+        res = self.client.get('/account')
+
+        row = res.data['linked_providers'][0]
+        self.assertEqual(set(row), {'provider', 'linked_at'})
+
+    def test_subject_id_never_reaches_the_response(self):
+        """The one that matters.
+
+        subject_id is the provider's permanent opaque id for a person. The
+        serializer's explicit field list is the only thing keeping it off the
+        wire, so it is asserted on its own rather than left to the field-set
+        check above — the same treatment the supporter email gets.
+        """
+        SocialAccount.objects.create(
+            user=self.user, provider='google', subject_id='super-secret-subject')
+
+        res = self.client.get('/account')
+
+        self.assertNotIn('super-secret-subject', json.dumps(res.data, default=str))
+
+    def test_only_the_callers_own_providers_are_listed(self):
+        """An account summary that leaked another user's linked identities would
+        be a cross-account disclosure, so it gets its own case."""
+        stranger = make_user('stranger')
+        SocialAccount.objects.create(
+            user=stranger, provider='discord', subject_id='not-mine')
+        SocialAccount.objects.create(
+            user=self.user, provider='google', subject_id='google-111')
+
+        res = self.client.get('/account')
+
+        providers = [row['provider'] for row in res.data['linked_providers']]
+        self.assertEqual(providers, ['google'])
+
+    def test_staff_accounts_answer_with_no_linked_providers(self):
+        """Staff sign in with a password and hold no SocialAccount rows at all.
+
+        An empty list is the correct answer for them, not an error — asserted so
+        a future change can't start treating "no providers" as a broken account.
+        """
+        staff = make_user('staffaccount', is_staff=True)
+        staff_client, _ = auth_client(staff)
+
+        res = staff_client.get('/account')
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.data['linked_providers'], [])
+
+    def test_supporter_block_is_present_and_false_for_everyone(self):
+        """Phase 0 has no entitlement path, so nobody can be a supporter yet.
+
+        The block still ships, because the client contract must not change when
+        Phase 2 makes it real.
+        """
+        res = self.client.get('/account')
+
+        self.assertEqual(res.data['supporter'], {'is_supporter': False})
+
+    def test_supporter_block_carries_no_null_tier_fields(self):
+        """A null tier_name sitting beside is_supporter: false invites a client
+        to render an empty badge, or to read the absence of a tier as a tier.
+        Absent means absent."""
+        res = self.client.get('/account')
+
+        self.assertEqual(set(res.data['supporter']), {'is_supporter'})
+
+
+@override_settings(
+    PATREON_OAUTH_CLIENT_ID="test-patreon-oauth-client",
+    PATREON_OAUTH_CLIENT_SECRET="test-patreon-oauth-secret",
+)
+class PatreonOAuthProviderTests(TestCase):
+    """Patreon as a third SIGN-IN provider.
+
+    The privacy posture is the whole point of these: Patreon will happily send
+    an email address and a display name if asked, and the only thing stopping it
+    is what this module asks for.
+    """
+
+    def test_patreon_is_a_supported_provider(self):
+        self.assertTrue(oauth.is_supported("patreon"))
+
+    def test_it_uses_the_sign_in_credentials_not_the_creator_ones(self):
+        """The trap this project is most likely to fall into.
+
+        PATREON_CLIENT_ID is the CREATOR app used by the supporters sync;
+        PATREON_OAUTH_CLIENT_ID is the identity app used here. Wiring the wrong
+        pair fails in a way that reads like an outage.
+        """
+        with override_settings(
+            PATREON_CLIENT_ID="creator-app-id",
+            PATREON_CLIENT_SECRET="creator-app-secret",
+        ):
+            config = oauth.get_config("patreon")
+
+        self.assertEqual(config["client_id"], "test-patreon-oauth-client")
+        self.assertEqual(config["client_secret"], "test-patreon-oauth-secret")
+
+    def test_the_scope_never_asks_for_an_email(self):
+        """Patreon's email sits behind a separate `identity[email]` scope.
+
+        Asking for it would put an address in the response for every person who
+        signs in — the exact thing the whole social-auth design avoids.
+        """
+        scope = oauth.get_config("patreon")["scope"]
+
+        self.assertEqual(scope, "identity")
+        self.assertNotIn("email", scope)
+
+    def test_subject_id_is_read_from_the_json_api_resource(self):
+        payload = {"data": {"type": "user", "id": "1234567", "attributes": {}}}
+
+        with patch("calculatorapi.oauth.requests.get", return_value=FakeResponse(payload)):
+            result = oauth._patreon_subject_id(  # pylint: disable=protected-access
+                {}, {"access_token": "at-1"}
+            )
+
+        self.assertEqual(result, "1234567")
+
+    def test_it_requests_no_user_attributes_at_all(self):
+        """An empty sparse fieldset. Without it Patreon returns its default
+        attribute set — full name, vanity URL, avatar, social handles — none of
+        which we want to receive, let alone store."""
+        payload = {"data": {"id": "1234567"}}
+
+        with patch(
+            "calculatorapi.oauth.requests.get", return_value=FakeResponse(payload)
+        ) as mocked:
+            oauth._patreon_subject_id({}, {"access_token": "at-1"})  # pylint: disable=protected-access
+
+        self.assertEqual(mocked.call_args.kwargs["params"], {"fields[user]": ""})
+
+    def test_a_response_without_a_user_resource_is_refused(self):
+        """Guessing at an unexpected shape is how a wrong id gets bound to an
+        account, so anything but a single resource object is an error."""
+        for payload in ({"data": []}, {"data": None}, {}, {"data": {"type": "user"}}):
+            with self.subTest(payload=payload):
+                with patch(
+                    "calculatorapi.oauth.requests.get", return_value=FakeResponse(payload)
+                ):
+                    with self.assertRaises(oauth.OAuthError):
+                        oauth._patreon_subject_id(  # pylint: disable=protected-access
+                            {}, {"access_token": "at-1"}
+                        )
+
+    def test_a_non_200_from_patreon_is_an_oauth_error(self):
+        with patch(
+            "calculatorapi.oauth.requests.get", return_value=FakeResponse({}, status_code=401)
+        ):
+            with self.assertRaises(oauth.OAuthError):
+                oauth._patreon_subject_id({}, {"access_token": "at-1"})  # pylint: disable=protected-access
+
+
+@override_settings(
+    PATREON_OAUTH_CLIENT_ID="test-patreon-oauth-client",
+    PATREON_OAUTH_CLIENT_SECRET="test-patreon-oauth-secret",
+    GOOGLE_OAUTH_CLIENT_ID="test-google-client",
+    GOOGLE_OAUTH_CLIENT_SECRET="test-google-secret",
+    OAUTH_REDIRECT_URI=CANONICAL_REDIRECT,
+    OAUTH_ALLOWED_REDIRECT_URIS=frozenset([CANONICAL_REDIRECT, DEV_REDIRECT]),
+)
+class AccountLinkStartTests(TestCase):
+    """GET /account/link/<provider>/start."""
+
+    def setUp(self):
+        # The start route is throttled, and DRF keeps its counter in the cache —
+        # which a TestCase rollback does not clear. Without this, the suite's own
+        # request volume eventually trips a 429 that looks like a code failure.
+        cache.clear()
+        self.user = make_user('linkuser')
+        self.client, _ = auth_client(self.user)
+
+    def test_anonymous_callers_are_rejected(self):
+        """Linking attaches an identity to an account. With no account in hand
+        there is nothing to attach it to, and this must never fall back to
+        creating one — that is sign-in's job."""
+        response = APIClient().get("/account/link/patreon/start")
+
+        self.assertEqual(response.status_code, 401)
+
+    def test_unknown_provider_is_a_404(self):
+        response = self.client.get("/account/link/myspace/start")
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_returns_a_consent_url_and_state(self):
+        response = self.client.get("/account/link/patreon/start")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("patreon.com", response.json()["authorize_url"])
+        self.assertTrue(response.json()["state"])
+
+    def test_the_allowlist_still_governs_the_redirect_uri(self):
+        """Same security boundary as sign-in, and deliberately the same code:
+        a second copy could drift, and a drifted copy is an open redirector."""
+        allowed = self.client.get(
+            "/account/link/patreon/start?" + urlencode({"redirect_uri": DEV_REDIRECT})
+        )
+        refused = self.client.get(
+            "/account/link/patreon/start?" + urlencode({"redirect_uri": UNLISTED_REDIRECT})
+        )
+
+        self.assertEqual(allowed.status_code, 200)
+        self.assertEqual(refused.status_code, 400)
+
+    def test_the_state_carries_the_user_it_was_minted_for(self):
+        state = self.client.get("/account/link/patreon/start").json()["state"]
+
+        payload = signing.loads(state, salt=LINK_STATE_SALT)
+        self.assertEqual(payload["u"], self.user.pk)
+
+    def test_starting_a_link_is_rate_limited(self):
+        """Each accepted call sends someone to a provider, so the cap is on
+        outbound work rather than on a public write. Asserted because a throttle
+        that silently does not throttle looks exactly like one that does."""
+        for _ in range(20):
+            self.assertEqual(
+                self.client.get("/account/link/patreon/start").status_code, 200
+            )
+
+        self.assertEqual(
+            self.client.get("/account/link/patreon/start").status_code, 429
+        )
+
+
+@override_settings(
+    PATREON_OAUTH_CLIENT_ID="test-patreon-oauth-client",
+    PATREON_OAUTH_CLIENT_SECRET="test-patreon-oauth-secret",
+    GOOGLE_OAUTH_CLIENT_ID="test-google-client",
+    GOOGLE_OAUTH_CLIENT_SECRET="test-google-secret",
+    OAUTH_REDIRECT_URI=CANONICAL_REDIRECT,
+    OAUTH_ALLOWED_REDIRECT_URIS=frozenset([CANONICAL_REDIRECT, DEV_REDIRECT]),
+)
+class AccountLinkCompleteTests(TestCase):
+    """POST /account/link/<provider>/complete — the account-takeover surface.
+
+    Every test here is about something that must NOT happen.
+    """
+
+    def setUp(self):
+        cache.clear()  # see AccountLinkStartTests.setUp
+        self.user = make_user('linkuser')
+        self.client, _ = auth_client(self.user)
+
+    def _state(self, provider="patreon", client=None):
+        return (client or self.client).get(
+            f"/account/link/{provider}/start"
+        ).json()["state"]
+
+    def _complete(self, state, code="CODE", provider="patreon", subject_id="patreon-1",
+                  client=None):
+        with patch("calculatorapi.oauth.exchange_code", return_value=subject_id) as mocked:
+            response = (client or self.client).post(
+                f"/account/link/{provider}/complete",
+                {"code": code, "state": state},
+                format="json",
+            )
+        return response, mocked
+
+    def test_links_the_identity_to_the_signed_in_account(self):
+        response, _ = self._complete(self._state())
+
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(
+            SocialAccount.objects.filter(
+                user=self.user, provider="patreon", subject_id="patreon-1"
+            ).exists()
+        )
+
+    def test_linking_never_creates_an_account(self):
+        """The invariant that separates this endpoint from sign-in. If this ever
+        fails, the endpoint has become a second account-creation path — one that
+        runs while someone else is authenticated."""
+        before = CustomUser.objects.count()
+
+        self._complete(self._state())
+
+        self.assertEqual(CustomUser.objects.count(), before)
+
+    def test_completing_twice_is_idempotent(self):
+        state_one = self._state()
+        state_two = self._state()
+        self._complete(state_one)
+
+        response, _ = self._complete(state_two)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(SocialAccount.objects.filter(user=self.user).count(), 1)
+
+    def test_an_identity_owned_by_someone_else_is_refused(self):
+        """The takeover case. Reassigning the row would strip another account of
+        its sign-in method — and hand it to the caller."""
+        stranger = make_user('stranger')
+        SocialAccount.objects.create(
+            user=stranger, provider="patreon", subject_id="patreon-1")
+
+        response, _ = self._complete(self._state())
+
+        self.assertEqual(response.status_code, 409)
+        link = SocialAccount.objects.get(provider="patreon", subject_id="patreon-1")
+        self.assertEqual(link.user, stranger)
+
+    def test_a_second_identity_for_the_same_provider_is_refused(self):
+        """One identity per provider per account, so DELETE by provider stays
+        unambiguous. Unlink the first one to swap."""
+        self._complete(self._state())
+
+        response, _ = self._complete(self._state(), subject_id="patreon-2")
+
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(SocialAccount.objects.filter(user=self.user).count(), 1)
+
+    def test_a_state_minted_for_another_user_is_refused(self):
+        """Login-CSRF, aimed at linking. Without the user binding, an attacker
+        starts a link on their own account, gets the victim's browser to
+        complete it, and their Patreon identity lands on the victim's account —
+        after which they can sign in as the victim at will.
+        """
+        attacker = make_user('attacker')
+        attacker_client, _ = auth_client(attacker)
+        attacker_state = self._state(client=attacker_client)
+
+        response, mocked = self._complete(attacker_state)
+
+        self.assertEqual(response.status_code, 400)
+        mocked.assert_not_called()
+        self.assertFalse(SocialAccount.objects.filter(user=self.user).exists())
+
+    def test_a_sign_in_state_cannot_be_used_to_link(self):
+        """Why the two salts differ.
+
+        A sign-in state carries no `u` at all, so if this endpoint accepted them
+        the user-binding check above would pass vacuously and every protection
+        it provides would be gone.
+        """
+        sign_in_state = self.client.get("/auth/patreon/start").json()["state"]
+
+        response, mocked = self._complete(sign_in_state)
+
+        self.assertEqual(response.status_code, 400)
+        mocked.assert_not_called()
+
+    def test_a_forged_state_is_refused(self):
+        forged = signing.dumps(
+            {"p": "patreon", "n": "nonce", "r": CANONICAL_REDIRECT, "u": self.user.pk},
+            salt="not-the-real-salt",
+        )
+
+        response, mocked = self._complete(forged)
+
+        self.assertEqual(response.status_code, 400)
+        mocked.assert_not_called()
+
+    def test_a_state_for_one_provider_is_not_replayable_against_another(self):
+        state = self._state(provider="google")
+
+        response, mocked = self._complete(state, provider="patreon")
+
+        self.assertEqual(response.status_code, 400)
+        mocked.assert_not_called()
+
+    def test_the_exchange_repeats_the_uri_the_flow_started_with(self):
+        state = self.client.get(
+            "/account/link/patreon/start?" + urlencode({"redirect_uri": DEV_REDIRECT})
+        ).json()["state"]
+
+        _, mocked = self._complete(state)
+
+        mocked.assert_called_once_with("patreon", "CODE", DEV_REDIRECT)
+
+    def test_anonymous_callers_are_rejected(self):
+        response = APIClient().post(
+            "/account/link/patreon/complete", {"code": "C", "state": "S"}, format="json"
+        )
+
+        self.assertEqual(response.status_code, 401)
+
+
+class AccountLinkDeleteTests(TestCase):
+    """DELETE /account/link/<provider> — and the refusal that prevents lockouts."""
+
+    def setUp(self):
+        self.user = make_user('linkuser')
+        # Ordinary accounts have no usable password: a provider is the ONLY way in.
+        self.user.set_unusable_password()
+        self.user.save()
+        self.client, _ = auth_client(self.user)
+
+    def test_unlinks_a_provider(self):
+        SocialAccount.objects.create(user=self.user, provider="google", subject_id="g-1")
+        SocialAccount.objects.create(user=self.user, provider="patreon", subject_id="p-1")
+
+        response = self.client.delete("/account/link/patreon")
+
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(
+            SocialAccount.objects.filter(user=self.user, provider="patreon").exists()
+        )
+
+    def test_unlinking_something_that_is_not_linked_is_a_404(self):
+        response = self.client.delete("/account/link/patreon")
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_the_last_sign_in_method_cannot_be_removed(self):
+        """There is no password and no email to send a reset to — by design. So
+        removing the only provider would lock someone out of their own saved
+        plan permanently, with nothing to recover through."""
+        SocialAccount.objects.create(user=self.user, provider="google", subject_id="g-1")
+
+        response = self.client.delete("/account/link/google")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue(SocialAccount.objects.filter(user=self.user).exists())
+
+    def test_staff_may_remove_their_last_provider(self):
+        """Staff sign in with a password that actually works, so they are not
+        locking themselves out."""
+        staff = make_user('staffuser', is_staff=True)
+        SocialAccount.objects.create(user=staff, provider="google", subject_id="g-staff")
+        staff_client, _ = auth_client(staff)
+
+        response = staff_client.delete("/account/link/google")
+
+        self.assertEqual(response.status_code, 204)
+
+    def test_one_user_cannot_unlink_another_users_provider(self):
+        stranger = make_user('stranger')
+        SocialAccount.objects.create(
+            user=stranger, provider="patreon", subject_id="p-stranger")
+
+        response = self.client.delete("/account/link/patreon")
+
+        self.assertEqual(response.status_code, 404)
+        self.assertTrue(SocialAccount.objects.filter(user=stranger).exists())
+
+    def test_anonymous_callers_are_rejected(self):
+        response = APIClient().delete("/account/link/patreon")
+
+        self.assertEqual(response.status_code, 401)
+
+
+@override_settings(
+    PATREON_OAUTH_CLIENT_ID="test-patreon-oauth-client",
+    PATREON_OAUTH_CLIENT_SECRET="test-patreon-oauth-secret",
+    OAUTH_REDIRECT_URI=CANONICAL_REDIRECT,
+    OAUTH_ALLOWED_REDIRECT_URIS=frozenset([CANONICAL_REDIRECT]),
+)
+class PatreonSignInTests(TestCase):
+    """Signing in WITH Patreon, as opposed to linking it."""
+
+    def test_sign_in_resolves_to_the_account_that_linked_it(self):
+        """The payoff for linking: after attaching Patreon to an existing
+        account, signing in with Patreon must land in THAT account rather than
+        minting a second empty one."""
+        user = make_user('linkuser')
+        SocialAccount.objects.create(
+            user=user, provider="patreon", subject_id="patreon-1")
+        state = self.client.get("/auth/patreon/start").json()["state"]
+
+        with patch("calculatorapi.oauth.exchange_code", return_value="patreon-1"):
+            response = self.client.post(
+                "/auth/social",
+                {"provider": "patreon", "code": "CODE", "state": state},
+                content_type="application/json",
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["token"], Token.objects.get(user=user).key)
+
+    def test_an_unknown_patreon_identity_still_creates_an_account(self):
+        """Patreon is a first-class sign-in provider, not link-only."""
+        before = CustomUser.objects.count()
+        state = self.client.get("/auth/patreon/start").json()["state"]
+
+        with patch("calculatorapi.oauth.exchange_code", return_value="patreon-new"):
+            response = self.client.post(
+                "/auth/social",
+                {"provider": "patreon", "code": "CODE", "state": state},
+                content_type="application/json",
+            )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(CustomUser.objects.count(), before + 1)
+
+
+# ── Phase 2: entitlement ─────────────────────────────────────────────────────
+# The gap these close: the daily sync always knew WHO was pledging, and the
+# sign-in tables always knew who was signed in, but nothing joined the two.
+
+
+class PatreonUserIdFetchTests(TestCase):
+    """The client reads the Patreon user id WITHOUT widening what it asks for."""
+
+    def setUp(self):
+        self.credentials = PatreonCredentials.load()
+        self.credentials.access_token = "access-1"
+        self.credentials.refresh_token = "refresh-1"
+        self.credentials.expires_at = timezone.now() + datetime.timedelta(days=30)
+        self.credentials.campaign_id = "camp-1"
+        self.credentials.save()
+
+    def _fetch(self, page):
+        with patch("calculatorapi.patreon_api.requests.request",
+                   return_value=FakeResponse(page)):
+            return patreon_api.fetch_members(self.credentials)
+
+    def test_member_fields_is_unchanged_by_the_linking_work(self):
+        """The privacy boundary, asserted as a literal.
+
+        The user id arrives as a RELATIONSHIP, so getting it must not have
+        added anything to the list of member ATTRIBUTES we ask Patreon for.
+        This is the same role REQUIRED_COLUMNS plays for the CSV path: if a
+        future change needs a new field here, it should have to change this
+        line and explain itself.
+        """
+        self.assertEqual(
+            patreon_api.MEMBER_FIELDS,
+            ("full_name", "email", "patron_status", "pledge_relationship_start"),
+        )
+
+    def test_the_user_resource_is_requested_with_no_attributes_at_all(self):
+        """`fields[user]=` empty is what stops Patreon sending the default set.
+
+        Drop the parameter and the sideloaded user arrives complete with full
+        name, vanity URL, avatar and social handles — none of which we want,
+        and all of which we would then be storing in a response we parse.
+        """
+        captured = {}
+
+        def fake_request(_method, _url, **kwargs):
+            captured.update(kwargs.get("params") or {})
+            return FakeResponse(patreon_page([]))
+
+        with patch("calculatorapi.patreon_api.requests.request", side_effect=fake_request):
+            patreon_api.fetch_members(self.credentials)
+
+        self.assertEqual(captured["fields[user]"], "")
+        self.assertIn("user", captured["include"].split(","))
+
+    def test_the_id_comes_from_the_relationship(self):
+        page = patreon_page(
+            [patreon_member("Rhondal", "t1", user_id="9911")], {"t1": "Junior Class"})
+        self.assertEqual(self._fetch(page)[0]["patreon_user_id"], "9911")
+
+    def test_a_member_with_no_user_relationship_still_imports(self):
+        """Falls back to the display name, exactly as every CSV row does."""
+        page = patreon_page(
+            [patreon_member("Rhondal", "t1", user_id="")], {"t1": "Junior Class"})
+        rows = self._fetch(page)
+        self.assertEqual(rows[0]["patreon_user_id"], "")
+        self.assertEqual(rows[0]["display_name"], "Rhondal")
+
+    def test_two_patrons_sharing_a_display_name_both_survive_the_fetch(self):
+        """THE BUG THIS PHASE EXISTS TO PREVENT.
+
+        Deduping on the display name silently dropped the second of two patrons
+        who happened to choose the same name. Harmless while this only fed a
+        thank-you list; once entitlement hangs off the row it costs one of them
+        the thing they paid for — and nothing reports it, because a dropped row
+        looks exactly like a lapsed one, after which `deactivate_missing`
+        retires whichever row already existed.
+        """
+        page = patreon_page([
+            patreon_member("Trainer", "t1", user_id="1"),
+            patreon_member("Trainer", "t1", user_id="2"),
+        ], {"t1": "Junior Class"})
+
+        rows = self._fetch(page)
+
+        self.assertEqual(len(rows), 2)
+        self.assertEqual({row["patreon_user_id"] for row in rows}, {"1", "2"})
+
+    def test_the_same_patron_twice_is_still_collapsed(self):
+        """Deduping did not simply go away — it moved onto the reliable key."""
+        page = patreon_page([
+            patreon_member("Trainer", "t1", user_id="1"),
+            patreon_member("Trainer", "t1", user_id="1"),
+        ], {"t1": "Junior Class"})
+
+        self.assertEqual(len(self._fetch(page)), 1)
+
+
+class PatreonImportMatchingTests(TestCase):
+    """Which stored row an incoming row is decided to BE."""
+
+    def setUp(self):
+        self.tier = PatreonTier.objects.create(name="Junior Class", order=10)
+
+    def _row(self, name, user_id="", tier="Junior Class", active=True):
+        return {
+            "display_name": name,
+            "patreon_user_id": user_id,
+            "email": "",
+            "tier_name": tier,
+            "is_active": active,
+        }
+
+    def test_a_rename_updates_the_row_instead_of_adding_one(self):
+        """The everyday case the id exists for. Under name matching this made a
+        second row and left the first to be deactivated as though they had
+        cancelled."""
+        PatreonSupporter.objects.create(
+            display_name="Old Name", patreon_user_id="7", tier=self.tier)
+
+        apply_patreon_import([self._row("New Name", user_id="7")])
+
+        supporters = PatreonSupporter.objects.all()
+        self.assertEqual(supporters.count(), 1)
+        # The row is theirs; the NAME is not updated by the reconcile, which
+        # only ever touches tier, status, email, date and id.
+        self.assertEqual(supporters.first().patreon_user_id, "7")
+
+    def test_two_patrons_sharing_a_name_get_two_rows(self):
+        apply_patreon_import([
+            self._row("Trainer", user_id="1"),
+            self._row("Trainer", user_id="2"),
+        ])
+
+        self.assertEqual(PatreonSupporter.objects.filter(display_name="Trainer").count(), 2)
+
+    def test_an_existing_row_adopts_the_id_on_the_first_sync(self):
+        """The backfill. No data migration — the first API sync after deploy
+        fills the id for everyone Patreon returns, by name, once."""
+        PatreonSupporter.objects.create(display_name="Rhondal", tier=self.tier)
+
+        summary = apply_patreon_import([self._row("Rhondal", user_id="7")])
+
+        self.assertEqual(PatreonSupporter.objects.count(), 1)
+        self.assertEqual(PatreonSupporter.objects.first().patreon_user_id, "7")
+        self.assertEqual(summary["ids_filled"], ["Rhondal"])
+
+    def test_an_id_is_never_overwritten(self):
+        """Fill-only, like `patron_since` — but load-bearing rather than
+        courteous. Overwriting would let a name collision move one patron's
+        entitlement onto another patron's row."""
+        PatreonSupporter.objects.create(
+            display_name="Rhondal", patreon_user_id="7", tier=self.tier)
+
+        apply_patreon_import([self._row("Rhondal", user_id="8")])
+
+        stored = {s.patreon_user_id for s in PatreonSupporter.objects.all()}
+        # "8" is a different person who shares the name, so they get their own
+        # row; "7" keeps the id they had.
+        self.assertEqual(stored, {"7", "8"})
+
+    def test_a_csv_row_updates_the_row_the_api_created(self):
+        """A CSV re-import of someone the API already knows must not duplicate
+        them just because the file carries no id."""
+        PatreonSupporter.objects.create(
+            display_name="Rhondal", patreon_user_id="7", tier=self.tier, is_active=False)
+
+        apply_patreon_import([self._row("Rhondal", active=True)])
+
+        self.assertEqual(PatreonSupporter.objects.count(), 1)
+        self.assertTrue(PatreonSupporter.objects.first().is_active)
+
+    def test_an_idless_row_matching_two_names_is_refused_not_guessed(self):
+        """The one case where acting could move a pledge onto the wrong person.
+
+        Nothing is written and the summary says so, rather than the import
+        picking whichever row it happened to read last.
+        """
+        PatreonSupporter.objects.create(
+            display_name="Trainer", patreon_user_id="1", tier=self.tier, is_active=True)
+        PatreonSupporter.objects.create(
+            display_name="Trainer", patreon_user_id="2", tier=self.tier, is_active=True)
+
+        summary = apply_patreon_import([self._row("Trainer", active=False)])
+
+        self.assertEqual(summary["ambiguous"], ["Trainer"])
+        self.assertEqual(PatreonSupporter.objects.filter(is_active=True).count(), 2)
+
+    def test_deactivate_missing_retires_by_row_not_by_name(self):
+        PatreonSupporter.objects.create(
+            display_name="Trainer", patreon_user_id="1", tier=self.tier)
+        PatreonSupporter.objects.create(
+            display_name="Trainer", patreon_user_id="2", tier=self.tier)
+
+        apply_patreon_import([self._row("Trainer", user_id="1")], deactivate_missing=True)
+
+        by_id = {s.patreon_user_id: s.is_active for s in PatreonSupporter.objects.all()}
+        self.assertEqual(by_id, {"1": True, "2": False})
+
+    def test_the_csv_parser_never_produces_an_id(self):
+        """The export HAS a User ID column. Reading it would make the wide,
+        PII-heavy file the source of a field entitlement depends on."""
+        csv_text = (
+            "Name,Email,Tier,Patron Status,User ID\n"
+            "Rhondal,r@example.com,Junior Class,Active patron,999\n"
+        )
+        rows = parse_patreon_csv(
+            SimpleUploadedFile("members.csv", csv_text.encode("utf-8")))
+
+        self.assertEqual(rows[0]["patreon_user_id"], "")
+
+
+class PatreonEntitlementTests(TestCase):
+    """`benefits`: the derivation, and the two directions a link is made from."""
+
+    def setUp(self):
+        self.tier = PatreonTier.objects.create(name="Junior Class", order=10)
+        self.top_tier = PatreonTier.objects.create(name="Classic Class", order=0)
+        self.user = CustomUser.objects.create(username="user_abc123")
+
+    def _supporter(self, **kwargs):
+        return PatreonSupporter.objects.create(**{
+            "display_name": "Rhondal",
+            "patreon_user_id": "7",
+            "tier": self.tier,
+            "is_active": True,
+            **kwargs,
+        })
+
+    def test_an_unlinked_patron_entitles_nobody(self):
+        self._supporter()
+        self.assertFalse(benefits.is_supporter(self.user))
+
+    def test_a_linked_active_tiered_patron_is_a_supporter(self):
+        self._supporter(linked_user=self.user)
+        self.assertTrue(benefits.is_supporter(self.user))
+
+    def test_a_lapse_drops_entitlement_and_keeps_the_row(self):
+        """Nothing is deleted and no consent decision is touched — a lapsed
+        patron who resumes must not have to opt in to being thanked again."""
+        supporter = self._supporter(linked_user=self.user, is_public=True)
+
+        supporter.is_active = False
+        supporter.save(update_fields=["is_active"])
+
+        self.assertFalse(benefits.is_supporter(self.user))
+        supporter.refresh_from_db()
+        self.assertTrue(supporter.is_public)
+        self.assertEqual(supporter.linked_user_id, self.user.pk)
+
+    def test_a_linked_patron_on_no_tier_is_not_a_supporter(self):
+        self._supporter(linked_user=self.user, tier=None)
+        self.assertFalse(benefits.is_supporter(self.user))
+
+    def test_an_anonymous_caller_is_never_a_supporter(self):
+        self.assertFalse(benefits.is_supporter(AnonymousUser()))
+        self.assertFalse(benefits.is_supporter(None))
+
+    def test_ad_free_needs_only_a_paid_tier(self):
+        self._supporter(linked_user=self.user, tier=self.tier)
+        self.assertTrue(benefits.has_benefit(self.user, benefits.AD_FREE))
+
+    def test_a_tier_gated_benefit_reads_order_as_a_threshold(self):
+        """Lower order = higher tier, so the check is `<=`. Asserted through a
+        temporary entry rather than a real one, so this keeps testing the
+        mechanism after the benefit map changes."""
+        supporter = self._supporter(linked_user=self.user, tier=self.tier)
+        with patch.dict(benefits.BENEFITS, {"top_only": 0}, clear=False):
+            self.assertFalse(benefits.has_benefit(self.user, "top_only"))
+
+            supporter.tier = self.top_tier
+            supporter.save(update_fields=["tier"])
+            self.assertTrue(benefits.has_benefit(self.user, "top_only"))
+
+    def test_an_unknown_benefit_key_raises(self):
+        """A typo in a gate must fail loudly at the first request, not quietly
+        refuse everyone forever."""
+        with self.assertRaises(KeyError):
+            benefits.has_benefit(self.user, "no_such_benefit")
+
+    def test_alice_pledges_then_links(self):
+        """The sync got there first; linking finds the row by id."""
+        self._supporter()
+
+        benefits.link_supporter_to_user(self.user, "7")
+
+        self.assertTrue(benefits.is_supporter(self.user))
+
+    def test_bob_links_then_pledges(self):
+        """No row exists at link time. The next sync creates it, sees the
+        SocialAccount already there, and attaches — with no second action
+        from him."""
+        SocialAccount.objects.create(
+            user=self.user, provider=SocialAccount.PROVIDER_PATREON, subject_id="7")
+
+        summary = apply_patreon_import([{
+            "display_name": "Rhondal", "patreon_user_id": "7", "email": "",
+            "tier_name": "Junior Class", "is_active": True,
+        }])
+
+        self.assertEqual(summary["linked"], ["Rhondal"])
+        self.assertTrue(benefits.is_supporter(self.user))
+
+    def test_a_patron_is_never_moved_onto_a_second_account(self):
+        other = CustomUser.objects.create(username="user_def456")
+        self._supporter(linked_user=other)
+
+        self.assertIsNone(benefits.link_supporter_to_user(self.user, "7"))
+        self.assertFalse(benefits.is_supporter(self.user))
+
+    def test_unlinking_keeps_the_row_and_its_consent(self):
+        supporter = self._supporter(linked_user=self.user, is_public=True,
+                                    patron_since=datetime.date(2025, 1, 1))
+
+        self.assertTrue(benefits.unlink_supporter(self.user))
+
+        supporter.refresh_from_db()
+        self.assertIsNone(supporter.linked_user_id)
+        self.assertTrue(supporter.is_public)
+        self.assertEqual(supporter.patron_since, datetime.date(2025, 1, 1))
+        self.assertFalse(benefits.is_supporter(self.user))
+
+    def test_deleting_an_account_keeps_the_supporter_row(self):
+        """SET_NULL, not CASCADE. They are still a patron — they just have no
+        account here any more."""
+        self._supporter(linked_user=self.user, is_public=True)
+
+        self.user.delete()
+
+        supporter = PatreonSupporter.objects.get(patreon_user_id="7")
+        self.assertIsNone(supporter.linked_user_id)
+        self.assertTrue(supporter.is_public)
+
+
+class SupporterAccountEndpointTests(TestCase):
+    """What GET /account says about entitlement, and what it refuses to say."""
+
+    def setUp(self):
+        self.client = APIClient()
+        self.tier = PatreonTier.objects.create(name="Junior Class", order=10)
+        self.user = CustomUser.objects.create(username="user_abc123")
+        self.token = Token.objects.create(user=self.user)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token.key}")
+
+    def test_a_non_supporter_gets_the_bare_block(self):
+        """No null tier and no empty benefits list — either would invite a
+        client to render an empty badge, or to read the absence of a tier as
+        a tier."""
+        response = self.client.get("/account")
+
+        self.assertEqual(response.data["supporter"], {"is_supporter": False})
+
+    def test_a_supporter_gets_their_tier_and_benefit_keys(self):
+        PatreonSupporter.objects.create(
+            display_name="Rhondal", patreon_user_id="7", tier=self.tier,
+            is_active=True, linked_user=self.user, email="r@example.com")
+
+        block = self.client.get("/account").data["supporter"]
+
+        self.assertTrue(block["is_supporter"])
+        self.assertEqual(block["tier"], "Junior Class")
+        self.assertIn(benefits.AD_FREE, block["benefits"])
+
+    def test_the_block_never_carries_supporter_identifiers(self):
+        """The same field-list discipline the linked providers are under: the
+        account owner has no use for the row id, the Patreon id, the display
+        name or the admin-only email, so none of them are on the wire."""
+        PatreonSupporter.objects.create(
+            display_name="Rhondal", patreon_user_id="7", tier=self.tier,
+            is_active=True, linked_user=self.user, email="r@example.com")
+
+        body = json.dumps(self.client.get("/account").data)
+
+        self.assertNotIn("r@example.com", body)
+        self.assertNotIn("Rhondal", body)
+        self.assertNotIn("patreon_user_id", body)
+
+    def test_a_lapsed_supporter_reads_as_not_a_supporter(self):
+        PatreonSupporter.objects.create(
+            display_name="Rhondal", patreon_user_id="7", tier=self.tier,
+            is_active=False, linked_user=self.user)
+
+        self.assertEqual(
+            self.client.get("/account").data["supporter"], {"is_supporter": False})
+
+
+@override_settings(
+    PATREON_OAUTH_CLIENT_ID="pid",
+    PATREON_OAUTH_CLIENT_SECRET="psecret",
+    OAUTH_REDIRECT_URI="http://localhost:5173/auth/callback",
+)
+class PatreonLinkEntitlementTests(TestCase):
+    """Linking Patreon to an account resolves entitlement there and then."""
+
+    def setUp(self):
+        cache.clear()  # the link throttle is LocMem; TestCase rollback misses it
+        self.client = APIClient()
+        self.tier = PatreonTier.objects.create(name="Junior Class", order=10)
+        self.user = CustomUser.objects.create(username="user_abc123")
+        self.token = Token.objects.create(user=self.user)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token.key}")
+        # The inline refresh is skipped outright when there is no token to use,
+        # so a configured deployment is what these tests have to look like.
+        credentials = PatreonCredentials.load()
+        credentials.access_token = "access-1"
+        credentials.refresh_token = "refresh-1"
+        credentials.expires_at = timezone.now() + datetime.timedelta(days=30)
+        credentials.campaign_id = "camp-1"
+        credentials.save()
+
+    def _state(self):
+        return signing.dumps(
+            {
+                "p": "patreon",
+                "n": "nonce",
+                "r": "http://localhost:5173/auth/callback",
+                "u": self.user.pk,
+            },
+            salt=LINK_STATE_SALT,
+        )
+
+    def _complete(self, subject_id="7"):
+        with patch.object(oauth, "exchange_code", return_value=subject_id):
+            return self.client.post(
+                "/account/link/patreon/complete",
+                {"code": "abc", "state": self._state()},
+                format="json",
+            )
+
+    def test_linking_a_known_patron_makes_them_a_supporter_immediately(self):
+        PatreonSupporter.objects.create(
+            display_name="Rhondal", patreon_user_id="7", tier=self.tier, is_active=True)
+
+        response = self._complete()
+
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(benefits.is_supporter(self.user))
+
+    def test_a_known_patron_costs_no_request_to_patreon(self):
+        """The common case must not reach the network at all: anyone who
+        pledged before today is already in the table."""
+        PatreonSupporter.objects.create(
+            display_name="Rhondal", patreon_user_id="7", tier=self.tier, is_active=True)
+
+        with patch("calculatorapi.patreon_api.fetch_members") as fetch:
+            self._complete()
+
+        fetch.assert_not_called()
+
+    def test_carol_pledges_and_links_in_the_same_minute(self):
+        """Nobody knows about her yet, so the link triggers the real sync —
+        the same producer and the same reconcile as every other path, not a
+        second route into entitlement reading her own token."""
+        with patch("calculatorapi.patreon_api.fetch_members", return_value=[{
+            "display_name": "Carol", "patreon_user_id": "7", "email": "",
+            "tier_name": "Junior Class", "is_active": True,
+        }]) as fetch:
+            response = self._complete()
+
+        self.assertEqual(response.status_code, 201)
+        fetch.assert_called_once()
+        self.assertTrue(benefits.is_supporter(self.user))
+
+    def test_the_inline_sync_never_deactivates_anyone(self):
+        """Retiring lapsed patrons is the daily job's business. A user action
+        may only ever ADD what it came for."""
+        stale = PatreonSupporter.objects.create(
+            display_name="Someone Else", patreon_user_id="99",
+            tier=self.tier, is_active=True)
+
+        with patch("calculatorapi.patreon_api.fetch_members", return_value=[]):
+            self._complete()
+
+        stale.refresh_from_db()
+        self.assertTrue(stale.is_active)
+
+    def test_patreon_being_down_does_not_fail_the_link(self):
+        """The link has already succeeded by the time entitlement is resolved.
+        Turning that into an error would lose the SocialAccount row too."""
+        with patch("calculatorapi.patreon_api.fetch_members",
+                   side_effect=patreon_api.PatreonApiError("boom")):
+            response = self._complete()
+
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(
+            SocialAccount.objects.filter(user=self.user, provider="patreon").exists())
+        self.assertFalse(benefits.is_supporter(self.user))
+
+    def test_a_non_patron_who_links_is_simply_not_a_supporter(self):
+        with patch("calculatorapi.patreon_api.fetch_members", return_value=[]):
+            response = self._complete()
+
+        self.assertEqual(response.status_code, 201)
+        self.assertFalse(benefits.is_supporter(self.user))
+
+    def test_a_conflicting_link_resolves_no_entitlement(self):
+        """A 409 means the identity is someone else's, so reading a pledge off
+        it would be reading a pledge that is not this user's."""
+        other = CustomUser.objects.create(username="user_def456")
+        SocialAccount.objects.create(
+            user=other, provider=SocialAccount.PROVIDER_PATREON, subject_id="7")
+        PatreonSupporter.objects.create(
+            display_name="Rhondal", patreon_user_id="7", tier=self.tier, is_active=True)
+
+        with patch("calculatorapi.patreon_api.fetch_members") as fetch:
+            response = self._complete()
+
+        self.assertEqual(response.status_code, 409)
+        fetch.assert_not_called()
+        self.assertFalse(benefits.is_supporter(self.user))
+
+    def test_linking_google_never_touches_patreon(self):
+        with patch("calculatorapi.patreon_api.fetch_members") as fetch:
+            state = signing.dumps(
+                {"p": "google", "n": "n", "r": "http://localhost:5173/auth/callback",
+                 "u": self.user.pk},
+                salt=LINK_STATE_SALT,
+            )
+            with patch.object(oauth, "exchange_code", return_value="g-1"):
+                response = self.client.post(
+                    "/account/link/google/complete",
+                    {"code": "abc", "state": state}, format="json")
+
+        self.assertEqual(response.status_code, 201)
+        fetch.assert_not_called()
+
+    def test_unlinking_patreon_drops_entitlement_but_keeps_the_row(self):
+        SocialAccount.objects.create(
+            user=self.user, provider=SocialAccount.PROVIDER_GOOGLE, subject_id="g-1")
+        with patch("calculatorapi.patreon_api.fetch_members", return_value=[]):
+            self._complete()
+        supporter = PatreonSupporter.objects.create(
+            display_name="Rhondal", patreon_user_id="7", tier=self.tier,
+            is_active=True, is_public=True)
+        benefits.link_supporter_to_user(self.user, "7")
+
+        response = self.client.delete("/account/link/patreon")
+
+        self.assertEqual(response.status_code, 204)
+        supporter.refresh_from_db()
+        self.assertIsNone(supporter.linked_user_id)
+        self.assertTrue(supporter.is_public)
+
+
+@override_settings(
+    PATREON_OAUTH_CLIENT_ID="pid",
+    PATREON_OAUTH_CLIENT_SECRET="psecret",
+    OAUTH_REDIRECT_URI="http://localhost:5173/auth/callback",
+)
+class PatreonSignInEntitlementTests(TestCase):
+    """Signing in with Patreon attaches a known patron — locally only."""
+
+    def setUp(self):
+        self.client = APIClient()
+        self.tier = PatreonTier.objects.create(name="Junior Class", order=10)
+
+    def _sign_in(self, subject_id="7"):
+        state = signing.dumps(
+            {"p": "patreon", "n": "n", "r": "http://localhost:5173/auth/callback"},
+            salt=STATE_SALT,
+        )
+        with patch.object(oauth, "exchange_code", return_value=subject_id):
+            return self.client.post(
+                "/auth/social",
+                {"provider": "patreon", "code": "abc", "state": state},
+                format="json",
+            )
+
+    def test_a_known_patron_signing_in_becomes_a_supporter(self):
+        PatreonSupporter.objects.create(
+            display_name="Rhondal", patreon_user_id="7", tier=self.tier, is_active=True)
+
+        response = self._sign_in()
+
+        self.assertEqual(response.status_code, 201)
+        supporter = PatreonSupporter.objects.get(patreon_user_id="7")
+        self.assertIsNotNone(supporter.linked_user_id)
+        self.assertTrue(benefits.is_supporter(supporter.linked_user))
+
+    def test_sign_in_never_calls_patreon(self):
+        """Sign-in is the hot path and most people signing in are not patrons.
+        Asking Patreon on every one would spend a request per login to answer
+        'no' — the link endpoint is where that question is worth asking."""
+        with patch("calculatorapi.patreon_api.fetch_members") as fetch:
+            self._sign_in()
+
+        fetch.assert_not_called()
+
+
+class PurgeClearsSupporterLinkTests(TestCase):
+    """A purged account must not leave a live entitlement pointing at it."""
+
+    def test_the_link_is_cleared_and_the_row_is_not(self):
+        tier = PatreonTier.objects.create(name="Junior Class", order=10)
+        user = CustomUser.objects.create(username="user_abc123")
+        supporter = PatreonSupporter.objects.create(
+            display_name="Rhondal", patreon_user_id="7", tier=tier,
+            is_active=True, is_public=True, email="r@example.com",
+            linked_user=user)
+
+        call_command("purge_user_pii", "--no-input", stdout=StringIO())
+
+        supporter.refresh_from_db()
+        self.assertIsNone(supporter.linked_user_id)
+        # Not behind --include-patreon: severing a link is not touching data.
+        self.assertEqual(supporter.email, "r@example.com")
+        self.assertTrue(supporter.is_public)
+        self.assertFalse(benefits.is_supporter(user))

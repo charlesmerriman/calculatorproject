@@ -424,7 +424,36 @@ narrows on tag fields elsewhere (see `event_type` on the timeline union).
 Real-money prices live in the database, never in code, so they can be corrected without
 a deploy when the store changes.
 
-### Selector eligibility is derived, not stored
+### Selector eligibility: a derived gate and a stored one
+
+Two independent gates decide whether a selector may take a card. The **temporal** one is
+derived; the **intrinsic** one is stored. Both must pass — `eligibility.py`'s
+`selection_refusal_reason()` is the single entry point that checks both, and callers use
+it rather than `is_eligible()` alone.
+
+#### The intrinsic gate is stored, on `Uma`
+
+`Uma.is_time_limited` (default `False`) and `Uma.is_three_star` (default `True`) mark
+units a selector can **never** take at any cutoff. Neither is derivable: a time-limited or
+★1/★2 unit sits on ordinary banners and is indistinguishable from a selectable one from
+the banner data alone. Editors set them in the admin, under "Selector availability".
+
+This gate is **independent of the cutoff and bites even when the cutoff is `null`**, which
+the temporal gate waves through. That is why neither serializer backstop may early-return
+on a null cutoff — the old `if cutoff is None: return` admitted exactly these units.
+
+`SupportCard` has no equivalent: ★3 is an uma-side concept (supports are SSR/SR), so a
+support card is only ever gated on its date. Both predicates read the flags defensively
+(absent ⇒ unrestricted), so a support card passes the intrinsic gate unconditionally.
+
+Like the cutoff, both flags are **grandfathered against a user's stored picks**. An editor
+flagging a unit must not `400` the plan of everyone who already picked it — that rejection
+takes their stats and banners down with it. The existing grandfathering in
+`UserPlannedPurchaseSerializer._pairing_is_unchanged` and
+`UserStepUpSelectionSerializer`'s `stored_pairs` runs *before* either gate, so it covers
+both for free.
+
+#### The temporal gate is derived
 
 A selector may only take cards released on JP on or before its cutoff (inclusive). There
 is no stored "JP release date": it is derived as `MIN(BannerTimeline.jp_start_date)` over
@@ -659,11 +688,11 @@ admin. Two models: `PatreonTier` is the pledge ladder (`name` + a hand-set
 **This is the only table holding data about people who never signed up to this
 site**, which is what shapes every decision in it.
 
-**It holds a display name, an email, a tier and a pledge start date, and nothing
-else — keep it that way.** Patreon's members export is a wide PII file: email,
-Discord handle, Patreon user ID, postal address, phone, charge history, lifetime
-totals. Only the email is kept; nothing else on that list is needed to say thank
-you or to run the admin.
+**It holds a display name, an email, a tier, a pledge start date and Patreon's
+opaque user id, and nothing else — keep it that way.** Patreon's members export
+is a wide PII file: email, Discord handle, postal address, phone, charge
+history, lifetime totals. None of that is needed to say thank you or to run the
+admin.
 
 Both import paths exclude the rest by construction rather than by filtering
 afterwards:
@@ -678,6 +707,46 @@ afterwards:
   access token automatically holds every v2 scope, so the token is capable of
   reading patron addresses and phone numbers and simply never asks. There are no
   scopes to leave unticked.
+
+### `patreon_user_id` and `linked_user` — the join to a website account
+
+The daily sync always knew **who is pledging**; `SocialAccount` always knew **who
+is signed in**. Nothing joined the two, so no site feature could depend on a
+pledge. These two fields are that join, and they are the whole of Phase 2.
+
+`patreon_user_id` is Patreon's opaque id for the *person* — the same value
+`SocialAccount.subject_id` stores when they sign in with Patreon. Storing it is a
+deliberate exception to the paragraph above, on four grounds:
+
+- It is **opaque**: it identifies nobody without Patreon's own database, exactly
+  like the subject ids already held for every account.
+- It arrives as a **relationship** (`include=user` → `relationships.user.data.id`)
+  with `fields[user]` sent **empty**, so the sideloaded user resource carries no
+  attributes at all. `MEMBER_FIELDS` — the privacy boundary — did not change to
+  get it, and a test asserts that.
+- The alternative was matching patrons to accounts **by email**, which would mean
+  collecting an email from every site user. This id exists precisely to avoid that.
+- It is **never serialized**, the same treatment as `email`.
+
+`linked_user` is `OneToOneField(..., on_delete=SET_NULL)`. Deleting a site account
+must not delete a supporter row — they are still a patron, they just have no
+account here any more — and the same holds when they unlink by hand or
+`purge_user_pii` runs. In every one of those cases the row survives with its
+`is_public` consent and `patron_since` intact. Identical treatment to a lapse.
+
+**Entitlement is derived from these, never stored as a flag.**
+`is_supporter = linked_user is set AND is_active AND tier is not None`, computed
+per request in `calculatorapi/benefits.py`. A cached boolean would be a second
+truth that drifts the moment a pledge lapses or resumes — invisibly, in the
+direction nobody reports.
+
+**CSV and hand-entered rows never get an id** and therefore can never be linked
+to an account. That is a real limitation and the strongest reason to prefer the
+API sync over the CSV upload.
+
+**Backfill needs no data migration.** The first API sync after deploy matches
+existing rows by name and writes the id in (`ids_filled` in the summary); from
+then on that patron is matched the reliable way.
 
 ### `email` — admin-only, and why it is the exception
 
@@ -727,9 +796,23 @@ an editor corrected by hand survives every later sync.
 patron keeps their `patron_since` and — more importantly — the consent decision
 already made about them, instead of silently reverting to the default.
 
-**`display_name` is unique case-insensitively** (`unique_patreon_supporter_display_name`
-over `Lower("display_name")`). That constraint is also the importer's match key,
-which is what makes a re-import an update rather than a second row.
+**Two uniqueness constraints, and which one applies depends on where the row
+came from.** `unique_patreon_supporter_patreon_user_id` covers rows that HAVE an
+id; `unique_patreon_supporter_display_name` (over `Lower("display_name")`) covers
+only rows that do **not**, and that partial condition is load-bearing.
+
+Two patrons are free to choose the same display name. While this table only fed a
+thank-you list, collapsing them was harmless. Once entitlement hangs off the row
+it costs one of them the thing they paid for — and nothing reports it, because a
+dropped row looks exactly like a lapsed one, after which `deactivate_missing`
+retires whichever row already existed. So API rows are keyed on the id and are not
+name-constrained at all, while CSV and hand-entered rows keep the collision
+protection they still need.
+
+The reconcile matches the same way: **id first, display name as the fallback**. A
+name match against a row with no id yet *adopts* it. The one case it refuses to
+guess at is an id-less row whose name matches two stored rows — nothing is written
+and the import summary reports it (`ambiguous`) for an editor to sort out.
 
 **`tier` is `on_delete=SET_NULL`.** Deleting a tier must not delete the people on
 it; they fall back to the unstyled base rendering until re-tiered.

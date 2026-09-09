@@ -10,6 +10,21 @@ place is what stops the manual and automatic paths drifting into treating the
 same data differently — and means the consent rule below is stated once and holds
 for both.
 
+MATCHING: THE PATREON USER ID FIRST, THE DISPLAY NAME AS A FALLBACK
+-------------------------------------------------------------------
+API rows carry `patreon_user_id` and are matched on it. That is what lets a
+patron rename themselves without becoming a second row, and — since entitlement
+now hangs off these rows — what stops two patrons who picked the same display
+name being collapsed into one, which would cost one of them the thing they paid
+for.
+
+CSV and hand-entered rows have no id and are still matched on the casefolded
+display name, which is why that uniqueness constraint survives on the model for
+exactly those rows. A name match against a row that has no id yet ADOPTS it:
+the id is written in, and from then on that patron is matched the reliable way.
+That is the backfill — no data migration needed, just the first sync after
+deploy.
+
 WHY THIS EXISTS AS ITS OWN NARROW PARSER
 ----------------------------------------
 Patreon's member export is a wide, PII-heavy file: email, Discord handle,
@@ -46,6 +61,7 @@ import io
 from django import forms
 from django.db import transaction
 
+from . import benefits
 from .models import PatreonSupporter, PatreonTier
 
 # The only four columns this importer will look at. Everything else in the
@@ -164,6 +180,11 @@ def parse_patreon_csv(uploaded_file):
             # Truncated to the model's max_length rather than raising: a name
             # over 100 characters is a display problem, not an import failure.
             "display_name": name[:100],
+            # No id from a CSV, ever. The export HAS a "User ID" column, and it
+            # stays unread: the API path is where a linkable id comes from, and
+            # reading one here would mean the wide PII export is what fills a
+            # field entitlement depends on.
+            "patreon_user_id": "",
             # Absent column or empty cell both give "", which the reconcile
             # treats as "don't know" rather than "clear the stored one".
             "email": (record.get(EMAIL_COLUMN) or "").strip(),
@@ -201,6 +222,16 @@ def _update_supporter(supporter, row, tier, summary):
     upload.
     """
     changed_fields = []
+
+    # FILL ONLY, never overwrite — the same rule `patron_since` lives under, but
+    # here it is load-bearing rather than courteous. Overwriting would let a
+    # display-name collision reassign one patron's identity to another's row,
+    # and entitlement follows the id.
+    incoming_id = (row.get("patreon_user_id") or "").strip()
+    if incoming_id and not supporter.patreon_user_id:
+        supporter.patreon_user_id = incoming_id
+        changed_fields.append("patreon_user_id")
+        summary["ids_filled"].append(supporter.display_name)
 
     if supporter.tier_id != (tier.id if tier else None):
         supporter.tier = tier
@@ -241,17 +272,81 @@ def _update_supporter(supporter, row, tier, summary):
     return True
 
 
+# Returned by the name index when a name is held by more than one row, so a
+# fallback match on it would be a coin flip between two people.
+AMBIGUOUS = object()
+
+
+def _index_existing():
+    """The two tables the reconcile matches incoming rows against.
+
+    `by_id` is the reliable one and only holds rows that have a Patreon id.
+    `by_name` covers EVERY row, including those with an id, so that a CSV
+    re-import of a patron the API already created updates them instead of
+    adding a second row — but a name two rows share maps to AMBIGUOUS rather
+    than to whichever was read last.
+    """
+    by_id = {}
+    by_name = {}
+    for supporter in PatreonSupporter.objects.select_related("tier"):
+        if supporter.patreon_user_id:
+            by_id[supporter.patreon_user_id] = supporter
+        key = supporter.display_name.casefold()
+        by_name[key] = AMBIGUOUS if key in by_name else supporter
+    return by_id, by_name
+
+
+def _remember(supporter, by_id, by_name):
+    """Index a row created during this run, so a duplicate later in the same
+    file updates it rather than trying to create it twice."""
+    if supporter.patreon_user_id:
+        by_id[supporter.patreon_user_id] = supporter
+    key = supporter.display_name.casefold()
+    by_name[key] = AMBIGUOUS if key in by_name else supporter
+
+
+def _match_existing(row, by_id, by_name):
+    """Find the row this one describes: `(supporter_or_None, refused)`.
+
+    `refused` means "two stored rows share this name and the incoming row has
+    no id to tell them apart" — the one case where guessing could move a pledge
+    onto the wrong person, so nothing is written and the summary reports it for
+    an editor to resolve by hand.
+    """
+    incoming_id = (row.get("patreon_user_id") or "").strip()
+    if incoming_id:
+        found = by_id.get(incoming_id)
+        if found is not None:
+            return found, False
+
+    candidate = by_name.get(row["display_name"].casefold())
+    if candidate is None:
+        return None, False
+    if candidate is AMBIGUOUS:
+        # With an id in hand this is not ambiguous at all: the id missed every
+        # stored row above, so this is a third person who happens to share the
+        # name, and they get their own row.
+        return None, not incoming_id
+    if incoming_id and candidate.patreon_user_id and candidate.patreon_user_id != incoming_id:
+        # Same display name, demonstrably a different person. Two patrons are
+        # free to choose the same name, and before ids existed this branch was
+        # where one of them silently became the other.
+        return None, False
+    return candidate, False
+
+
 @transaction.atomic
 def apply_patreon_import(rows, deactivate_missing=False, dry_run=False):
     """Reconcile parsed rows against the table. Returns a summary dict.
 
-    Matching is on casefolded `display_name`, the same key as the model's
-    uniqueness constraint, so a re-import updates rather than duplicating.
+    Matching is on `patreon_user_id` where there is one, falling back to the
+    casefolded display name — see the module docstring and `_match_existing`.
 
     Rows come from either source — `parse_patreon_csv` or `patreon_api.fetch_members`
-    — and carry the same keys, with one optional extra: the API knows each
-    patron's pledge start date and the CSV does not. A row may therefore include
-    `patron_since`; a row without the key leaves the stored value alone.
+    — and carry the same keys, with two the CSV cannot know: the API knows each
+    patron's pledge start date and their Patreon id. A row may therefore include
+    `patron_since` and `patreon_user_id`; an absent or empty value leaves the
+    stored one alone.
 
     `email` behaves the same way when it is empty (an older CSV export has no
     such column, and Patreon does not always have an address for a member), but
@@ -264,28 +359,31 @@ def apply_patreon_import(rows, deactivate_missing=False, dry_run=False):
         "deactivated": [],
         "dates_filled": [],
         "emails_updated": [],
+        "ids_filled": [],
+        "linked": [],
+        "ambiguous": [],
         "unchanged": 0,
         "tiers_created": [],
     }
 
     tiers_by_name = {tier.name.casefold(): tier for tier in PatreonTier.objects.all()}
-    existing = {
-        supporter.display_name.casefold(): supporter
-        for supporter in PatreonSupporter.objects.select_related("tier")
-    }
+    by_id, by_name = _index_existing()
 
-    seen_keys = set()
+    seen_pks = set()
     for row in rows:
-        key = row["display_name"].casefold()
-        seen_keys.add(key)
         tier = _resolve_tier(row["tier_name"], tiers_by_name, summary["tiers_created"])
-        supporter = existing.get(key)
+        supporter, refused = _match_existing(row, by_id, by_name)
+
+        if refused:
+            summary["ambiguous"].append(row["display_name"])
+            continue
 
         if supporter is None:
             # NOTE: is_public is left at the model default (False). An import
             # must never publish a name — see the module docstring.
-            PatreonSupporter.objects.create(
+            supporter = PatreonSupporter.objects.create(
                 display_name=row["display_name"],
+                patreon_user_id=(row.get("patreon_user_id") or "").strip(),
                 # "" when the source had no email for them — the model's own
                 # default, and a legitimate state for a hand-entered supporter.
                 email=row.get("email") or "",
@@ -294,15 +392,23 @@ def apply_patreon_import(rows, deactivate_missing=False, dry_run=False):
                 patron_since=row.get("patron_since"),
             )
             summary["created"].append(row["display_name"])
-            continue
-
-        if not _update_supporter(supporter, row, tier, summary):
+            _remember(supporter, by_id, by_name)
+        elif not _update_supporter(supporter, row, tier, summary):
             summary["unchanged"] += 1
 
+        seen_pks.add(supporter.pk)
+
+        # The patron may already have an account here — someone who linked
+        # their Patreon login before they pledged. Closing that gap is the
+        # sync's job precisely because it is the half that happens later, and
+        # it must cost them no second action.
+        if benefits.link_user_to_supporter(supporter) is not None:
+            summary["linked"].append(supporter.display_name)
+
     if deactivate_missing:
-        for key, supporter in existing.items():
-            if key in seen_keys or not supporter.is_active:
-                continue
+        for supporter in PatreonSupporter.objects.filter(is_active=True).exclude(
+            pk__in=seen_pks
+        ):
             supporter.is_active = False
             supporter.save(update_fields=["is_active"])
             summary["deactivated"].append(supporter.display_name)

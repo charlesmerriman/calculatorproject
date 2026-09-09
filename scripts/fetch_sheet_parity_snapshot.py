@@ -32,7 +32,8 @@ this at a copy with an actual plan configured to get a meaningful snapshot:
 
 The sheet must be readable without auth ("anyone with the link can view").
 
-NOTE: python `requests` is not installed in this project — stdlib urllib only.
+NOTE: stdlib urllib is used here deliberately — this is a standalone script,
+run outside Django, and it has no other dependencies.
 """
 
 import argparse
@@ -81,11 +82,20 @@ BANNER_CELLS = {
     "type": ("C", 1),
     "name": ("F", 1),
     "pulls": ("Q", 1),
-    "start_date": ("D", 1),
+    # Start Date is column K, NOT D. This read D until 2026-09-09, which is
+    # blank in every block, so every captured banner had an empty start date.
+    # Spend attribution is ordered by start date, so a harness built on the
+    # broken capture would have compared correct totals in the wrong order.
+    "start_date": ("K", 1),
     "end_date": ("L", 1),
     "carat_est": ("M", 1),
     "paid_carat_est": ("N", 1),
     "max_pulls": ("O", 1),
+    # "Misc Pulls", rendered as "free/tickets/paid" (header in P41). The sheet's
+    # own split of where a banner's pulls came from — the single most useful
+    # diagnostic we can capture, because it tells us WHICH resource pool a
+    # disagreement lives in instead of just that a total is out.
+    "misc_pulls": ("P", 1),
 }
 
 
@@ -157,6 +167,7 @@ def read_banners(grid):
             "pulls": to_number(values["pulls"]) or 0,
             "start_date": values["start_date"],
             "end_date": values["end_date"],
+            "misc_pulls": values["misc_pulls"],
             "carat_est": to_number(values["carat_est"]),
             "paid_carat_est": to_number(values["paid_carat_est"]),
             "max_pulls": to_number(values["max_pulls"]),

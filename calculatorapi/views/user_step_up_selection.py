@@ -1,6 +1,9 @@
 from rest_framework import serializers
 
-from calculatorapi.eligibility import build_first_jp_date_maps, is_eligible
+from calculatorapi.eligibility import (
+    build_first_jp_date_maps,
+    selection_refusal_reason,
+)
 from calculatorapi.models import (
     BannerStepUp,
     SELECTION_SLOTS,
@@ -90,7 +93,10 @@ class UserStepUpSelectionSerializer(serializers.ModelSerializer):
         return attrs
 
     def _validate_eligibility(self, step_up, uma, support):
-        """Reject a pick the campaign's JP cutoff does not actually cover.
+        """Reject a pick this step-up cannot actually grant.
+
+        Two gates, both backstopped here: the campaign's JP cutoff, and the
+        intrinsic one (time-limited / not ★3). See calculatorapi/eligibility.py.
 
         The client filters its picker by the same rule, so this is a backstop
         against a stale client persisting a NEW ineligible pick.
@@ -117,23 +123,24 @@ class UserStepUpSelectionSerializer(serializers.ModelSerializer):
         dropping someone's pick because shared data moved is worse than showing
         a flag.
         """
-        cutoff = step_up.anniversary_event.jp_cutoff_date
-        if cutoff is None:
-            return
-
         card = uma or support
         kind = "uma" if uma else "support"
         stored_pairs = self.context.get("stored_pairs")
         if stored_pairs is not None and (step_up.id, kind, card.id) in stored_pairs:
             return
 
-        uma_dates, support_dates = self._first_jp_dates()
-        dates = uma_dates if uma else support_dates
-        if not is_eligible(dates.get(card.id), cutoff):
-            raise serializers.ValidationError(
-                f"{card.name} was released on JP after this step-up's cutoff "
-                f"({cutoff.isoformat()}) and cannot be selected."
-            )
+        # No early return on a null cutoff: that only makes the TEMPORAL gate
+        # unrestricted. A time-limited or non-★3 uma is refused by every
+        # step-up there is, cutoff or no cutoff.
+        cutoff = step_up.anniversary_event.jp_cutoff_date
+        first_jp = None
+        if cutoff is not None:
+            uma_dates, support_dates = self._first_jp_dates()
+            first_jp = (uma_dates if uma else support_dates).get(card.id)
+
+        refusal = selection_refusal_reason(card, first_jp, cutoff, "this step-up")
+        if refusal:
+            raise serializers.ValidationError(refusal)
 
     def _first_jp_dates(self):
         maps = self.context.get("first_jp_dates")

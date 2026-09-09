@@ -14,4 +14,9 @@ class UmaSerializer(FirstJpDateMixin, serializers.ModelSerializer):
             "image",
             "admin_comments",
             "first_jp_date",
+            # The intrinsic selector gates. Sent on every uma because the
+            # client filters both pickers and the projection's selector
+            # funding by them -- see frontend/src/utils/selectorTickets.ts.
+            "is_time_limited",
+            "is_three_star",
         )

@@ -97,10 +97,19 @@ class Command(BaseCommand):
             ("deactivated", "deactivated"),
             ("pledge date filled", "dates_filled"),
             ("email updated", "emails_updated"),
+            ("Patreon id filled", "ids_filled"),
+            ("matched to a website account", "linked"),
         ):
             names = summary[key]
             if names:
                 self.stdout.write(f"  {len(names)} {label}: {', '.join(names)}")
+        if summary["ambiguous"]:
+            self.stdout.write(
+                self.style.WARNING(
+                    f"  {len(summary['ambiguous'])} skipped — more than one supporter "
+                    f"already uses that name: {', '.join(summary['ambiguous'])}"
+                )
+            )
         self.stdout.write(f"  {summary['unchanged']} unchanged")
         if summary["tiers_created"]:
             self.stdout.write(

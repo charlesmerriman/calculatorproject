@@ -1,5 +1,5 @@
 """
-OAuth2 authorization-code flow for Google and Discord sign-in.
+OAuth2 authorization-code flow for Google, Discord and Patreon sign-in.
 
 Ordinary users never give us a password. The provider verifies who they are and
 hands back one opaque, provider-scoped id (Google's `sub`, Discord's user `id`),
@@ -22,8 +22,13 @@ than leaking provider internals to the client.
 
 PRIVACY NOTE: the scopes below are the narrowest each provider allows. Google's
 "openid" yields only `sub`; Discord's "identify" yields a small profile object
-we read one field from. Neither sends an email address, so none can be stored
+we read one field from; Patreon's "identity" yields a JSON:API user resource we
+read the `id` of. None of them sends an email address, so none can be stored
 here by accident. Do not widen these without a deliberate reason.
+
+In particular: Patreon puts the email behind a SEPARATE "identity[email]" scope.
+Never request it. Adding it would put an address in the response for every
+person who signs in, which is the exact thing this design exists to avoid.
 """
 
 import base64
@@ -40,6 +45,7 @@ HTTP_TIMEOUT_SECONDS = 10
 
 GOOGLE = "google"
 DISCORD = "discord"
+PATREON = "patreon"
 
 
 class OAuthError(Exception):
@@ -73,10 +79,29 @@ def _discord_config():
     }
 
 
+def _patreon_config():
+    return {
+        "authorize_url": "https://www.patreon.com/oauth2/authorize",
+        "token_url": "https://www.patreon.com/api/oauth2/token",
+        # "identity" returns the user resource WITHOUT the email -- that lives
+        # behind "identity[email]", which we must never ask for. A later phase
+        # adds "identity.memberships" to the LINK flow so a new supporter is
+        # recognised immediately rather than at the next daily sync; it is not
+        # requested yet because nothing reads it yet.
+        "scope": "identity",
+        "client_id": settings.PATREON_OAUTH_CLIENT_ID,
+        # NOT settings.PATREON_CLIENT_SECRET -- that is the creator app used by
+        # patreon_api.py for the member sync. See the settings comment.
+        "client_secret": settings.PATREON_OAUTH_CLIENT_SECRET,
+        "extra_authorize_params": {},
+    }
+
+
 # Built per call rather than at import time so @override_settings works in tests.
 _PROVIDER_BUILDERS = {
     GOOGLE: _google_config,
     DISCORD: _discord_config,
+    PATREON: _patreon_config,
 }
 
 SUPPORTED_PROVIDERS = tuple(_PROVIDER_BUILDERS)
@@ -236,9 +261,66 @@ def _discord_subject_id(_config, token_data):
     return str(subject_id)
 
 
+def _patreon_subject_id(_config, token_data):
+    """The caller's Patreon user id, from the JSON:API identity resource.
+
+    UNVERIFIED AGAINST THE LIVE API. Everything else in this module was written
+    against a response someone had actually seen; this was written from the
+    documentation, because the app had not been registered yet. The shape below
+    is what Patreon documents -- {"data": {"type": "user", "id": "...", ...}} --
+    and `data.id` is the only part we use, which is the least likely part to be
+    wrong. Confirm it on the first real sign-in and delete this paragraph.
+
+    THE ONE THING MOST LIKELY TO NEED CHANGING: the empty `fields[user]=`
+    parameter. It is a JSON:API sparse fieldset asking for the resource with NO
+    attributes at all -- the id is all we want, and anything else Patreon would
+    otherwise send by default (full name, vanity URL, avatar, social handles) is
+    personal data we have no use for and no wish to receive. If Patreon rejects
+    an empty fieldset, ask for one innocuous attribute instead; do not drop the
+    parameter, or the default attribute set comes back in full.
+
+    Either way the extractor reads `data.id` and drops the rest, the same
+    discipline _discord_subject_id already applies to username and avatar.
+    """
+    access_token = token_data.get("access_token")
+    if not access_token:
+        raise OAuthError("Patreon response contained no access_token")
+
+    try:
+        response = requests.get(
+            "https://www.patreon.com/api/oauth2/v2/identity",
+            headers={"Authorization": f"Bearer {access_token}"},
+            params={"fields[user]": ""},
+            timeout=HTTP_TIMEOUT_SECONDS,
+        )
+    except requests.RequestException as exc:
+        raise OAuthError("Patreon identity request failed") from exc
+
+    if response.status_code != 200:
+        raise OAuthError(f"Patreon identity endpoint returned {response.status_code}")
+
+    try:
+        payload = response.json()
+    except ValueError as exc:
+        raise OAuthError("Patreon identity endpoint returned malformed JSON") from exc
+
+    data = payload.get("data")
+    # A JSON:API resource object, not a list -- /identity describes exactly one
+    # user (the token's owner). Anything else means the shape changed, and
+    # guessing at it would be how a wrong id gets bound to an account.
+    if not isinstance(data, dict):
+        raise OAuthError("Patreon identity response had no user resource")
+
+    subject_id = data.get("id")
+    if not subject_id:
+        raise OAuthError("Patreon identity resource contained no id")
+    return str(subject_id)
+
+
 _SUBJECT_EXTRACTORS = {
     GOOGLE: _google_subject_id,
     DISCORD: _discord_subject_id,
+    PATREON: _patreon_subject_id,
 }
 
 
