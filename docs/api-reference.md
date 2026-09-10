@@ -784,6 +784,7 @@ The flat, date-sorted timeline the projection queries for cumulative income tota
   "name": "Narita Brian",
   "is_predicted": false,
   "throughout_end": "ISO8601 | null",
+  "event_number": null,
   "carats": 80,
   "carats_throughout": 1050,
   "uma_tickets": 0,
@@ -795,10 +796,11 @@ The flat, date-sorted timeline the projection queries for cumulative income tota
 }
 ```
 
-Four things to know:
+Five things to know:
 
 - **`date` is the instant the reward lands** — an event's resolved start; for a race event, its resolved **end less that kind's `RACE_REWARD_LEAD_TIME`**. A Champions Meeting settles its placements **24 hours before** its window closes, so its row sits a day ahead of the end date the timeline shows; League of Heroes has no lead time and is dated at its end. The offset is a `timedelta`, so it preserves time of day — a CM closing 21:59:59 pays at 21:59:59 the day before.
 - **Race rows carry no amounts.** `champions_meeting` / `league_of_heroes` rows are indicators; what a placement pays depends on the user's rank row, which only the client knows. Every amount field is still present (as `0`), so the client never guards on shape.
+- **`event_number` says which race event a row is**: `cm_number` / `loh_number` on race rows, `null` on `event` rows. It exists because a few specific events pay *below* the user's rank. League of Heroes #1 only ran to Platinum 1, so the client caps it there (`RACE_RANK_CAPS` in `frontend/src/utils/incomeLedger.ts`). The number rather than `source_id`, because it is the identity the game and the sheet use, and it is stable across databases.
 - **`throughout_end` is the linked banner's end, with `GAME_EVENT_END_DATE_BUFFER` already removed.** The `carats_throughout` pool decays over the banner, not over the event, whose own `end_date` trails it by 4 days. Emitting it pre-stripped is what stops the client keeping its own copy of that constant.
 - **No rows are filtered by "today".** The ledger is a set of dated facts, past ones included; the projection applies `today < date <= end` client-side so the whole calculation shares one anchor. Rows with no *resolvable* date are dropped, since a ledger row's only purpose is its position on the calendar.
 
