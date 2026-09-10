@@ -108,7 +108,9 @@ class ImagePreviewMixin:  # pylint: disable=too-few-public-methods
 class BannerUmaInline(TabularInline):
     """Uma banners listed on their timeline; click through to edit the umas."""
     model = BannerUma
-    fields = ("name", "free_pulls")
+    # is_recommended is here as well as on the banner's own page so an editor
+    # can tick it from the timeline they are already editing.
+    fields = ("name", "free_pulls", "is_recommended")
     show_change_link = True  # renders a "Change" link to the banner's own page
     extra = 0
 
@@ -116,7 +118,7 @@ class BannerUmaInline(TabularInline):
 class BannerSupportInline(TabularInline):
     """Support card banners listed on their timeline."""
     model = BannerSupport
-    fields = ("name", "free_pulls")
+    fields = ("name", "free_pulls", "is_recommended")
     show_change_link = True
     extra = 0
 
@@ -326,7 +328,13 @@ class PlannedByColumnMixin:  # pylint: disable=too-few-public-methods
 
 @admin.register(BannerUma)
 class BannerUmaAdmin(PlannedByColumnMixin, ModelAdmin):
-    list_display = ("name", "banner_timeline", "free_pulls", "planned_by")
+    list_display = ("name", "banner_timeline", "free_pulls", "is_recommended", "planned_by")
+    list_filter = ("is_recommended",)
+    # Tickable straight from the list. Deliberately NOT a "Mark as recommended"
+    # bulk action: those are written with queryset.update(), which fires no
+    # post_save, so public_payload_cache would keep serving the old flag until
+    # its TTL ran out. list_editable saves each changed row individually.
+    list_editable = ("is_recommended",)
     list_select_related = ("banner_timeline",)
     ordering = ("-banner_timeline__global_start_date",)
     search_fields = ("name",)
@@ -336,7 +344,10 @@ class BannerUmaAdmin(PlannedByColumnMixin, ModelAdmin):
 
 @admin.register(BannerSupport)
 class BannerSupportAdmin(PlannedByColumnMixin, ModelAdmin):
-    list_display = ("name", "banner_timeline", "free_pulls", "planned_by")
+    list_display = ("name", "banner_timeline", "free_pulls", "is_recommended", "planned_by")
+    list_filter = ("is_recommended",)
+    # See BannerUmaAdmin on why this is list_editable rather than a bulk action.
+    list_editable = ("is_recommended",)
     list_select_related = ("banner_timeline",)
     ordering = ("-banner_timeline__global_start_date",)
     search_fields = ("name",)
@@ -400,16 +411,37 @@ class BannerStepUpAdmin(ImagePreviewMixin, SpacesImagePickerMixin, ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
+# Shared by the two card admins so the wording that separates a PUBLIC note
+# from the editors' own can't drift between them.
+PURPOSE_FIELDSET = (
+    "Shown to players", {
+        "fields": ("purpose",),
+        "description": (
+            "<strong>Public.</strong> One short line on what this card is for — "
+            "\"Great pace parent\", \"Great for front runners\". Players see it when "
+            "they hover over or tap the card's picture on the Timeline; leave it "
+            "blank and nothing shows. 100 characters at most, so it fits on the "
+            "smallest card. Notes meant for other editors go in Admin comments."
+        ),
+    },
+)
+
+# "Empty" lists every card still missing a purpose, so an editor can work
+# through them.
+PURPOSE_FILTER = ("purpose", admin.EmptyFieldListFilter)
+
+
 @admin.register(Uma)
 class UmaAdmin(ImagePreviewMixin, SpacesImagePickerMixin, ModelAdmin):
     list_display = ("image_preview", "name", "is_time_limited", "is_three_star")
     list_display_links = ("name",)
-    list_filter = ("is_time_limited", "is_three_star")
+    list_filter = ("is_time_limited", "is_three_star", PURPOSE_FILTER)
     ordering = ("name",)
     search_fields = ("name",)  # required: autocomplete source for banner inlines
     readonly_fields = ("image_preview",)
     fieldsets = (
         (None, {"fields": ("name", "image", "image_preview", "admin_comments")}),
+        PURPOSE_FIELDSET,
         ("Selector availability", {
             "fields": ("is_time_limited", "is_three_star"),
             "description": (
@@ -426,9 +458,16 @@ class UmaAdmin(ImagePreviewMixin, SpacesImagePickerMixin, ModelAdmin):
 class SupportCardAdmin(ImagePreviewMixin, SpacesImagePickerMixin, ModelAdmin):
     list_display = ("image_preview", "name", "game_id")
     list_display_links = ("name",)
+    list_filter = (PURPOSE_FILTER,)
     ordering = ("name",)
     search_fields = ("name", "=game_id")  # required: autocomplete source for banner inlines
     readonly_fields = ("image_preview",)
+    # Explicit since purpose arrived: Django's every-field default form had
+    # nowhere to say that one of these boxes is public.
+    fieldsets = (
+        (None, {"fields": ("name", "game_id", "image", "image_preview", "admin_comments")}),
+        PURPOSE_FIELDSET,
+    )
 
 
 @admin.register(GameEvent)

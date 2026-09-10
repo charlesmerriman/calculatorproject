@@ -14,6 +14,19 @@ class BannerUma(models.Model):
         default=0,
         help_text="Free pulls players get on this banner — the calculator counts these toward affordability.",
     )
+    # Editorial and presentation-only -- nothing in the projection reads it. It
+    # gives the Timeline's "Featured Umamusume" panel its SSR treatment and stars
+    # this banner in the planner's dropdown.
+    #
+    # Per banner, not per BannerTimeline, on purpose: the uma and support banners
+    # sharing a window are pulled on independently, and a step-up points at a
+    # campaign's timeline too -- a window-level flag would recommend all three.
+    is_recommended = models.BooleanField(
+        default=False,
+        verbose_name="recommended",
+        help_text="Tick when this banner is exceptionally worth pulling on. Highlights it "
+                  "on the Timeline and in the calculator's banner dropdown.",
+    )
 
     class Meta:
         # Default would be "banner uma / banner umas" — confusing for editors.

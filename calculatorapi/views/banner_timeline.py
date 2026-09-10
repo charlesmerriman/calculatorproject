@@ -27,7 +27,9 @@ class BannerSupportNestedSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BannerSupport
-        fields = ("id", "name", "free_pulls", "admin_comments", "support_cards")
+        # is_recommended gives this panel its SSR treatment on the Timeline.
+        fields = ("id", "name", "free_pulls", "is_recommended", "admin_comments",
+                  "support_cards")
 
     def get_support_cards(self, obj):
         result = []
@@ -53,7 +55,8 @@ class BannerUmaNestedSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BannerUma
-        fields = ("id", "name", "free_pulls", "admin_comments", "umas")
+        # is_recommended gives this panel its SSR treatment on the Timeline.
+        fields = ("id", "name", "free_pulls", "is_recommended", "admin_comments", "umas")
 
     def get_umas(self, obj):
         result = []

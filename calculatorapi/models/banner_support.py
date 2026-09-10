@@ -14,6 +14,14 @@ class BannerSupport(models.Model):
         default=0,
         help_text="Free pulls players get on this banner — the calculator counts these toward affordability.",
     )
+    # Same flag as BannerUma.is_recommended -- see the note there for why it lives
+    # per banner rather than on the shared BannerTimeline.
+    is_recommended = models.BooleanField(
+        default=False,
+        verbose_name="recommended",
+        help_text="Tick when this banner is exceptionally worth pulling on. Highlights it "
+                  "on the Timeline and in the calculator's banner dropdown.",
+    )
 
     class Meta:
         # Default would be "banner support / banner supports" — confusing for editors.

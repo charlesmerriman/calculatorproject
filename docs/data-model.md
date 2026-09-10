@@ -68,6 +68,7 @@ erDiagram
         int banner_timeline_id FK
         string name
         int free_pulls
+        bool is_recommended "editorial; presentation only"
         string admin_comments
     }
 
@@ -76,6 +77,7 @@ erDiagram
         int banner_timeline_id FK
         string name
         int free_pulls
+        bool is_recommended "editorial; presentation only"
         string admin_comments
     }
 
@@ -84,6 +86,7 @@ erDiagram
         string name
         string image
         string admin_comments
+        string purpose "PUBLIC, max 100, never null; the Timeline tile's hover overlay"
     }
 
     SupportCard {
@@ -92,6 +95,7 @@ erDiagram
         int game_id "unique, nullable; anchors image to the DO Space file. ALSO ENCODES RARITY: 1xxxx R, 2xxxx SR, 3xxxx SSR — banners may only link 3xxxx"
         string image
         string admin_comments
+        string purpose "PUBLIC, max 100, never null; the Timeline tile's hover overlay"
     }
 
     UmasOnUmaBanner {
@@ -494,6 +498,34 @@ frontend translates them into a pending state rather than rendering them raw.
 ### Through tables carry recommendation text
 
 `UmasOnUmaBanner` and `SupportsOnSupportBanner` are explicit through models (not Django's auto-generated M2M table) because they carry a `recommendation` field — freeform admin notes about whether a card/uma on a banner is worth pulling. This text is exposed by the `BannerTimelineForViewingSerializer` used in `banner_timeline_data`.
+
+### Three editorial notes on a card, and which of them is public
+
+They are easy to confuse, and every one of them reaches the public payload:
+
+| Field | Lives on | Scope | Rendered? |
+|---|---|---|---|
+| `recommendation` | the two through tables | one card **on one banner** | yes — a badge on the Timeline tile |
+| `purpose` | `Uma`, `SupportCard` | the card itself, on every banner | yes — the tile's hover / focus / tap overlay |
+| `admin_comments` | cards and banners | notes for editors | **no** — but `/calculator-data` still serializes it |
+
+`purpose` is a `CharField(max_length=100, blank=True, default="")`: capped so the overlay
+always fits the narrowest tile, and never null, so "no purpose" has one representation. The
+admin gives it its own **Shown to players** fieldset so it can't be mistaken for
+`admin_comments` — which nothing renders, but which is public all the same.
+
+### `is_recommended` — per banner, presentation only
+
+`BannerUma.is_recommended` / `BannerSupport.is_recommended` is the editorial "Recommended"
+flag: the Timeline panel's SSR treatment and the planner dropdown's gold star. It sits on the
+banner, not on `BannerTimeline`, because the uma and support banners in one window are pulled
+on independently — and because a `BannerStepUp` points at its campaign's timeline too, so a
+window-level flag would recommend all three. No projection reads it (the same contract as
+`banner_category`).
+
+The admin toggles it with `list_editable`, deliberately not a bulk action: bulk actions are
+`queryset.update()`, which fires no `post_save`, so `public_payload_cache` would keep serving
+the old flag until its TTL expired.
 
 ### `GameEvent` reward amounts are fields, not a separate model
 
