@@ -264,20 +264,26 @@ def _discord_subject_id(_config, token_data):
 def _patreon_subject_id(_config, token_data):
     """The caller's Patreon user id, from the JSON:API identity resource.
 
-    UNVERIFIED AGAINST THE LIVE API. Everything else in this module was written
-    against a response someone had actually seen; this was written from the
-    documentation, because the app had not been registered yet. The shape below
-    is what Patreon documents -- {"data": {"type": "user", "id": "...", ...}} --
+    STILL UNVERIFIED AGAINST THE LIVE API. Everything else in this module was
+    written against a response someone had actually seen; this was written from
+    the documentation, because the app had not been registered yet. The shape
+    below is what Patreon documents -- {"data": {"type": "user", "id": "..."}} --
     and `data.id` is the only part we use, which is the least likely part to be
-    wrong. Confirm it on the first real sign-in and delete this paragraph.
+    wrong. Every real sign-in so far failed at the request itself (see below),
+    so nobody has seen a 200 body yet: confirm it on the first successful
+    sign-in and delete this paragraph.
 
-    THE ONE THING MOST LIKELY TO NEED CHANGING: the empty `fields[user]=`
-    parameter. It is a JSON:API sparse fieldset asking for the resource with NO
-    attributes at all -- the id is all we want, and anything else Patreon would
-    otherwise send by default (full name, vanity URL, avatar, social handles) is
-    personal data we have no use for and no wish to receive. If Patreon rejects
-    an empty fieldset, ask for one innocuous attribute instead; do not drop the
-    parameter, or the default attribute set comes back in full.
+    THE FIELDSET IS NOT OPTIONAL AND MUST NOT BE EMPTY. It was `fields[user]=`
+    (empty) from 2026-09-09 to 2026-09-10, and Patreon answered every sign-in
+    with a flat HTTP 400 -- the same parameter took the supporter sync down at
+    the same time, since patreon_api.py asks for the sideloaded user the same
+    way. A JSON:API sparse fieldset has to name at least one attribute, so it
+    names the most useless one Patreon offers: `hide_pledges`, a scope-free
+    boolean saying whether the user keeps their pledges private. Nothing reads
+    it. Dropping the parameter is the other wrong fix -- with no fieldset at all
+    Patreon sends its DEFAULT user attributes (full name, vanity URL, avatar,
+    social handles), which is personal data we have no use for and no wish to
+    receive.
 
     Either way the extractor reads `data.id` and drops the rest, the same
     discipline _discord_subject_id already applies to username and avatar.
@@ -290,7 +296,9 @@ def _patreon_subject_id(_config, token_data):
         response = requests.get(
             "https://www.patreon.com/api/oauth2/v2/identity",
             headers={"Authorization": f"Bearer {access_token}"},
-            params={"fields[user]": ""},
+            # One throwaway boolean. NOT "" (Patreon 400s) and NOT absent
+            # (Patreon sends the whole default profile). See the docstring.
+            params={"fields[user]": "hide_pledges"},
             timeout=HTTP_TIMEOUT_SECONDS,
         )
     except requests.RequestException as exc:
