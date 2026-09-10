@@ -721,9 +721,11 @@ deliberate exception to the paragraph above, on four grounds:
 - It is **opaque**: it identifies nobody without Patreon's own database, exactly
   like the subject ids already held for every account.
 - It arrives as a **relationship** (`include=user` → `relationships.user.data.id`)
-  with `fields[user]` sent **empty**, so the sideloaded user resource carries no
-  attributes at all. `MEMBER_FIELDS` — the privacy boundary — did not change to
-  get it, and a test asserts that.
+  whose sideloaded resource is held empty by `fields[user]`. That fieldset names
+  one throwaway boolean (`hide_pledges`) rather than nothing: an **empty**
+  `fields[user]=` is an HTTP 400 from Patreon, and an absent one brings back the
+  full default profile. `MEMBER_FIELDS` — the privacy boundary — did not change
+  to get this id, and a test asserts that.
 - The alternative was matching patrons to accounts **by email**, which would mean
   collecting an email from every site user. This id exists precisely to avoid that.
 - It is **never serialized**, the same treatment as `email`.
