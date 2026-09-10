@@ -13,6 +13,8 @@ class UmaSerializer(FirstJpDateMixin, serializers.ModelSerializer):
             "name",
             "image",
             "admin_comments",
+            # Public and rendered: the Timeline tile's hover overlay.
+            "purpose",
             "first_jp_date",
             # The intrinsic selector gates. Sent on every uma because the
             # client filters both pickers and the projection's selector

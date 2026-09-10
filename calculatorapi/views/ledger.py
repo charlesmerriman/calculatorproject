@@ -27,6 +27,10 @@ class IncomeLedgerRowSerializer(serializers.Serializer):
     name = serializers.CharField()
     is_predicted = serializers.BooleanField()
     throughout_end = serializers.DateTimeField(allow_null=True)
+    # cm_number / loh_number on race rows, null on event rows. Lets the client
+    # recognise the event that pays at a capped rank (League of Heroes #1 only
+    # ran to Platinum 1); see RACE_RANK_CAPS in frontend/src/utils/incomeLedger.ts.
+    event_number = serializers.IntegerField(allow_null=True)
 
     carats = serializers.IntegerField()
     carats_throughout = serializers.IntegerField()

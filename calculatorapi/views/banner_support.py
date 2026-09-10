@@ -15,6 +15,8 @@ class BannerSupportSerializer(serializers.ModelSerializer):
             "banner_timeline",
             "name",
             "free_pulls",
+            # Stars this banner's option in the planner's dropdown.
+            "is_recommended",
             "admin_comments",
             "support_cards",
         )

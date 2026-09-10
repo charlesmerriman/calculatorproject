@@ -5,6 +5,27 @@ class Uma(models.Model):
     image = models.ImageField(upload_to="umas/", blank=True, null=True)
     admin_comments = models.TextField(blank=True, null=True, help_text="Notes for editors.")
 
+    # PUBLIC, and rendered -- unlike admin_comments above, which nothing on the
+    # site displays. Shown as an overlay when a player hovers or focuses the uma's
+    # art on the Timeline. It describes the uma itself ("Great pace parent"), so it
+    # reads the same on every banner; advice about one particular banner belongs
+    # on the UmasOnUmaBanner.recommendation junction instead.
+    #
+    # Capped at 100 because the overlay has to fit the narrowest tile the Timeline
+    # draws. CharField rather than TextField so the admin form and the column both
+    # enforce the cap; default "" rather than null so "no purpose" has exactly one
+    # representation.
+    purpose = models.CharField(
+        max_length=100,
+        blank=True,
+        default="",
+        help_text=(
+            "Shown publicly when a player hovers this uma's art on the Timeline, "
+            "e.g. \"Great pace parent.\" Leave blank to show nothing. Notes for "
+            "other editors go in Admin comments instead."
+        ),
+    )
+
     # Two INTRINSIC selector gates, stored because neither is derivable from
     # banner data: a time-limited unit and a non-★3 unit both appear on ordinary
     # banners and look exactly like a selectable unit from here. They are

@@ -228,7 +228,7 @@ def make_champions_meeting(name='Test CM', cm_number=1, jp_start_date=None,
 
 def make_league_of_heroes(name='Test LoH', jp_start_date=None, jp_end_date=None,
                           global_start_date=None, global_end_date=None,
-                          schedule_offset_days=0):
+                          schedule_offset_days=0, loh_number=0):
     """Create a LeagueOfHeroes event. Defaults to a CONFIRMED global event
     (now → now+7d); pass jp_*/global_* explicitly for predicted rows."""
     now = timezone.now()
@@ -237,7 +237,7 @@ def make_league_of_heroes(name='Test LoH', jp_start_date=None, jp_end_date=None,
         global_start_date = now
         global_end_date = now + datetime.timedelta(days=7)
     return LeagueOfHeroes.objects.create(
-        name=name,
+        name=name, loh_number=loh_number,
         jp_start_date=jp_start_date, jp_end_date=jp_end_date,
         global_start_date=global_start_date, global_end_date=global_end_date,
         schedule_offset_days=schedule_offset_days,
@@ -1166,6 +1166,29 @@ class LedgerTests(TestCase):
             self.assertEqual(row['carats'], 0)
             self.assertEqual(row['uma_tickets'], 0)
 
+    def test_race_rows_carry_their_event_number(self):
+        # The client caps the rank a few specific events pay at (League of
+        # Heroes #1 only ran to Platinum 1), so a race row has to say WHICH
+        # event it is. Game events have no such number; they carry null, so the
+        # field is still present on every row.
+        timeline = make_timeline(
+            name='Confirmed',
+            global_start_date=_dt(2025, 5, 1), global_end_date=_dt(2025, 5, 8),
+        )
+        make_game_event(banner_timeline=timeline, carat_amount=100)
+        make_champions_meeting(
+            name='CM', cm_number=12, global_start_date=_dt(2025, 6, 1),
+            global_end_date=_dt(2025, 6, 8),
+        )
+        make_league_of_heroes(
+            name='LoH', loh_number=3, global_start_date=_dt(2025, 7, 1),
+            global_end_date=_dt(2025, 7, 8),
+        )
+        numbers = {row['kind']: row['event_number'] for row in self._ledger()}
+        self.assertEqual(numbers, {
+            'event': None, 'champions_meeting': 12, 'league_of_heroes': 3,
+        })
+
     def test_cm_lead_time_keeps_the_time_of_day(self):
         # Confirmed global windows run 22:00 -> 21:59:59, not midnight to
         # midnight. The lead time is a timedelta off the resolved end, so it
@@ -1244,6 +1267,16 @@ class LedgerSerializerTests(TestCase):
         self.assertEqual(row['carats'], 1200)
         self.assertEqual(row['kind'], 'event')
 
+
+    def test_endpoint_serializes_race_event_number(self):
+        make_league_of_heroes(name='LoH', loh_number=1,
+                              global_start_date=_dt(2025, 7, 1),
+                              global_end_date=_dt(2025, 7, 8))
+        res = APIClient().get('/calculator-data')
+        self.assertEqual(res.status_code, 200)
+        row, = res.data['income_ledger']
+        self.assertEqual((row['kind'], row['event_number']),
+                         ('league_of_heroes', 1))
 
 _EXPECTED_GET_KEYS = {
     'club_rank_data', 'team_trials_rank_data', 'champions_meeting_rank_data',
@@ -4791,6 +4824,118 @@ class BannerCategoryTests(TestCase):
         row = next(t for t in res.json()['banner_timeline_data']
                    if t['id'] == timeline.pk)
         self.assertEqual(row['banner_category'], 'golden_week_revival')
+
+
+class BannerRecommendationTests(TestCase):
+    """The editorial "Recommended" flag on uma and support banners."""
+
+    def setUp(self):
+        # TestCase rolls rows back without firing post_delete, so a payload an
+        # earlier test cached can outlive its rows. Start every test cold.
+        cache.clear()
+        start = timezone.make_aware(datetime.datetime(2025, 4, 30))
+        self.timeline = BannerTimeline.objects.create(
+            name='Window', jp_start_date=start,
+            jp_end_date=start + datetime.timedelta(days=10))
+        self.uma_banner = BannerUma.objects.create(
+            banner_timeline=self.timeline, name='Uma banner')
+        self.support_banner = BannerSupport.objects.create(
+            banner_timeline=self.timeline, name='Support banner')
+
+    def _payload(self):
+        res = self.client.get('/calculator-data')
+        self.assertEqual(res.status_code, 200)
+        return res.json()
+
+    def test_defaults_to_not_recommended(self):
+        self.assertFalse(self.uma_banner.is_recommended)
+        self.assertFalse(self.support_banner.is_recommended)
+
+    def test_reaches_the_planner_dropdown_payloads(self):
+        self.uma_banner.is_recommended = True
+        self.uma_banner.save()
+
+        data = self._payload()
+
+        uma = next(b for b in data['banner_uma_data'] if b['id'] == self.uma_banner.pk)
+        support = next(b for b in data['banner_support_data']
+                       if b['id'] == self.support_banner.pk)
+        self.assertIs(uma['is_recommended'], True)
+        # Per banner: recommending the uma side leaves its neighbour alone.
+        self.assertIs(support['is_recommended'], False)
+
+    def test_reaches_the_timeline_payload(self):
+        self.support_banner.is_recommended = True
+        self.support_banner.save()
+
+        row = next(t for t in self._payload()['banner_timeline_data']
+                   if t['id'] == self.timeline.pk)
+
+        self.assertIs(row['banner_supports'][0]['is_recommended'], True)
+        self.assertIs(row['banner_umas'][0]['is_recommended'], False)
+
+    def test_a_save_is_not_hidden_by_the_public_payload_cache(self):
+        """Ticking the box in the admin is a plain save(); the cached payload must drop."""
+        self._payload()  # warm the cache while the flag is still off
+        self.uma_banner.is_recommended = True
+        self.uma_banner.save()
+
+        uma = next(b for b in self._payload()['banner_uma_data']
+                   if b['id'] == self.uma_banner.pk)
+        self.assertIs(uma['is_recommended'], True)
+
+
+class CardPurposeTests(TestCase):
+    """The public one-line purpose on umas and support cards."""
+
+    def setUp(self):
+        cache.clear()  # see BannerRecommendationTests.setUp
+        start = timezone.make_aware(datetime.datetime(2025, 4, 30))
+        self.timeline = BannerTimeline.objects.create(
+            name='Window', jp_start_date=start,
+            jp_end_date=start + datetime.timedelta(days=10))
+        self.uma = Uma.objects.create(name='Gold Ship', purpose='Great pace parent.')
+        self.card = SupportCard.objects.create(
+            name='Kitasan Black', purpose='Great for front runners.')
+        uma_banner = BannerUma.objects.create(banner_timeline=self.timeline, name='Gold Ship')
+        UmasOnUmaBanner.objects.create(banner_uma=uma_banner, uma=self.uma)
+        support_banner = BannerSupport.objects.create(
+            banner_timeline=self.timeline, name='Kitasan Black')
+        SupportsOnSupportBanner.objects.create(
+            banner_support=support_banner, support_card=self.card)
+
+    def test_defaults_to_an_empty_string_not_null(self):
+        """One representation of "no purpose", so the client checks one thing."""
+        self.assertEqual(Uma.objects.create(name='Blank').purpose, '')
+        self.assertEqual(SupportCard.objects.create(name='Blank').purpose, '')
+
+    def test_is_capped_at_100_characters(self):
+        self.uma.purpose = 'x' * 100
+        self.uma.full_clean()  # the cap itself is allowed
+        for obj in (self.uma, self.card):
+            obj.purpose = 'x' * 101
+            with self.assertRaises(ValidationError):
+                obj.full_clean()
+
+    def test_is_served_on_the_timeline_tiles(self):
+        data = self.client.get('/calculator-data').json()
+
+        row = next(t for t in data['banner_timeline_data'] if t['id'] == self.timeline.pk)
+        self.assertEqual(row['banner_umas'][0]['umas'][0]['purpose'], 'Great pace parent.')
+        self.assertEqual(row['banner_supports'][0]['support_cards'][0]['purpose'],
+                         'Great for front runners.')
+
+    def test_is_served_on_the_planner_payloads_too(self):
+        """One serializer per card, so the calculator's copies carry it as well."""
+        data = self.client.get('/calculator-data').json()
+
+        uma_banner = next(b for b in data['banner_uma_data']
+                          if b['banner_timeline']['id'] == self.timeline.pk)
+        support_banner = next(b for b in data['banner_support_data']
+                              if b['banner_timeline']['id'] == self.timeline.pk)
+        self.assertEqual(uma_banner['umas'][0]['purpose'], 'Great pace parent.')
+        self.assertEqual(support_banner['support_cards'][0]['purpose'],
+                         'Great for front runners.')
 
 
 class SupportVariantResolutionTests(TestCase):

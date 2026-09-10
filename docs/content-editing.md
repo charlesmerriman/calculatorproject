@@ -102,6 +102,33 @@ The Uma banner and Support card banner lists have a **Planned by** column —
 how many players currently have that banner in their pull plan. Click the
 column header to sort by it.
 
+### Marking a banner as Recommended
+
+Tick **Recommended** on an uma or support card banner when it is exceptionally
+worth pulling on. You can tick it on the banner's own page, straight from the
+**Uma banners** / **Support card banners** lists (it's a column there), or on
+the banner rows of a timeline's page.
+
+Players see it two ways: the banner's **Featured Umamusume** / **Featured
+Support Cards** panel on the Timeline turns gold and shimmers, and the banner
+gets a gold star in the calculator's banner dropdown. The uma banner and the
+support banner in the same window are separate, so ticking one leaves the other
+alone. Use it sparingly — a star on everything is a star on nothing.
+
+### A card's purpose
+
+Every uma and support card has a **Purpose** box, under **Shown to players**.
+Write one short line on what the card is for, like "Great pace parent" or
+"Great for front runners". It is **public**: players see it when they hover
+over (or tap) the card's picture on the Timeline. Leave it blank and nothing
+shows.
+
+It's capped at 100 characters so it always fits on the smallest card. It
+describes the card itself, so it appears on every banner the card is featured
+on; advice about one particular banner still belongs in that banner's
+recommendation text. On the **Umas** / **Support cards** lists, the **By
+purpose → Empty** filter shows every card that doesn't have one yet.
+
 ## Events
 
 **Game events** hold an event's name, dates, and image; its **reward amounts**

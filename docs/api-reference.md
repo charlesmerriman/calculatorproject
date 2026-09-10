@@ -670,11 +670,22 @@ editor narrowing a cutoff cannot 400 a plan its owner never touched.
   "id": 1,
   "name": "string",
   "free_pulls": 0,
+  "is_recommended": false,
   "admin_comments": "string | null",
   "banner_timeline": { "id": 1, "name": "string", "start_date": "ISO8601", "end_date": "ISO8601", "is_predicted": false, "jp_start_date": "ISO8601 | null", "jp_end_date": "ISO8601 | null", "global_start_date": "ISO8601 | null", "global_end_date": "ISO8601 | null", "image": "url | null" },
-  "umas": [ { "id": 1, "name": "string", "image": "url | null", "admin_comments": "string | null", "first_jp_date": "ISO8601 | null", "is_time_limited": false, "is_three_star": true } ]
+  "umas": [ { "id": 1, "name": "string", "image": "url | null", "admin_comments": "string | null", "purpose": "string", "first_jp_date": "ISO8601 | null", "is_time_limited": false, "is_three_star": true } ]
 }
 ```
+
+`is_recommended` is the editorial "Recommended" flag, set **per banner** — the uma and
+support banners sharing a window are flagged independently, and `BannerStepUp` has no such
+field. Presentation only: it stars the planner dropdown's option and gives the Timeline
+panel its SSR treatment; no projection reads it.
+
+`purpose` on a nested uma or support card is its **public** one-liner (at most 100
+characters), rendered as the overlay on its Timeline tile. Never `null` — `""` means none.
+Unlike the per-banner `recommendation` on `banner_timeline_data`'s cards, it describes the
+card itself, so it is identical on every banner the card appears on.
 
 `first_jp_date` on a nested uma or support card is the earliest JP banner it appeared
 on, derived server-side (never stored) and the key the **temporal** half of selector
@@ -694,9 +705,10 @@ including one with a `null` (unrestricted) cutoff. A client must check both halv
   "id": 1,
   "name": "string",
   "free_pulls": 0,
+  "is_recommended": false,
   "admin_comments": "string | null",
   "banner_timeline": { ... },
-  "support_cards": [ { "id": 1, "name": "string", "image": "url | null", "admin_comments": "string | null", "first_jp_date": "ISO8601 | null" } ]
+  "support_cards": [ { "id": 1, "name": "string", "image": "url | null", "admin_comments": "string | null", "purpose": "string", "first_jp_date": "ISO8601 | null" } ]
 }
 ```
 
@@ -784,6 +796,7 @@ The flat, date-sorted timeline the projection queries for cumulative income tota
   "name": "Narita Brian",
   "is_predicted": false,
   "throughout_end": "ISO8601 | null",
+  "event_number": null,
   "carats": 80,
   "carats_throughout": 1050,
   "uma_tickets": 0,
@@ -795,10 +808,11 @@ The flat, date-sorted timeline the projection queries for cumulative income tota
 }
 ```
 
-Four things to know:
+Five things to know:
 
 - **`date` is the instant the reward lands** — an event's resolved start; for a race event, its resolved **end less that kind's `RACE_REWARD_LEAD_TIME`**. A Champions Meeting settles its placements **24 hours before** its window closes, so its row sits a day ahead of the end date the timeline shows; League of Heroes has no lead time and is dated at its end. The offset is a `timedelta`, so it preserves time of day — a CM closing 21:59:59 pays at 21:59:59 the day before.
 - **Race rows carry no amounts.** `champions_meeting` / `league_of_heroes` rows are indicators; what a placement pays depends on the user's rank row, which only the client knows. Every amount field is still present (as `0`), so the client never guards on shape.
+- **`event_number` says which race event a row is**: `cm_number` / `loh_number` on race rows, `null` on `event` rows. It exists because a few specific events pay *below* the user's rank. League of Heroes #1 only ran to Platinum 1, so the client caps it there (`RACE_RANK_CAPS` in `frontend/src/utils/incomeLedger.ts`). The number rather than `source_id`, because it is the identity the game and the sheet use, and it is stable across databases.
 - **`throughout_end` is the linked banner's end, with `GAME_EVENT_END_DATE_BUFFER` already removed.** The `carats_throughout` pool decays over the banner, not over the event, whose own `end_date` trails it by 4 days. Emitting it pre-stripped is what stops the client keeping its own copy of that constant.
 - **No rows are filtered by "today".** The ledger is a set of dated facts, past ones included; the projection applies `today < date <= end` client-side so the whole calculation shares one anchor. Rows with no *resolvable* date are dropped, since a ledger row's only purpose is its position on the calendar.
 
@@ -910,7 +924,7 @@ The `banner_timeline_data` key uses an expanded serializer that nests uma and su
   "schedule_offset_days": 0,
   "applied_offset_days": 0,
   "image": "url | null",
-  "banner_umas": [ { "id": 1, "name": "string", "free_pulls": 0, "admin_comments": "string | null", "umas": [ { ...uma + "recommendation": "string | null" } ] } ],
+  "banner_umas": [ { "id": 1, "name": "string", "free_pulls": 0, "is_recommended": false, "admin_comments": "string | null", "umas": [ { ...uma + "recommendation": "string | null" } ] } ],
   "banner_supports": [ { ... } ],
   "anniversary_event": { "id": 8, "name": "3rd Anniversary", "event_type": "anniversary", "accent_label": "", "image": "url | null", "part_number": 2 },
   "banner_step_ups": [ { "id": 1, "name": "string", "card_type": "uma | support", "banner_count": 2 } ]
