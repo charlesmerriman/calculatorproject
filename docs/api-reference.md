@@ -670,11 +670,22 @@ editor narrowing a cutoff cannot 400 a plan its owner never touched.
   "id": 1,
   "name": "string",
   "free_pulls": 0,
+  "is_recommended": false,
   "admin_comments": "string | null",
   "banner_timeline": { "id": 1, "name": "string", "start_date": "ISO8601", "end_date": "ISO8601", "is_predicted": false, "jp_start_date": "ISO8601 | null", "jp_end_date": "ISO8601 | null", "global_start_date": "ISO8601 | null", "global_end_date": "ISO8601 | null", "image": "url | null" },
-  "umas": [ { "id": 1, "name": "string", "image": "url | null", "admin_comments": "string | null", "first_jp_date": "ISO8601 | null", "is_time_limited": false, "is_three_star": true } ]
+  "umas": [ { "id": 1, "name": "string", "image": "url | null", "admin_comments": "string | null", "purpose": "string", "first_jp_date": "ISO8601 | null", "is_time_limited": false, "is_three_star": true } ]
 }
 ```
+
+`is_recommended` is the editorial "Recommended" flag, set **per banner** — the uma and
+support banners sharing a window are flagged independently, and `BannerStepUp` has no such
+field. Presentation only: it stars the planner dropdown's option and gives the Timeline
+panel its SSR treatment; no projection reads it.
+
+`purpose` on a nested uma or support card is its **public** one-liner (at most 100
+characters), rendered as the overlay on its Timeline tile. Never `null` — `""` means none.
+Unlike the per-banner `recommendation` on `banner_timeline_data`'s cards, it describes the
+card itself, so it is identical on every banner the card appears on.
 
 `first_jp_date` on a nested uma or support card is the earliest JP banner it appeared
 on, derived server-side (never stored) and the key the **temporal** half of selector
@@ -694,9 +705,10 @@ including one with a `null` (unrestricted) cutoff. A client must check both halv
   "id": 1,
   "name": "string",
   "free_pulls": 0,
+  "is_recommended": false,
   "admin_comments": "string | null",
   "banner_timeline": { ... },
-  "support_cards": [ { "id": 1, "name": "string", "image": "url | null", "admin_comments": "string | null", "first_jp_date": "ISO8601 | null" } ]
+  "support_cards": [ { "id": 1, "name": "string", "image": "url | null", "admin_comments": "string | null", "purpose": "string", "first_jp_date": "ISO8601 | null" } ]
 }
 ```
 
@@ -912,7 +924,7 @@ The `banner_timeline_data` key uses an expanded serializer that nests uma and su
   "schedule_offset_days": 0,
   "applied_offset_days": 0,
   "image": "url | null",
-  "banner_umas": [ { "id": 1, "name": "string", "free_pulls": 0, "admin_comments": "string | null", "umas": [ { ...uma + "recommendation": "string | null" } ] } ],
+  "banner_umas": [ { "id": 1, "name": "string", "free_pulls": 0, "is_recommended": false, "admin_comments": "string | null", "umas": [ { ...uma + "recommendation": "string | null" } ] } ],
   "banner_supports": [ { ... } ],
   "anniversary_event": { "id": 8, "name": "3rd Anniversary", "event_type": "anniversary", "accent_label": "", "image": "url | null", "part_number": 2 },
   "banner_step_ups": [ { "id": 1, "name": "string", "card_type": "uma | support", "banner_count": 2 } ]

@@ -13,5 +13,7 @@ class SupportCardSerializer(FirstJpDateMixin, serializers.ModelSerializer):
             "name",
             "image",
             "admin_comments",
+            # Public and rendered: the Timeline tile's hover overlay.
+            "purpose",
             "first_jp_date",
         )

@@ -4826,6 +4826,118 @@ class BannerCategoryTests(TestCase):
         self.assertEqual(row['banner_category'], 'golden_week_revival')
 
 
+class BannerRecommendationTests(TestCase):
+    """The editorial "Recommended" flag on uma and support banners."""
+
+    def setUp(self):
+        # TestCase rolls rows back without firing post_delete, so a payload an
+        # earlier test cached can outlive its rows. Start every test cold.
+        cache.clear()
+        start = timezone.make_aware(datetime.datetime(2025, 4, 30))
+        self.timeline = BannerTimeline.objects.create(
+            name='Window', jp_start_date=start,
+            jp_end_date=start + datetime.timedelta(days=10))
+        self.uma_banner = BannerUma.objects.create(
+            banner_timeline=self.timeline, name='Uma banner')
+        self.support_banner = BannerSupport.objects.create(
+            banner_timeline=self.timeline, name='Support banner')
+
+    def _payload(self):
+        res = self.client.get('/calculator-data')
+        self.assertEqual(res.status_code, 200)
+        return res.json()
+
+    def test_defaults_to_not_recommended(self):
+        self.assertFalse(self.uma_banner.is_recommended)
+        self.assertFalse(self.support_banner.is_recommended)
+
+    def test_reaches_the_planner_dropdown_payloads(self):
+        self.uma_banner.is_recommended = True
+        self.uma_banner.save()
+
+        data = self._payload()
+
+        uma = next(b for b in data['banner_uma_data'] if b['id'] == self.uma_banner.pk)
+        support = next(b for b in data['banner_support_data']
+                       if b['id'] == self.support_banner.pk)
+        self.assertIs(uma['is_recommended'], True)
+        # Per banner: recommending the uma side leaves its neighbour alone.
+        self.assertIs(support['is_recommended'], False)
+
+    def test_reaches_the_timeline_payload(self):
+        self.support_banner.is_recommended = True
+        self.support_banner.save()
+
+        row = next(t for t in self._payload()['banner_timeline_data']
+                   if t['id'] == self.timeline.pk)
+
+        self.assertIs(row['banner_supports'][0]['is_recommended'], True)
+        self.assertIs(row['banner_umas'][0]['is_recommended'], False)
+
+    def test_a_save_is_not_hidden_by_the_public_payload_cache(self):
+        """Ticking the box in the admin is a plain save(); the cached payload must drop."""
+        self._payload()  # warm the cache while the flag is still off
+        self.uma_banner.is_recommended = True
+        self.uma_banner.save()
+
+        uma = next(b for b in self._payload()['banner_uma_data']
+                   if b['id'] == self.uma_banner.pk)
+        self.assertIs(uma['is_recommended'], True)
+
+
+class CardPurposeTests(TestCase):
+    """The public one-line purpose on umas and support cards."""
+
+    def setUp(self):
+        cache.clear()  # see BannerRecommendationTests.setUp
+        start = timezone.make_aware(datetime.datetime(2025, 4, 30))
+        self.timeline = BannerTimeline.objects.create(
+            name='Window', jp_start_date=start,
+            jp_end_date=start + datetime.timedelta(days=10))
+        self.uma = Uma.objects.create(name='Gold Ship', purpose='Great pace parent.')
+        self.card = SupportCard.objects.create(
+            name='Kitasan Black', purpose='Great for front runners.')
+        uma_banner = BannerUma.objects.create(banner_timeline=self.timeline, name='Gold Ship')
+        UmasOnUmaBanner.objects.create(banner_uma=uma_banner, uma=self.uma)
+        support_banner = BannerSupport.objects.create(
+            banner_timeline=self.timeline, name='Kitasan Black')
+        SupportsOnSupportBanner.objects.create(
+            banner_support=support_banner, support_card=self.card)
+
+    def test_defaults_to_an_empty_string_not_null(self):
+        """One representation of "no purpose", so the client checks one thing."""
+        self.assertEqual(Uma.objects.create(name='Blank').purpose, '')
+        self.assertEqual(SupportCard.objects.create(name='Blank').purpose, '')
+
+    def test_is_capped_at_100_characters(self):
+        self.uma.purpose = 'x' * 100
+        self.uma.full_clean()  # the cap itself is allowed
+        for obj in (self.uma, self.card):
+            obj.purpose = 'x' * 101
+            with self.assertRaises(ValidationError):
+                obj.full_clean()
+
+    def test_is_served_on_the_timeline_tiles(self):
+        data = self.client.get('/calculator-data').json()
+
+        row = next(t for t in data['banner_timeline_data'] if t['id'] == self.timeline.pk)
+        self.assertEqual(row['banner_umas'][0]['umas'][0]['purpose'], 'Great pace parent.')
+        self.assertEqual(row['banner_supports'][0]['support_cards'][0]['purpose'],
+                         'Great for front runners.')
+
+    def test_is_served_on_the_planner_payloads_too(self):
+        """One serializer per card, so the calculator's copies carry it as well."""
+        data = self.client.get('/calculator-data').json()
+
+        uma_banner = next(b for b in data['banner_uma_data']
+                          if b['banner_timeline']['id'] == self.timeline.pk)
+        support_banner = next(b for b in data['banner_support_data']
+                              if b['banner_timeline']['id'] == self.timeline.pk)
+        self.assertEqual(uma_banner['umas'][0]['purpose'], 'Great pace parent.')
+        self.assertEqual(support_banner['support_cards'][0]['purpose'],
+                         'Great for front runners.')
+
+
 class SupportVariantResolutionTests(TestCase):
     """
     Which of several same-named SupportCard rows a banner actually features.
