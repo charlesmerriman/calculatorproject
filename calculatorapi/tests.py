@@ -228,7 +228,7 @@ def make_champions_meeting(name='Test CM', cm_number=1, jp_start_date=None,
 
 def make_league_of_heroes(name='Test LoH', jp_start_date=None, jp_end_date=None,
                           global_start_date=None, global_end_date=None,
-                          schedule_offset_days=0):
+                          schedule_offset_days=0, loh_number=0):
     """Create a LeagueOfHeroes event. Defaults to a CONFIRMED global event
     (now → now+7d); pass jp_*/global_* explicitly for predicted rows."""
     now = timezone.now()
@@ -237,7 +237,7 @@ def make_league_of_heroes(name='Test LoH', jp_start_date=None, jp_end_date=None,
         global_start_date = now
         global_end_date = now + datetime.timedelta(days=7)
     return LeagueOfHeroes.objects.create(
-        name=name,
+        name=name, loh_number=loh_number,
         jp_start_date=jp_start_date, jp_end_date=jp_end_date,
         global_start_date=global_start_date, global_end_date=global_end_date,
         schedule_offset_days=schedule_offset_days,
@@ -1166,6 +1166,29 @@ class LedgerTests(TestCase):
             self.assertEqual(row['carats'], 0)
             self.assertEqual(row['uma_tickets'], 0)
 
+    def test_race_rows_carry_their_event_number(self):
+        # The client caps the rank a few specific events pay at (League of
+        # Heroes #1 only ran to Platinum 1), so a race row has to say WHICH
+        # event it is. Game events have no such number; they carry null, so the
+        # field is still present on every row.
+        timeline = make_timeline(
+            name='Confirmed',
+            global_start_date=_dt(2025, 5, 1), global_end_date=_dt(2025, 5, 8),
+        )
+        make_game_event(banner_timeline=timeline, carat_amount=100)
+        make_champions_meeting(
+            name='CM', cm_number=12, global_start_date=_dt(2025, 6, 1),
+            global_end_date=_dt(2025, 6, 8),
+        )
+        make_league_of_heroes(
+            name='LoH', loh_number=3, global_start_date=_dt(2025, 7, 1),
+            global_end_date=_dt(2025, 7, 8),
+        )
+        numbers = {row['kind']: row['event_number'] for row in self._ledger()}
+        self.assertEqual(numbers, {
+            'event': None, 'champions_meeting': 12, 'league_of_heroes': 3,
+        })
+
     def test_cm_lead_time_keeps_the_time_of_day(self):
         # Confirmed global windows run 22:00 -> 21:59:59, not midnight to
         # midnight. The lead time is a timedelta off the resolved end, so it
@@ -1244,6 +1267,16 @@ class LedgerSerializerTests(TestCase):
         self.assertEqual(row['carats'], 1200)
         self.assertEqual(row['kind'], 'event')
 
+
+    def test_endpoint_serializes_race_event_number(self):
+        make_league_of_heroes(name='LoH', loh_number=1,
+                              global_start_date=_dt(2025, 7, 1),
+                              global_end_date=_dt(2025, 7, 8))
+        res = APIClient().get('/calculator-data')
+        self.assertEqual(res.status_code, 200)
+        row, = res.data['income_ledger']
+        self.assertEqual((row['kind'], row['event_number']),
+                         ('league_of_heroes', 1))
 
 _EXPECTED_GET_KEYS = {
     'club_rank_data', 'team_trials_rank_data', 'champions_meeting_rank_data',

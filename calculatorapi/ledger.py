@@ -64,6 +64,16 @@ RACE_REWARD_LEAD_TIME = {
     KIND_LEAGUE_OF_HEROES: timedelta(0),
 }
 
+# The model field holding each race kind's own number (CM #12, LoH #3), so a
+# row can say WHICH meeting it is. The client needs that to cap the rank a few
+# specific events pay at: League of Heroes #1 only ran to Platinum 1. Keyed by
+# kind for the same reason as the lead time above, since the two kinds differ
+# only in what the column is called.
+RACE_NUMBER_FIELD = {
+    KIND_CHAMPIONS_MEETING: "cm_number",
+    KIND_LEAGUE_OF_HEROES: "loh_number",
+}
+
 # Every amount field a ledger row can carry, so callers (and the serializer) have
 # one list to iterate rather than a hand-maintained copy each.
 AMOUNT_FIELDS = (
@@ -92,6 +102,7 @@ def _row(*, date, kind, source_id, name, is_predicted, **amounts):
         "name": name,
         "is_predicted": is_predicted,
         "throughout_end": None,
+        "event_number": None,
     }
     for field in AMOUNT_FIELDS:
         row[field] = 0
@@ -169,20 +180,23 @@ def _race_rows(events, emap, kind):
     keeping its own copy of the offset to subtract.
     """
     lead_time = RACE_REWARD_LEAD_TIME.get(kind, timedelta(0))
+    number_field = RACE_NUMBER_FIELD.get(kind)
     rows = []
     for event in events:
         entry = emap.get(event.id)
         if entry is None or entry["end_date"] is None:
             continue
-        rows.append(
-            _row(
-                date=entry["end_date"] - lead_time,
-                kind=kind,
-                source_id=event.id,
-                name=event.name,
-                is_predicted=entry["is_predicted"],
-            )
+        row = _row(
+            date=entry["end_date"] - lead_time,
+            kind=kind,
+            source_id=event.id,
+            name=event.name,
+            is_predicted=entry["is_predicted"],
         )
+        # The number, not the pk: it is the identity the game and the sheet use
+        # ("League of Heroes 1"), and it is the same in every database.
+        row["event_number"] = getattr(event, number_field) if number_field else None
+        rows.append(row)
     return rows
 
 
