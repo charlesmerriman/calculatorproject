@@ -6947,10 +6947,15 @@ class PatreonOAuthProviderTests(TestCase):
 
         self.assertEqual(result, "1234567")
 
-    def test_it_requests_no_user_attributes_at_all(self):
-        """An empty sparse fieldset. Without it Patreon returns its default
-        attribute set — full name, vanity URL, avatar, social handles — none of
-        which we want to receive, let alone store."""
+    def test_it_requests_one_throwaway_user_attribute(self):
+        """A minimal sparse fieldset, and both halves of it matter.
+
+        Absent, Patreon returns its default attribute set — full name, vanity
+        URL, avatar, social handles — none of which we want to receive, let
+        alone store. EMPTY, Patreon returns HTTP 400 and no one can sign in,
+        which is exactly what shipped on 2026-09-09. So it names one boolean
+        that tells us nothing about the user and that nothing here reads.
+        """
         payload = {"data": {"id": "1234567"}}
 
         with patch(
@@ -6958,7 +6963,11 @@ class PatreonOAuthProviderTests(TestCase):
         ) as mocked:
             oauth._patreon_subject_id({}, {"access_token": "at-1"})  # pylint: disable=protected-access
 
-        self.assertEqual(mocked.call_args.kwargs["params"], {"fields[user]": ""})
+        params = mocked.call_args.kwargs["params"]
+        self.assertEqual(params, {"fields[user]": "hide_pledges"})
+        # The point of the assertion above, spelled out so a future edit that
+        # "tidies" the value has to argue with it.
+        self.assertNotEqual(params["fields[user]"], "")
 
     def test_a_response_without_a_user_resource_is_refused(self):
         """Guessing at an unexpected shape is how a wrong id gets bound to an
@@ -7349,12 +7358,19 @@ class PatreonUserIdFetchTests(TestCase):
             ("full_name", "email", "patron_status", "pledge_relationship_start"),
         )
 
-    def test_the_user_resource_is_requested_with_no_attributes_at_all(self):
-        """`fields[user]=` empty is what stops Patreon sending the default set.
+    def test_the_user_resource_is_requested_with_one_useless_attribute(self):
+        """`fields[user]` is what stops Patreon sending the default set.
 
         Drop the parameter and the sideloaded user arrives complete with full
         name, vanity URL, avatar and social handles — none of which we want,
-        and all of which we would then be storing in a response we parse.
+        and all of which we would then be storing in a response we parse. Send
+        it EMPTY and Patreon rejects the whole request with HTTP 400, which is
+        how this sync spent 2026-09-09 returning nothing at all.
+
+        So it must name something, and what it names must stay worthless:
+        `hide_pledges` is a boolean about a display preference, needs no scope,
+        and is never read. Anything on this list that describes the PERSON
+        belongs in MEMBER_FIELDS' review conversation instead.
         """
         captured = {}
 
@@ -7365,7 +7381,8 @@ class PatreonUserIdFetchTests(TestCase):
         with patch("calculatorapi.patreon_api.requests.request", side_effect=fake_request):
             patreon_api.fetch_members(self.credentials)
 
-        self.assertEqual(captured["fields[user]"], "")
+        self.assertEqual(patreon_api.USER_FIELDS, ("hide_pledges",))
+        self.assertEqual(captured["fields[user]"], "hide_pledges")
         self.assertIn("user", captured["include"].split(","))
 
     def test_the_id_comes_from_the_relationship(self):

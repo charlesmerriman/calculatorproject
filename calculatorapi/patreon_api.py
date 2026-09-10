@@ -39,10 +39,12 @@ THE USER ID IS A RELATIONSHIP, NOT A FIELD
 Each row also carries `patreon_user_id`, which is what matches a patron to a
 site account. It is deliberately NOT obtained by adding anything to
 MEMBER_FIELDS: it is the linkage id of the member's `user` relationship, and
-`fields[user]` is sent EMPTY so the sideloaded user resource arrives with no
-attributes at all — no full name, no vanity URL, no avatar, no social handles.
-So the privacy boundary this module rests on is unchanged, and a test asserts
-MEMBER_FIELDS still holds exactly what it held before.
+`fields[user]` asks that sideloaded resource for a single throwaway boolean —
+no full name, no vanity URL, no avatar, no social handles. So the privacy
+boundary this module rests on is unchanged, and a test asserts MEMBER_FIELDS
+still holds exactly what it held before.
+
+That fieldset must not be empty and must not be absent; see USER_FIELDS.
 
 OUTPUT SHAPE
 ------------
@@ -81,10 +83,22 @@ PAGE_SIZE = 500
 # ── The privacy boundary. Read the module docstring before touching. ──────────
 # `email` is here deliberately and is the only contact field on the list.
 MEMBER_FIELDS = ("full_name", "email", "patron_status", "pledge_relationship_start")
-# Empty ON PURPOSE — a JSON:API sparse fieldset asking for the user resource
-# with NO attributes. We want the relationship's id and nothing else. Dropping
-# this parameter would bring back Patreon's DEFAULT user attribute set in full.
-USER_FIELDS = ()
+# ONE throwaway boolean, on purpose. This is a JSON:API sparse fieldset over the
+# sideloaded user resource, and its job is to keep that resource EMPTY of
+# anything we care about: we want the relationship's id and nothing else.
+#
+# It cannot be an empty list, though that is what it was until 2026-09-10.
+# Patreon rejects `fields[user]=` with a flat HTTP 400 — it took the members
+# endpoint and Patreon SIGN-IN down together for a day, because oauth.py asked
+# /identity the same way. A fieldset must name at least one attribute, so this
+# names the most useless one on the resource: whether the user hides which
+# creators they pledge to. It needs no scope, it is a boolean, it says nothing
+# about who they are, and nothing reads it.
+#
+# Do NOT "simplify" this by dropping the parameter. Without a fieldset Patreon
+# sends the DEFAULT user attribute set — full name, vanity URL, avatar, social
+# handles — which is exactly the personal data this module exists to not receive.
+USER_FIELDS = ("hide_pledges",)
 # `amount_cents` is the TIER's price, not a person's billing data, and it is read
 # transiently to tell a paid tier from a free one — see _row_from_member. It is
 # never stored: PatreonTier deliberately carries no money column.
@@ -339,7 +353,9 @@ def fetch_members(credentials=None):
             "include": "currently_entitled_tiers,user",
             "fields[member]": ",".join(MEMBER_FIELDS),
             "fields[tier]": ",".join(TIER_FIELDS),
-            # Empty, deliberately. See USER_FIELDS.
+            # One useless attribute, deliberately — an EMPTY value here is a
+            # 400 from Patreon, and an absent one brings back the default set.
+            # See USER_FIELDS.
             "fields[user]": ",".join(USER_FIELDS),
             "page[count]": PAGE_SIZE,
         }
