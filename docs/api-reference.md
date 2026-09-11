@@ -2,6 +2,11 @@
 
 All endpoints are relative to the API base URL (e.g. `http://localhost:8000` in development).
 
+A generated OpenAPI schema is served at `/schema`, with Swagger UI over it at `/docs`
+([live](https://umacaratcalculator.com/api/docs)). This file stays the fuller reference: the
+generator can't infer the bodies of the function-based views, which build their requests and
+responses by hand.
+
 Token authentication is required for all protected endpoints. Include the token in every request header:
 
 ```

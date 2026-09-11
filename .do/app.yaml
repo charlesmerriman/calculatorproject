@@ -135,6 +135,12 @@ services:
   - key: FRONTEND_URL
     scope: RUN_TIME
     value: https://umacaratcalculator.com
+  # The path the ingress below serves this API under. App Platform strips it
+  # before a request reaches Django, so the OpenAPI schema is told explicitly;
+  # without it Swagger UI's "Try it out" would call the static site instead.
+  - key: API_PUBLIC_PREFIX
+    scope: RUN_TIME
+    value: /api
   # OAUTH_EXTRA_REDIRECT_URIS is set in the DigitalOcean DASHBOARD, not here, and
   # is deliberately absent from this file. Current value:
   #
