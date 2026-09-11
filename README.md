@@ -6,7 +6,8 @@ visitors since the September 2026 launch, and dozens of Patreon supporters.
 [![CI](https://github.com/charlesmerriman/uma-carat-calculator-api/actions/workflows/ci.yml/badge.svg)](https://github.com/charlesmerriman/uma-carat-calculator-api/actions/workflows/ci.yml)
 
 The Django REST API behind a gacha resource planner for Uma Musume Pretty Derby. The React
-frontend is [uma-carat-calculator-web](https://github.com/charlesmerriman/uma-carat-calculator-web).
+frontend is [uma-carat-calculator-web](https://github.com/charlesmerriman/uma-carat-calculator-web),
+and browsable API docs are live at [umacaratcalculator.com/api/docs](https://umacaratcalculator.com/api/docs).
 
 It serves everything the planner needs to know about the game (banners and their dates, events
 and their rewards, rank income tables, campaigns) as one aggregated payload, stores each
@@ -36,6 +37,7 @@ One site, two repositories, both deployed by DigitalOcean App Platform on every 
 |---|---|
 | Django 6 | Web framework and ORM |
 | Django REST Framework | API views, serializers, token authentication |
+| drf-spectacular | The generated OpenAPI schema, and Swagger UI over it at `/api/docs` |
 | django-unfold | The admin theme behind the content CMS |
 | PostgreSQL (prod), SQLite (dev) | Selected by `DATABASE_URL` through `dj-database-url` |
 | django-storages + boto3 | Image uploads to DigitalOcean Spaces |
@@ -120,6 +122,7 @@ aggregates only, never per-user rows. The public changelog is authored in
 | `POST /visit`, `POST /feedback` | Anonymous visit beacon and feedback form, both throttled |
 | `POST /patreon/sync` | Supporter sync, authorised by a shared-secret header |
 | `GET /teamtrialranks`, `/clubranks`, `/championsmeetingranks`, `/leagueofheroesranks`, `/leagueofheroes`, `/events`, `/changelog`, `/supporters` | Read-only reference data |
+| `GET /schema`, `GET /docs` | The generated OpenAPI schema, and Swagger UI over it ([live](https://umacaratcalculator.com/api/docs)) |
 | `/admin/`, `/admin/analytics/`, `/admin/image-library/` | Staff only |
 
 Request and response shapes are in [docs/api-reference.md](docs/api-reference.md).
@@ -204,6 +207,7 @@ this file, which would overwrite every secret with an empty string.
 | `GOOGLE_OAUTH_*`, `DISCORD_OAUTH_*`, `PATREON_OAUTH_*` | The sign-in apps |
 | `PATREON_CLIENT_*`, `PATREON_SYNC_SECRET` | The creator app and the shared secret behind the supporters sync |
 | `DO_SPACES_*` | Media storage |
+| `API_PUBLIC_PREFIX` | The path the API is served under (`/api` in production), so the docs page's "Try it out" calls the API |
 
 ## Documentation
 
