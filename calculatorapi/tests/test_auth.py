@@ -9,7 +9,6 @@ from unittest.mock import patch
 from urllib.parse import parse_qs, urlencode, urlparse
 
 from django.core import signing
-from django.core.cache import cache
 from django.test import override_settings
 from django.urls import NoReverseMatch, reverse
 from rest_framework.authtoken.models import Token
@@ -504,10 +503,6 @@ class AccountLinkStartTests(CalculatorTestCase):
     """GET /account/link/<provider>/start."""
 
     def setUp(self):
-        # The start route is throttled, and DRF keeps its counter in the cache —
-        # which a TestCase rollback does not clear. Without this, the suite's own
-        # request volume eventually trips a 429 that looks like a code failure.
-        cache.clear()
         self.user = make_user('linkuser')
         self.client, _ = auth_client(self.user)
 
@@ -579,7 +574,6 @@ class AccountLinkCompleteTests(CalculatorTestCase):
     """
 
     def setUp(self):
-        cache.clear()  # see AccountLinkStartTests.setUp
         self.user = make_user('linkuser')
         self.client, _ = auth_client(self.user)
 

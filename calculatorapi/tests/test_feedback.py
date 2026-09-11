@@ -1,6 +1,5 @@
 """POST /feedback, the endpoint behind the public feedback form."""
 
-from django.core.cache import cache
 from django.urls import reverse
 from rest_framework.authtoken.models import Token
 
@@ -17,9 +16,6 @@ class FeedbackEndpointTests(CalculatorTestCase):
 
     def setUp(self):
         self.url = reverse('submit-feedback')
-        # DRF throttles through the shared cache; without this a neighbouring
-        # test's hits could throttle ours. Same reason as the visit beacon.
-        cache.clear()
 
     def test_guest_submission_is_stored(self):
         res = self.client.post(self.url, {

@@ -4,7 +4,6 @@ import datetime
 from io import StringIO
 from unittest.mock import patch
 
-from django.core.cache import cache
 from django.core.management import call_command
 from django.test import RequestFactory, override_settings
 from django.urls import reverse
@@ -537,9 +536,6 @@ class VisitBeaconEndpointTests(CalculatorTestCase):
 
     def setUp(self):
         self.url = reverse('site-visit')
-        # DRF throttles through the cache, which is shared across tests in a
-        # run; without this a neighbouring test's hits could throttle ours.
-        cache.clear()
 
     def test_anonymous_post_is_accepted_and_counted(self):
         res = self.client.post(self.url, HTTP_USER_AGENT='Mozilla/5.0')
