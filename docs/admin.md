@@ -258,4 +258,4 @@ DEBUG=True python manage.py runserver 8001 --noreload
 ```
 
 Django tests that render admin templates need an `@override_settings(STORAGES=...)` swap
-to plain `StaticFilesStorage` — see `AnalyticsDashboardViewTests` in `tests.py`.
+to plain `StaticFilesStorage` — see `PLAIN_TEST_STORAGES` in `calculatorapi/tests/base.py`.
