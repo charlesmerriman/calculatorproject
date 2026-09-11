@@ -6,7 +6,6 @@ from io import StringIO
 from unittest.mock import patch
 
 from django.contrib.auth.models import Group
-from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.test import override_settings
@@ -209,11 +208,6 @@ class SocialAccountAdminTests(CalculatorTestCase):
 class ImageLibraryTests(CalculatorTestCase):
     """The bucket-listing layer behind the admin's 'choose existing image' picker."""
 
-    def setUp(self):
-        # The listing cache is process-wide locmem and would otherwise leak
-        # between tests (and from the widget rendering in AdminSmokeTests).
-        cache.clear()
-
     def test_prefixes_are_derived_from_every_image_field(self):
         self.assertEqual(
             image_prefixes(),
@@ -303,7 +297,6 @@ class ImageLibraryEndpointTests(CalculatorTestCase):
         cls.superuser = CustomUser.objects.create_superuser(username='boss', password='x')
 
     def setUp(self):
-        cache.clear()
         self.url = reverse('admin-image-library')
 
     def test_anonymous_is_redirected_to_admin_login(self):
@@ -387,7 +380,6 @@ class SpacesImagePickerFormTests(CalculatorTestCase):
         cls.superuser = CustomUser.objects.create_superuser(username='boss', password='x')
 
     def setUp(self):
-        cache.clear()
         self.client.force_login(self.superuser)
         self.add_url = reverse('admin:calculatorapi_uma_add')
 

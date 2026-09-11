@@ -671,9 +671,8 @@ class PublicPayloadCacheTests(CalculatorTestCase):
     """
 
     def setUp(self):
-        # The cache outlives a test -- it is process memory, and TestCase's
-        # rollback does not touch it. Clear it so each case starts on a miss.
-        cache.clear()
+        # Every case starts on a miss: CalculatorTestCase empties the cache
+        # before each test.
         self.user = make_user()
         self.client, self.token = auth_client(self.user)
         self.timeline = make_timeline(name='Cached Banner')

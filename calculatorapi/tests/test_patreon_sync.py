@@ -10,7 +10,6 @@ import os
 from io import StringIO
 from unittest.mock import patch
 
-from django.core.cache import cache
 from django.core.management import call_command
 from django.test import override_settings
 from django.urls import reverse
@@ -463,9 +462,6 @@ class PatreonSyncEndpointTests(CalculatorTestCase):
 
     def setUp(self):
         self.url = reverse("patreon-sync")
-        # DRF throttles through the shared cache; without this a neighbouring
-        # test's hits could throttle ours. Same reason as the feedback endpoint.
-        cache.clear()
         credentials = PatreonCredentials.load()
         credentials.access_token = "access-1"
         credentials.refresh_token = "refresh-1"

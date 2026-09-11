@@ -4,7 +4,6 @@ import datetime
 from io import StringIO
 
 from django.core.exceptions import ValidationError
-from django.core.cache import cache
 from django.core.management import call_command
 from django.utils import timezone
 
@@ -159,9 +158,6 @@ class BannerRecommendationTests(CalculatorTestCase):
     """The editorial "Recommended" flag on uma and support banners."""
 
     def setUp(self):
-        # TestCase rolls rows back without firing post_delete, so a payload an
-        # earlier test cached can outlive its rows. Start every test cold.
-        cache.clear()
         start = timezone.make_aware(datetime.datetime(2025, 4, 30))
         self.timeline = BannerTimeline.objects.create(
             name='Window', jp_start_date=start,
@@ -218,7 +214,6 @@ class CardPurposeTests(CalculatorTestCase):
     """The public one-line purpose on umas and support cards."""
 
     def setUp(self):
-        cache.clear()  # see BannerRecommendationTests.setUp
         start = timezone.make_aware(datetime.datetime(2025, 4, 30))
         self.timeline = BannerTimeline.objects.create(
             name='Window', jp_start_date=start,

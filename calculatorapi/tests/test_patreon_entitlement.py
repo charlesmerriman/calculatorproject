@@ -12,7 +12,6 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import AnonymousUser
 from django.core import signing
-from django.core.cache import cache
 from django.core.management import call_command
 from django.test import override_settings
 from django.utils import timezone
@@ -216,7 +215,6 @@ class PatreonLinkEntitlementTests(CalculatorTestCase):
     """Linking Patreon to an account resolves entitlement there and then."""
 
     def setUp(self):
-        cache.clear()  # the link throttle is LocMem; TestCase rollback misses it
         self.client = APIClient()
         self.tier = PatreonTier.objects.create(name="Junior Class", order=10)
         self.user = CustomUser.objects.create(username="user_abc123")
