@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework import routers
 from calculatorapi.views import (
     TeamTrialsRankViewSet,
@@ -118,4 +119,10 @@ urlpatterns = [
         ),
         name="calculator-data",
     ),
+    # The OpenAPI schema, and Swagger UI over it. Both public. The docs page
+    # fetches the schema by a RELATIVE url on purpose: production serves this
+    # API under /api and strips the prefix, so the absolute /schema that
+    # reverse() would produce lands on the static site instead.
+    path("schema", SpectacularAPIView.as_view(), name="schema"),
+    path("docs", SpectacularSwaggerView.as_view(url="schema"), name="api-docs"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

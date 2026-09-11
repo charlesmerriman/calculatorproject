@@ -2,6 +2,11 @@
 
 All endpoints are relative to the API base URL (e.g. `http://localhost:8000` in development).
 
+A generated OpenAPI schema is served at `/schema`, with Swagger UI over it at `/docs`
+([live](https://umacaratcalculator.com/api/docs)). This file stays the fuller reference: the
+generator can't infer the bodies of the function-based views, which build their requests and
+responses by hand.
+
 Token authentication is required for all protected endpoints. Include the token in every request header:
 
 ```
@@ -16,7 +21,7 @@ Not part of the public API: `/admin/analytics/` is a staff-only aggregate analyt
 
 ## Authentication
 
-Ordinary accounts are created and authenticated **only** through Google or Discord (OAuth2 authorization code flow). There is no registration endpoint, and `POST /login` is restricted to staff. A social account stores nothing but the provider's opaque subject id and a generated `user_xxxxxx` handle — no email, name, or password. See `calculatorapi/oauth.py` and `calculatorapi/views/social_auth.py`.
+Ordinary accounts are created and authenticated **only** through Google, Discord or Patreon (OAuth2 authorization code flow). There is no registration endpoint, and `POST /login` is restricted to staff. A social account stores nothing but the provider's opaque subject id and a generated `user_xxxxxx` handle — no email, name, or password. See `calculatorapi/oauth.py` and `calculatorapi/views/social_auth.py`.
 
 ### `GET /auth/<provider>/start`
 

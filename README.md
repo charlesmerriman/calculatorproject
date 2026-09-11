@@ -1,136 +1,228 @@
-# Uma Musume Carat Calculator — Backend
+# Uma Carat Calculator (API)
 
-A REST API that powers a gacha resource planner for Uma Musume Pretty Derby. Users receive a personalized forecast of how many carats and tickets they will accumulate before each planned banner's start date, based on their in-game ranks and upcoming event schedules. All read endpoints are public — guests get the full reference payload with empty user data — while saving a plan (`PATCH /calculator-data`) requires a token-authenticated account.
+**Live at [umacaratcalculator.com](https://umacaratcalculator.com).** Tens of thousands of
+visitors since the September 2026 launch, and dozens of Patreon supporters.
 
-## Tech Stack
+[![CI](https://github.com/charlesmerriman/uma-carat-calculator-api/actions/workflows/ci.yml/badge.svg)](https://github.com/charlesmerriman/uma-carat-calculator-api/actions/workflows/ci.yml)
 
-| Tool | Purpose |
-|---|---|
-| Django 6 | Web framework and ORM |
-| Django REST Framework | API views, serializers, token authentication |
-| drf-spectacular | Auto-generated OpenAPI schema |
-| PostgreSQL (prod) / SQLite (dev) | Database, selected via `DATABASE_URL` env var using `dj-database-url` |
-| gunicorn | WSGI server for production |
-| whitenoise | Static file serving without a separate web server |
-| DigitalOcean App Platform | Hosting (configured in `.do/app.yaml`) |
+The Django REST API behind a gacha resource planner for Uma Musume Pretty Derby. The React
+frontend is [uma-carat-calculator-web](https://github.com/charlesmerriman/uma-carat-calculator-web),
+and browsable API docs are live at [umacaratcalculator.com/api/docs](https://umacaratcalculator.com/api/docs).
+
+It serves everything the planner needs to know about the game (banners and their dates, events
+and their rewards, rank income tables, campaigns) as one aggregated payload, stores each
+signed-in player's plan, and handles OAuth sign-in. Its admin is the site's CMS: every banner,
+event and reward on the site is maintained there by hand.
 
 ## Architecture
 
-### Django app structure
+One site, two repositories, both deployed by DigitalOcean App Platform on every push to
+`master`:
 
-There is one app: `calculatorapi`. Models and views each live in a subdirectory with one file per entity, keeping diffs small and files focused.
+- **Web** ([uma-carat-calculator-web](https://github.com/charlesmerriman/uma-carat-calculator-web)): a React 19 + TypeScript single-page app, built by Vite and served as a static site.
+- **API** (this repo): Django 6 and Django REST Framework, served from the same domain under `/api`.
+- **Data**: managed PostgreSQL, with banner and card images on DigitalOcean Spaces behind its CDN.
+- **Accounts**: sign-in through Google, Discord or Patreon OAuth, exchanged for a DRF token. Player accounts store no email, name or password.
+- **Maths**: every projection runs in the browser. The API assembles and dates the reference data, including a flat income ledger, but never computes a forecast.
+- **Content**: banners, events and rewards are maintained by hand in the Django admin, which doubles as the CMS.
 
-```
-calculatorapi/
-  models/        # One model per file
-  views/         # One serializer + ViewSet (or APIView) per file
-  fixtures/      # JSON seed data for reference/rank tables
-```
+## About this project
 
-### Aggregated data endpoint
+- In continuous development since December 2025, live in open beta since September 2026, and actively maintained.
+- The resource model follows [Henry's resource spreadsheet](https://docs.google.com/spreadsheets/d/100t3hnYl5Qm2UR8RtPlH-8Xd9KQbBlxEdXUOIR4d394/), the community reference built by Daptrius that this site grew out of. The application is my own work: the projection engine, authentication, admin and deployment.
 
-`GET /calculator-data` returns a single payload containing all reference data, the user's current stats, their planned banners, event schedules, and banner timelines. This design avoids N+1 fetch chains from the client — the frontend only needs one request on mount.
+## Tech stack
 
-`PATCH /calculator-data` uses an upsert pattern: rows with `id` are updated, rows without `id` are created, and any rows absent from the payload are deleted. User stats are updated in the same request.
-
-### Data model highlights
-
-| Model | Purpose |
+| Tool | Used for |
 |---|---|
-| `CustomUser` | Extends `AbstractUser`; stores current carat/ticket counts and rank FK references |
-| `BannerTimeline` | A time window grouping one or more gacha banners |
-| `BannerUma` / `BannerSupport` | Gacha banners with M2M relationships to Uma/SupportCard via through tables |
-| `UserPlannedBanner` | A user's pull plan — FK to either `banner_uma` or `banner_support` (never both), plus `number_of_pulls` |
-| `GameEvent` | In-game events; reward amounts (`carat_amount`, `carats_throughout`, tickets, shards, crystals) are fields on the event itself, used in the resource projection |
-| `ChampionsMeeting` | Racing event with track metadata and per-stat Uma recommendations |
-| `*Rank` tables | `ClubRank`, `TeamTrialsRank`, `ChampionsMeetingRank`, `LeagueOfHeroesRank` — income amounts per rank tier |
+| Django 6 | Web framework and ORM |
+| Django REST Framework | API views, serializers, token authentication |
+| drf-spectacular | The generated OpenAPI schema, and Swagger UI over it at `/api/docs` |
+| django-unfold | The admin theme behind the content CMS |
+| PostgreSQL (prod), SQLite (dev) | Selected by `DATABASE_URL` through `dj-database-url` |
+| django-storages + boto3 | Image uploads to DigitalOcean Spaces |
+| whitenoise | Static files without a separate web server |
+| gunicorn | WSGI server |
+| requests | Calls to the OAuth providers and the Patreon API |
 
-`UserPlannedBanner` has a DB-level check constraint that enforces exactly one of `banner_uma` / `banner_support` is non-null at all times.
+## How it works
 
-### URL routing
+### One payload
 
-Manual routes:
-- `POST /login`, `POST /register`, `POST /logout`
-- `GET /calculator-data`, `PATCH /calculator-data`
+`GET /calculator-data` returns what the planner needs in a single response: every reference
+table, the dated income ledger, banner timelines with resolved dates, campaigns and, for a
+signed-in player, their stats and plan. Guests get the same public payload with the user
+fields empty. The public half is cached in-process and invalidated by model signals whenever
+content changes.
 
-SimpleRouter-registered read-only ViewSets:
-- `/teamtrialranks`, `/clubranks`, `/championsmeetingranks`, `/leagueofheroesranks`
-- `/events`
+`PATCH /calculator-data` reconciles a player's collections in one request: rows with an `id`
+are updated, rows without one are created, and rows missing from the payload are deleted.
 
-### Content editing via Django admin
+### Predicted dates
 
-The admin (`/admin/`) is configured for non-technical content editors: friendly model
-names under an "Uma Musume Data" section, inline editing (a banner and its featured
-umas/cards on one page), searchable autocomplete pickers, and image previews. A
-"Content editors" permission group scopes editor accounts to game content only —
-create it with `python manage.py create_content_editor_group`. See
-[docs/content-editing.md](docs/content-editing.md) for the editor guide and
-account-setup steps.
+The global server follows the Japanese release schedule but announces dates late, so banner
+and event dates are predicted from the JP calendar, with admin-set offsets for when global
+slips. Every predicted date is flagged as one. [docs/data-model.md](docs/data-model.md) has
+the prediction model.
 
-### Admin analytics dashboard
+### Accounts and privacy
 
-`/admin/analytics/` (staff-only, linked from the admin home page) shows aggregate usage
-statistics — paid-product adoption, rank distributions, resource averages, and the most
-popular planned banners — with a CSV export. Aggregation logic lives in
-`calculatorapi/analytics.py`; only aggregates are ever exposed, never per-user rows.
-See [docs/analytics.md](docs/analytics.md) for how to read and use the numbers.
+Players sign in through Google, Discord or Patreon with the OAuth2 authorization-code flow and
+get back a DRF token. Scopes are limited to identity, and a player account holds nothing but
+the provider's opaque id and a generated handle. The redirect URI comes from a server-side
+allowlist and is sealed into a signed `state`, so the sign-in endpoint can't be used as an
+open redirector. Linking a second provider is a separate, authenticated flow that can never
+create an account. Password login exists for staff only, and it answers a wrong password
+exactly as it answers a non-staff account.
 
-## Local Setup
+### Patreon supporters
+
+A scheduled GitHub Action calls `POST /patreon/sync` once a day, which pulls members from the
+Patreon API through the same reconcile the admin's CSV import uses. Supporter benefits are
+derived on every request from the linked supporter record rather than stored on the account,
+so a lapsed pledge can't leave a stale flag behind.
+
+### Content
+
+The admin (`/admin/`) is set up for non-technical editors, with friendly names, inline
+editing, autocomplete pickers, an image library backed by Spaces, and a "Content editors"
+permission group scoped to game content. Staff also get `/admin/analytics/`, which reports
+aggregates only, never per-user rows. The public changelog is authored in
+`calculatorapi/data/changelog.yaml` and written to the database on every deploy.
+
+### Data model
+
+| Model | Holds |
+|---|---|
+| `Uma`, `SupportCard` | Characters and support cards. Release dates are derived from the banners that featured them, never stored |
+| `BannerTimeline` | A banner window: its JP and global dates, category and schedule offset |
+| `BannerUma`, `BannerSupport`, `BannerStepUp` | The banners in a window and the cards they feature |
+| `UserPlannedBanner` | One row of a player's plan; a check constraint enforces exactly one banner target |
+| `UserStepUpSelection` | A player's ten card picks on a step-up banner |
+| `AnniversaryEvent` | A campaign, its banner parts and its purchasable packs |
+| `UserPlannedPurchase` | A pack a player plans to buy |
+| `GameEvent`, `ChampionsMeeting`, `LeagueOfHeroes`, `Scenario` | Events, race events and training scenarios |
+| `ClubRank`, `TeamTrialsRank`, `ChampionsMeetingRank`, `LeagueOfHeroesRank` | Income per rank tier |
+| `CalculationConstants` | Income constants, editable in the admin instead of baked into the frontend bundle |
+| `CustomUser`, `SocialAccount` | Accounts and the provider identities linked to them |
+| `PatreonTier`, `PatreonSupporter` | Supporter tiers and the synced supporter list |
+| `ChangelogEntry`, `ChangelogChange` | Public patch notes |
+| `DailyVisit`, `MonthlyVisit`, `Feedback` | Anonymous traffic counts and feedback |
+
+### Endpoints
+
+| Route | |
+|---|---|
+| `GET /calculator-data` | The aggregated payload. Public; the user fields fill in when a token is sent |
+| `PATCH /calculator-data` | Save a plan (token required) |
+| `GET /auth/<provider>/start`, `POST /auth/social` | OAuth sign-in with `google`, `discord` or `patreon` |
+| `GET /account` | The signed-in account and its supporter benefits |
+| `GET /account/link/<provider>/start`, `POST /account/link/<provider>/complete`, `DELETE /account/link/<provider>` | Link or unlink a provider on a signed-in account |
+| `POST /login`, `POST /logout` | Staff password login, and logout |
+| `POST /visit`, `POST /feedback` | Anonymous visit beacon and feedback form, both throttled |
+| `POST /patreon/sync` | Supporter sync, authorised by a shared-secret header |
+| `GET /teamtrialranks`, `/clubranks`, `/championsmeetingranks`, `/leagueofheroesranks`, `/leagueofheroes`, `/events`, `/changelog`, `/supporters` | Read-only reference data |
+| `GET /schema`, `GET /docs` | The generated OpenAPI schema, and Swagger UI over it ([live](https://umacaratcalculator.com/api/docs)) |
+| `/admin/`, `/admin/analytics/`, `/admin/image-library/` | Staff only |
+
+Request and response shapes are in [docs/api-reference.md](docs/api-reference.md).
+
+## Local setup
 
 ```bash
-cd backend
-
-# Create and activate a virtual environment
-python3 -m venv venv
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run migrations
-python3 manage.py migrate
-
-# Create a staff account for /admin
-python3 manage.py createsuperuser
-
-# Start the dev server
-python3 manage.py runserver
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements-dev.txt    # runtime dependencies plus lint tooling
+cp .env.example .env
+python manage.py migrate
+python manage.py createsuperuser       # a staff account for /admin
+python manage.py runserver
 ```
 
-### There is no seeding step — a fresh local database starts empty
+[`.env.example`](.env.example) is annotated and runs as-is locally: Django falls back to SQLite
+and an insecure development secret key. Sign-in additionally needs the OAuth client credentials
+for the provider you test with, and `FRONTEND_URL` must produce the exact redirect URI
+registered in that provider's console.
 
-This is deliberate. Production content is authored and maintained through the
-Django admin panel, and `loaddata` **upserts by primary key** — so any seeding
-script is one stray invocation (or one wrong `DATABASE_URL`) away from silently
-overwriting live admin edits with a stale snapshot. The seeding script was
-removed rather than documented-around.
+### A fresh database starts empty
 
-To develop against real content, point the frontend at the **live API** instead
-of your local backend:
+There is no seeding step, on purpose. Production content is authored in the admin, and
+`loaddata` upserts by primary key, so a seeding script is one stray run (or one wrong
+`DATABASE_URL`) away from overwriting live edits with a stale snapshot. The JSON in
+`calculatorapi/fixtures/` is a one-way export that nothing loads.
+
+To work against real content, run the frontend against the production API with
+`npm run dev:live`
+([details](https://github.com/charlesmerriman/uma-carat-calculator-web#choosing-a-backend)).
+Sign-in there is real: signed in, a save writes to the live database under your own account.
+Use your local `/admin` when you specifically need local rows, such as when exercising a
+migration.
+
+## Tests and linting
 
 ```bash
-cd ../frontend && npm run dev:live
+python manage.py test                                                # the whole suite
+python manage.py test calculatorapi.tests.test_ledger                # one module
+python manage.py test calculatorapi.tests.test_ledger.LedgerTests    # one class
+pylint calculatorapi/ calculatorproject/
 ```
 
-That reads production through the public API and never touches the database —
-see [../frontend/README.md](../frontend/README.md#choosing-a-backend). Use your
-local `/admin` to add rows when you specifically need *local* data, such as
-exercising a migration.
+CI runs both on every push. The tests live in `calculatorapi/tests/`, one module per feature
+area. Every test starts with an empty cache (`CalculatorTestCase` in `tests/base.py`), so no
+result depends on which tests ran before it.
 
-Other useful commands:
+## Management commands
 
-```bash
-python3 manage.py test      # Run tests
-pylint calculatorapi/ calculatorproject/  # Lint
-python3 manage.py makemigrations          # After model changes
-python3 manage.py createsuperuser         # Staff login for /admin and /admin/analytics/
-python3 manage.py create_content_editor_group  # Permission group for content editors
-```
+| Command | What it does |
+|---|---|
+| `sync_changelog` | Writes `calculatorapi/data/changelog.yaml` into the changelog table. Runs on every deploy; use `--dry-run --strict` locally to validate the file |
+| `create_content_editor_group` | Creates or refreshes the "Content editors" permission group. Run it after `migrate` |
+| `seed_anniversary_campaigns` | Creates or refreshes the anniversary campaigns from the source sheet. Idempotent |
+| `sync_patreon_supporters` | Syncs supporters from the Patreon API; the daily Action reaches the same reconcile over HTTP |
+| `set_patreon_tier_order` | Sets supporter tier order from `NAME=ORDER` pairs |
+| `prune_visitor_hashes` | Deletes visitor de-duplication hashes older than the retention window |
+| `purge_user_pii` | Blanks email, name and password on every non-staff account. **Irreversible**, so run it with `--dry-run` first |
 
-## Environment Variables
+Four more are one-off data repairs, kept for the record: `classify_banner_categories`,
+`backfill_race_prep_supports`, `fix_support_card_variants` and `repair_launch_banner`.
 
-| Variable | Required | Description |
-|---|---|---|
-| `DJANGO_SECRET_KEY` | Production | Django secret key |
-| `DATABASE_URL` | Production | PostgreSQL connection string; falls back to `db.sqlite3` if unset |
-| `DEBUG` | Optional | `"True"` or `"False"` (default `"False"` in production) |
+## Deployment
+
+App Platform builds on every push to `master`: `pip install -r requirements.txt` and
+`collectstatic`, then `migrate`, `sync_changelog` and gunicorn on start. `develop` is where
+work integrates; `master` only moves by merging it.
+
+[`.do/app.yaml`](.do/app.yaml) is a reference copy of the app spec with its secrets blanked.
+Change the live spec with `doctl apps spec get` and `doctl apps update` rather than by applying
+this file, which would overwrite every secret with an empty string.
+
+## Configuration
+
+[`.env.example`](.env.example) documents every variable. The ones that matter most:
+
+| Variable | |
+|---|---|
+| `DJANGO_SECRET_KEY` | Required in production |
+| `DATABASE_URL` | PostgreSQL connection string; SQLite when unset |
+| `FRONTEND_URL` | The OAuth redirect URI is derived from it and must match each provider console exactly |
+| `GOOGLE_OAUTH_*`, `DISCORD_OAUTH_*`, `PATREON_OAUTH_*` | The sign-in apps |
+| `PATREON_CLIENT_*`, `PATREON_SYNC_SECRET` | The creator app and the shared secret behind the supporters sync |
+| `DO_SPACES_*` | Media storage |
+| `API_PUBLIC_PREFIX` | The path the API is served under (`/api` in production), so the docs page's "Try it out" calls the API |
+
+## Documentation
+
+- [data-model.md](docs/data-model.md): models, constraints, date prediction and the changelog pipeline
+- [api-reference.md](docs/api-reference.md): request and response shapes for every endpoint
+- [auth-and-privacy.md](docs/auth-and-privacy.md): the OAuth flows, account linking, and what is and isn't stored
+- [income-calculation.md](docs/income-calculation.md): income amounts and schedules, campaign purchases and step-up costs
+- [admin.md](docs/admin.md): the admin setup, the image picker and the Patreon import
+- [analytics.md](docs/analytics.md): reading the staff analytics dashboard
+- [content-editing.md](docs/content-editing.md): the guide for content editors
+- [banner-timeline-content-flowchart.svg](docs/banner-timeline-content-flowchart.svg): the banner-timeline content workflow as a flowchart
+
+How the frontend turns this data into a forecast is covered in the
+[web repo's docs](https://github.com/charlesmerriman/uma-carat-calculator-web/tree/HEAD/docs).
+
+## License
+
+[MIT](LICENSE)

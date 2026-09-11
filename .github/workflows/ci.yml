@@ -7,14 +7,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
-          python-version: "3.12"
+          # .python-version is the one pin: the production buildpack reads it
+          # too, so CI tests on the Python the API runs on.
+          python-version-file: .python-version
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements-dev.txt
 
       - name: Run tests
         run: python manage.py test

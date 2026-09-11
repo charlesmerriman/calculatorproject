@@ -68,7 +68,7 @@ features:
 #   github:
 #     branch: master
 #     deploy_on_push: true
-#     repo: charlesmerriman/calculatorproject
+#     repo: charlesmerriman/uma-carat-calculator-api
 #   build_command: pip install -r requirements.txt
 #   run_command: python manage.py fix_support_card_variants --dry-run
 #   instance_count: 1
@@ -135,21 +135,26 @@ services:
   - key: FRONTEND_URL
     scope: RUN_TIME
     value: https://umacaratcalculator.com
+  # The path the ingress below serves this API under. App Platform strips it
+  # before a request reaches Django, so the OpenAPI schema is told explicitly;
+  # without it Swagger UI's "Try it out" would call the static site instead.
+  - key: API_PUBLIC_PREFIX
+    scope: RUN_TIME
+    value: /api
   # OAUTH_EXTRA_REDIRECT_URIS is set in the DigitalOcean DASHBOARD, not here, and
   # is deliberately absent from this file. Current value:
   #
-  #   http://localhost:5173/auth/callback,
-  #   https://umamusme-calculator-7zdcg.ondigitalocean.app/auth/callback
+  #   http://localhost:5173/auth/callback
   #
-  # The second entry keeps sign-in working on the old App Platform hostname now
-  # that FRONTEND_URL points at the custom domain: OAUTH_ALLOWED_REDIRECT_URIS is
-  # {derived OAUTH_REDIRECT_URI} + these, so moving FRONTEND_URL silently drops
-  # the old host. Remove it once the domain has been stable for a week or two.
+  # That entry is what lets `npm run dev:live` — a local Vite server pointed at
+  # THIS deployment — complete a real sign-in instead of bouncing the developer
+  # to the deployed site. Consequence: a signed-in local frontend writes to the
+  # live database. See backend/docs/auth-and-privacy.md.
   #
-  # The localhost entry is what lets `npm run dev:live` — a local
-  # Vite server pointed at THIS deployment — can complete a real sign-in instead
-  # of bouncing the developer to the deployed site. Consequence: a signed-in
-  # local frontend writes to the live database. See backend/docs/auth-and-privacy.md.
+  # The old App Platform hostname is not listed, so sign-in there is refused
+  # with a 400 even though the site still loads. OAUTH_ALLOWED_REDIRECT_URIS is
+  # {derived OAUTH_REDIRECT_URI} + these, so moving FRONTEND_URL again silently
+  # drops the previous host unless it is added here.
   #
   # Kept out of the committed spec because this repo is public and there is no
   # reason to advertise that production accepts a loopback callback, and because
@@ -177,7 +182,7 @@ services:
   github:
     branch: master
     deploy_on_push: true
-    repo: charlesmerriman/calculatorproject
+    repo: charlesmerriman/uma-carat-calculator-api
   http_port: 8080
   instance_count: 1
   instance_size_slug: apps-s-1vcpu-0.5gb
@@ -208,7 +213,7 @@ static_sites:
   github:
     branch: master
     deploy_on_push: true
-    repo: charlesmerriman/calculatorcapstoneclient
+    repo: charlesmerriman/uma-carat-calculator-web
   name: calculatorcapstoneclient
   output_dir: dist
   source_dir: /

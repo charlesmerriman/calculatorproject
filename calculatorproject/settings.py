@@ -537,10 +537,27 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "calculatorapi.CustomUser"
 
+# Pinned rather than @latest: the docs page runs this third-party JavaScript,
+# and anyone who pastes a token into its "Authorize" box is trusting it.
+_SWAGGER_UI = "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.32.15"
+
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Calculator API",
-    "DESCRIPTION": "API for the calculator capstone",
+    "TITLE": "Uma Carat Calculator API",
+    "DESCRIPTION": "Reference data, plan storage and OAuth sign-in for umacaratcalculator.com.",
     "VERSION": "1.0.0",
+    # App Platform serves this API under /api and strips the prefix before a
+    # request reaches Django, so nothing in here can see it. The schema has to be
+    # told, or Swagger UI's "Try it out" would send /calculator-data to the static
+    # site instead of the API. Unset locally, where runserver is the whole origin.
+    "SERVERS": [{"url": os.getenv("API_PUBLIC_PREFIX", "").rstrip("/") or "/"}],
+    # The schema route documenting itself is noise.
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SWAGGER_UI_DIST": _SWAGGER_UI,
+    "SWAGGER_UI_FAVICON_HREF": f"{_SWAGGER_UI}/favicon-32x32.png",
+    # Generation notes (views it cannot infer a body for) are for whoever is
+    # working on the schema: printed with DEBUG on, kept out of the production
+    # log and the test output.
+    "DISABLE_ERRORS_AND_WARNINGS": not DEBUG,
 }
 
 WHITENOISE_STATIC_PREFIX = '/static/'
