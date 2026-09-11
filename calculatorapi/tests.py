@@ -118,6 +118,30 @@ PNG_1PX = (
 )
 
 
+class CalculatorTestCase(TestCase):
+    """
+    The base class for every test class in this module: a TestCase that starts
+    each test with an empty cache.
+
+    Django rolls the database back between tests but leaves the cache alone,
+    and the cache here is LocMem living in this one process. It holds the
+    /calculator-data public payload and the throttle counters, so without this
+    whatever one test cached is still there for the next, and a test's result
+    can depend on which tests happened to run before it.
+
+    The clear lives in run(), not setUp(), on purpose. Django does not require
+    subclasses to call super().setUp() (its own __call__ docstring says so),
+    and most classes here define setUp() without it, so a clear placed in
+    setUp() would silently never run for them. Django calls run() for every
+    test, after its own per-test setup and before the class's setUp().
+    """
+
+    def run(self, result=None):
+        """Clear the cache, then run the test exactly as TestCase would."""
+        cache.clear()
+        return super().run(result)
+
+
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def make_ranks():
@@ -294,7 +318,7 @@ def auth_client(user):
 
 # ── Auth Tests ────────────────────────────────────────────────────────────────
 
-class AuthTests(TestCase):
+class AuthTests(CalculatorTestCase):
     def setUp(self):
         self.client = APIClient()
 
@@ -416,7 +440,7 @@ def _iso(value):
     return text[:-6] + 'Z' if text.endswith('+00:00') else text
 
 
-class PredictionUnitTests(TestCase):
+class PredictionUnitTests(CalculatorTestCase):
     """Directly exercises compute_effective_dates on plain dicts (no DB)."""
 
     def test_confirmed_banner_passes_through(self):
@@ -531,7 +555,7 @@ def _entry(start, end=None, is_predicted=True, offset_days=0, anchor_start=None)
     }
 
 
-class ScheduleOffsetUnitTests(TestCase):
+class ScheduleOffsetUnitTests(CalculatorTestCase):
     """Directly exercises apply_schedule_offsets on hand-built maps (no DB).
 
     An offset pushes its own row AND every dated row after it, across every
@@ -765,7 +789,7 @@ class ScheduleOffsetUnitTests(TestCase):
         self.assertEqual(meeting['applied_offset_days'], 7)
 
 
-class GameEventPredictionTests(TestCase):
+class GameEventPredictionTests(CalculatorTestCase):
     """game_event_effective_dates/game_event_confirmed_dates: GameEvent has no
     date fields of its own, so these resolve purely via the linked
     BannerTimeline's own (already-built) effective-date map."""
@@ -859,7 +883,7 @@ class GameEventPredictionTests(TestCase):
         self.assertFalse(out['is_predicted'])
 
 
-class GameEventBannerTimelineDeletionTests(TestCase):
+class GameEventBannerTimelineDeletionTests(CalculatorTestCase):
     """GameEvent.banner_timeline is SET_NULL, not CASCADE -- an event's own
     content (image, reward amounts) outlives its linked banner."""
 
@@ -875,7 +899,7 @@ class GameEventBannerTimelineDeletionTests(TestCase):
         self.assertEqual(event.carat_amount, 100)
 
 
-class CalculationConstantsTests(TestCase):
+class CalculationConstantsTests(CalculatorTestCase):
     """The singleton holding every tunable number the projection uses."""
 
     def test_load_creates_one_row_and_returns_it_thereafter(self):
@@ -979,7 +1003,7 @@ class CalculationConstantsTests(TestCase):
         self.assertEqual(out[1]['start_date'], _dt(2025, 6, 1))
 
 
-class CalculationConstantsSerializerTests(TestCase):
+class CalculationConstantsSerializerTests(CalculatorTestCase):
     def test_every_decimal_constant_serializes_as_a_number(self):
         """No constant may reach the client as a decimal STRING.
 
@@ -1005,7 +1029,7 @@ class CalculationConstantsSerializerTests(TestCase):
 
 
 @override_settings(STORAGES=PLAIN_TEST_STORAGES)
-class CalculationConstantsAdminTests(TestCase):
+class CalculationConstantsAdminTests(CalculatorTestCase):
     """The singleton admin page. Its list → add → edit flow is deliberately
     non-standard, and a broken fieldset only surfaces on render."""
 
@@ -1060,7 +1084,7 @@ class CalculationConstantsAdminTests(TestCase):
         self.assertFalse(editor.has_perm('calculatorapi.change_calculationconstants'))
 
 
-class LedgerTests(TestCase):
+class LedgerTests(CalculatorTestCase):
     """build_income_ledger: the flat dated timeline the projection queries.
 
     It computes no income — it places rows on the calendar. So these pin dates,
@@ -1244,7 +1268,7 @@ class LedgerTests(TestCase):
         self.assertTrue(row['is_predicted'])
 
 
-class LedgerSerializerTests(TestCase):
+class LedgerSerializerTests(CalculatorTestCase):
     def test_serializer_emits_every_amount_field(self):
         # ledger.AMOUNT_FIELDS is what fills the zeros on every row; the
         # serializer is what puts them on the wire. If one grows a field the
@@ -1290,7 +1314,7 @@ _EXPECTED_GET_KEYS = {
 }
 
 
-class CalculatorGetTests(TestCase):
+class CalculatorGetTests(CalculatorTestCase):
     def setUp(self):
         self.user = make_user()
         self.client, self.token = auth_client(self.user)
@@ -1648,7 +1672,7 @@ class CalculatorGetTests(TestCase):
 
 # ── Reference Endpoint Tests ──────────────────────────────────────────────────
 
-class ReferenceEndpointGuestAccessTests(TestCase):
+class ReferenceEndpointGuestAccessTests(CalculatorTestCase):
     """Read-only reference endpoints are open to guests."""
 
     def test_reference_reads_return_200_for_guests(self):
@@ -1715,7 +1739,7 @@ class ReferenceEndpointGuestAccessTests(TestCase):
 
 # ── Calculator PATCH Tests ────────────────────────────────────────────────────
 
-class CalculatorPatchTests(TestCase):
+class CalculatorPatchTests(CalculatorTestCase):
     def setUp(self):
         self.user = make_user()
         self.client, _ = auth_client(self.user)
@@ -1911,7 +1935,7 @@ class CalculatorPatchTests(TestCase):
 
 # ── Selector Planner Tests ────────────────────────────────────────────────────
 
-class BannerStepUpTests(TestCase):
+class BannerStepUpTests(CalculatorTestCase):
     """The step-up model, its constraint, and how it reaches the API."""
 
     def setUp(self):
@@ -2099,7 +2123,7 @@ class BannerStepUpTests(TestCase):
         self.assertIsNotNone(rows[1]['banner_step_up'])
 
 
-class UserStepUpSelectionTests(TestCase):
+class UserStepUpSelectionTests(CalculatorTestCase):
     """The ten cards a user intends to pick at a step-up, and the rules on them.
 
     Nothing here should ever affect a projected number -- these tests exist to
@@ -2500,7 +2524,7 @@ class UserStepUpSelectionTests(TestCase):
         self.assertEqual(len(body['user_planned_banner_data']), 1)
 
 
-class SelectorEligibilityTests(TestCase):
+class SelectorEligibilityTests(CalculatorTestCase):
     """A card's JP release date is derived from its earliest banner appearance."""
 
     def setUp(self):
@@ -2562,7 +2586,7 @@ class SelectorEligibilityTests(TestCase):
         self.assertFalse(is_eligible(None, datetime.date(2024, 1, 31)))
 
 
-class IntrinsicSelectorGateTests(TestCase):
+class IntrinsicSelectorGateTests(CalculatorTestCase):
     """The second gate: units no selector can take at ANY cutoff."""
 
     def test_an_ordinary_uma_is_selectable_by_default(self):
@@ -2621,7 +2645,7 @@ class IntrinsicSelectorGateTests(TestCase):
         self.assertIn('2024-01-31', reason)
 
 
-class ScenarioDateTests(TestCase):
+class ScenarioDateTests(CalculatorTestCase):
     """A scenario borrows its launch banner's START, and has no end at all."""
 
     def test_start_comes_from_the_launch_banner_and_there_is_no_end(self):
@@ -2678,7 +2702,7 @@ class ScenarioDateTests(TestCase):
         self.assertFalse(resolved['is_predicted'])
 
 
-class ScenarioApiTests(TestCase):
+class ScenarioApiTests(CalculatorTestCase):
     """/calculator-data serves scenarios, start-only and image-optional."""
 
     def setUp(self):
@@ -2754,7 +2778,7 @@ class ScenarioApiTests(TestCase):
         self.assertEqual(len(response.data['scenario_data']), 1)
 
 
-class AnniversaryEventDateTests(TestCase):
+class AnniversaryEventDateTests(CalculatorTestCase):
     """A campaign spans its banner parts rather than owning dates."""
 
     def test_dates_span_earliest_start_to_latest_end(self):
@@ -2927,7 +2951,7 @@ class AnniversaryEventDateTests(TestCase):
         self.assertEqual(resolved['start_date'], part1.global_start_date)
 
 
-class AnniversaryEventApiTests(TestCase):
+class AnniversaryEventApiTests(CalculatorTestCase):
     """The campaign payload and the banner strip it attaches to."""
 
     def setUp(self):
@@ -3051,7 +3075,7 @@ class AnniversaryEventApiTests(TestCase):
         self.assertEqual(len(res.data['anniversary_event_data']), 1)
 
 
-class UserPlannedPurchaseTests(TestCase):
+class UserPlannedPurchaseTests(CalculatorTestCase):
     """The PATCH upsert and the selector-target validation behind it."""
 
     def setUp(self):
@@ -3328,7 +3352,7 @@ class UserPlannedPurchaseTests(TestCase):
         self.assertEqual(res.data['user_planned_purchase_data'][0]['quantity'], 1)
 
 
-class ReservedCopiesTests(TestCase):
+class ReservedCopiesTests(CalculatorTestCase):
     """reserved_copies rides along on the existing planned-banner payload."""
 
     def setUp(self):
@@ -3366,7 +3390,7 @@ class ReservedCopiesTests(TestCase):
 
 # ── Analytics Tests ───────────────────────────────────────────────────────────
 
-class AnalyticsReportEmptyTests(TestCase):
+class AnalyticsReportEmptyTests(CalculatorTestCase):
     """build_analytics_report() must survive a completely empty database."""
 
     def test_empty_db_returns_zeroes_without_errors(self):
@@ -3386,7 +3410,7 @@ class AnalyticsReportEmptyTests(TestCase):
         self.assertEqual(report['popular_support_banners'], [])
 
 
-class AnalyticsReportScenarioTests(TestCase):
+class AnalyticsReportScenarioTests(CalculatorTestCase):
     """One seeded user base, asserted against every report section.
 
     The scenario:
@@ -3494,7 +3518,7 @@ class AnalyticsReportScenarioTests(TestCase):
         self.assertEqual(only['total_pulls'], 5)
 
 
-class AnalyticsOutlierTests(TestCase):
+class AnalyticsOutlierTests(CalculatorTestCase):
     """Implausible stored values must not reach any figure that is a quantity.
 
     Reproduces the shape seen in production: one account holding 999,999,999
@@ -3607,7 +3631,7 @@ class AnalyticsOutlierTests(TestCase):
 # whitenoise manifest storage requires collectstatic, which never runs in
 # tests. Any test class that renders admin pages swaps in plain storage.
 @override_settings(STORAGES=PLAIN_TEST_STORAGES)
-class AnalyticsDashboardViewTests(TestCase):
+class AnalyticsDashboardViewTests(CalculatorTestCase):
     """Access control and response formats for /admin/analytics/."""
 
     def setUp(self):
@@ -3695,7 +3719,7 @@ class AnalyticsDashboardViewTests(TestCase):
 
 # ── Visit Tracking Tests ──────────────────────────────────────────────────────
 
-class VisitRecordingTests(TestCase):
+class VisitRecordingTests(CalculatorTestCase):
     """record_visit()'s counting, deduplication and bot filtering.
 
     Every test pins the calendar date rather than using the real one: the
@@ -3830,7 +3854,7 @@ class VisitRecordingTests(TestCase):
         self.assertEqual(self._monthly(), (3, 2))
 
 
-class VisitReportTests(TestCase):
+class VisitReportTests(CalculatorTestCase):
     """build_visit_report()'s windowing and monthly figures."""
 
     def test_empty_db_reports_no_traffic(self):
@@ -3869,7 +3893,7 @@ class VisitReportTests(TestCase):
         self.assertEqual(len(build_visit_report(months=6)['monthly']), 6)
 
 
-class VisitBeaconEndpointTests(TestCase):
+class VisitBeaconEndpointTests(CalculatorTestCase):
     """POST /visit — the public write-only beacon."""
 
     def setUp(self):
@@ -3902,7 +3926,7 @@ class VisitBeaconEndpointTests(TestCase):
         self.assertEqual(res.status_code, 429)
 
 
-class PruneVisitorHashesCommandTests(TestCase):
+class PruneVisitorHashesCommandTests(CalculatorTestCase):
     """The housekeeping command must never touch the permanent counters."""
 
     def setUp(self):
@@ -3951,7 +3975,7 @@ class PruneVisitorHashesCommandTests(TestCase):
 # ── Admin UX Tests ────────────────────────────────────────────────────────────
 
 @override_settings(STORAGES=PLAIN_TEST_STORAGES)
-class AdminSmokeTests(TestCase):
+class AdminSmokeTests(CalculatorTestCase):
     """Changelist and add pages render for a superuser.
 
     Catches admin config mistakes (bad list_display refs, broken fieldsets,
@@ -4010,7 +4034,7 @@ class AdminSmokeTests(TestCase):
 
 
 @override_settings(STORAGES=PLAIN_TEST_STORAGES)
-class ContentEditorPermissionTests(TestCase):
+class ContentEditorPermissionTests(CalculatorTestCase):
     """The "Content editors" group can manage content but never user data."""
 
     @classmethod
@@ -4047,7 +4071,7 @@ class ContentEditorPermissionTests(TestCase):
         self.assertNotContains(res, 'User planned banners')
 
 
-class ContentEditorGroupCommandTests(TestCase):
+class ContentEditorGroupCommandTests(CalculatorTestCase):
     """create_content_editor_group is idempotent and scoped to content only."""
 
     def test_command_is_idempotent(self):
@@ -4076,7 +4100,7 @@ class ContentEditorGroupCommandTests(TestCase):
 
 # ── Changelog Endpoint Tests ──────────────────────────────────────────────────
 
-class ChangelogEndpointTests(TestCase):
+class ChangelogEndpointTests(CalculatorTestCase):
     """The public /changelog endpoint lists entries newest-first with nested,
     ordered changes; writes stay admin-only."""
 
@@ -4134,7 +4158,7 @@ class ChangelogEndpointTests(TestCase):
 
 # ── Changelog Sync Command Tests ──────────────────────────────────────────────
 
-class ShippedChangelogFileTests(TestCase):
+class ShippedChangelogFileTests(CalculatorTestCase):
     """The committed changelog.yaml must always validate.
 
     This is the guard that keeps a broken file off production. `sync_changelog`
@@ -4154,7 +4178,7 @@ class ShippedChangelogFileTests(TestCase):
             self.assertIsInstance(entry['date'], datetime.date)
 
 
-class SyncChangelogCommandTests(TestCase):
+class SyncChangelogCommandTests(CalculatorTestCase):
     """`sync_changelog` writes the file's entries and nothing else."""
 
     def setUp(self):
@@ -4280,7 +4304,7 @@ class SyncChangelogCommandTests(TestCase):
 
 # ── PII Purge Command Tests ───────────────────────────────────────────────────
 
-class PurgeUserPiiTests(TestCase):
+class PurgeUserPiiTests(CalculatorTestCase):
     """`purge_user_pii` retires personal data from the old password-based
     sign-up while leaving staff logins working."""
 
@@ -4402,7 +4426,7 @@ class PurgeUserPiiTests(TestCase):
 
 
 @override_settings(STORAGES=PLAIN_TEST_STORAGES)
-class SocialAccountAdminTests(TestCase):
+class SocialAccountAdminTests(CalculatorTestCase):
     """Linked accounts are visible but not editable, and the one identifying
     value we hold is never rendered."""
 
@@ -4449,7 +4473,7 @@ class SocialAccountAdminTests(TestCase):
 
 # ── Image Library / Picker Tests ──────────────────────────────────────────────
 
-class ImageLibraryTests(TestCase):
+class ImageLibraryTests(CalculatorTestCase):
     """The bucket-listing layer behind the admin's 'choose existing image' picker."""
 
     def setUp(self):
@@ -4538,7 +4562,7 @@ class ImageLibraryTests(TestCase):
 
 
 @override_settings(STORAGES=PLAIN_TEST_STORAGES)
-class ImageLibraryEndpointTests(TestCase):
+class ImageLibraryEndpointTests(CalculatorTestCase):
     """/admin/image-library/ — staff-only, allow-listed folders."""
 
     @classmethod
@@ -4604,7 +4628,7 @@ class ImageLibraryEndpointTests(TestCase):
             self.assertEqual(storage.listdir.call_count, 2)
 
 
-class SpacesImagePickerFormTests(TestCase):
+class SpacesImagePickerFormTests(CalculatorTestCase):
     """Saving a library choice writes the bucket key straight onto the field."""
 
     @classmethod
@@ -4688,7 +4712,7 @@ class SpacesImagePickerFormTests(TestCase):
                 self.assertContains(res, 'spaces-image-picker.js')
 
 
-class BannerCategoryTests(TestCase):
+class BannerCategoryTests(CalculatorTestCase):
     """The stored category, and the two commands that populate it."""
 
     def _timeline(self, name, jp_start, **kwargs):
@@ -4826,7 +4850,7 @@ class BannerCategoryTests(TestCase):
         self.assertEqual(row['banner_category'], 'golden_week_revival')
 
 
-class BannerRecommendationTests(TestCase):
+class BannerRecommendationTests(CalculatorTestCase):
     """The editorial "Recommended" flag on uma and support banners."""
 
     def setUp(self):
@@ -4885,7 +4909,7 @@ class BannerRecommendationTests(TestCase):
         self.assertIs(uma['is_recommended'], True)
 
 
-class CardPurposeTests(TestCase):
+class CardPurposeTests(CalculatorTestCase):
     """The public one-line purpose on umas and support cards."""
 
     def setUp(self):
@@ -4938,7 +4962,7 @@ class CardPurposeTests(TestCase):
                          'Great for front runners.')
 
 
-class SupportVariantResolutionTests(TestCase):
+class SupportVariantResolutionTests(CalculatorTestCase):
     """
     Which of several same-named SupportCard rows a banner actually features.
 
@@ -5138,7 +5162,7 @@ class SupportVariantResolutionTests(TestCase):
         self.assertEqual([c.name for c in found], ['Orphan Card'])
 
 
-class SupportBackfillTests(TestCase):
+class SupportBackfillTests(CalculatorTestCase):
     """
     The race-prep support backfill and the launch banner's support half.
 
@@ -5339,7 +5363,7 @@ class SupportBackfillTests(TestCase):
             list(support.support_cards.values_list('pk', flat=True)), [wanted.pk])
 
 
-class FixSupportCardVariantsTests(TestCase):
+class FixSupportCardVariantsTests(CalculatorTestCase):
     """
     The repair for banner links pointing at an R card instead of its SSR.
 
@@ -5495,7 +5519,7 @@ UNLISTED_REDIRECT = "https://attacker.example.net/auth/callback"
     OAUTH_REDIRECT_URI=CANONICAL_REDIRECT,
     OAUTH_ALLOWED_REDIRECT_URIS=frozenset([CANONICAL_REDIRECT, DEV_REDIRECT]),
 )
-class SocialAuthRedirectUriTests(TestCase):
+class SocialAuthRedirectUriTests(CalculatorTestCase):
     """The allowlisted `redirect_uri` parameter on /auth/<provider>/start.
 
     It exists so `npm run dev:live` -- a local Vite server talking to a deployed
@@ -5638,7 +5662,7 @@ class SocialAuthRedirectUriTests(TestCase):
     OAUTH_REDIRECT_URI=CANONICAL_REDIRECT,
     OAUTH_ALLOWED_REDIRECT_URIS=frozenset([CANONICAL_REDIRECT]),
 )
-class SocialAuthDefaultAllowlistTests(TestCase):
+class SocialAuthDefaultAllowlistTests(CalculatorTestCase):
     """With no extra URIs configured -- the default for any deployment that has
     not opted in -- the endpoint behaves exactly as it did before."""
 
@@ -5657,7 +5681,7 @@ class SocialAuthDefaultAllowlistTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class FeedbackEndpointTests(TestCase):
+class FeedbackEndpointTests(CalculatorTestCase):
     """POST /feedback — the public form's write-only endpoint.
 
     Mirrors VisitBeaconEndpointTests above: both are unauthenticated, throttled
@@ -5792,7 +5816,7 @@ def patreon_csv(*rows):
     )
 
 
-class PatreonSupporterEndpointTests(TestCase):
+class PatreonSupporterEndpointTests(CalculatorTestCase):
     """GET /supporters — what the public thank-you list is allowed to expose."""
 
     def setUp(self):
@@ -5874,7 +5898,7 @@ class PatreonSupporterEndpointTests(TestCase):
             PatreonSupporter.objects.create(display_name="rhondal")
 
 
-class PatreonCsvImportTests(TestCase):
+class PatreonCsvImportTests(CalculatorTestCase):
     """The importer's two jobs: reconcile the roster, and touch nothing else."""
 
     def test_parse_reads_only_name_email_tier_and_status(self):
@@ -6053,7 +6077,7 @@ class PatreonCsvImportTests(TestCase):
 # Renders real admin templates, so it needs the plain static storage — the
 # manifest one has no entry for unfold's fonts without a collectstatic.
 @override_settings(STORAGES=PLAIN_TEST_STORAGES)
-class PatreonImportAdminViewTests(TestCase):
+class PatreonImportAdminViewTests(CalculatorTestCase):
     """The admin upload page — permissions and the round trip through the form."""
 
     def setUp(self):
@@ -6087,7 +6111,7 @@ class PatreonImportAdminViewTests(TestCase):
         self.assertEqual(PatreonSupporter.objects.count(), 0)
 
 
-class SetPatreonTierOrderCommandTests(TestCase):
+class SetPatreonTierOrderCommandTests(CalculatorTestCase):
     """`set_patreon_tier_order` — the admin-free route to renumbering the ladder.
 
     It is built to be run as a POST_DEPLOY job against production, where a
@@ -6262,7 +6286,7 @@ class FakeResponse:  # pylint: disable=too-few-public-methods
 
 
 @override_settings(PATREON_CLIENT_ID="cid", PATREON_CLIENT_SECRET="csecret")
-class PatreonApiClientTests(TestCase):
+class PatreonApiClientTests(CalculatorTestCase):
     """The API client: what it asks for, what it refuses to ask for, and tokens."""
 
     def setUp(self):
@@ -6534,7 +6558,7 @@ class PatreonApiClientTests(TestCase):
 
 
 @override_settings(PATREON_CLIENT_ID="cid", PATREON_CLIENT_SECRET="csecret")
-class PatreonSyncCommandTests(TestCase):
+class PatreonSyncCommandTests(CalculatorTestCase):
     """`sync_patreon_supporters` — the shared core behind all three triggers.
 
     Mocked at `fetch_members`, the seam between provider logic and reconcile, so
@@ -6644,7 +6668,7 @@ class PatreonSyncCommandTests(TestCase):
         self.assertTrue(PatreonSupporter.objects.get(display_name="Existing").is_active)
 
 
-class PatreonSyncEndpointTests(TestCase):
+class PatreonSyncEndpointTests(CalculatorTestCase):
     """POST /patreon/sync — the scheduled job's trigger and its shared secret."""
 
     def setUp(self):
@@ -6721,7 +6745,7 @@ class PatreonSyncEndpointTests(TestCase):
 # manifest one has no entry for unfold's fonts without a collectstatic.
 @override_settings(STORAGES=PLAIN_TEST_STORAGES,
                    PATREON_CLIENT_ID="cid", PATREON_CLIENT_SECRET="csecret")
-class PatreonSyncAdminViewTests(TestCase):
+class PatreonSyncAdminViewTests(CalculatorTestCase):
     """The admin "Sync from Patreon" page — permissions and the round trip."""
 
     def setUp(self):
@@ -6799,7 +6823,7 @@ class PatreonSyncAdminViewTests(TestCase):
         self.assertContains(response, "Import Patreon CSV")
 
 
-class PublicPayloadCacheTests(TestCase):
+class PublicPayloadCacheTests(CalculatorTestCase):
     """The server-side cache behind GET /calculator-data.
 
     -> calculatorapi/public_payload_cache.py
@@ -6920,7 +6944,7 @@ class PublicPayloadCacheTests(TestCase):
         self.assertEqual(set(cached.keys()), _EXPECTED_GET_KEYS)
 
 
-class AccountEndpointTests(TestCase):
+class AccountEndpointTests(CalculatorTestCase):
     """GET /account — the SPA's source of truth for "who am I signed in as?".
 
     This route exists so the client can stop inferring identity from the mere
@@ -7044,7 +7068,7 @@ class AccountEndpointTests(TestCase):
     PATREON_OAUTH_CLIENT_ID="test-patreon-oauth-client",
     PATREON_OAUTH_CLIENT_SECRET="test-patreon-oauth-secret",
 )
-class PatreonOAuthProviderTests(TestCase):
+class PatreonOAuthProviderTests(CalculatorTestCase):
     """Patreon as a third SIGN-IN provider.
 
     The privacy posture is the whole point of these: Patreon will happily send
@@ -7143,7 +7167,7 @@ class PatreonOAuthProviderTests(TestCase):
     OAUTH_REDIRECT_URI=CANONICAL_REDIRECT,
     OAUTH_ALLOWED_REDIRECT_URIS=frozenset([CANONICAL_REDIRECT, DEV_REDIRECT]),
 )
-class AccountLinkStartTests(TestCase):
+class AccountLinkStartTests(CalculatorTestCase):
     """GET /account/link/<provider>/start."""
 
     def setUp(self):
@@ -7215,7 +7239,7 @@ class AccountLinkStartTests(TestCase):
     OAUTH_REDIRECT_URI=CANONICAL_REDIRECT,
     OAUTH_ALLOWED_REDIRECT_URIS=frozenset([CANONICAL_REDIRECT, DEV_REDIRECT]),
 )
-class AccountLinkCompleteTests(TestCase):
+class AccountLinkCompleteTests(CalculatorTestCase):
     """POST /account/link/<provider>/complete — the account-takeover surface.
 
     Every test here is about something that must NOT happen.
@@ -7360,7 +7384,7 @@ class AccountLinkCompleteTests(TestCase):
         self.assertEqual(response.status_code, 401)
 
 
-class AccountLinkDeleteTests(TestCase):
+class AccountLinkDeleteTests(CalculatorTestCase):
     """DELETE /account/link/<provider> — and the refusal that prevents lockouts."""
 
     def setUp(self):
@@ -7430,7 +7454,7 @@ class AccountLinkDeleteTests(TestCase):
     OAUTH_REDIRECT_URI=CANONICAL_REDIRECT,
     OAUTH_ALLOWED_REDIRECT_URIS=frozenset([CANONICAL_REDIRECT]),
 )
-class PatreonSignInTests(TestCase):
+class PatreonSignInTests(CalculatorTestCase):
     """Signing in WITH Patreon, as opposed to linking it."""
 
     def test_sign_in_resolves_to_the_account_that_linked_it(self):
@@ -7473,7 +7497,7 @@ class PatreonSignInTests(TestCase):
 # sign-in tables always knew who was signed in, but nothing joined the two.
 
 
-class PatreonUserIdFetchTests(TestCase):
+class PatreonUserIdFetchTests(CalculatorTestCase):
     """The client reads the Patreon user id WITHOUT widening what it asks for."""
 
     def setUp(self):
@@ -7573,7 +7597,7 @@ class PatreonUserIdFetchTests(TestCase):
         self.assertEqual(len(self._fetch(page)), 1)
 
 
-class PatreonImportMatchingTests(TestCase):
+class PatreonImportMatchingTests(CalculatorTestCase):
     """Which stored row an incoming row is decided to BE."""
 
     def setUp(self):
@@ -7687,7 +7711,7 @@ class PatreonImportMatchingTests(TestCase):
         self.assertEqual(rows[0]["patreon_user_id"], "")
 
 
-class PatreonEntitlementTests(TestCase):
+class PatreonEntitlementTests(CalculatorTestCase):
     """`benefits`: the derivation, and the two directions a link is made from."""
 
     def setUp(self):
@@ -7809,7 +7833,7 @@ class PatreonEntitlementTests(TestCase):
         self.assertTrue(supporter.is_public)
 
 
-class SupporterAccountEndpointTests(TestCase):
+class SupporterAccountEndpointTests(CalculatorTestCase):
     """What GET /account says about entitlement, and what it refuses to say."""
 
     def setUp(self):
@@ -7866,7 +7890,7 @@ class SupporterAccountEndpointTests(TestCase):
     PATREON_OAUTH_CLIENT_SECRET="psecret",
     OAUTH_REDIRECT_URI="http://localhost:5173/auth/callback",
 )
-class PatreonLinkEntitlementTests(TestCase):
+class PatreonLinkEntitlementTests(CalculatorTestCase):
     """Linking Patreon to an account resolves entitlement there and then."""
 
     def setUp(self):
@@ -8024,7 +8048,7 @@ class PatreonLinkEntitlementTests(TestCase):
     PATREON_OAUTH_CLIENT_SECRET="psecret",
     OAUTH_REDIRECT_URI="http://localhost:5173/auth/callback",
 )
-class PatreonSignInEntitlementTests(TestCase):
+class PatreonSignInEntitlementTests(CalculatorTestCase):
     """Signing in with Patreon attaches a known patron — locally only."""
 
     def setUp(self):
@@ -8064,7 +8088,7 @@ class PatreonSignInEntitlementTests(TestCase):
         fetch.assert_not_called()
 
 
-class PurgeClearsSupporterLinkTests(TestCase):
+class PurgeClearsSupporterLinkTests(CalculatorTestCase):
     """A purged account must not leave a live entitlement pointing at it."""
 
     def test_the_link_is_cleared_and_the_row_is_not(self):
