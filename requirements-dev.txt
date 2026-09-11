@@ -1,0 +1,14 @@
+# Development and CI tooling on top of the runtime set. Production installs
+# requirements.txt only, so nothing here may be imported by the app itself.
+-r requirements.txt
+astroid==3.3.11
+autopep8==2.3.2
+dill==0.4.0
+isort==6.1.0
+mccabe==0.7.0
+platformdirs==4.5.1
+pycodestyle==2.14.0
+pylint==3.3.9
+pylint-django==2.6.1
+pylint-plugin-utils==0.9.0
+tomlkit==0.13.3
