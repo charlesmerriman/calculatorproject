@@ -68,7 +68,7 @@ features:
 #   github:
 #     branch: master
 #     deploy_on_push: true
-#     repo: charlesmerriman/calculatorproject
+#     repo: charlesmerriman/uma-carat-calculator-api
 #   build_command: pip install -r requirements.txt
 #   run_command: python manage.py fix_support_card_variants --dry-run
 #   instance_count: 1
@@ -177,7 +177,7 @@ services:
   github:
     branch: master
     deploy_on_push: true
-    repo: charlesmerriman/calculatorproject
+    repo: charlesmerriman/uma-carat-calculator-api
   http_port: 8080
   instance_count: 1
   instance_size_slug: apps-s-1vcpu-0.5gb
@@ -208,7 +208,7 @@ static_sites:
   github:
     branch: master
     deploy_on_push: true
-    repo: charlesmerriman/calculatorcapstoneclient
+    repo: charlesmerriman/uma-carat-calculator-web
   name: calculatorcapstoneclient
   output_dir: dist
   source_dir: /

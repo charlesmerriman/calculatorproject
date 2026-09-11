@@ -538,8 +538,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "calculatorapi.CustomUser"
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Calculator API",
-    "DESCRIPTION": "API for the calculator capstone",
+    "TITLE": "Uma Carat Calculator API",
+    "DESCRIPTION": "Reference data, plan storage and OAuth sign-in for umacaratcalculator.com.",
     "VERSION": "1.0.0",
 }
 
