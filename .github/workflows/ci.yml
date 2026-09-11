@@ -11,7 +11,9 @@ jobs:
 
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.12"
+          # .python-version is the one pin: the production buildpack reads it
+          # too, so CI tests on the Python the API runs on.
+          python-version-file: .python-version
 
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
