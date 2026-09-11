@@ -215,3 +215,10 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 db.sqlite3
+
+# Generated, never committed:
+#   staticfiles/  collectstatic output; the production build regenerates it
+#   media/        local uploads; production media lives on DigitalOcean Spaces
+/staticfiles/
+/media/
+.VSCodeCounter/
