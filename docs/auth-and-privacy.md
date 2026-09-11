@@ -178,9 +178,9 @@ and the developer can never be authenticated while looking at real content. Prod
 sets `OAUTH_EXTRA_REDIRECT_URIS=http://localhost:5173/auth/callback` to permit exactly
 that one address.
 
-The consequence is that **`dev:live` is no longer read-only** — a signed-in local
-frontend writes to the live database under a real account. That was previously a
-structural guarantee and is now only a matter of not being signed in.
+The consequence is that **`dev:live` can write to production**: a signed-in local
+frontend saves to the live database under a real account. Staying signed out is what
+keeps a session read-only.
 
 **The chosen URI is sealed into the signed `state`** (`{"p": provider, "n": nonce,
 "r": redirect_uri}`) and recovered from it at completion. Providers bind the code to the
