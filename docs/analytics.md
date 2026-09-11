@@ -194,4 +194,4 @@ files. The dated filenames make it easy to build a trend spreadsheet later.
   `admin.site.admin_view()` in `calculatorproject/urls.py`, which enforces the
   staff-only requirement and redirects everyone else to the admin login.
 - Tests cover the aggregation math, access control, and CSV response — see the
-  `Analytics*` test classes in `calculatorapi/tests.py`.
+  `Analytics*` test classes in `calculatorapi/tests/test_analytics.py`.

@@ -157,12 +157,14 @@ migration.
 ## Tests and linting
 
 ```bash
-python manage.py test                                    # the whole suite
-python manage.py test calculatorapi.tests.LedgerTests    # one class
+python manage.py test                                                # the whole suite
+python manage.py test calculatorapi.tests.test_ledger                # one module
+python manage.py test calculatorapi.tests.test_ledger.LedgerTests    # one class
 pylint calculatorapi/ calculatorproject/
 ```
 
-CI runs both on every push. Every test starts with an empty cache (`CalculatorTestCase`), so no
+CI runs both on every push. The tests live in `calculatorapi/tests/`, one module per feature
+area. Every test starts with an empty cache (`CalculatorTestCase` in `tests/base.py`), so no
 result depends on which tests ran before it.
 
 ## Management commands
